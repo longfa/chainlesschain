@@ -4,7 +4,7 @@
 
 CLI **0.166.147** is public through [Actions OIDC](https://github.com/chainlesschain/chainlesschain/actions/runs/42976618525), with [public provenance and immutable artifact byte verification](https://github.com/chainlesschain/chainlesschain/actions/runs/43032767673). Exact source `32451e4d568e414acdb9c956208e5cff827cd6e0` passed all **76 CLI CI** and **6 Strict Sandbox** jobs. Install `npm i -g chainlesschain@0.166.147 --registry https://registry.npmjs.org`, restart hosts, then run `cc --version` and `cc doctor`.
 
-Open VSX **0.37.186** is public and byte-identical to the official VSIX, recommending CLI **0.166.147**. JetBrains **0.4.201** is awaiting completion of its official tag workflow; upload is not yet verified. Exact IDE source `703b22e89` passed its full host and ARM64 gates. This batch adds original RRSI manifest ownership, strict audit-response validation and preparation for a separate 36+9 retest. Automatic promotion remains HOLD; no new completion rate has been measured. See [upgrade and release status](docs-site/docs/chainlesschain/cli-ide-update-2026-11-11-147.md).
+Open VSX **0.37.186** is public and byte-identical to the official VSIX, recommending CLI **0.166.147**. JetBrains **0.4.201** is uploaded through its successful official tag workflow and awaits Marketplace approval/public download. Exact IDE source `703b22e89` passed its full host and ARM64 gates. This batch adds original RRSI manifest ownership, strict audit-response validation and preparation for a separate 36+9 retest. Automatic promotion remains HOLD; no new completion rate has been measured. See [upgrade and release status](docs-site/docs/chainlesschain/cli-ide-update-2026-11-11-147.md).
 
 ## Historical public release — 2026-11-10
 

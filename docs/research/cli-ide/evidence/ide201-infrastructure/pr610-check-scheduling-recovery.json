@@ -1,0 +1,125 @@
+{
+  "observedAt": "2026-11-11T23:10:09.590392+00:00",
+  "runId": 43097893314,
+  "source": "d1a60e807abf5221ca8394d8be3e7b31a46e44da",
+  "workflow": ".github/workflows/test.yml",
+  "status": "queued",
+  "attempt": 1,
+  "createdAt": "2026-11-11T20:45:06Z",
+  "updatedAt": "2026-11-11T20:45:06Z",
+  "jobs": {
+    "total_count": 0,
+    "jobs": []
+  },
+  "scope": "single stalled unstarted PR CI run; official release workflows untouched",
+  "normalCancel": {
+    "httpStatus": 409,
+    "message": "Cannot cancel a workflow run that has not been queued yet.",
+    "mutated": false
+  },
+  "freshZeroJobRecheck": true,
+  "forceCancel": {
+    "httpStatus": 409,
+    "message": "Cannot cancel a workflow run that has not been queued yet.",
+    "mutated": false
+  },
+  "reopenIntent": {
+    "observedAt": "2026-11-11T23:13:42.777014+00:00",
+    "source": "d1a60e807abf5221ca8394d8be3e7b31a46e44da",
+    "autoMergeDisabled": true,
+    "reason": "Stalled unstarted check graph; retrigger same source via configured human CLI identity"
+  },
+  "reopened": {
+    "observedAt": "2026-11-11T23:14:30.887545+00:00",
+    "source": "d1a60e807abf5221ca8394d8be3e7b31a46e44da",
+    "state": "open",
+    "autoMergeReenabled": true,
+    "newWorkflowRuns": [
+      {
+        "id": 43118239478,
+        "name": "Undeclared Dependency Audit (PR mandatory)",
+        "status": "completed",
+        "conclusion": "success",
+        "actor": "longfa"
+      },
+      {
+        "id": 43118239418,
+        "name": "CLI Agent Team Soak",
+        "status": "in_progress",
+        "conclusion": null,
+        "actor": "longfa"
+      },
+      {
+        "id": 43118239666,
+        "name": "PR Tests",
+        "status": "in_progress",
+        "conclusion": null,
+        "actor": "longfa"
+      },
+      {
+        "id": 43118239368,
+        "name": "Docs-Site Build Gate (truncated-render guard)",
+        "status": "in_progress",
+        "conclusion": null,
+        "actor": "longfa"
+      },
+      {
+        "id": 43118239405,
+        "name": "E2E Tests",
+        "status": "in_progress",
+        "conclusion": null,
+        "actor": "longfa"
+      },
+      {
+        "id": 43118239365,
+        "name": "Workspace Publish Staleness Check (PR mandatory)",
+        "status": "completed",
+        "conclusion": "success",
+        "actor": "longfa"
+      },
+      {
+        "id": 43118239540,
+        "name": "Full Test Automation with Diagnostics",
+        "status": "queued",
+        "conclusion": null,
+        "actor": "longfa"
+      },
+      {
+        "id": 43118239726,
+        "name": "CI Tests",
+        "status": "queued",
+        "conclusion": null,
+        "actor": "longfa"
+      },
+      {
+        "id": 43118239584,
+        "name": "Code Quality & Security",
+        "status": "queued",
+        "conclusion": null,
+        "actor": "longfa"
+      },
+      {
+        "id": 43118239426,
+        "name": "Secret Scan Audit (PR advisory)",
+        "status": "completed",
+        "conclusion": "success",
+        "actor": "longfa"
+      },
+      {
+        "id": 43118239735,
+        "name": "CLI CI",
+        "status": "queued",
+        "conclusion": null,
+        "actor": "longfa"
+      },
+      {
+        "id": 43118239580,
+        "name": "PDH Bundle Staleness Check (hard gate, traps",
+        "status": "completed",
+        "conclusion": "success",
+        "actor": "longfa"
+      }
+    ],
+    "underlyingSchedulingCauseEstablished": false
+  }
+}

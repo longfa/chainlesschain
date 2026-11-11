@@ -1,0 +1,24 @@
+{
+  "version": "0.4.201",
+  "status": "uploaded-pending-review",
+  "source": "703b22e895bff2c0f40cd7f350aef0757dc3bdd5",
+  "runId": 43072220080,
+  "tag": "ide-jetbrains-v0.4.201",
+  "observedAt": "2026-11-11T23:34:39.039730+00:00",
+  "officialWorkflowConclusion": "success",
+  "marketplaceUploaded": true,
+  "recommendedCliVersion": "0.166.147",
+  "publicRegistryBytesVerified": false,
+  "officialArtifact": {
+    "runId": 43072220080,
+    "artifactId": 13900152464,
+    "artifactName": "chainlesschain-ide-jetbrains-2",
+    "artifactDigest": "sha256:79ca0d4c52ce1132d528d71ffcb8b0e3235229f1484c52e2f172b8cc32423eb9",
+    "artifactBytes": 1607988,
+    "sourceCommit": "703b22e895bff2c0f40cd7f350aef0757dc3bdd5",
+    "workflowConclusion": "success",
+    "file": "chainlesschain-ide-bridge-0.4.201.zip",
+    "payloadDigest": "sha256:5b49bb3da1625d9fb38ba7a0a09b4c9b0863ed1b5404949262517babb9c422cc",
+    "payloadBytes": 1607726
+  }
+}

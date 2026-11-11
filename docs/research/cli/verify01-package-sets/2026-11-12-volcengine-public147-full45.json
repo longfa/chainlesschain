@@ -1,0 +1,87 @@
+{
+  "schema": "chainlesschain.native-package-set/v1",
+  "resolvedAt": "2026-11-11T23:38:57.796679+00:00",
+  "versions": {
+    "cli": "0.166.147",
+    "vscode": "0.37.186",
+    "jetbrains": "0.4.201",
+    "vscodeHost": "1.132.0",
+    "jetbrainsHost": "2025.2"
+  },
+  "releaseSourceCommit": "32451e4d568e414acdb9c956208e5cff827cd6e0",
+  "releaseSourceCommits": {
+    "cli": "32451e4d568e414acdb9c956208e5cff827cd6e0",
+    "openVsx": "703b22e895bff2c0f40cd7f350aef0757dc3bdd5",
+    "jetbrains": "703b22e895bff2c0f40cd7f350aef0757dc3bdd5"
+  },
+  "publicGeneratorProof": {
+    "path": "docs/research/cli/evidence/release147-public/publication.json",
+    "digest": "sha256:8910c5d508d83d443b0057428d98c279bce83cf1788c9c5d8bf9e56162ea5226"
+  },
+  "diagnosticExecution": {
+    "contextWindowTokens": 32768
+  },
+  "origin": {
+    "cli": {
+      "url": "https://registry.npmjs.org/chainlesschain/0.166.147",
+      "integrity": "d11fb783481d33c4364ba583a37312a0d134b2c53fb705b2b5481b95201301959ad009e8fc0abf525273a1bf21d5c192f8a98713a51b76ea445f315157e3db26",
+      "tarball": "https://registry.npmjs.org/chainlesschain/-/chainlesschain-0.166.147.tgz"
+    },
+    "vscode": {
+      "url": "https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.186",
+      "download": "https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.186/file/chainlesschain.chainlesschain-ide-0.37.186.vsix"
+    },
+    "jetbrains": {
+      "distribution": "github-actions-artifact",
+      "repository": "chainlesschain/chainlesschain",
+      "sourceCommit": "703b22e895bff2c0f40cd7f350aef0757dc3bdd5",
+      "runId": 43072220080,
+      "artifactId": 13900152464,
+      "artifactName": "chainlesschain-ide-jetbrains-2",
+      "artifactDigest": "sha256:79ca0d4c52ce1132d528d71ffcb8b0e3235229f1484c52e2f172b8cc32423eb9",
+      "tag": "ide-jetbrains-v0.4.201",
+      "file": "chainlesschain-ide-bridge-0.4.201.zip",
+      "workflow": ".github/workflows/ide-extensions.yml",
+      "marketplaceStatus": "uploaded-pending-review"
+    }
+  },
+  "publicArtifacts": {
+    "cli": {
+      "digest": "sha256:2d933c68e6053d9de21a16c2d2c4e245d964d957ce9663958419b8061e9969b2",
+      "bytes": 9628979
+    },
+    "vscode": {
+      "digest": "sha256:3b8579bf23e6ae5f52c11d1e685e16955487f382a16e13b3dc7af805c1f4c83f",
+      "bytes": 771301
+    },
+    "jetbrains": {
+      "digest": "sha256:5b49bb3da1625d9fb38ba7a0a09b4c9b0863ed1b5404949262517babb9c422cc",
+      "bytes": 1607726
+    }
+  },
+  "volcengineFullRound": {
+    "id": "volcengine-public147-full45-20261111",
+    "projectCommit": "b2aa3aba082873570e85dce39b00754e5504ff37",
+    "model": "deepseek-v4-flash-ga-260731",
+    "taskCount": 36,
+    "firstRunCount": 9,
+    "repeatPreviouslyAccepted": true,
+    "historicalScoresUnchanged": true,
+    "formalSample": false,
+    "reviewChanges": true,
+    "outputPolicy": "model-maximum",
+    "modelTurns": 40,
+    "physicalRequests": 48,
+    "outputTokens": 393216,
+    "ordinaryDeadlineMs": 2400000,
+    "firstRunDeadlineMs": 3600000,
+    "connectionAttemptTimeoutMs": 10000,
+    "parallelToolCalls": null,
+    "modelMetadata": {
+      "path": "docs/research/cli/verify01-volcengine-147-full-20261111/model-catalog.json",
+      "digest": "sha256:eb2a89b219ad919e8d706a00e66a5d99d6580500ff11fde39cdec033ccd6702e"
+    },
+    "preserveExplicitOutputLimits": true
+  },
+  "authorization": "User authorized the new CLI/IDE releases after tests and the separate original 36+9 comparison. Original project, model, host allocation, budgets and independent acceptance are retained. Automatic active promotion remains HOLD. Package preflight makes no model-generation request."
+}

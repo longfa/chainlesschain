@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "checkedAt": "2026-11-11T19:29:00.463686+00:00",
+  "checkedAt": "2026-11-11T23:34:39.039730+00:00",
   "source": "32451e4d568e414acdb9c956208e5cff827cd6e0",
   "cli": {
     "version": "0.166.147",
@@ -70,11 +70,27 @@
     "jetbrains": {
       "version": "0.4.201",
       "source": "703b22e895bff2c0f40cd7f350aef0757dc3bdd5",
-      "status": "publishing",
+      "status": "uploaded-pending-review",
       "tag": "ide-jetbrains-v0.4.201",
       "runId": 43072220080,
       "annotatedTagSha": "877da0558092d1e47fdf58cdbe10c97b934b7189",
-      "officialWorkflowConclusion": null
+      "officialWorkflowConclusion": "success",
+      "observedAt": "2026-11-11T23:34:39.039730+00:00",
+      "marketplaceUploaded": true,
+      "recommendedCliVersion": "0.166.147",
+      "publicRegistryBytesVerified": false,
+      "officialArtifact": {
+        "runId": 43072220080,
+        "artifactId": 13900152464,
+        "artifactName": "chainlesschain-ide-jetbrains-2",
+        "artifactDigest": "sha256:79ca0d4c52ce1132d528d71ffcb8b0e3235229f1484c52e2f172b8cc32423eb9",
+        "artifactBytes": 1607988,
+        "sourceCommit": "703b22e895bff2c0f40cd7f350aef0757dc3bdd5",
+        "workflowConclusion": "success",
+        "file": "chainlesschain-ide-bridge-0.4.201.zip",
+        "payloadDigest": "sha256:5b49bb3da1625d9fb38ba7a0a09b4c9b0863ed1b5404949262517babb9c422cc",
+        "payloadBytes": 1607726
+      }
     }
   },
   "rawReadbackFiles": [
@@ -97,6 +113,14 @@
       "path": "vscode186-candidate-manifest.json.raw",
       "bytes": 714,
       "digest": "sha256:6d310a98aeafec634cf9cd9fbe968b012b69296c50819cab02534e3d4dcaf1a3"
+    },
+    {
+      "path": "jetbrains201-official-plugin.xml.raw",
+      "bytes": 19893,
+      "digest": "sha256:6ba4a93796ecd28978eed62082c0336f61e8bd2831c6c69f01bd56d275f08f56",
+      "originalMember": "chainlesschain-ide-bridge-0.4.201.zip!/chainlesschain-ide-bridge/lib/chainlesschain-ide-bridge-0.4.201.jar!/META-INF/plugin.xml",
+      "runId": 43072220080,
+      "artifactId": 13900152464
     }
   ],
   "readbackArtifact": {
@@ -380,5 +404,7 @@
         }
       ]
     }
-  }
+  },
+  "snapshotFinalizedAt": "2026-11-11T23:38:57.420080+00:00",
+  "snapshotScope": "Immutable release and pre-dispatch snapshot. modelGenerationRequests and new36Plus9Status describe this snapshot only; subsequent campaign progress and results are recorded separately in docs/research/cli/verify01-volcengine-147-full-20261111/retest-plan.json and its evidence."
 }
