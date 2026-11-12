@@ -1,0 +1,159 @@
+{
+  "kind": "generated-GitHub-job-step-observation",
+  "observedAt": "2026-11-11T23:36:15.457088+00:00",
+  "runId": 43072220080,
+  "attempt": 1,
+  "sourceCommit": "703b22e895bff2c0f40cd7f350aef0757dc3bdd5",
+  "jobId": 130724193488,
+  "conclusion": "failure",
+  "testAssertionsPassed": true,
+  "failureStage": "Upload host journey evidence",
+  "originalJobLog": {
+    "status": "unavailable",
+    "httpStatus": 404,
+    "providerCode": "BlobNotFound",
+    "observation": "GitHub connector followed the official log redirect; provider returned missing blob. No log contents reconstructed."
+  },
+  "steps": [
+    {
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T20:02:27Z",
+      "completed_at": "2026-11-11T20:02:28Z"
+    },
+    {
+      "name": "Enable Windows long paths before checkout",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-11-11T20:02:28Z",
+      "completed_at": "2026-11-11T20:02:28Z"
+    },
+    {
+      "name": "Run actions/checkout@v5",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T20:02:28Z",
+      "completed_at": "2026-11-11T20:03:36Z"
+    },
+    {
+      "name": "Run actions/setup-java@v5",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T20:03:36Z",
+      "completed_at": "2026-11-11T20:03:36Z"
+    },
+    {
+      "name": "Run actions/setup-node@v5",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T20:03:36Z",
+      "completed_at": "2026-11-11T20:03:45Z"
+    },
+    {
+      "name": "Install CLI dependencies for canonical host recovery",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T20:03:45Z",
+      "completed_at": "2026-11-11T20:04:02Z"
+    },
+    {
+      "name": "Verify Remote Robot startup and recovery evidence contracts",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T20:04:02Z",
+      "completed_at": "2026-11-11T20:04:03Z"
+    },
+    {
+      "name": "Make gradlew executable",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T20:04:03Z",
+      "completed_at": "2026-11-11T20:04:03Z"
+    },
+    {
+      "name": "Prepare Ubuntu repository DNS",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-11-11T20:04:03Z",
+      "completed_at": "2026-11-11T20:04:03Z"
+    },
+    {
+      "name": "Install Linux virtual display",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-11-11T20:04:03Z",
+      "completed_at": "2026-11-11T20:04:03Z"
+    },
+    {
+      "name": "Bootstrap pinned Gradle distribution before IDE assertions",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T20:04:03Z",
+      "completed_at": "2026-11-11T20:04:06Z"
+    },
+    {
+      "name": "Run deterministic chat/control/resume journey (Linux)",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-11-11T20:04:06Z",
+      "completed_at": "2026-11-11T20:04:06Z"
+    },
+    {
+      "name": "Run deterministic chat/control/resume journey (Windows/macOS)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T20:04:06Z",
+      "completed_at": "2026-11-11T20:20:18Z"
+    },
+    {
+      "name": "Run canonical recovery and Stop journey (Linux)",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-11-11T20:20:18Z",
+      "completed_at": "2026-11-11T20:20:18Z"
+    },
+    {
+      "name": "Run canonical recovery and Stop journey (Windows/macOS)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T20:20:18Z",
+      "completed_at": "2026-11-11T20:24:28Z"
+    },
+    {
+      "name": "Upload host journey evidence",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-11T20:24:28Z",
+      "completed_at": "2026-11-11T20:35:00Z"
+    },
+    {
+      "name": "Post Run actions/setup-node@v5",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-11-11T20:35:00Z",
+      "completed_at": "2026-11-11T20:35:00Z"
+    },
+    {
+      "name": "Post Run actions/setup-java@v5",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T20:35:00Z",
+      "completed_at": "2026-11-11T20:35:01Z"
+    },
+    {
+      "name": "Post Run actions/checkout@v5",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T20:35:01Z",
+      "completed_at": "2026-11-11T20:35:02Z"
+    },
+    {
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T20:35:02Z",
+      "completed_at": "2026-11-11T20:35:04Z"
+    }
+  ]
+}

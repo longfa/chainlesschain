@@ -49,8 +49,8 @@
     "exactSourceCliCiAndStrictSandbox": "verified",
     "publicCliReadback": "verified",
     "exactSourceIdeAndArm64": "verified",
-    "publicIdeReadback": "verified-open-vsx; publishing-jetbrains",
-    "boundPackageManifest": "pending"
+    "publicIdeReadback": "verified-open-vsx; uploaded-pending-review-jetbrains",
+    "boundPackageManifest": "verified"
   },
   "upstreamCliValidation": {
     "sourceCommit": "32451e4d568e414acdb9c956208e5cff827cd6e0",
@@ -69,5 +69,18 @@
     "cli": "32451e4d568e414acdb9c956208e5cff827cd6e0",
     "vscode": "703b22e895bff2c0f40cd7f350aef0757dc3bdd5",
     "jetbrains": "703b22e895bff2c0f40cd7f350aef0757dc3bdd5"
+  },
+  "boundPackageManifest": {
+    "path": "docs/research/cli/verify01-package-sets/2026-11-12-volcengine-public147-full45.json",
+    "digest": "sha256:fd053b0ee05ffea3383a12277e2f33a9823a683a8eafb02d5eaf72fe08f8a58e"
+  },
+  "distribution": "public npm CLI and Open VSX VSIX plus exact official JetBrains tag artifact pending Marketplace review",
+  "preDispatchDraftCorrection": {
+    "field": "volcengineFullRound.preserveExplicitOutputLimits",
+    "value": true,
+    "reason": "Enforce the original fixed .140 baseline output-limit preservation policy",
+    "invalidDraftDigest": "sha256:e9291d4b48b64d66fd653ab79ba667ac8e84bd33f3d486160e7b69e2a6d38eaf",
+    "beforeCommitAndDispatch": true,
+    "modelRequests": 0
   }
 }

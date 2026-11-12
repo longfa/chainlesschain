@@ -33,7 +33,7 @@ Remote-SSH 第二次失败制品 13870310661 共 2,236,598 字节，SHA-256 为 
 | [桌面 E2E](https://github.com/chainlesschain/chainlesschain/actions/runs/43061797961)                 | 4/4 成功                                           |
 | [Linux x64/ARM64 进程恢复](https://github.com/chainlesschain/chainlesschain/actions/runs/43061798050) | 2/2 成功                                           |
 
-Open VSX **0.37.186** 已公开并与官方 VSIX 逐字节核验，推荐 CLI **0.166.147**；JetBrains **0.4.201** 正式标签工作流仍在运行，尚未核验上传。36+9 尚未执行。完整门禁作业名单、原始无障碍汇总及历史失败保留在[回执](./receipt.json)。
+Open VSX **0.37.186** 已公开并与官方 VSIX 逐字节核验，推荐 CLI **0.166.147**；JetBrains **0.4.201** 正式标签工作流成功且已上传，待 Marketplace 审核及公开下载。36+9 尚未执行。完整门禁作业名单、原始无障碍汇总及历史失败保留在[回执](./receipt.json)。
 
 补充门禁已完成：
 
@@ -54,3 +54,11 @@ Open VSX **0.37.186** 已公开并与官方 VSIX 逐字节核验，推荐 CLI **
 后续主分支 `5044641ff` 的 [Full Test Automation 43083563555](https://github.com/chainlesschain/chainlesschain/actions/runs/43083563555) 首轮 Windows 成功；Linux 在 CLI 独立依赖安装阶段三次 ETARGET，尚未执行测试断言。最后错误时间为 2026-11-11 19:54:22.902 UTC；npm 官方记录显示 generator 7.29.14 在 19:53:05.027 发布并要求 parser/types ^7.29.14，parser 到 19:54:23.671、types 到 19:55:50.462 才发布。这是已观察到的上游先后发布窗口；不归因为工作树 HEAD 修正或产品断言失败。
 
 已核对相关版本和 tarball 可访问，仅请求重跑失败作业，成功 Windows 作业不重跑。attempt 2 的依赖安装、完整测试及强制检查均成功，但随后测试结果上传步骤失败；作业日志接口读取超时，尚未断定上传失败的具体原因。工作流未确认成功，不将首轮或重跑的失败改为通过。详见 `main504-attempt2-upload-failure-observation.json` 的生成步骤观察。生成的官方 registry 元数据/HEAD 观察见 `main504-upstream-babel-observation.json`；`main504.upstream-babel.decoded.log.raw` 是连接器解码后选定的 UTF-8/LF 日志片段，不是原始 HTTP 响应字节。此前发行源 `703b22e89` 的完整成功结果保留各自源码范围。
+
+## 2026-11-12 上传与检查调度恢复续作
+
+主分支 `5044641ff` 的 attempt 2 日志后续可读取：ZIP 内容上传完成后，FinalizeArtifact 五次请求返回非 JSON HTML，最终上传步骤失败；解码片段保存在 `main504.attempt2-upload.decoded.log.raw`。记录中的 ZIP 摘要来自失败日志，未取得可下载的已完成制品，不能当作制品回读成功。前两轮失败保留。仅重跑失败作业的 attempt 3 已完整成功：Linux 安装、完整测试、结果上传和强制检查均成功；Windows 保留既有成功结果。完整作业名单见 `main504-attempt3-recovery-success.json`。
+
+JetBrains 正式标签首轮 macOS 2024.2 的两项真实旅程断言成功，失败点为证据上传。原日志跳转返回 404/BlobNotFound，未补造日志；生成的步骤观察见 `jetbrains201-tag-attempt1-upload-failure.json`。后续正式标签运行状态和公开/待审核分发证明见 CLI .147 发行回执。
+
+PR #610 的初始检查排队超过两小时且零作业；常规/强制取消均被 GitHub 以 409 拒绝，原记录未改变。通过已配置 CLI 身份关闭再重开同一 PR 后，同一提交 `d1a60e807` 的新检查实际开始，自动合并恢复。未修改工作流源码或主分支保护规则；底层调度原因尚未确立。生成的操作观察见 `pr610-check-scheduling-recovery.json`。

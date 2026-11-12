@@ -1,0 +1,48 @@
+{
+  "sourceCommit": "5044641ff004eb282d44b9bf8b17b7f1f485e9d7",
+  "runId": 43083563555,
+  "attempt": 3,
+  "conclusion": "success",
+  "linuxJobId": 130846236698,
+  "passed": 4,
+  "skipped": 1,
+  "total": 5,
+  "scope": "Only failed jobs and dependents requested; Windows prior success retained.",
+  "jobs": [
+    {
+      "id": 130846236698,
+      "name": "Run All Tests (ubuntu-latest)",
+      "conclusion": "success",
+      "run_attempt": 3,
+      "completed_at": "2026-11-11T23:19:15Z"
+    },
+    {
+      "id": 130846238409,
+      "name": "Run All Tests (windows-latest)",
+      "conclusion": "success",
+      "run_attempt": 3,
+      "completed_at": "2026-11-11T19:51:39Z"
+    },
+    {
+      "id": 130846239629,
+      "name": "System Health Check",
+      "conclusion": "success",
+      "run_attempt": 3,
+      "completed_at": "2026-11-11T19:49:55Z"
+    },
+    {
+      "id": 130846288312,
+      "name": "Scoped documentation check / Detect and validate scoped documentation",
+      "conclusion": "success",
+      "run_attempt": 3,
+      "completed_at": "2026-11-11T19:29:41Z"
+    },
+    {
+      "id": 130853990242,
+      "name": "Create Issue on Failure",
+      "conclusion": "skipped",
+      "run_attempt": 3,
+      "completed_at": "2026-11-11T23:19:16Z"
+    }
+  ]
+}
