@@ -1,17 +1,12 @@
 # ChainlessChain - 基于U盾和SIMKey的个人移动AI管理系统
 
+## 2026-11-14 CLI / IDE 发布状态
 
-## 2026-11-13 CLI / IDE 自进化状态发布
+CLI **0.166.149** 已通过 [GitHub Actions OIDC 发布](https://github.com/chainlesschain/chainlesschain/actions/runs/43475425890)。准确源码 `168a3d561b5a16e9d27b060944c63b2264c99df0` 的 CLI CI **76/76**、Strict Sandbox **6/6** 全部通过，官方公开归档及来源验证成功，独立公开下载与正式制品逐字节一致。安装：`npm i -g chainlesschain@0.166.149 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`、`cc doctor`。
 
-CLI **0.166.148** was published through GitHub Actions OIDC from exact source `146b3fbd438eece981aa14327d9481156683acd4`; CLI CI **76/76** and Strict Sandbox passed. Open VSX **0.37.187** is public and recommends CLI **0.166.148**. JetBrains **0.4.202** completed build, host-matrix and Marketplace upload steps, but remains pending manual listing review.
+Open VSX **0.37.188** 已公开，推荐 CLI **0.166.149**，完整宿主门禁及独立公开 VSIX 字节回读通过。配套 JetBrains **0.4.203** 推荐同一 CLI，已通过完整正式门禁并上传，待商店审核及公开下载核验；此前已核验的公开 JetBrains **0.4.202** 推荐 CLI **0.166.148**。见[升级说明](docs-site/docs/chainlesschain/cli-ide-update-2026-11-13-149.md)和[发布证据](docs/research/cli/evidence/release149-public/publication.json)。
 
-The release projects one CLI-owned self-evolution capability state into CLI, VS Code and JetBrains: `automaticPromotion=HOLD`, `productionAuthority=false`, and `runtimeEvidence=false`. This confirms configuration wiring only; it does not claim a production producer/storage graph, A/B acceptance, business-effect acceptance, or promotion authority. Run `cc evolution deployment status --json` after upgrading.
-
-## 2026-11-13 CLI / IDE ????
-
-CLI **0.166.148** ??? GitHub Actions OIDC ???????? `146b3fbd438eece981aa14327d9481156683acd4`?CLI CI **76/76** ? Strict Sandbox ??????npm ?????? provenance ????????????`npm i -g chainlesschain@0.166.148 --registry https://registry.npmjs.org`?
-
-Open VSX **0.37.187** ??????????? CLI **0.166.148**?JetBrains **0.4.202** ??? Marketplace??????????????????? Marketplace ????/????????????????? CLI-owned wiring projection?automatic promotion ?? **HOLD**??? authority ? runtime evidence ?????
+本次将原始 catalog/head 目录边界检查接入保留历史报告，并在最终日志验证后再次检查目录替换，能力限于本地目录元数据。自定义或包装后端不能取得原组件所有权。`automaticPromotion=HOLD`、`productionAuthority=false`、`runtimeEvidence=false` 保持；完整运行时存储图、独立安装器与固定依赖、A/B/C 评测、业务效果和自动晋升尚未完成。本轮没有新增模型任务验收。Microsoft Marketplace 仍未发布，PC/mobile 公开版本仍为 **v5.0.3.145**。**NOT_PAID_READY / NOT_ADMITTED / HOLD** 保持。
 
 ## 2026-11-12 CLI / IDE 发布状态
 

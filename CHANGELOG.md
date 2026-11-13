@@ -5,11 +5,18 @@ All notable changes to ChainlessChain will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-> Public release scope: CLI **0.166.142**, Session Core **0.3.25**, Open VSX **0.37.178** and JetBrains **0.4.195** are verified public from source `b78cf0af8c8b0491189465773b148ac77c332222`. CLI CI completed with **75 successful / 1 optional skipped** job; Strict Sandbox passed **6/6**. Actions OIDC publication and independent public-byte/provenance readback passed. JetBrains is approved, listed and downloadable; all 626 original payload files match its official build. Product **v5.0.3.145** is still in its five-platform release workflow; **v5.0.3.144** remains the verified public client release. See [release evidence](docs/research/cli/evidence/release142-public/README.md).
+> Public release scope checked 2026-11-14: CLI **0.166.149** is public from source `168a3d561b5a16e9d27b060944c63b2264c99df0`, with **76/76 CLI CI**, **6/6 Strict Sandbox**, Actions OIDC publication, official provenance verification and independent public archive byte equality. Open VSX **0.37.188** is public and byte-verified, recommending CLI **0.166.149**. JetBrains **0.4.203** has been uploaded and awaits Marketplace approval and public download verification; verified public JetBrains **0.4.202** retains CLI **0.166.148** pairing. See [publication evidence](docs/research/cli/evidence/release149-public/publication.json).
 >
-> `Unreleased` is a rolling source-development log retaining historical candidate labels, not a publication ledger. Historical OpenAI acceptance is **41/45** across versions; the focused image follow-up remains **0/1**. Engineering checks add no model task acceptance. Microsoft Marketplace is deferred. PC/mobile **[v5.0.3.144](https://github.com/chainlesschain/chainlesschain/releases/tag/v5.0.3.144)** is public and latest as of **2026-11-03**, with all five platform builds, six required checks and 22 release assets verified. Windows/macOS packages are unsigned, macOS is not notarized, and iOS is signed for Ad Hoc distribution to registered devices; this release does not publish to App Store or Google Play.
+> `Unreleased` is a rolling source-development log retaining historical candidate labels, not a publication ledger. Engineering checks add no model-task acceptance. Full runtime producer/storage graphs, independent installer/pins, A/B/C evaluation and automatic promotion remain incomplete. **NOT_PAID_READY / NOT_ADMITTED / HOLD** remain. Microsoft Marketplace is deferred; public PC/mobile clients remain **v5.0.3.145**.
 
 ## [Unreleased]
+
+### Added - cc CLI 0.166.149: retained-history manifest directory rechecks (candidate, 2026-11-13)
+
+- Bind observed-text and signed-anchor history reports to the genuine original journal catalog/head directory boundaries, with rechecks after capture, replay and final journal verification. Reject replaced directories and mixed or wrapped ownership without invoking caller callbacks.
+- Add temporary manifestDirectoryBoundaryDigest, manifestDirectoryBoundaryRechecked and manifestBoundaryScope report fields. Persistent schemas, signatures, CAS and localCompositionDigest remain unchanged; custom backends report this original-directory capability as unavailable.
+- Pair with VS Code/Open VSX 0.37.188 and JetBrains 0.4.203, both recommending CLI 0.166.149. Child package versions remain unchanged. Require exact-source three-OS CLI CI and Strict Sandbox, Actions OIDC publication and public readback before IDE publication.
+- Local focused validation: 138 passed and two existing platform-specific skips across nine files. This verifies local directory metadata only; independent installer/pins, complete runtime producer/storage graphs, A/B/C evaluation, business effects and automatic promotion remain incomplete. HOLD remains.
 
 ### Added - cc CLI 0.166.148: self-evolution capability status projection (candidate, 2026-11-13)
 

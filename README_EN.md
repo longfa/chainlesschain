@@ -1,11 +1,12 @@
 # ChainlessChain - Personal Mobile AI Management System Based on USB Key and SIMKey
 
+## 2026-11-14 CLI / IDE publication status
 
-## 2026-11-13 CLI / IDE self-evolution status release
+CLI **0.166.149** is public through [GitHub Actions OIDC](https://github.com/chainlesschain/chainlesschain/actions/runs/43475425890). Exact source `168a3d561b5a16e9d27b060944c63b2264c99df0` passed **76/76 CLI CI** and **6/6 Strict Sandbox** jobs. Official public archive/provenance verification passed, and an independent public download is byte-identical to the official tarball. Install `npm i -g chainlesschain@0.166.149 --registry https://registry.npmjs.org`, restart hosts, then run `cc --version` and `cc doctor`.
 
-CLI **0.166.148** was published through GitHub Actions OIDC from exact source `146b3fbd438eece981aa14327d9481156683acd4`; CLI CI **76/76** and Strict Sandbox passed on all configured systems. Open VSX **0.37.187** is public and recommends CLI **0.166.148**. JetBrains **0.4.202** completed build, host-matrix and Marketplace upload steps, but is still awaiting manual Marketplace listing review.
+Open VSX **0.37.188** is public and recommends CLI **0.166.149**; its complete host gates passed and independent public readback confirms official VSIX byte identity. JetBrains **0.4.203** recommends the same CLI and has been uploaded and awaits Marketplace approval and public download verification. Verified public JetBrains **0.4.202** retains CLI **0.166.148** pairing. See the [upgrade guide](docs-site/docs/chainlesschain/cli-ide-update-2026-11-13-149.md) and [publication evidence](docs/research/cli/evidence/release149-public/publication.json).
 
-The release projects one CLI-owned self-evolution capability state into CLI, VS Code and JetBrains: `automaticPromotion=HOLD`, `productionAuthority=false`, and `runtimeEvidence=false`. This confirms configuration wiring only; it does not claim a production producer/storage graph, A/B acceptance, business-effect acceptance, or promotion authority. Run `cc evolution deployment status --json` after upgrading.
+Retained-history reports now recheck original catalog/head directory boundaries after final journal verification. These are local directory metadata checks. Full runtime graphs, independent installer/pins, A/B/C evaluation, business effects and automatic promotion remain incomplete. `automaticPromotion=HOLD`, `productionAuthority=false` and `runtimeEvidence=false` remain. No additional model-task acceptance is claimed. Microsoft Marketplace is deferred and public PC/mobile clients remain **v5.0.3.145**. **NOT_PAID_READY / NOT_ADMITTED / HOLD** remain.
 
 ## Public CLI / IDE release status (2026-11-12)
 
