@@ -1,5 +1,18 @@
 # ChainlessChain - 基于U盾和SIMKey的个人移动AI管理系统
 
+
+## 2026-11-13 CLI / IDE 自进化状态发布
+
+CLI **0.166.148** was published through GitHub Actions OIDC from exact source `146b3fbd438eece981aa14327d9481156683acd4`; CLI CI **76/76** and Strict Sandbox passed. Open VSX **0.37.187** is public and recommends CLI **0.166.148**. JetBrains **0.4.202** completed build, host-matrix and Marketplace upload steps, but remains pending manual listing review.
+
+The release projects one CLI-owned self-evolution capability state into CLI, VS Code and JetBrains: `automaticPromotion=HOLD`, `productionAuthority=false`, and `runtimeEvidence=false`. This confirms configuration wiring only; it does not claim a production producer/storage graph, A/B acceptance, business-effect acceptance, or promotion authority. Run `cc evolution deployment status --json` after upgrading.
+
+## 2026-11-13 CLI / IDE ????
+
+CLI **0.166.148** ??? GitHub Actions OIDC ???????? `146b3fbd438eece981aa14327d9481156683acd4`?CLI CI **76/76** ? Strict Sandbox ??????npm ?????? provenance ????????????`npm i -g chainlesschain@0.166.148 --registry https://registry.npmjs.org`?
+
+Open VSX **0.37.187** ??????????? CLI **0.166.148**?JetBrains **0.4.202** ??? Marketplace??????????????????? Marketplace ????/????????????????? CLI-owned wiring projection?automatic promotion ?? **HOLD**??? authority ? runtime evidence ?????
+
 ## 2026-11-12 CLI / IDE 发布状态
 
 CLI **0.166.147** 已通过 [Actions OIDC 发布](https://github.com/chainlesschain/chainlesschain/actions/runs/42976618525)与[公开包来源及字节回读](https://github.com/chainlesschain/chainlesschain/actions/runs/43032767673)。准确源码 `32451e4d568e414acdb9c956208e5cff827cd6e0` 的 CLI CI **76/76**、Strict Sandbox **6/6** 全部通过。安装：`npm i -g chainlesschain@0.166.147 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`、`cc doctor`。
