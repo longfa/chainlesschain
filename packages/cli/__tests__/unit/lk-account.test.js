@@ -183,6 +183,14 @@ describe("fresh LK account data", () => {
       outputPerMillion: null,
     });
   });
+  it("does not imply model access from a group whitelist when the Key cannot use the model", () => {
+    const result = normalizeLkAccountPart("pricing", {
+      ...fixtures.pricing,
+      available_for_this_key: false,
+    });
+    expect(result.available).toBe(false);
+    expect(result.groups[0].allowed).toBe(false);
+  });
   it("does not reuse cached account data after a Key change", async () => {
     const fetcher = vi.fn(fetchFixture);
     await queryLkAccount({}, { config, fetcher });

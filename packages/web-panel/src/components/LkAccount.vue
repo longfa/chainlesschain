@@ -54,7 +54,13 @@
             .join('；')
         "
       />
+      <a-alert
+        v-if="account.pricing?.available === false"
+        type="warning"
+        message="当前 Key 无此模型权限，价格仅供参考"
+      />
       <a-table
+        v-if="account.pricing"
         size="small"
         :pagination="false"
         :columns="priceColumns"

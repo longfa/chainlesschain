@@ -87,7 +87,9 @@ function normalizeLkAccountPart(kind, data) {
         name: text(row.group_name),
         active: row.is_active === true,
         allowed:
-          row.in_key_whitelist === true && row.excluded_for_this_key !== true,
+          data.available_for_this_key !== false &&
+          row.in_key_whitelist === true &&
+          row.excluded_for_this_key !== true,
         billingMethod: text(row.billing_method),
         basePrice: number(row.base_price),
         inputPerMillion: number(row.input_token_price),
@@ -208,6 +210,9 @@ function formatLkAccount(result) {
     `Key 已用：${quota?.used ?? "未知"}；剩余额度：${quota?.unlimited ? "不限额" : (quota?.remaining ?? "未知")} 算力`,
     `最近 ${result.days} 天 API ${result.scope === "user" ? "全部 Key" : "当前 Key"} 实扣：${result.usage?.total?.cost ?? "未知"} 算力`,
     `动态价格（${result.model}，算力/百万 Token）：`,
+    ...(result.pricing?.available === false
+      ? ["当前 Key 无此模型权限；价格仅供参考。"]
+      : []),
     ...(result.pricing?.groups || []).map(
       (row) =>
         `  ${row.name}: ${row.billingMethod === "按token" ? `输入 ${row.inputPerMillion ?? "未知"} / 输出 ${row.outputPerMillion ?? "未知"}` : `基础价 ${row.basePrice ?? "未知"}`} · ${row.billingMethod} · ${row.active ? "启用" : "停用"} · ${row.allowed ? "Key 可用" : "Key 不可用"}`,
