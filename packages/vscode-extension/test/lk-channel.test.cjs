@@ -71,6 +71,7 @@ test("LK preset chooses exact alias and isolates every protocol's models", () =>
   assert.equal(e("model").value, "tt-6-luna");
   assert.equal(e("apiKey").value, "");
   assert.equal(e("baseUrl").value, "https://api.lk888.ai/v1");
+  assert.doesNotMatch(e("key-hint").textContent, /可留空/);
   for (const [protocol, model, provider] of [
     ["openai", "tt-6-luna", "custom"],
     ["anthropic", "fb-5-2", "anthropic"],

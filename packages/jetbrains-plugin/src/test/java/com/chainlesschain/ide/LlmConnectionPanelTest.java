@@ -27,6 +27,9 @@ class LlmConnectionPanelTest {
             assertFalse(panel.needsNewKey());
             assertEquals("", panel.apiKey());
             assertNotNull(LlmConfig.validateConnection(new LlmConfig.Connection("custom", "fb-5-2", "https://api.lk888.ai/v1", "", false), false));
+            panel.load(new LlmConfig.Connection("custom", "local", "http://localhost:8000/v1", "", false));
+            ((JTextField) find(panel, "llm.baseUrl")).setText("https://api.lk888.ai/v1");
+            assertTrue(panel.needsNewKey());
         });
     }
 

@@ -33,7 +33,7 @@ function update() {
   $("key-hint").textContent =
     same && current?.hasKey
       ? "已有密钥不会显示或回传到页面。留空即可保留。"
-      : p === "custom"
+      : p === "custom" && !lk
         ? "本地算力平台的密钥按平台要求填写，可留空；更换地址不会复用原服务的密钥。"
         : "新服务或新中转地址需填写对应密钥，原服务的密钥不会被复用。";
   $("url-hint").textContent =
@@ -43,9 +43,11 @@ function update() {
         ? "填写 Gemini 兼容接口基础地址，通常以 /v1beta 结尾。"
         : p === "anthropic"
           ? "填写 Anthropic 兼容接口基础地址，通常以 /v1 结尾；不要填写 /messages。"
-          : p === "custom"
-            ? "力数等本地平台：例如 http://192.168.1.100:8889/v1；模型 ID 以平台 API 为准。"
-            : "例如 https://your-relay.example/v1；不要填写 /chat/completions。";
+          : lk
+            ? "LK 基础地址由协议和主备选择生成；保存前填写渠道密钥。"
+            : p === "custom"
+              ? "力数等本地平台：例如 http://192.168.1.100:8889/v1；模型 ID 以平台 API 为准。"
+              : "例如 https://your-relay.example/v1；不要填写 /chat/completions。";
   try {
     const url = new URL($("baseUrl").value);
     $("http-field").hidden =

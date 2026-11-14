@@ -169,7 +169,7 @@ public final class LlmConnectionPanel extends JPanel {
         boolean same = current != null && providerId().equals(current.provider)
                 && LlmConfig.normalizedBaseUrl(baseUrl.getText()).equals(LlmConfig.normalizedBaseUrl(current.baseUrl));
         keyHint.setText(text.apply("ollama".equals(providerId()) ? "llm.form.keyless"
-                : "custom".equals(providerId()) && !(same && current.hasKey) ? "llm.form.optionalLocalKey"
+                : "custom".equals(providerId()) && !LkChannelCatalog.isEndpoint(baseUrl.getText()) && !(same && current.hasKey) ? "llm.form.optionalLocalKey"
                 : same && current.hasKey ? "llm.form.keepKey" : "llm.form.newKey"));
         boolean remoteHttp = false;
         try {
@@ -219,7 +219,7 @@ public final class LlmConnectionPanel extends JPanel {
     public LlmConfig.Connection connection() { return new LlmConfig.Connection(providerId(), model.getText().trim(), baseUrl.getText().trim(), vision.getText().trim(), false); }
     public String apiKey() { char[] value = key.getPassword(); try { return new String(value).trim(); } finally { Arrays.fill(value, '\0'); } }
     public boolean allowHttp() { return allowHttp.isSelected(); }
-    public boolean needsNewKey() { return (isLk() || LlmConfig.requiresApiKey(providerId())) && apiKey().isEmpty()
+    public boolean needsNewKey() { return (LkChannelCatalog.isEndpoint(baseUrl.getText()) || LlmConfig.requiresApiKey(providerId())) && apiKey().isEmpty()
             && !(current != null && current.hasKey && providerId().equals(current.provider)
             && LlmConfig.normalizedBaseUrl(baseUrl.getText()).equals(LlmConfig.normalizedBaseUrl(current.baseUrl))); }
     public void setBusy(boolean value) { busy = value; update(); }
