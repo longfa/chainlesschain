@@ -141,12 +141,12 @@ describe("LLM custom connection", () => {
       }),
     ).not.toThrow();
   });
-  it("restores a legacy channel credential after switching away before a model was configured", () => {
+  it("restores legacy credentials with a missing model and an equivalent URL", () => {
     const original = state.config;
     state.config = {
       llm: {
         provider: "volcengine",
-        baseUrl: "https://ark.cn-beijing.volces.com/api/v3",
+        baseUrl: " https://ARK.CN-BEIJING.volces.com:443/api/v3/ ",
         apiKey: "legacy-volc-key",
       },
     };

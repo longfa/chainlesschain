@@ -89,11 +89,17 @@ export function normalizeLlmConnection(input) {
 
 export function llmConnectionIdentity(connection = {}) {
   const provider = connection.provider || "ollama";
-  const baseUrl = String(
+  let baseUrl = String(
     connection.baseUrl || BUILT_IN_PROVIDERS[provider]?.baseUrl || "",
   )
     .trim()
     .replace(/\/+$/, "");
+  try {
+    baseUrl = new URL(baseUrl).href.replace(/\/+$/, "");
+    if (provider === "ollama") baseUrl = normalizeOllamaBaseUrl(baseUrl);
+  } catch {
+    // Preserve malformed legacy destinations separately until they are repaired.
+  }
   return isLkEndpoint(baseUrl) ? "channel:lk" : `${provider}:${baseUrl}`;
 }
 const profileId = (connection) =>
