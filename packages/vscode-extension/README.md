@@ -1,5 +1,9 @@
 # ChainlessChain IDE Bridge for VS Code
 
+## LK channel release candidate
+
+CLI **0.166.150**, VS Code/Open VSX **0.37.189** and JetBrains **0.4.204** are prepared for this release. They add LK primary/backup configuration and 83 protocol-filtered chat models, with a shared 197-entry model directory. Publication is pending exact-source CI, npm OIDC and registry readback; the preceding public versions below remain authoritative until verification. [LK setup and limits](../../docs/configuration/lk-api-channel.md).
+
 ChainlessChain agent workspace for VS Code-compatible editors with streaming chat, inline assistance, governed review, sessions, automation, and a localhost MCP bridge.
 
 ## Release pairing

@@ -29,6 +29,11 @@ import {
 import logger from "../lib/logger.js";
 import { normalizeLlmEndpoint } from "../lib/llm-connection-resolution.js";
 import {
+  LK_CHANNEL,
+  LK_MODELS,
+  resolveLkConnection,
+} from "../lib/llm-channel-presets.js";
+import {
   assessEvolutionDeploymentReadiness,
   getEvolutionDeploymentStatus,
 } from "../lib/evolution/evolution-deployment-config.js";
@@ -141,24 +146,64 @@ async function runSetup(options) {
     name: info.name,
     value: key,
   }));
-  const provider = await askSelect("Select LLM provider:", providerChoices);
+  providerChoices.push({ name: "LK API (聚合平台 / 主备渠道)", value: "lk" });
+  let provider = await askSelect("Select LLM provider:", providerChoices);
+  let channelConnection;
+  if (provider === "lk") {
+    const protocol = await askSelect(
+      "Select LK protocol (FB-5.2 requires Anthropic):",
+      ["anthropic", "openai", "gemini"].map((id) => ({
+        name: LK_CHANNEL.protocols[id].label,
+        value: id,
+      })),
+    );
+    const address = await askSelect(
+      "Select LK address (same service; switch manually if unreachable):",
+      Object.entries(LK_CHANNEL.addresses).map(([id, url]) => ({
+        name: `${id}: ${url}`,
+        value: id,
+      })),
+    );
+    const selectedModel = await askSelect("Select LK model:", [
+      ...LK_MODELS.filter(
+        (entry) =>
+          entry.type === "chat" && entry.compatibleProtocols.includes(protocol),
+      ).map((entry) => ({
+        name: `${entry.label} (${entry.id})`,
+        value: entry.id,
+      })),
+      { name: "Other model (enter exact ID)", value: "__custom__" },
+    ]);
+    const model =
+      selectedModel === "__custom__"
+        ? await askInput("Enter LK model name:")
+        : selectedModel;
+    if (!model?.trim()) throw new Error("An LK model name is required");
+    channelConnection = resolveLkConnection(protocol, address, { model });
+    provider = channelConnection.provider;
+  }
   const providerInfo = LLM_PROVIDERS[provider];
 
   let apiKey = null;
   let { baseUrl, model } = resolveSetupLlmDefaults(provider, existingLlm);
 
-  if (providerInfo.requiresApiKey) {
-    apiKey = await askPassword(`Enter ${providerInfo.name} API key:`);
+  if (channelConnection || providerInfo.requiresApiKey) {
+    apiKey = await askPassword(
+      `Enter ${channelConnection ? LK_CHANNEL.name : providerInfo.name} API key:`,
+    );
     // Abort before changing provider/baseUrl so an old provider's credential
     // can never be paired with and sent to a newly selected endpoint.
-    assertRequiredProviderCredential(providerInfo, apiKey);
+    assertRequiredProviderCredential({ requiresApiKey: true }, apiKey);
   } else if (provider === "custom") {
     apiKey = await askPassword(
       "Enter the platform API key (optional; leave blank if not required):",
     );
   }
 
-  if (provider === "custom" || providerInfo.isProxy) {
+  if (channelConnection) {
+    baseUrl = channelConnection.baseUrl;
+    model = channelConnection.model;
+  } else if (provider === "custom" || providerInfo.isProxy) {
     baseUrl = await askInput("Enter API base URL:", baseUrl || "");
     model = await askInput("Enter model name:", model || "");
   } else {

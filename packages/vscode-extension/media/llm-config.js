@@ -3,18 +3,26 @@
 const vscode = acquireVsCodeApi();
 const $ = (id) => document.getElementById(id);
 let current = null,
+  lkCatalog = null,
   presets = [],
   busy = false,
   dirty = false;
 const protocols = ["openai", "anthropic", "gemini", "ollama"];
 const normalized = (url) => String(url || "").replace(/\/+$/, "");
 function provider() {
+  if ($("preset").value === "lk")
+    return $("protocol").value === "openai" ? "custom" : $("protocol").value;
   return $("preset").value === "relay"
     ? $("protocol").value
     : $("preset").value;
 }
 function update() {
-  $("protocol-field").hidden = $("preset").value !== "relay";
+  const lk = $("preset").value === "lk";
+  $("protocol-field").hidden = !lk && $("preset").value !== "relay";
+  $("lk-address-field").hidden = !lk;
+  $("lk-model-field").hidden = !lk;
+  for (const option of $("protocol").options || [])
+    option.disabled = lk && option.value === "ollama";
   const p = provider();
   $("key-field").hidden = p === "ollama";
   const same =
@@ -55,6 +63,12 @@ function update() {
     : "配置已同步";
 }
 function fill(c) {
+  const lk =
+    lkCatalog &&
+    Object.values(lkCatalog.channel.addresses).some((origin) =>
+      [origin + "/v1", origin + "/v1beta"].includes(normalized(c.baseUrl)),
+    ) &&
+    ["custom", "openai", "anthropic", "gemini"].includes(c.provider);
   const preset = presets.find(
     (p) =>
       p.id === c.provider &&
@@ -63,8 +77,16 @@ function fill(c) {
       (!protocols.includes(c.provider) ||
         normalized(p.baseUrl) === normalized(c.baseUrl)),
   );
-  $("preset").value = preset ? preset.id : "relay";
+  $("preset").value = lk ? "lk" : preset ? preset.id : "relay";
   $("protocol").value = protocols.includes(c.provider) ? c.provider : "openai";
+  if (lk) {
+    $("lk-address").value = normalized(c.baseUrl).startsWith(
+      lkCatalog.channel.addresses.backup + "/",
+    )
+      ? "backup"
+      : "primary";
+    fillLkModels(c.model);
+  }
   for (const key of ["model", "baseUrl", "visionModel"])
     $(key).value = c[key] || "";
   $("apiKey").value = "";
@@ -85,6 +107,12 @@ function fill(c) {
   update();
 }
 $("preset").onchange = () => {
+  if ($("preset").value === "lk") {
+    $("protocol").value = "openai";
+    $("lk-address").value = "primary";
+    applyLk();
+    return;
+  }
   const p = presets.find((p) => p.id === $("preset").value);
   if (p) {
     $("baseUrl").value = p.baseUrl;
@@ -96,7 +124,48 @@ $("preset").onchange = () => {
   update();
 };
 $("protocol").onchange = () => {
+  if ($("preset").value === "lk") {
+    applyLk();
+    return;
+  }
   $("apiKey").value = "";
+  dirty = true;
+  update();
+};
+function fillLkModels(selected) {
+  const protocol = $("protocol").value;
+  $("lk-model").replaceChildren();
+  for (const model of lkCatalog.models.filter(
+    (m) => m.type === "chat" && m.compatibleProtocols.includes(protocol),
+  )) {
+    const option = document.createElement("option");
+    option.value = model.id;
+    option.textContent = model.label + " (" + model.id + ")";
+    $("lk-model").append(option);
+  }
+  $("lk-model").value =
+    selected || lkCatalog.channel.protocols[protocol].defaultModel;
+}
+function applyLk() {
+  const protocol = $("protocol").value;
+  fillLkModels();
+  $("baseUrl").value =
+    lkCatalog.channel.addresses[$("lk-address").value] +
+    lkCatalog.channel.protocols[protocol].basePath;
+  $("model").value = $("lk-model").value;
+  $("visionModel").value = "";
+  $("apiKey").value = "";
+  dirty = true;
+  update();
+}
+$("lk-address").onchange = () => {
+  const model = $("model").value;
+  applyLk();
+  $("model").value = model;
+  $("lk-model").value = model;
+};
+$("lk-model").onchange = () => {
+  $("model").value = $("lk-model").value;
   dirty = true;
   update();
 };
@@ -124,8 +193,13 @@ window.addEventListener("message", ({ data: m }) => {
   if (m.type === "config") {
     current = m.current;
     presets = m.presets;
+    lkCatalog = m.lkCatalog;
     $("preset").replaceChildren();
-    for (const p of [{ id: "relay", label: "自定义 / 中转站" }, ...presets]) {
+    for (const p of [
+      { id: "relay", label: "自定义 / 中转站" },
+      ...presets,
+      ...(lkCatalog ? [{ id: "lk", label: "LK API 聚合平台" }] : []),
+    ]) {
       const option = document.createElement("option");
       option.value = p.id;
       option.textContent = p.label;

@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added - cc CLI 0.166.150: LK aggregator model configuration (candidate, 2026-11-14)
+
+- Add the LK aggregator with documented primary/backup addresses, exact model aliases and protocol-aware selection. The shared catalog contains 83 chat models plus 114 media entries; media task execution is not included. Preserve saved aliases and keep credentials scoped to the selected endpoint. Three tiny live protocol probes and authenticated pricing queries succeeded; this does not certify the whole model catalog.
+- Pair with VS Code/Open VSX 0.37.189 and JetBrains 0.4.204; child npm packages remain unchanged. Require complete exact-source CLI CI and Strict Sandbox matrices, then OIDC publication and public package readback before IDE publication.
+
 ### Added - cc CLI 0.166.149: retained-history manifest directory rechecks (candidate, 2026-11-13)
 
 - Bind observed-text and signed-anchor history reports to the genuine original journal catalog/head directory boundaries, with rechecks after capture, replay and final journal verification. Reject replaced directories and mixed or wrapped ownership without invoking caller callbacks.

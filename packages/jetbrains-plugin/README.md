@@ -1,5 +1,9 @@
 # ChainlessChain IDE Bridge (JetBrains)
 
+## LK channel release candidate
+
+CLI **0.166.150**, VS Code/Open VSX **0.37.189** and JetBrains **0.4.204** are prepared for this release. They add LK primary/backup configuration and 83 protocol-filtered chat models, with a shared 197-entry model directory. Publication is pending exact-source CI, npm OIDC and registry readback; the preceding public versions below remain authoritative until verification. [LK setup and limits](../../docs/configuration/lk-api-channel.md).
+
 ## Current release 0.4.203 / CLI 0.166.149 (2026-11-14)
 
 The [official tag workflow](https://github.com/chainlesschain/chainlesschain/actions/runs/43478484313) passed its complete Windows/Linux/macOS host, browser, unit, build and compatibility gates. JetBrains **0.4.203** has been uploaded and awaits Marketplace approval and public download verification. It recommends CLI **0.166.149**. Verified public **0.4.202** remains paired with CLI **0.166.148** until the new version is approved and publicly verified. [Publication evidence](../../docs/research/cli/evidence/release149-public/jetbrains.json).
@@ -305,9 +309,9 @@ See the [verified publication evidence](https://github.com/chainlesschain/chainl
 
 ## Release compatibility
 
-Plugin **0.4.203** recommends `chainlesschain@0.166.149`. This release pairs with the CLI original manifest directory boundary checks in retained-history reports and the CLI-owned self-evolution capability status surface and retains the Rewind chooser anchoring and stale-conversation result fix. [Rewind fix](https://github.com/chainlesschain/chainlesschain/pull/593).
+Plugin **0.4.204** recommends `chainlesschain@0.166.150`. This candidate adds the LK aggregation channel and protocol-filtered model directory while retaining the CLI-owned capability status surface and Rewind fixes. [Rewind fix](https://github.com/chainlesschain/chainlesschain/pull/593).
 
-Install the public paired CLI with `npm i -g chainlesschain@0.166.149 --registry https://registry.npmjs.org`, restart the chat host, and run `cc --version` and `cc doctor`. Goal transfer and native Graph features require matching desktop support and explicit native authorization. Model-task improvement and automatic promotion remain unverified.
+After publication, install the paired CLI with `npm i -g chainlesschain@0.166.150 --registry https://registry.npmjs.org`, restart the chat host, and run `cc --version` and `cc doctor`. Goal transfer and native Graph features require matching desktop support and explicit native authorization. Model-task improvement and automatic promotion remain unverified.
 
 ## Previous candidates and development notes
 

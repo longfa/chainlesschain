@@ -7,6 +7,84 @@
         :wrapper-col="{ span: 18 }"
         @finish="handleSave"
       >
+        <a-form-item label="渠道预设">
+          <a-space wrap>
+            <span>LK API</span>
+            <a-select
+              v-model:value="lkProtocol"
+              style="width: 235px"
+              @change="handleLkProtocolChange"
+            >
+              <a-select-option
+                v-for="(protocol, id) in LK_CHANNEL.protocols"
+                :key="id"
+                :value="id"
+              >
+                {{ protocol.label }}
+              </a-select-option>
+            </a-select>
+            <a-select
+              v-model:value="lkModel"
+              show-search
+              style="width: 290px"
+              placeholder="选择模型"
+            >
+              <a-select-option
+                v-for="model in lkChatModels"
+                :key="model.id"
+                :value="model.id"
+                >{{ model.label }} ({{ model.id }})</a-select-option
+              >
+            </a-select>
+            <a-select v-model:value="lkAddress" style="width: 265px">
+              <a-select-option value="primary">主 api.lk888.ai</a-select-option>
+              <a-select-option value="backup"
+                >备用 api.lk666.ai</a-select-option
+              >
+            </a-select>
+            <a-button @click="applyLkPreset">使用此渠道</a-button>
+          </a-space>
+          <div class="form-hint">
+            主备地址为同一服务，访问不畅时可手动切换。FB-5.2 使用 Anthropic
+            协议。
+            <a
+              :href="LK_CHANNEL.documentationUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              >开发文档</a
+            >
+            ·
+            <a
+              :href="`${LK_CHANNEL.pricingUrl}?model=${encodeURIComponent(lkModel)}`"
+              target="_blank"
+              rel="noopener noreferrer"
+              >模型定价</a
+            >
+          </div>
+          <details class="form-hint">
+            <summary>五类协议与接口地址</summary>
+            <div v-for="(path, name) in LK_CHANNEL.endpoints" :key="name">
+              {{ name }}: {{ LK_CHANNEL.addresses[lkAddress] }}{{ path }}
+            </div>
+            <div>
+              图片接口仅部分图片模型可用；媒体生成与 Skills 在此提供接口参考。
+            </div>
+            <div v-for="type in ['image', 'video', 'audio']" :key="type">
+              {{ type }} 模型：
+              <a
+                v-for="model in LK_MODELS.filter(
+                  (entry) => entry.type === type,
+                )"
+                :key="model.id"
+                :href="`${LK_CHANNEL.documentationUrl}#model/${encodeURIComponent(model.id)}`"
+                target="_blank"
+                rel="noopener noreferrer"
+                style="margin-right: 8px"
+                >{{ model.label }}</a
+              >
+            </div>
+          </details>
+        </a-form-item>
         <!-- 提供商选择 -->
         <a-form-item label="服务提供商">
           <a-radio-group
@@ -20,6 +98,7 @@
             </a-radio-button>
             <a-radio-button value="volcengine"> 豆包 (字节) </a-radio-button>
             <a-radio-button value="deepseek"> DeepSeek </a-radio-button>
+            <a-radio-button value="gemini"> Gemini </a-radio-button>
             <a-radio-button value="custom"> 自定义API </a-radio-button>
           </a-radio-group>
           <div class="form-hint">选择LLM服务提供商</div>
@@ -192,6 +271,22 @@
           </a-form-item>
         </template>
 
+        <template v-if="form.provider === 'gemini'">
+          <a-divider orientation="left">Gemini 配置</a-divider>
+          <a-form-item label="API 地址" required>
+            <a-input v-model:value="form.gemini.baseURL" />
+          </a-form-item>
+          <a-form-item label="API Key" required>
+            <a-input-password v-model:value="form.gemini.apiKey" />
+          </a-form-item>
+          <a-form-item label="模型名称" required>
+            <a-input
+              v-model:value="form.gemini.model"
+              placeholder="填写渠道模型标识符"
+            />
+          </a-form-item>
+        </template>
+
         <!-- 自定义 API 配置 -->
         <template v-if="form.provider === 'custom'">
           <a-divider orientation="left"> 自定义 API 配置 </a-divider>
@@ -360,6 +455,43 @@ import { logger } from "@/utils/logger";
 import { ref, reactive, computed, onMounted } from "vue";
 import { message } from "ant-design-vue";
 import TokenStatsCard from "./TokenStatsCard.vue";
+import {
+  LK_CHANNEL,
+  LK_MODELS,
+  resolveLkConnection,
+} from "../../../../packages/cli/src/lib/llm-channel-presets.js";
+
+const lkProtocol = ref("anthropic");
+const lkAddress = ref("primary");
+const lkModel = ref("fb-5-2");
+const lkChatModels = computed(() =>
+  LK_MODELS.filter(
+    (model) =>
+      model.type === "chat" &&
+      model.compatibleProtocols.includes(lkProtocol.value),
+  ),
+);
+const handleLkProtocolChange = () => {
+  lkModel.value = LK_CHANNEL.protocols[lkProtocol.value].defaultModel;
+};
+const applyLkPreset = () => {
+  const connection = resolveLkConnection(lkProtocol.value, lkAddress.value, {
+    desktop: true,
+    model: lkModel.value,
+  });
+  const previous = form[connection.provider] || {};
+  const sameChannel = Object.values(LK_CHANNEL.addresses).some((origin) =>
+    [origin, `${origin}/v1`, `${origin}/v1beta`].includes(previous.baseURL),
+  );
+  form[connection.provider] = {
+    ...previous,
+    name: LK_CHANNEL.name,
+    baseURL: connection.baseUrl,
+    apiKey: sameChannel ? previous.apiKey : "",
+    model: connection.model,
+  };
+  form.provider = connection.provider;
+};
 
 // 状态
 const loading = ref(false);
@@ -469,6 +601,12 @@ const form = reactive({
     model: "",
   },
 
+  gemini: {
+    apiKey: "",
+    baseURL: "https://generativelanguage.googleapis.com/v1beta",
+    model: "",
+  },
+
   options: {
     temperature: 0.7,
     top_p: 0.9,
@@ -529,6 +667,13 @@ const handleTest = async () => {
   testing.value = true;
   try {
     // 验证必填字段
+    const activeConfig = form[form.provider];
+    if (form.provider !== "ollama" && !activeConfig?.model?.trim()) {
+      throw new Error("请先输入模型名称");
+    }
+    if (form.provider === "gemini" && !form.gemini.apiKey) {
+      throw new Error("请先输入 Gemini API Key");
+    }
     if (form.provider === "openai" && !form.openai.apiKey) {
       throw new Error("请先输入 OpenAI API Key");
     }
@@ -602,6 +747,11 @@ const handleReset = () => {
     baseURL: "",
     model: "",
   };
+  form.gemini = {
+    apiKey: "",
+    baseURL: "https://generativelanguage.googleapis.com/v1beta",
+    model: "",
+  };
   form.options = {
     temperature: 0.7,
     top_p: 0.9,
@@ -665,6 +815,7 @@ const getProviderName = (provider) => {
     openai: "OpenAI",
     anthropic: "Claude (Anthropic)",
     deepseek: "DeepSeek",
+    gemini: "Gemini",
     volcengine: "豆包（火山引擎）",
     custom: "自定义API",
   };

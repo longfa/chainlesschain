@@ -308,6 +308,13 @@ public final class LlmConfig {
                     && !"127.0.0.1".equals(host) && !"[::1]".equals(host) && !allowHttp)
                 return "Confirm unencrypted HTTP before using a remote endpoint";
         } catch (Exception e) { return "Enter a valid base URL"; }
+        if (LkChannelCatalog.isEndpoint(connection.baseUrl)) {
+            String wire = "custom".equals(connection.provider) ? "openai" : connection.provider;
+            for (LkChannelCatalog.Model entry : LkChannelCatalog.MODELS) {
+                if (entry.id.equals(connection.model) && (!"chat".equals(entry.type) || !wire.equals(entry.protocol)))
+                    return "This LK model does not support the selected chat protocol";
+            }
+        }
         return null;
     }
 

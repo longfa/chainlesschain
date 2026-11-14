@@ -1,5 +1,9 @@
 # ChainlessChain - 基于U盾和SIMKey的个人移动AI管理系统
 
+## LK channel release candidate
+
+CLI **0.166.150**, VS Code/Open VSX **0.37.189** and JetBrains **0.4.204** are prepared for this release. They add LK primary/backup configuration and 83 protocol-filtered chat models, with a shared 197-entry model directory. Publication is pending exact-source CI, npm OIDC and registry readback; the preceding public versions below remain authoritative until verification. [LK setup and limits](docs/configuration/lk-api-channel.md).
+
 ## 2026-11-14 CLI / IDE 发布状态
 
 CLI **0.166.149** 已通过 [GitHub Actions OIDC 发布](https://github.com/chainlesschain/chainlesschain/actions/runs/43475425890)。准确源码 `168a3d561b5a16e9d27b060944c63b2264c99df0` 的 CLI CI **76/76**、Strict Sandbox **6/6** 全部通过，官方公开归档及来源验证成功，独立公开下载与正式制品逐字节一致。安装：`npm i -g chainlesschain@0.166.149 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`、`cc doctor`。
