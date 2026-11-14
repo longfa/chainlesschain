@@ -7,6 +7,32 @@ import java.awt.Container;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LlmConnectionPanelTest {
+    @Test void lkCatalogRoutesExactAliasesAndRetainsSavedCustomAliases() throws Exception {
+        SwingUtilities.invokeAndWait(() -> {
+            LlmConnectionPanel panel = new LlmConnectionPanel(key -> key);
+            panel.load(new LlmConfig.Connection("openai", "old", "https://api.openai.com/v1", "", true));
+            ((JComboBox<?>) find(panel, "llm.provider")).setSelectedIndex(LlmConfig.PRESETS.length + 1);
+            assertEquals("custom", panel.connection().provider);
+            assertEquals("tt-6-luna", panel.connection().model);
+            assertEquals("https://api.lk888.ai/v1", panel.connection().baseUrl);
+            assertTrue(panel.needsNewKey());
+            ((JComboBox<?>) find(panel, "llm.protocol")).setSelectedIndex(1);
+            assertEquals("anthropic", panel.connection().provider);
+            assertEquals("fb-5-2", panel.connection().model);
+            assertEquals(14, ((JComboBox<?>) find(panel, "llm.lkModel")).getItemCount());
+            ((JComboBox<?>) find(panel, "llm.lkAddress")).setSelectedIndex(1);
+            assertEquals("https://api.lk666.ai/v1", panel.connection().baseUrl);
+            panel.load(new LlmConfig.Connection("custom", "team/future", "https://api.lk666.ai/v1", "", true));
+            assertEquals("team/future", panel.connection().model);
+            assertFalse(panel.needsNewKey());
+            assertEquals("", panel.apiKey());
+            assertNotNull(LlmConfig.validateConnection(new LlmConfig.Connection("custom", "fb-5-2", "https://api.lk888.ai/v1", "", false), false));
+            panel.load(new LlmConfig.Connection("custom", "local", "http://localhost:8000/v1", "", false));
+            ((JTextField) find(panel, "llm.baseUrl")).setText("https://api.lk888.ai/v1");
+            assertTrue(panel.needsNewKey());
+        });
+    }
+
     private static Component find(Container parent, String name) {
         for (Component child : parent.getComponents()) {
             if (name.equals(child.getName())) return child;

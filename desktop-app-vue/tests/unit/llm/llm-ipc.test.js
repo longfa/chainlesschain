@@ -1,6 +1,6 @@
 /**
  * LLM Service IPC 单元测试
- * 测试43个 LLM IPC handlers 的注册和执行
+ * 测试44个 LLM IPC handlers 的注册和执行
  *
  * 使用依赖注入模式验证 IPC handlers，支持动态测试
  */
@@ -20,7 +20,7 @@ describe("LLM Service IPC", () => {
   let registerLLMIPC;
 
   const expectedChannels = [
-    // 基础功能 (14个)
+    // 基础功能 (15个)
     "llm:check-status",
     "llm:query",
     "llm:chat",
@@ -28,6 +28,7 @@ describe("LLM Service IPC", () => {
     "llm:query-stream",
     "llm:get-config",
     "llm:set-config",
+    "llm:lk-account",
     "llm:list-models",
     "llm:clear-context",
     "llm:embeddings",
@@ -233,8 +234,8 @@ describe("LLM Service IPC", () => {
   // ============================================================
 
   describe("Handler 注册验证", () => {
-    it("should have exactly 14 handlers registered", () => {
-      expect(Object.keys(handlers).length).toBe(43);
+    it("should have exactly 44 handlers registered", () => {
+      expect(Object.keys(handlers).length).toBe(44);
     });
 
     it("should match all expected handler channels", () => {
@@ -302,19 +303,20 @@ describe("LLM Service IPC", () => {
   });
 
   // ============================================================
-  // 配置管理 Handlers (3个)
+  // 配置管理 Handlers (4个)
   // ============================================================
 
   describe("配置管理 Handlers", () => {
     const configHandlers = [
       "llm:get-config",
       "llm:set-config",
+      "llm:lk-account",
       "llm:list-models",
     ];
 
-    it("should have 3 configuration management handlers", () => {
+    it("should have 4 configuration management handlers", () => {
       const count = configHandlers.filter((h) => handlers[h]).length;
-      expect(count).toBe(3);
+      expect(count).toBe(4);
     });
 
     configHandlers.forEach((channel) => {
@@ -375,8 +377,8 @@ describe("LLM Service IPC", () => {
   // ============================================================
 
   describe("按功能域分类验证", () => {
-    it("should have 14 + 6 + 6 + 2 + 4 + 4 + 3 + 4 = 43 total handlers", () => {
-      expect(Object.keys(handlers).length).toBe(43);
+    it("should have 15 + 6 + 6 + 2 + 4 + 4 + 3 + 4 = 44 total handlers", () => {
+      expect(Object.keys(handlers).length).toBe(44);
     });
 
     it("should group handlers correctly by functional domain", () => {
@@ -392,6 +394,7 @@ describe("LLM Service IPC", () => {
       const configCount = [
         "llm:get-config",
         "llm:set-config",
+        "llm:lk-account",
         "llm:list-models",
       ].filter((h) => handlers[h]).length;
       const contextCount = ["llm:clear-context", "llm:embeddings"].filter(
@@ -406,7 +409,7 @@ describe("LLM Service IPC", () => {
 
       expect(basicCount).toBe(4);
       expect(templateCount).toBe(1);
-      expect(configCount).toBe(3);
+      expect(configCount).toBe(4);
       expect(contextCount).toBe(2);
       expect(selectorCount).toBe(4);
     });
@@ -587,6 +590,7 @@ describe("LLM Service IPC", () => {
     it("should have handlers for configuration and model management", () => {
       expect(handlers["llm:get-config"]).toBeDefined();
       expect(handlers["llm:set-config"]).toBeDefined();
+      expect(handlers["llm:lk-account"]).toBeDefined();
       expect(handlers["llm:list-models"]).toBeDefined();
     });
 

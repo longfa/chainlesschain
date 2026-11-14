@@ -1,0 +1,245 @@
+<idea-plugin>
+  <idea-version since-build="242" />
+  <id>com.chainlesschain.ide</id>
+  <name>ChainlessChain IDE Bridge</name>
+  <version>0.4.201</version>
+  <vendor url="https://github.com/chainlesschain/chainlesschain">ChainlessChain</vendor>
+  <description><![CDATA[<b>ChainlessChain IDE Bridge</b> brings the ChainlessChain <code>cc</code>
+        agent CLI into your JetBrains IDE — a full AI coding agent in a side panel
+        that sees your editor, edits through native diffs you approve, and runs
+        your app, without leaving the IDE.
+        <br/><br/>
+        It runs a localhost MCP server exposing your active selection, diagnostics,
+        open editors and native diff review as tools the agent can call, and writes a
+        discovery lockfile so a <code>cc agent</code> you run in any terminal
+        auto-connects to this project's bridge.
+        <br/><br/>
+        <b>What you get</b>
+        <ul>
+          <li><b>Chat tool window with conversation tabs</b> — talk to the agent in
+              the right-dock "ChainlessChain" panel: streaming replies, tool-call
+              trace, and multiple conversations as tabs (each its own
+              <code>cc agent</code> process; switch instantly, close, reopen). Tabs
+              and their sessions resume across IDE restarts. New chat
+              (<code>Ctrl/Cmd+Alt+Shift+D</code>), reopen last closed
+              (<code>Ctrl/Cmd+Alt+Shift+R</code>).</li>
+          <li><b>Editor-aware out of the box</b> — your selection and open tabs ride
+              along with every prompt; after the agent edits a file, the IDE's fresh
+              errors/warnings flow back into the same run so it fixes what it broke.
+              (<code>CC_IDE_CONTEXT=0</code> to opt out.)</li>
+          <li><b>Native diff review</b> — file edits become a side-by-side IDE diff:
+              <em>Accept</em>, <em>Request changes…</em> (inline notes go back to the
+              agent), or <em>Reject</em> (never writes). Multi-file changes open as a
+              single <code>openMultiDiff</code> batch — accept all, pick files, or
+              reject.</li>
+          <li><b>Approval modes &amp; extended thinking</b> — slash commands in the
+              panel: <code>/auto</code> (accept edits), <code>/bypass</code>,
+              <code>/normal</code>; <code>/think</code> · <code>/ultrathink</code> ·
+              <code>/think-off</code> (Anthropic). Also <code>/new</code>
+              <code>/stop</code> <code>/cost</code> <code>/context</code>
+              <code>/plan</code> <code>/approve</code> <code>/reject</code>.</li>
+          <li><b>Interactive plan &amp; approval cards</b> — plans and tool-permission
+              prompts render as cards with Approve / Deny (Approve / Reject) buttons,
+              right in the chat.</li>
+          <li><b>Selection actions &amp; @-mentions</b> — right-click code →
+              <em>Explain</em> or <em>Refactor</em>; <code>Ctrl/Cmd+Alt+Shift+K</code>
+              inserts an <code>@file#L5-10</code> reference for the selection; type
+              <code>@</code> for a completion popup of
+              <code>@selection</code>/<code>@diagnostics</code> + project files +
+              class &amp; method symbols.</li>
+          <li><b>In-editor app preview</b> — <em>Start App Preview</em> finds your dev
+              script, runs the dev server, detects the URL and embeds it (JCEF, with
+              an external-browser fallback); a one-click Restart if the server dies.</li>
+          <li><b>Live context window</b> — a subtle line under the chat shows model
+              context usage after each turn.</li>
+        </ul>
+        <b>Requirements:</b> the ChainlessChain <code>cc</code> CLI on your PATH
+        (<code>npm i -g chainlesschain</code>) and a configured model
+        (Tools → "ChainlessChain: Configure LLM", or <code>cc config</code>).
+        Open-source: <a href="https://github.com/chainlesschain/chainlesschain">github.com/chainlesschain/chainlesschain</a>.]]></description>
+  <!-- AUTO-GENERATED at build time from CHANGELOG.md by build.gradle.kts
+         (intellijPlatform.pluginConfiguration.changeNotes → patchPluginXml
+         overrides this element). Do NOT hand-edit — edit CHANGELOG.md instead.
+         The content below is only a fallback if the gradle render fails. -->
+  <change-notes><![CDATA[<b>[0.4.201] - evolved CLI pairing candidate (2026-11-11)</b><br/><ul><li>Recommend CLI 0.166.147 and pair with Open VSX 0.37.186 after verified CLI publication.</li><li>Retain the public 0.4.200 Rewind anchoring and stale-conversation result fix.</li><li>Defer Rewind menu display until native focus restoration settles and the callback returns; reject menus when their conversation, visibility or running-turn state changes while waiting.</li><li>Require exact-source host, ARM64 and packaging gates plus Marketplace readback; model-task improvement and automatic promotion are not established.</li></ul><br/><b>[0.4.200] - Rewind chooser anchoring (2026-11-11)</b><br/><ul><li>Anchor the Rewind chooser to the visible conversation panel so it stays open after a confirmation dialog closes.</li><li>Discard pending Rewind results when the conversation changes or its panel is hidden.</li><li>Recommend CLI <code>0.166.146</code> alongside Open VSX <code>0.37.185</code>.</li></ul><br/><b>[0.4.199] - canonical Memory correction and retained diagnostics (2026-11-09)</b><br/><ul><li>Recommend CLI 0.166.146 and pair with VS Code/Open VSX 0.37.184 after verified Agent Protocol 0.1.13, Agent SDK 0.2.18, Context/Memory Kernel 0.1.12 and CLI publication.</li><li>Invalidate cached Memory rows and recall projections on revision-checked corrections; notifications contain predecessor identities without Memory bodies.</li><li>Retain model-input diagnostics during stream sessions and the JetBrains restored tool trace.</li><li>Require exact-source host matrices and public artifact readback. Full lifecycle, multilingual quality and paid admission remain incomplete.</li></ul><br/><b>[0.4.198] - Memory authority and diagnostics release candidate (2026-11-08)</b><br/><ul><li>Recommend CLI 0.166.145 and pair with VS Code/Open VSX 0.37.181 after verified Session Core 0.3.27 and CLI publication.</li><li>Include the read-only model-input diagnostics entry in the canonical public IDE capability contract and generated documentation.</li><li>Retain strict host matrices and upstream readback. Package publication does not grant native GUI, real-model or paid readiness.</li></ul><br/><b>[0.4.197] - goal transfer release candidate (2026-11-08)</b><br/><ul><li>Recommend CLI 0.166.144 and pair with the other IDE 0.37.180 after verified Session Core 0.3.27 and CLI publication.</li><li>Carry explicit goal transfer, signed rollback and the native canonical Graph host boundary through the matching CLI source.</li><li>Enable Windows Git long paths before CI checkout so immutable native acceptance artifacts do not prevent checks from starting.</li><li>Candidate only: exact-source release gates and public package readback remain required; no desktop installer or new business acceptance is claimed.</li></ul>]]></change-notes>
+  <depends>com.intellij.modules.platform</depends>
+  <!-- Localization: action text/description resolve from messages/CcBundle
+         (English base) + CcBundle_zh (Chinese) via action.<id>.text /
+         action.<id>.description keys. The IDE picks the locale (e.g. the Chinese
+         Language Pack sets zh). Runtime Java dialog strings localize in a
+         follow-up pass (a DynamicBundle over this same bundle). -->
+  <resource-bundle>messages.CcBundle</resource-bundle>
+  <extensions defaultExtensionNs="com.intellij">
+    <postStartupActivity implementation="com.chainlesschain.ide.intellij.IdeBridgeStartup" />
+    <applicationService serviceImplementation="com.chainlesschain.ide.intellij.CcSettings" />
+    <!-- Settings → Tools → ChainlessChain IDE (cc path + context indicator);
+             VS Code chainlesschain.cli.path / chat.contextIndicator parity. -->
+    <applicationConfigurable parentId="tools" id="com.chainlesschain.ide.settings" displayName="ChainlessChain IDE" instance="com.chainlesschain.ide.intellij.CcConfigurable" />
+    <projectService serviceImplementation="com.chainlesschain.ide.intellij.IdeBridgeService" />
+    <projectService serviceImplementation="com.chainlesschain.ide.intellij.PreviewService" />
+    <toolWindow id="ChainlessChain" anchor="right" secondary="true" icon="/icons/chainlesschain.png" factoryClass="com.chainlesschain.ide.intellij.ChatToolWindowFactory" />
+    <toolWindow id="ChainlessChain Preview" anchor="bottom" secondary="true" icon="/icons/chainlesschain.png" factoryClass="com.chainlesschain.ide.intellij.PreviewToolWindowFactory" />
+    <!-- Live JCEF dashboard (status cards + tool-call stream); VS Code
+             chainlesschain.ide.openDashboard parity. -->
+    <toolWindow id="ChainlessChain Dashboard" anchor="right" secondary="true" icon="/icons/chainlesschain.png" factoryClass="com.chainlesschain.ide.intellij.DashboardToolWindowFactory" />
+    <!-- Unified sessions workbench (gap #3): chat sessions + cross-IDE
+             index + background agents + remote-control hosts in one table. -->
+    <toolWindow id="ChainlessChain Sessions" anchor="right" secondary="true" icon="/icons/chainlesschain.png" factoryClass="com.chainlesschain.ide.intellij.SessionsWorkbenchToolWindowFactory" />
+    <toolWindow id="ChainlessChain Automation" anchor="right" secondary="true" icon="/icons/chainlesschain.png" factoryClass="com.chainlesschain.ide.intellij.AutomationCenterToolWindowFactory" />
+    <statusBarWidgetFactory id="chainlesschain.ide.statusBar" implementation="com.chainlesschain.ide.intellij.BridgeStatusBarWidgetFactory" />
+    <!-- Balloon notifications (one-shot cc-upgrade "What's New" nudge; VS
+             Code showInformationMessage parity). -->
+    <notificationGroup id="ChainlessChain" displayType="BALLOON" />
+    <intentionAction>
+      <className>com.chainlesschain.ide.intellij.FixWithCcIntention</className>
+      <category>ChainlessChain</category>
+    </intentionAction>
+    <!-- jetbrains://idea/chainlesschain/open?prompt=… deep link (VS Code
+             registerUriHandler parity): focus the chat tool window + seed a prompt. -->
+    <jbProtocolCommand implementation="com.chainlesschain.ide.intellij.CcProtocolCommand" />
+    <!-- Ghost-text inline completion: manual trigger plus governed,
+             default-off automatic mode; shares the `cc complete` backend. -->
+    <inline.completion.provider implementation="com.chainlesschain.ide.intellij.CcInlineCompletionProvider" />
+  </extensions>
+  <actions>
+    <!-- text/description resolve from messages/CcBundle via
+             action.<id>.text / action.<id>.description (see <resource-bundle>). -->
+    <action id="chainlesschain.ide.ShowStatus" class="com.chainlesschain.ide.intellij.ShowStatusAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.ide.ShowActivity" class="com.chainlesschain.ide.intellij.ShowActivityAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.ide.OpenDashboard" class="com.chainlesschain.ide.intellij.OpenDashboardAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.team.Monitor" class="com.chainlesschain.ide.intellij.TeamMonitorAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.session.PrStatus" class="com.chainlesschain.ide.intellij.PrStatusAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.bg.Agents" class="com.chainlesschain.ide.intellij.BackgroundAgentsAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.remote.Control" class="com.chainlesschain.ide.intellij.RemoteControlAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.sessions.Workbench" class="com.chainlesschain.ide.intellij.SessionsWorkbenchAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.automation.Center" class="com.chainlesschain.ide.intellij.AutomationCenterAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.usage.Show" class="com.chainlesschain.ide.intellij.ShowUsageAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.artifacts.Browse" class="com.chainlesschain.ide.intellij.ArtifactsAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.evolution.Workbench" class="com.chainlesschain.ide.intellij.EvolutionWorkbenchAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.evolution.Configure" class="com.chainlesschain.ide.intellij.ConfigureEvolutionDeploymentAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.skills.Retrieve" class="com.chainlesschain.ide.intellij.SkillRetrievalAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.policy.Viewer" class="com.chainlesschain.ide.intellij.PolicyViewerAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.context.Center" class="com.chainlesschain.ide.intellij.ContextCenterAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.session.ModelInputs" class="com.chainlesschain.ide.intellij.ModelInputDiagnosticsAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.plugins.Manage" class="com.chainlesschain.ide.intellij.PluginManagerAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.worktree.Tasks" class="com.chainlesschain.ide.intellij.WorktreeTasksAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.chrome.Connector" class="com.chainlesschain.ide.intellij.ChromeConnectorAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.workspace.ScanAutoExec" class="com.chainlesschain.ide.intellij.AutoExecScanAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <!-- Managed CLI runtime (gap #2 插件托管/内置 CLI; VS Code managed-cli twin):
+             used ONLY when no usable global cc is found — an explicit configured
+             cc path is never replaced. -->
+    <action id="chainlesschain.managedCli.Install" class="com.chainlesschain.ide.intellij.InstallManagedCliAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.managedCli.Rollback" class="com.chainlesschain.ide.intellij.RollbackManagedCliAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.ide.DiagnoseBridge" class="com.chainlesschain.ide.intellij.DiagnoseBridgeAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.ide.ExportDiagnostics" class="com.chainlesschain.ide.intellij.ExportDiagnosticsAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.ide.RestartBridge" class="com.chainlesschain.ide.intellij.RestartBridgeAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.cli.whatsNew" class="com.chainlesschain.ide.intellij.ShowWhatsNewAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.ide.ConfigureLlm" class="com.chainlesschain.ide.intellij.ConfigureLlmAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.ide.ConfigureVisionModel" class="com.chainlesschain.ide.intellij.ConfigureVisionModelAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.chat.newConversation" class="com.chainlesschain.ide.intellij.NewConversationAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+      <!-- Ctrl+Alt+N is IDEA's Refactor→Inline and Ctrl+Shift+Esc is OS-reserved
+                 on Windows — use an unclaimed Ctrl+Alt+Shift chord instead (D = dialog);
+                 rebindable in Settings → Keymap. -->
+      <keyboard-shortcut keymap="$default" first-keystroke="control alt shift D" />
+      <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt shift D" />
+    </action>
+    <action id="chainlesschain.chat.reopenClosedConversation" class="com.chainlesschain.ide.intellij.ReopenClosedConversationAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+      <!-- Ctrl+Shift+T is IDEA's Navigate→Go to Test — use an unclaimed
+                 Ctrl+Alt+Shift chord (R = reopen); rebindable in Settings → Keymap. -->
+      <keyboard-shortcut keymap="$default" first-keystroke="control alt shift R" />
+      <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt shift R" />
+    </action>
+    <!-- Ghost-text: fire an explicit inline-completion request at the caret.
+             Alt+\ matches the VS Code keybinding; rebindable in Settings → Keymap.
+             Automatic typing remains independently opt-in under plugin settings. -->
+    <action id="chainlesschain.completion.trigger" class="com.chainlesschain.ide.intellij.TriggerCompletionAction">
+      <keyboard-shortcut keymap="$default" first-keystroke="alt BACK_SLASH" />
+    </action>
+    <action id="chainlesschain.chat.explainSelection" class="com.chainlesschain.ide.intellij.ExplainSelectionAction">
+      <add-to-group group-id="EditorPopupMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.chat.refactorSelection" class="com.chainlesschain.ide.intellij.RefactorSelectionAction">
+      <add-to-group group-id="EditorPopupMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.chat.insertFileReference" class="com.chainlesschain.ide.intellij.InsertFileReferenceAction">
+      <add-to-group group-id="EditorPopupMenu" anchor="last" />
+      <!-- Ctrl+Alt+K is IDEA's Git Commit and Push — use an unclaimed
+                 Ctrl+Alt+Shift chord (K kept for muscle memory); rebindable in
+                 Settings → Keymap. -->
+      <keyboard-shortcut keymap="$default" first-keystroke="control alt shift K" />
+      <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt shift K" />
+    </action>
+    <action id="chainlesschain.memory.init" class="com.chainlesschain.ide.intellij.GenerateProjectMemoryAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.memory.files" class="com.chainlesschain.ide.intellij.ShowMemoryFilesAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.preview.start" class="com.chainlesschain.ide.intellij.StartPreviewAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+    <action id="chainlesschain.preview.stop" class="com.chainlesschain.ide.intellij.StopPreviewAction">
+      <add-to-group group-id="ToolsMenu" anchor="last" />
+    </action>
+  </actions>
+</idea-plugin>

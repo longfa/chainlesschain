@@ -3,31 +3,49 @@
 const vscode = acquireVsCodeApi();
 const $ = (id) => document.getElementById(id);
 let current = null,
+  lkCatalog = null,
+  savedConnections = [],
   presets = [],
   busy = false,
   dirty = false;
 const protocols = ["openai", "anthropic", "gemini", "ollama"];
 const normalized = (url) => String(url || "").replace(/\/+$/, "");
 function provider() {
+  if ($("preset").value === "lk")
+    return $("protocol").value === "openai" ? "custom" : $("protocol").value;
   return $("preset").value === "relay"
     ? $("protocol").value
     : $("preset").value;
 }
 function update() {
-  $("protocol-field").hidden = $("preset").value !== "relay";
+  const lk = $("preset").value === "lk";
+  $("protocol-field").hidden = !lk && $("preset").value !== "relay";
+  $("lk-address-field").hidden = !lk;
+  $("lk-model-field").hidden = !lk;
+  for (const option of $("protocol").options || [])
+    option.disabled = lk && option.value === "ollama";
   const p = provider();
   $("key-field").hidden = p === "ollama";
   const same =
     p === current?.provider &&
     normalized($("baseUrl").value.trim()) === normalized(current?.baseUrl);
-  $("apiKey").placeholder =
-    same && current?.hasKey ? "已保存密钥 · 留空保留" : "输入此服务的 API Key";
-  $("key-hint").textContent =
-    same && current?.hasKey
-      ? "已有密钥不会显示或回传到页面。留空即可保留。"
-      : p === "custom"
-        ? "本地算力平台的密钥按平台要求填写，可留空；更换地址不会复用原服务的密钥。"
-        : "新服务或新中转地址需填写对应密钥，原服务的密钥不会被复用。";
+  const savedKey =
+    (same && current?.hasKey) ||
+    savedConnections.some(
+      (row) =>
+        row.hasKey &&
+        ((lk && row.channel === "lk") ||
+          (row.provider === p &&
+            normalized(row.baseUrl) === normalized($("baseUrl").value.trim()))),
+    );
+  $("apiKey").placeholder = savedKey
+    ? "此渠道密钥已保存 · 留空自动恢复"
+    : "输入此服务的 API Key";
+  $("key-hint").textContent = savedKey
+    ? "此渠道凭证已保存，留空会自动恢复；密钥不会回传到页面。"
+    : p === "custom" && !lk
+      ? "本地算力平台的密钥按平台要求填写，可留空；更换地址不会复用原服务的密钥。"
+      : "新服务或新中转地址需填写对应密钥，原服务的密钥不会被复用。";
   $("url-hint").textContent =
     p === "ollama"
       ? "例如 http://localhost:11434；不要填写 /api/generate。"
@@ -35,9 +53,11 @@ function update() {
         ? "填写 Gemini 兼容接口基础地址，通常以 /v1beta 结尾。"
         : p === "anthropic"
           ? "填写 Anthropic 兼容接口基础地址，通常以 /v1 结尾；不要填写 /messages。"
-          : p === "custom"
-            ? "力数等本地平台：例如 http://192.168.1.100:8889/v1；模型 ID 以平台 API 为准。"
-            : "例如 https://your-relay.example/v1；不要填写 /chat/completions。";
+          : lk
+            ? "LK 基础地址由协议和主备选择生成；保存前填写渠道密钥。"
+            : p === "custom"
+              ? "力数等本地平台：例如 http://192.168.1.100:8889/v1；模型 ID 以平台 API 为准。"
+              : "例如 https://your-relay.example/v1；不要填写 /chat/completions。";
   try {
     const url = new URL($("baseUrl").value);
     $("http-field").hidden =
@@ -50,11 +70,20 @@ function update() {
   $("save").disabled = busy || !dirty;
   $("test").disabled = busy || dirty || !current?.model;
   $("reload").disabled = busy;
+  $("account").disabled = busy || dirty || !current?.hasKey || !lk;
+  if (dirty) $("account-result").textContent = "";
   $("dirty").textContent = dirty
     ? "有未保存的修改 · 保存后再测试"
     : "配置已同步";
 }
 function fill(c) {
+  $("account-result").textContent = "";
+  const lk =
+    lkCatalog &&
+    Object.values(lkCatalog.channel.addresses).some((origin) =>
+      [origin + "/v1", origin + "/v1beta"].includes(normalized(c.baseUrl)),
+    ) &&
+    ["custom", "openai", "anthropic", "gemini"].includes(c.provider);
   const preset = presets.find(
     (p) =>
       p.id === c.provider &&
@@ -63,8 +92,16 @@ function fill(c) {
       (!protocols.includes(c.provider) ||
         normalized(p.baseUrl) === normalized(c.baseUrl)),
   );
-  $("preset").value = preset ? preset.id : "relay";
+  $("preset").value = lk ? "lk" : preset ? preset.id : "relay";
   $("protocol").value = protocols.includes(c.provider) ? c.provider : "openai";
+  if (lk) {
+    $("lk-address").value = normalized(c.baseUrl).startsWith(
+      lkCatalog.channel.addresses.backup + "/",
+    )
+      ? "backup"
+      : "primary";
+    fillLkModels(c.model);
+  }
   for (const key of ["model", "baseUrl", "visionModel"])
     $(key).value = c[key] || "";
   $("apiKey").value = "";
@@ -85,6 +122,23 @@ function fill(c) {
   update();
 }
 $("preset").onchange = () => {
+  const saved = savedConnections.find((row) =>
+    $("preset").value === "lk"
+      ? row.channel === "lk"
+      : row.provider === $("preset").value && row.channel !== "lk",
+  );
+  if (saved) {
+    fill(saved);
+    dirty = true;
+    update();
+    return;
+  }
+  if ($("preset").value === "lk") {
+    $("protocol").value = "openai";
+    $("lk-address").value = "primary";
+    applyLk();
+    return;
+  }
   const p = presets.find((p) => p.id === $("preset").value);
   if (p) {
     $("baseUrl").value = p.baseUrl;
@@ -96,7 +150,48 @@ $("preset").onchange = () => {
   update();
 };
 $("protocol").onchange = () => {
+  if ($("preset").value === "lk") {
+    applyLk();
+    return;
+  }
   $("apiKey").value = "";
+  dirty = true;
+  update();
+};
+function fillLkModels(selected) {
+  const protocol = $("protocol").value;
+  $("lk-model").replaceChildren();
+  for (const model of lkCatalog.models.filter(
+    (m) => m.type === "chat" && m.compatibleProtocols.includes(protocol),
+  )) {
+    const option = document.createElement("option");
+    option.value = model.id;
+    option.textContent = model.label + " (" + model.id + ")";
+    $("lk-model").append(option);
+  }
+  $("lk-model").value =
+    selected || lkCatalog.channel.protocols[protocol].defaultModel;
+}
+function applyLk() {
+  const protocol = $("protocol").value;
+  fillLkModels();
+  $("baseUrl").value =
+    lkCatalog.channel.addresses[$("lk-address").value] +
+    lkCatalog.channel.protocols[protocol].basePath;
+  $("model").value = $("lk-model").value;
+  $("visionModel").value = "";
+  $("apiKey").value = "";
+  dirty = true;
+  update();
+}
+$("lk-address").onchange = () => {
+  const model = $("model").value;
+  applyLk();
+  $("model").value = model;
+  $("lk-model").value = model;
+};
+$("lk-model").onchange = () => {
+  $("model").value = $("lk-model").value;
   dirty = true;
   update();
 };
@@ -119,13 +214,42 @@ $("form").onsubmit = (event) => {
   vscode.postMessage({ type: "save", answers });
 };
 $("reload").onclick = () => vscode.postMessage({ type: "reload" });
+$("saved-connection").onchange = () => {
+  const index = $("saved-connection").value;
+  if (index === "" || !savedConnections[index]) return;
+  fill(savedConnections[index]);
+  dirty = true;
+  update();
+};
 $("test").onclick = () => vscode.postMessage({ type: "test" });
+$("account").onclick = () => {
+  if (busy || dirty) return;
+  $("account-result").textContent = "正在读取动态价格与账单…";
+  vscode.postMessage({ type: "account" });
+};
 window.addEventListener("message", ({ data: m }) => {
   if (m.type === "config") {
     current = m.current;
     presets = m.presets;
+    lkCatalog = m.lkCatalog;
+    savedConnections = m.savedConnections || [];
+    $("saved-connection").replaceChildren();
+    for (const [index, row] of [
+      { label: "选择已保存渠道" },
+      ...savedConnections,
+    ].entries()) {
+      const option = document.createElement("option");
+      option.value = index === 0 ? "" : String(index - 1);
+      option.textContent =
+        row.label || `${row.provider} · ${row.baseUrl} · ${row.model}`;
+      $("saved-connection").append(option);
+    }
     $("preset").replaceChildren();
-    for (const p of [{ id: "relay", label: "自定义 / 中转站" }, ...presets]) {
+    for (const p of [
+      { id: "relay", label: "自定义 / 中转站" },
+      ...presets,
+      ...(lkCatalog ? [{ id: "lk", label: "LK API 聚合平台" }] : []),
+    ]) {
       const option = document.createElement("option");
       option.value = p.id;
       option.textContent = p.label;
@@ -138,6 +262,8 @@ window.addEventListener("message", ({ data: m }) => {
   } else if (m.type === "notice") {
     $("notice").textContent = m.text;
     $("notice").className = "notice " + m.kind;
+  } else if (m.type === "account") {
+    $("account-result").textContent = m.text;
   }
 });
 vscode.postMessage({ type: "ready" });

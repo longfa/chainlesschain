@@ -33,6 +33,10 @@ const OPERATION_AUTHORIZATION = Object.freeze({
     purpose: "model-configuration-read",
     fields: Object.freeze(["provider-configuration-status"]),
   }),
+  "lk-account": Object.freeze({
+    purpose: "model-account-read",
+    fields: Object.freeze(["prices", "balance", "quota", "billing-records"]),
+  }),
   "set-config": Object.freeze({
     purpose: "model-configuration-write",
     fields: Object.freeze(["provider-configuration"]),

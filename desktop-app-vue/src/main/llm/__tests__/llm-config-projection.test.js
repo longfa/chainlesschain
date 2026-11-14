@@ -43,6 +43,61 @@ function privateConfig() {
 }
 
 describe("LLM config renderer projection", () => {
+  it("retains separate endpoint credentials and restores LK across protocols without exposing saved secrets", () => {
+    let config = privateConfig();
+    config = mergeLlmConfigWrite(
+      {
+        custom: {
+          baseURL: "https://api.lk888.ai/v1",
+          apiKey: "lk-secret",
+          model: "tt-6-luna",
+        },
+        provider: "custom",
+      },
+      config,
+    );
+    config = mergeLlmConfigWrite(
+      {
+        provider: "volcengine",
+        volcengine: {
+          baseURL: "https://ark.cn-beijing.volces.com/api/v3",
+          apiKey: "volc-secret",
+          model: "ep-model",
+        },
+      },
+      config,
+    );
+    config = mergeLlmConfigWrite(
+      {
+        provider: "anthropic",
+        anthropic: {
+          baseURL: "https://api.lk666.ai/v1",
+          apiKey: "",
+          model: "fb-5-2",
+        },
+      },
+      config,
+    );
+    expect(config.anthropic.apiKey).toBe("lk-secret");
+    const projected = projectLlmConfigForRenderer(config);
+    const original = projected.savedConnections.find(
+      (row) => row.provider === "openai",
+    );
+    const restored = mergeLlmConfigWrite(
+      { restoreConnectionId: original.id },
+      config,
+    );
+    expect(restored.openai.apiKey).toBe("sk-openai-secret");
+    expect(restored.volcengine.apiKey).toBe("volc-secret");
+    const foreign = mergeLlmConfigWrite(
+      { openai: { baseURL: "https://unknown.example/v1", apiKey: "" } },
+      restored,
+    );
+    expect(foreign.openai.apiKey).toBe("");
+    expect(JSON.stringify(projected)).not.toMatch(
+      /lk-secret|volc-secret|sk-openai-secret|tenant.example.test/,
+    );
+  });
   it("returns configured receipts without private values", () => {
     const projected = projectLlmConfigForRenderer(privateConfig());
     const serialized = JSON.stringify(projected);

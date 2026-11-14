@@ -39,11 +39,13 @@ const BACKUP_FILENAME =
  * 敏感配置字段列表 - 支持14+个LLM提供商
  */
 const SENSITIVE_FIELDS = [
+  "connectionProfiles", // Entire endpoint credential history is encrypted.
   // 主要国际提供商
   "openai.apiKey",
   "anthropic.apiKey",
   "deepseek.apiKey",
   "google.apiKey", // Google AI / Gemini
+  "gemini.apiKey",
   "cohere.apiKey", // Cohere
   "mistral.apiKey", // Mistral AI
 

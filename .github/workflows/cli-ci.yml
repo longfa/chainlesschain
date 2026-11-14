@@ -217,6 +217,8 @@ jobs:
           desktop-app-vue/scripts/__tests__/install-electron.test.mjs
           desktop-app-vue/scripts/__tests__/permanent-memory-startup.test.mjs
           desktop-app-vue/scripts/__tests__/goal-journey-observation.test.mjs
+      - name: Verify LK catalog synchronization and protocol routing
+        run: node --test packages/cli/test-node/lk-channel.node-test.mjs
       - uses: ./.github/actions/setup-node-deps
       - name: Verify native campaign dispatch and acceptance preflight without provider execution
         run: >-

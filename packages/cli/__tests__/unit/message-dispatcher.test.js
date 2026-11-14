@@ -36,6 +36,79 @@ function createServerStub() {
 }
 
 describe("ws message dispatcher", () => {
+  it("requires authentication before reading or saving an LLM connection", async () => {
+    const server = createServerStub();
+    server.token = "fixture-token";
+    server.clients.set("client-1", { authenticated: false });
+    server._saveLlmConnection = vi.fn();
+    server._readLlmConnection = vi.fn();
+    const dispatcher = createWsMessageDispatcher(server);
+    for (const type of ["llm-config-get", "llm-configure", "llm-account"])
+      await dispatcher.dispatch(
+        "client-1",
+        {},
+        { id: type, type, connection: {} },
+      );
+    expect(server._saveLlmConnection).not.toHaveBeenCalled();
+    expect(server._readLlmConnection).not.toHaveBeenCalled();
+    expect(
+      server._send.mock.calls.every(
+        ([, result]) => result.code === "AUTH_REQUIRED",
+      ),
+    ).toBe(true);
+  });
+
+  it("saves structured connection data and never echoes secrets or backend errors", async () => {
+    const server = createServerStub();
+    server._saveLlmConnection = vi.fn().mockReturnValue({
+      provider: "custom",
+      model: "tt-6-luna",
+      baseUrl: "https://api.lk888.ai/v1",
+      apiKey: "fixture-secret",
+    });
+    server._readLlmConnection = vi.fn().mockReturnValue({
+      provider: "custom",
+      hasKey: true,
+      apiKey: "fixture-secret",
+    });
+    const dispatcher = createWsMessageDispatcher(server);
+    await dispatcher.dispatch(
+      "client-1",
+      {},
+      {
+        id: "save",
+        type: "llm-configure",
+        connection: { apiKey: "fixture-secret" },
+      },
+    );
+    await dispatcher.dispatch(
+      "client-1",
+      {},
+      { id: "get", type: "llm-config-get" },
+    );
+    expect(server._saveLlmConnection).toHaveBeenCalledWith({
+      apiKey: "fixture-secret",
+    });
+    expect(server._executeCommand).not.toHaveBeenCalled();
+    expect(server._send.mock.calls[1][1].config).toEqual({
+      provider: "custom",
+      hasKey: true,
+      savedConnections: [],
+    });
+    server._saveLlmConnection.mockImplementation(() => {
+      throw new Error("fixture-secret");
+    });
+    await dispatcher.dispatch(
+      "client-1",
+      {},
+      { id: "failed", type: "llm-configure", connection: {} },
+    );
+    expect(JSON.stringify(server._send.mock.calls)).not.toContain(
+      "fixture-secret",
+    );
+    expect(server._send.mock.calls[2][1].code).toBe("LLM_CONFIG_SAVE_FAILED");
+  });
+
   it("returns MISSING_ID when message id is absent", async () => {
     const server = createServerStub();
     const dispatcher = createWsMessageDispatcher(server);

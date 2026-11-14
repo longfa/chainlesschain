@@ -4,9 +4,11 @@ ChainlessChain agent workspace for VS Code-compatible editors with streaming cha
 
 ## Release pairing
 
-Version **0.37.188** recommends CLI **`0.166.149`**. Open VSX publication, native hosts, Remote-SSH, browser checks and independent public VSIX byte verification passed from exact source `168a3d561b5a16e9d27b060944c63b2264c99df0`. JetBrains **0.4.203** is in its official publication workflow; public JetBrains **0.4.202** retains CLI **0.166.148** pairing. Child package versions remain unchanged.
+This candidate also adds fresh LK model prices, balance, Key quota and actual API billing (cc llm account), plus saved credentials for every configured channel, including Volcengine. Switch back using Saved connections without re-entering the Key; LK hosts and protocols share one credential. Desktop source supports the same account queries and encrypted connection history.
 
-The paired CLI adds original manifest catalog/head directory boundary rechecks to retained-history reports. These local metadata checks do not establish complete runtime graphs, model-task gains or automatic promotion. HOLD remains. [Publication evidence](../../docs/research/cli/evidence/release149-public/publication.json).
+Version **0.37.189** recommends CLI **`0.166.150`** and pairs with source JetBrains **0.4.204**. These candidates add LK primary/backup configuration and 83 protocol-filtered chat models, with a shared 197-entry model directory. Publication is pending exact-source CI, npm OIDC and registry readback; the preceding public versions below remain authoritative until verification. Child package versions remain unchanged. [LK setup and limits](../../docs/configuration/lk-api-channel.md).
+
+The channel uses native OpenAI, Anthropic and Gemini adapters. Its media directory is an interface reference; task submission and polling are not implemented in these chat panels. Account model permissions and pricing remain platform-controlled. Existing deployment gates and HOLD remain. [Previous publication evidence](../../docs/research/cli/evidence/release149-public/publication.json).
 
 ## Current release
 

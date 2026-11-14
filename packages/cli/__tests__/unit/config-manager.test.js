@@ -118,6 +118,79 @@ describe("config-manager", () => {
     expect(mod.getConfigValue("llm.apiKey")).toBe("private-value");
   });
 
+  it("retains endpoint credentials across Volcengine, LK protocols/hosts, official services and local connections", async () => {
+    const mod = await import("../../src/lib/config-manager.js");
+    const { saveLlmConnection, readLlmConnection } =
+      await import("../../src/lib/llm-connection-config.js");
+    const values = new Map();
+    const store = {
+      name: "memory",
+      set: (ref, value) => values.set(ref, value),
+      get: (ref) => values.get(ref),
+      delete: (ref) => values.delete(ref),
+    };
+    mod._deps.createSecretStore = () => store;
+    const volc = {
+      provider: "volcengine",
+      model: "ep-private",
+      baseUrl: "https://ark.cn-beijing.volces.com/api/v3",
+    };
+    const lk = {
+      provider: "custom",
+      model: "tt-6-luna",
+      baseUrl: "https://api.lk888.ai/v1",
+    };
+    mod.updateConfigAtomically((config) => {
+      config.llm = { ...volc };
+    });
+    mod.setSecretConfigValue("llm.apiKey", "legacy-volc-key", {
+      storage: "keychain",
+    });
+    saveLlmConnection({ ...lk, apiKey: "lk-saved-key" });
+    expect(mod.loadConfig().llm.apiKey).toBe("lk-saved-key");
+    saveLlmConnection(volc);
+    expect(mod.loadConfig().llm.apiKey).toBe("legacy-volc-key");
+    saveLlmConnection({
+      provider: "anthropic",
+      model: "fb-5-2",
+      baseUrl: "https://api.lk666.ai/v1",
+    });
+    expect(mod.loadConfig().llm.apiKey).toBe("lk-saved-key");
+    saveLlmConnection({
+      provider: "gemini",
+      model: "gem-3.8-flash",
+      baseUrl: "https://api.lk888.ai/v1beta",
+      apiKey: "rotated-lk-key",
+    });
+    saveLlmConnection(volc);
+    saveLlmConnection(lk);
+    expect(mod.loadConfig().llm.apiKey).toBe("rotated-lk-key");
+    saveLlmConnection({
+      provider: "custom",
+      model: "local",
+      baseUrl: "http://localhost:8000/v1",
+    });
+    expect(mod.loadConfig().llm.apiKey).toBeNull();
+    expect(() =>
+      saveLlmConnection({
+        provider: "openai",
+        model: "gpt-6.1-sol",
+        baseUrl: "https://unseen.example/v1",
+      }),
+    ).toThrow("own API key");
+    saveLlmConnection(volc);
+    expect(mod.loadConfig().llm.apiKey).toBe("legacy-volc-key");
+    const raw = readFileSync(configPath, "utf8");
+    expect(raw).not.toMatch(/legacy-volc-key|lk-saved-key|rotated-lk-key/);
+    expect(JSON.stringify(readLlmConnection())).not.toMatch(
+      /legacy-volc-key|rotated-lk-key|__cc_secret_ref|apiKeyHelper/,
+    );
+    expect(
+      readLlmConnection().savedConnections.filter((row) => row.hasKey),
+    ).toHaveLength(2);
+    expect(values.size).toBe(2);
+  });
+
   it("never treats a config write failure as permission to downgrade a stored secret", async () => {
     const mod = await import("../../src/lib/config-manager.js");
     const previousRef = "config/legacy/llm.apiKey";
@@ -240,9 +313,8 @@ describe("config-manager", () => {
   });
 
   it("loadConfig merges saved values with defaults", async () => {
-    const { saveConfig, loadConfig } = await import(
-      "../../src/lib/config-manager.js"
-    );
+    const { saveConfig, loadConfig } =
+      await import("../../src/lib/config-manager.js");
     saveConfig({ edition: "enterprise" });
     const config = loadConfig();
     expect(config.edition).toBe("enterprise");
@@ -252,9 +324,8 @@ describe("config-manager", () => {
   });
 
   it("getConfigValue reads nested keys", async () => {
-    const { saveConfig, getConfigValue } = await import(
-      "../../src/lib/config-manager.js"
-    );
+    const { saveConfig, getConfigValue } =
+      await import("../../src/lib/config-manager.js");
     saveConfig({ llm: { provider: "deepseek", model: "deepseek-chat" } });
     expect(getConfigValue("llm.provider")).toBe("deepseek");
     expect(getConfigValue("llm.model")).toBe("deepseek-chat");
@@ -266,17 +337,15 @@ describe("config-manager", () => {
   });
 
   it("setConfigValue writes nested keys", async () => {
-    const { setConfigValue, getConfigValue } = await import(
-      "../../src/lib/config-manager.js"
-    );
+    const { setConfigValue, getConfigValue } =
+      await import("../../src/lib/config-manager.js");
     setConfigValue("llm.provider", "openai");
     expect(getConfigValue("llm.provider")).toBe("openai");
   });
 
   it("setConfigValue parses boolean strings", async () => {
-    const { setConfigValue, getConfigValue } = await import(
-      "../../src/lib/config-manager.js"
-    );
+    const { setConfigValue, getConfigValue } =
+      await import("../../src/lib/config-manager.js");
     setConfigValue("setupCompleted", "true");
     expect(getConfigValue("setupCompleted")).toBe(true);
   });
@@ -306,9 +375,8 @@ describe("config-manager", () => {
   );
 
   it("rejects unknown keys unless extension development opts in", async () => {
-    const { setConfigValue, getConfigValue } = await import(
-      "../../src/lib/config-manager.js"
-    );
+    const { setConfigValue, getConfigValue } =
+      await import("../../src/lib/config-manager.js");
     expect(() => setConfigValue("services.port", "8080")).toThrow(
       /Unknown configuration key/,
     );
@@ -324,9 +392,8 @@ describe("config-manager", () => {
   });
 
   it("resetConfig restores defaults", async () => {
-    const { setConfigValue, resetConfig, loadConfig } = await import(
-      "../../src/lib/config-manager.js"
-    );
+    const { setConfigValue, resetConfig, loadConfig } =
+      await import("../../src/lib/config-manager.js");
     setConfigValue("edition", "enterprise");
     resetConfig();
     const config = loadConfig();
@@ -432,9 +499,8 @@ describe("config-manager", () => {
   });
 
   it("keeps the first owner-only pre-migration backup", async () => {
-    const { backupConfigForMigration } = await import(
-      "../../src/lib/config-manager.js"
-    );
+    const { backupConfigForMigration } =
+      await import("../../src/lib/config-manager.js");
     writeFileSync(configPath, '{ "llm": { "fallbackModel": "old" } }');
     const backupPath = backupConfigForMigration(".before-schema-v1", {
       applyWindowsAcl: false,
@@ -452,9 +518,8 @@ describe("config-manager", () => {
 
   describe("renameWithRetry (Windows EPERM hardening)", () => {
     it("retries transient rename errors then succeeds", async () => {
-      const { renameWithRetry } = await import(
-        "../../src/lib/config-manager.js"
-      );
+      const { renameWithRetry } =
+        await import("../../src/lib/config-manager.js");
       let calls = 0;
       const sleeps = [];
       const _rename = () => {
@@ -471,9 +536,8 @@ describe("config-manager", () => {
     });
 
     it("rethrows immediately for non-transient errors", async () => {
-      const { renameWithRetry } = await import(
-        "../../src/lib/config-manager.js"
-      );
+      const { renameWithRetry } =
+        await import("../../src/lib/config-manager.js");
       let calls = 0;
       const _rename = () => {
         calls++;
@@ -488,9 +552,8 @@ describe("config-manager", () => {
     });
 
     it("gives up after the attempt budget and rethrows", async () => {
-      const { renameWithRetry } = await import(
-        "../../src/lib/config-manager.js"
-      );
+      const { renameWithRetry } =
+        await import("../../src/lib/config-manager.js");
       let calls = 0;
       const _rename = () => {
         calls++;

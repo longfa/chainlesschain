@@ -1,5 +1,11 @@
 # Changelog — ChainlessChain IDE Bridge (JetBrains)
 
+## [0.4.204] - LK aggregator model configuration (candidate, 2026-11-14)
+
+- Add the LK aggregator with documented primary/backup addresses, exact model aliases and protocol-aware selection. The shared catalog contains 83 chat models plus 114 media entries; media task execution is not included. Preserve saved aliases and keep credentials scoped to the selected endpoint. Three tiny live protocol probes and authenticated pricing queries succeeded; this does not certify the whole model catalog.
+- Add LK price/balance/billing refresh and saved channel restoration, including Volcengine, without returning credentials to the form.
+- Recommend CLI 0.166.150; publish only after its verified npm availability.
+
 ## [0.4.203] - retained-history CLI pairing (candidate, 2026-11-13)
 
 - Recommend CLI 0.166.149 and pair with VS Code/Open VSX 0.37.188 after verified CLI publication.

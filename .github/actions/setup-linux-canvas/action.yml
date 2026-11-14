@@ -13,9 +13,37 @@ runs:
       run: |
         set -euo pipefail
         test "$RUNNER_OS" = "Linux"
-        sudo apt-get update
-        sudo apt-get install -y --no-install-recommends \
-          build-essential pkg-config libcairo2-dev libpango1.0-dev \
-          libpixman-1-dev libjpeg-dev libgif-dev librsvg2-dev
-        pkg-config --exists cairo pangocairo pixman-1 libjpeg librsvg-2.0
-        pkg-config --modversion cairo pangocairo pixman-1 libjpeg librsvg-2.0
+        # GitHub-hosted runners hit transient apt mirror fetch failures
+        # (issues #606/#607: update warns "Failed to fetch ... InRelease"
+        # (temporary DNS resolution), install then fails "Unable to fetch
+        # some archives" with exit 100 after ~45 min, zero test failures).
+        # Two bounded retry layers, per apt's own "maybe run apt-get update
+        # or try with --fix-missing?" hint:
+        # 1) Acquire::Retries retries each individual download;
+        # 2) outer loop refreshes the index and re-runs install; already
+        #    fetched archives stay in apt's cache, so retries are cheap.
+        install_prereqs() {
+          sudo apt-get -o Acquire::Retries=3 update
+          sudo apt-get -o Acquire::Retries=3 install -y --no-install-recommends \
+            build-essential pkg-config libcairo2-dev libpango1.0-dev \
+            libpixman-1-dev libjpeg-dev libgif-dev librsvg2-dev
+        }
+        attempt=1
+        until install_prereqs; do
+          if [ "$attempt" -ge 3 ]; then
+            echo "apt install failed after $attempt attempts" >&2
+            exit 1
+          fi
+          attempt=$((attempt + 1))
+          echo "apt install failed; refreshing index and retrying (attempt $attempt/3)" >&2
+          sleep 15
+        done
+        # pkg-config names for jpeg/gif are not uniform across Ubuntu
+        # releases, so verify every requested package via dpkg and only
+        # the stable module names via pkg-config.
+        pkg-config --exists cairo pangocairo pixman-1 librsvg-2.0
+        pkg-config --modversion cairo pangocairo pixman-1 librsvg-2.0
+        for p in build-essential pkg-config libcairo2-dev libpango1.0-dev \
+                 libpixman-1-dev libjpeg-dev libgif-dev librsvg2-dev; do
+          dpkg -s "$p" >/dev/null || { echo "missing: $p" >&2; exit 1; }
+        done

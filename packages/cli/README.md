@@ -1,5 +1,11 @@
 # chainlesschain CLI
 
+This candidate also adds fresh LK model prices, balance, Key quota and actual API billing (cc llm account), plus saved credentials for every configured channel, including Volcengine. Switch back using Saved connections without re-entering the Key; LK hosts and protocols share one credential. Desktop source supports the same account queries and encrypted connection history.
+
+## LK channel release candidate
+
+CLI **0.166.150**, VS Code/Open VSX **0.37.189** and JetBrains **0.4.204** are prepared for this release. They add LK primary/backup configuration in CLI setup, the `cc ui` Web panel and IDE settings, with 83 protocol-filtered chat models, with a shared 197-entry model directory. Publication is pending exact-source CI, npm OIDC and registry readback; the preceding public versions below remain authoritative until verification. [LK setup and limits](../../docs/configuration/lk-api-channel.md).
+
 Command-line interface for installing, configuring, and managing [ChainlessChain](https://www.chainlesschain.com), including the coding agent, governed tools, sessions, memory, and IDE integrations.
 
 ## Public CLI 0.166.149 / IDE pairing (2026-11-14)
@@ -28,7 +34,7 @@ This version retains original manifest catalog/head ownership through Evolution 
 
 CLI **0.166.147** is public through [Actions OIDC](https://github.com/chainlesschain/chainlesschain/actions/runs/42976618525). Exact source `32451e4d568e414acdb9c956208e5cff827cd6e0` passed all **76 CLI CI** and **6 Strict Sandbox** jobs. The [public readback](https://github.com/chainlesschain/chainlesschain/actions/runs/43032767673) verified npm provenance and byte identity with the official immutable tarball. Install `npm i -g chainlesschain@0.166.147 --registry https://registry.npmjs.org`, restart hosts, then run `cc --version` and `cc doctor`.
 
-Open VSX **0.37.186** is public and byte-identical to the official VSIX, recommending CLI **0.166.147**. JetBrains **0.4.201** is awaiting completion of its official tag workflow; upload is not yet verified. Both new IDE versions recommend CLI **0.166.147**; their exact source `703b22e895bff2c0f40cd7f350aef0757dc3bdd5` passed the complete host and ARM64 gates. Session Core **0.3.27**, Protocol **0.1.13**, Agent SDK **0.2.18** and Context/Memory Kernel **0.1.12** are unchanged. [Download the public 0.37.186 VSIX](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.186/file/chainlesschain.chainlesschain-ide-0.37.186.vsix).
+Open VSX **0.37.186** is public and byte-identical to the official VSIX, recommending CLI **0.166.147**. JetBrains **0.4.201** is uploaded through its successful official tag workflow and awaits Marketplace approval/public download. Both new IDE versions recommend CLI **0.166.147**; their exact source `703b22e895bff2c0f40cd7f350aef0757dc3bdd5` passed the complete host and ARM64 gates. Session Core **0.3.27**, Protocol **0.1.13**, Agent SDK **0.2.18** and Context/Memory Kernel **0.1.12** are unchanged. [Download the public 0.37.186 VSIX](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.186/file/chainlesschain.chainlesschain-ide-0.37.186.vsix).
 
 The [upgrade and release-status guide](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-11-147.md) records each channel separately. Microsoft Marketplace was not published by this tag run; it requires an explicit exact-tag backfill and a configured VSCE_PAT. Public mobile/PC clients remain **v5.0.3.145**. Automatic promotion, independent business effects, invoice reconciliation and paid admission remain incomplete; **NOT_PAID_READY / NOT_ADMITTED / HOLD** remain. [Publication evidence](../../docs/research/cli/evidence/release147-public/README.md).
 

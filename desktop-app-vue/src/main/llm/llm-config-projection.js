@@ -1,6 +1,26 @@
 /**
  * Public/read and write projections for the renderer-facing LLM config IPC.
  */
+const { createHash } = require("node:crypto");
+function connectionId(provider, baseURL) {
+  const endpoint = stringValue(baseURL).trim().replace(/\/+$/, "");
+  const lk = /^https:\/\/api\.lk(?:888|666)\.ai(?:\/v1|\/v1beta)?$/.test(
+    endpoint,
+  );
+  return createHash("sha256")
+    .update(lk ? "channel:lk" : `${provider}:${endpoint}`)
+    .digest("hex");
+}
+function savedProfiles(config) {
+  const profiles = { ...record(config.connectionProfiles) };
+  for (const provider of Object.keys(PROVIDER_FIELDS)) {
+    const row = record(config[provider]);
+    if (!row.apiKey || !row.baseURL) continue;
+    const id = connectionId(provider, row.baseURL);
+    if (!profiles[id]) profiles[id] = { provider, ...row };
+  }
+  return profiles;
+}
 
 const PROVIDER_FIELDS = Object.freeze({
   ollama: {
@@ -89,6 +109,19 @@ function projectLlmConfigForRenderer(config) {
     systemPromptConfigured: stringValue(input.systemPrompt).length > 0,
     streamEnabled: input.streamEnabled === true,
     autoSaveConversations: input.autoSaveConversations === true,
+    restoreConnectionId: "",
+    savedConnections: Object.entries(savedProfiles(input)).map(([id, row]) => ({
+      id,
+      provider: row.provider,
+      model: stringValue(row.model),
+      name: stringValue(row.name),
+      hasKey: Boolean(row.apiKey),
+      channel: /^https:\/\/api\.lk(?:888|666)\.ai(?:\/|$)/.test(
+        row.baseURL || "",
+      )
+        ? "lk"
+        : null,
+    })),
   };
 
   for (const [provider, fields] of Object.entries(PROVIDER_FIELDS)) {
@@ -117,6 +150,7 @@ function mergePrivateString(submitted, current) {
 function mergeLlmConfigWrite(submittedConfig, currentConfig) {
   const submitted = record(submittedConfig);
   const current = record(currentConfig);
+  const profiles = savedProfiles(current);
   const merged = {
     provider: stringValue(submitted.provider || current.provider),
     options: mergeOptions(submitted.options, current.options),
@@ -148,7 +182,20 @@ function mergeLlmConfigWrite(submittedConfig, currentConfig) {
       );
     }
     merged[provider] = next;
+    const id = connectionId(provider, next.baseURL);
+    // Empty password fields restore only this destination's credential.
+    if (!providerInput.apiKey && providerInput.apiKey !== null)
+      next.apiKey = stringValue(profiles[id]?.apiKey);
+    if (next.baseURL) profiles[id] = { provider, ...next };
   }
+
+  const restored = profiles[stringValue(submitted.restoreConnectionId)];
+  if (restored && PROVIDER_FIELDS[restored.provider]) {
+    merged.provider = restored.provider;
+    merged[restored.provider] = { ...restored };
+    delete merged[restored.provider].provider;
+  }
+  merged.connectionProfiles = profiles;
 
   return merged;
 }

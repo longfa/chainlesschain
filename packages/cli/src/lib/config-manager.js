@@ -454,14 +454,17 @@ export function withConfigLock(callback) {
 }
 
 /** Serialize an arbitrary in-process config mutation under the config lock. */
-export function updateConfigAtomically(mutator) {
+export function updateConfigAtomically(
+  mutator,
+  { resolveSecrets = true } = {},
+) {
   if (typeof mutator !== "function") {
     throw new TypeError("Config mutator must be a function");
   }
   return withConfigLock(() => {
-    const config = loadConfig({ failIfUnavailable: true });
+    const config = loadConfig({ failIfUnavailable: true, resolveSecrets });
     mutator(config);
-    saveConfig(config);
+    saveConfig(config, { preserveSecretRefs: resolveSecrets });
     return config;
   });
 }
@@ -531,6 +534,7 @@ export function setSecretConfigValue(key, value, options = {}) {
           // secret to plaintext configuration.
           setNestedValue(config, key, secretRef(ref));
           try {
+            options.storedValueMutator?.(config, secretRef(ref));
             // This load kept every secret as its persisted reference, so bypass
             // the resolved-value restoration cache and persist this exact raw
             // document.
@@ -547,7 +551,11 @@ export function setSecretConfigValue(key, value, options = {}) {
             ref,
             resolved: String(value),
           });
-          if (previousRef && previousRef !== ref) {
+          if (
+            previousRef &&
+            previousRef !== ref &&
+            !containsSecretReference(config, previousRef)
+          ) {
             deleteSecretRefBestEffort(
               store,
               previousRef,
@@ -558,8 +566,9 @@ export function setSecretConfigValue(key, value, options = {}) {
         }
       }
       setNestedValue(config, key, String(value));
+      options.storedValueMutator?.(config, String(value));
       saveConfig(config, { preserveSecretRefs: false });
-      if (previousRef) {
+      if (previousRef && !containsSecretReference(config, previousRef)) {
         let previousStore = options.secretStore || null;
         if (!previousStore) {
           try {
@@ -577,6 +586,15 @@ export function setSecretConfigValue(key, value, options = {}) {
       return { key, storage: "file", backend: null };
     },
     { failIfUnavailable: true },
+  );
+}
+
+function containsSecretReference(value, ref) {
+  if (isSecretRef(value)) return value.__cc_secret_ref === ref;
+  return (
+    value &&
+    typeof value === "object" &&
+    Object.values(value).some((child) => containsSecretReference(child, ref))
   );
 }
 

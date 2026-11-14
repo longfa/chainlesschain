@@ -66,6 +66,11 @@ const DESCRIPTORS = [
   descriptor("llm.apiKeyHelper", ["string", "null"], {
     description: "Command that prints an API key to stdout",
   }),
+  descriptor("llm.savedConnections", "object", {
+    open: true,
+    description:
+      "Endpoint-scoped saved LLM connections; API keys remain secret",
+  }),
   descriptor("llm.baseUrl", "string", {
     default: DEFAULT_CONFIG.llm.baseUrl,
     description: "LLM provider API endpoint",
@@ -520,11 +525,11 @@ function valueIssue(key, code, message) {
 function isPersistedSecretRef(value) {
   return Boolean(
     value &&
-      typeof value === "object" &&
-      !Array.isArray(value) &&
-      Object.keys(value).length === 1 &&
-      typeof value.__cc_secret_ref === "string" &&
-      value.__cc_secret_ref.length > 0,
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    Object.keys(value).length === 1 &&
+    typeof value.__cc_secret_ref === "string" &&
+    value.__cc_secret_ref.length > 0,
   );
 }
 

@@ -31,6 +31,7 @@ public final class ConfigureLlmAction extends AnAction {
             setCancelButtonText(CcBundle.message("llm.form.close"));
             init();
             form.onReload(this::reload); form.onSave(this::save); form.onTest(this::test);
+            form.onAccount(this::account);
             reload();
         }
         @Override protected JComponent createCenterPanel() { return form; }
@@ -54,7 +55,8 @@ public final class ConfigureLlmAction extends AnAction {
         private void reload() {
             background(CcBundle.message("llm.form.loading"), () -> {
                 LlmConfig.Connection saved = LlmConfig.readConnection();
-                return () -> form.load(saved);
+                java.util.List<LlmConfig.Connection> profiles = LlmConfig.readSavedConnections();
+                return () -> { form.load(saved); form.setSavedConnections(profiles); };
             });
         }
         private void save() {
@@ -68,13 +70,20 @@ public final class ConfigureLlmAction extends AnAction {
                 String error = LlmConfig.saveConnection(submitted, key, allowHttp);
                 if (error != null) return () -> form.notice(CcBundle.message("llm.error.configWrite", error));
                 LlmConfig.Connection confirmed = LlmConfig.readConnection();
-                return () -> { form.load(confirmed); form.notice(CcBundle.message("llm.form.saved")); };
+                java.util.List<LlmConfig.Connection> profiles = LlmConfig.readSavedConnections();
+                return () -> { form.load(confirmed); form.setSavedConnections(profiles); form.notice(CcBundle.message("llm.form.saved")); };
             });
         }
         private void test() {
             background(CcBundle.message("llm.form.testing"), () -> {
                 LlmConfig.CliResult result = LlmConfig.testLlm();
                 return () -> form.notice(CcBundle.message(result.ok ? "llm.form.testPassed" : "llm.form.testFailed", result.output));
+            });
+        }
+        private void account() {
+            background("正在读取 LK 动态价格与实际账单…", () -> {
+                LlmConfig.CliResult result = LlmConfig.queryLkAccount();
+                return () -> { form.showAccount(result.output); form.notice(result.ok ? "已刷新；金额单位为算力" : result.output); };
             });
         }
     }

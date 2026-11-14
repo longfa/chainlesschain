@@ -117,6 +117,7 @@ const SAFE_OPERATIONS = new Set([
   "get-budget",
   "get-cache-stats",
   "get-config",
+  "lk-account",
   "get-cost-breakdown",
   "get-model-budgets",
   "get-pricing",

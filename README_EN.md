@@ -1,5 +1,11 @@
 # ChainlessChain - Personal Mobile AI Management System Based on USB Key and SIMKey
 
+This candidate also adds fresh LK model prices, balance, Key quota and actual API billing (cc llm account), plus saved credentials for every configured channel, including Volcengine. Switch back using Saved connections without re-entering the Key; LK hosts and protocols share one credential. Desktop source supports the same account queries and encrypted connection history.
+
+## LK channel release candidate
+
+CLI **0.166.150**, VS Code/Open VSX **0.37.189** and JetBrains **0.4.204** are prepared for this release. They add LK primary/backup configuration in CLI setup, the `cc ui` Web panel and IDE settings, with 83 protocol-filtered chat models, with a shared 197-entry model directory. Publication is pending exact-source CI, npm OIDC and registry readback; the preceding public versions below remain authoritative until verification. [LK setup and limits](docs/configuration/lk-api-channel.md).
+
 ## 2026-11-14 CLI / IDE publication status
 
 CLI **0.166.149** is public through [GitHub Actions OIDC](https://github.com/chainlesschain/chainlesschain/actions/runs/43475425890). Exact source `168a3d561b5a16e9d27b060944c63b2264c99df0` passed **76/76 CLI CI** and **6/6 Strict Sandbox** jobs. Official public archive/provenance verification passed, and an independent public download is byte-identical to the official tarball. Install `npm i -g chainlesschain@0.166.149 --registry https://registry.npmjs.org`, restart hosts, then run `cc --version` and `cc doctor`.
@@ -12,7 +18,7 @@ Retained-history reports now recheck original catalog/head directory boundaries 
 
 CLI **0.166.147** is public through [Actions OIDC](https://github.com/chainlesschain/chainlesschain/actions/runs/42976618525), with [public provenance and immutable artifact byte verification](https://github.com/chainlesschain/chainlesschain/actions/runs/43032767673). Exact source `32451e4d568e414acdb9c956208e5cff827cd6e0` passed all **76 CLI CI** and **6 Strict Sandbox** jobs. Install `npm i -g chainlesschain@0.166.147 --registry https://registry.npmjs.org`, restart hosts, then run `cc --version` and `cc doctor`.
 
-Open VSX **0.37.186** is public and byte-identical to the official VSIX, recommending CLI **0.166.147**. JetBrains **0.4.201** is awaiting completion of its official tag workflow; upload is not yet verified. Exact IDE source `703b22e89` passed its full host and ARM64 gates. This batch adds original RRSI manifest ownership, strict audit-response validation and preparation for a separate 36+9 retest. Automatic promotion remains HOLD; no new completion rate has been measured. See [upgrade and release status](docs-site/docs/chainlesschain/cli-ide-update-2026-11-11-147.md).
+Open VSX **0.37.186** is public and byte-identical to the official VSIX, recommending CLI **0.166.147**. JetBrains **0.4.201** is uploaded through its successful official tag workflow and awaits Marketplace approval/public download. Exact IDE source `703b22e89` passed its full host and ARM64 gates. This batch adds original RRSI manifest ownership, strict audit-response validation and preparation for a separate 36+9 retest. Automatic promotion remains HOLD; no new completion rate has been measured. See [upgrade and release status](docs-site/docs/chainlesschain/cli-ide-update-2026-11-11-147.md).
 
 ## Historical public release — 2026-11-10
 

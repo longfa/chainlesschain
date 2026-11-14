@@ -72,6 +72,7 @@ describe("LLM core IPC failure privacy", () => {
       ["llm:query", [null, secret, {}], "query"],
       ["llm:query-stream", [null, secret, {}], "query-stream"],
       ["llm:get-config", [], "get-config"],
+      ["llm:lk-account", [], "lk-account"],
       ["llm:set-config", [null, { apiKey: secret }], "set-config"],
       ["llm:clear-context", [null, secret], "clear-context"],
       ["llm:embeddings", [null, secret], "embeddings"],
@@ -107,6 +108,39 @@ describe("LLM core IPC failure privacy", () => {
 
     expect(JSON.stringify(sink.error.mock.calls)).not.toContain(secret);
     expect(JSON.stringify(status)).not.toContain(secret);
+  });
+
+  it("queries LK billing with the desktop saved credential and never returns it", async () => {
+    const apiKey = "fixture-desktop-account-key";
+    getLLMConfig.mockReturnValue({
+      getAll: () => ({
+        provider: "anthropic",
+        anthropic: { baseURL: "https://api.lk666.ai", model: "fb-5-2", apiKey },
+      }),
+    });
+    const fetcher = vi.fn(
+      async () => new Response("unauthorized", { status: 401 }),
+    );
+    vi.stubGlobal("fetch", fetcher);
+    try {
+      const result = await handlers["llm:lk-account"](null, {
+        days: 7,
+        apiKey: "foreign-key",
+        baseUrl: "https://foreign.example",
+      });
+      expect(fetcher).toHaveBeenCalledTimes(4);
+      for (const [url, options] of fetcher.mock.calls) {
+        expect(url).toMatch(/^https:\/\/api\.lk666\.ai\/v1\/skills\//);
+        expect(options.headers.Authorization).toBe(`Bearer ${apiKey}`);
+      }
+      expect(result.partial).toBe(true);
+      expect(JSON.stringify(result)).not.toMatch(
+        /fixture-desktop-account-key|foreign-key/,
+      );
+      expect(result.formattedText).toContain("未知");
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 
   it("preserves the governance code without returning the original error", async () => {

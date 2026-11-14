@@ -1,5 +1,11 @@
 # ChainlessChain - 基于U盾和SIMKey的个人移动AI管理系统
 
+This candidate also adds fresh LK model prices, balance, Key quota and actual API billing (cc llm account), plus saved credentials for every configured channel, including Volcengine. Switch back using Saved connections without re-entering the Key; LK hosts and protocols share one credential. Desktop source supports the same account queries and encrypted connection history.
+
+## LK channel release candidate
+
+CLI **0.166.150**, VS Code/Open VSX **0.37.189** and JetBrains **0.4.204** are prepared for this release. They add LK primary/backup configuration in CLI setup, the `cc ui` Web panel and IDE settings, with 83 protocol-filtered chat models, with a shared 197-entry model directory. Publication is pending exact-source CI, npm OIDC and registry readback; the preceding public versions below remain authoritative until verification. [LK setup and limits](docs/configuration/lk-api-channel.md).
+
 ## 2026-11-14 CLI / IDE 发布状态
 
 CLI **0.166.149** 已通过 [GitHub Actions OIDC 发布](https://github.com/chainlesschain/chainlesschain/actions/runs/43475425890)。准确源码 `168a3d561b5a16e9d27b060944c63b2264c99df0` 的 CLI CI **76/76**、Strict Sandbox **6/6** 全部通过，官方公开归档及来源验证成功，独立公开下载与正式制品逐字节一致。安装：`npm i -g chainlesschain@0.166.149 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`、`cc doctor`。
@@ -12,7 +18,7 @@ Open VSX **0.37.188** 已公开，推荐 CLI **0.166.149**，完整宿主门禁�
 
 CLI **0.166.147** 已通过 [Actions OIDC 发布](https://github.com/chainlesschain/chainlesschain/actions/runs/42976618525)与[公开包来源及字节回读](https://github.com/chainlesschain/chainlesschain/actions/runs/43032767673)。准确源码 `32451e4d568e414acdb9c956208e5cff827cd6e0` 的 CLI CI **76/76**、Strict Sandbox **6/6** 全部通过。安装：`npm i -g chainlesschain@0.166.147 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`、`cc doctor`。
 
-Open VSX **0.37.186** 已公开并与官方 VSIX 逐字节核验，推荐 CLI **0.166.147**；JetBrains **0.4.201** 正式标签工作流仍在运行，尚未核验上传。准确 IDE 源 `703b22e89` 的完整宿主及 ARM64 门禁已通过。本批集成 RRSI 原组件所有权、严格审计响应校验及独立 36+9 复测准备；自动晋升仍 HOLD，尚无新完成率。见[升级与发布状态](docs-site/docs/chainlesschain/cli-ide-update-2026-11-11-147.md)。
+Open VSX **0.37.186** 已公开并与官方 VSIX 逐字节核验，推荐 CLI **0.166.147**；JetBrains **0.4.201** 正式标签工作流成功且已上传，待 Marketplace 审核及公开下载。准确 IDE 源 `703b22e89` 的完整宿主及 ARM64 门禁已通过。本批集成 RRSI 原组件所有权、严格审计响应校验及独立 36+9 复测准备；自动晋升仍 HOLD，尚无新完成率。见[升级与发布状态](docs-site/docs/chainlesschain/cli-ide-update-2026-11-11-147.md)。
 
 ## 2026-11-10 历史公开发行
 
