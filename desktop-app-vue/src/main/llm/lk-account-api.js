@@ -101,8 +101,8 @@ function normalizeLkAccountPart(kind, data) {
   throw new Error("Unknown account response");
 }
 
-async function getJson(fetcher, origin, path, apiKey) {
-  const response = await fetcher(origin + path, {
+async function getJson(fetchImpl, origin, path, apiKey) {
+  const response = await fetchImpl(origin + path, {
     headers: { Authorization: `Bearer ${apiKey}`, Accept: "application/json" },
     signal: AbortSignal.timeout(12000),
     redirect: "error",
