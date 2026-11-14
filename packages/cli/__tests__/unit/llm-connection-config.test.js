@@ -141,6 +141,39 @@ describe("LLM custom connection", () => {
       }),
     ).not.toThrow();
   });
+  it("restores a legacy channel credential after switching away before a model was configured", () => {
+    const original = state.config;
+    state.config = {
+      llm: {
+        provider: "volcengine",
+        baseUrl: "https://ark.cn-beijing.volces.com/api/v3",
+        apiKey: "legacy-volc-key",
+      },
+    };
+    try {
+      const metadata = readLlmConnection();
+      expect(metadata.savedConnections).toContainEqual(
+        expect.objectContaining({ provider: "volcengine", hasKey: true }),
+      );
+      expect(JSON.stringify(metadata)).not.toContain("legacy-volc-key");
+      saveLlmConnection({
+        provider: "custom",
+        model: "local-model",
+        baseUrl: "http://localhost:1234/v1",
+      });
+      state.config = state.calls.at(-1);
+      expect(state.config.llm).not.toHaveProperty("apiKey");
+      saveLlmConnection({
+        provider: "volcengine",
+        model: "configured-later",
+        baseUrl: "https://ark.cn-beijing.volces.com/api/v3",
+      });
+      expect(state.calls.at(-1).llm.apiKey).toBe("legacy-volc-key");
+    } finally {
+      state.config = original;
+      state.calls.length = 0;
+    }
+  });
   it("rejects unsafe URL/protocol/fields before writing anything", () => {
     for (const baseUrl of [
       "file:///tmp/key",

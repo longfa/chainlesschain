@@ -117,8 +117,8 @@ export function saveLlmConnection(
     const current = config.llm || {};
     const profiles = { ...(current.savedConnections || {}) };
     // Move raw references, never resolved plaintext, when migrating legacy config.
-    if (current.provider && current.model)
-      profiles[profileId(current)] = profileFields(current);
+    // Older configs can have a credential before a model has been chosen.
+    if (current.provider) profiles[profileId(current)] = profileFields(current);
     const saved = profiles[targetId] || {};
     const credential = saved.apiKey || null;
     const helper = saved.apiKeyHelper || null;
@@ -190,8 +190,7 @@ export function readLlmConnection() {
 
 function publicConnections(current) {
   const profiles = { ...(current.savedConnections || {}) };
-  if (current.provider && current.model)
-    profiles[profileId(current)] = profileFields(current);
+  if (current.provider) profiles[profileId(current)] = profileFields(current);
   return Object.values(profiles)
     .filter((row) => row && typeof row === "object")
     .map((row) => ({
