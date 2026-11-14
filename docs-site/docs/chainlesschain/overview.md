@@ -1,28 +1,21 @@
 # ChainlessChain 系统概述
 
-截至 **2026-11-14**，ChainlessChain 提供本地优先的个人 AI、知识管理、Agent 任务、去中心化通信与跨设备数据入口。CLI、IDE 插件和桌面/移动客户端独立发行；下面按各渠道实际发布与回读状态分别记录。
+## 当前发行核对（2026-11-15）
 
-## 当前公开版本
+CLI **0.166.150** 已通过 [GitHub Actions OIDC 发布](https://github.com/chainlesschain/chainlesschain/actions/runs/43642085522)，准确源码的完整 CLI CI / Strict Sandbox、公开包字节及签名来源均已核验。Open VSX **0.37.189** 已公开且与正式 VSIX 一致；JetBrains **0.4.204** 已公开核验。两款插件推荐 CLI **0.166.150**。
 
-| 入口 / 组件                  | 已核对的公开版本    | 使用说明                                                                                |
-| ---------------------------- | ------------------- | --------------------------------------------------------------------------------------- |
-| CLI                          | **0.166.149**       | OIDC 发布、来源与公开字节回读均通过                                                     |
-| VS Code / Open VSX           | **0.37.188**        | 推荐 CLI .149，已核验列出、下载与正式制品字节一致性                                     |
-| JetBrains                    | **0.4.202**         | 已批准并列出，推荐 CLI .148；新 .203 已通过完整正式门禁并上传，待商店审核及公开下载核验 |
-| PC / Android / iOS           | **v5.0.3.145**      | 独立产品源码与 22 个公开资产；不能据 CLI 版本推断客户端功能                             |
-| Session Core / Memory Kernel | **0.3.27 / 0.1.12** | 会话与上下文/记忆共享组件，各自保留独立版本                                             |
-| Agent SDK TS / Python        | **0.2.18 / 0.2.9**  | Agent Protocol **0.1.13**                                                               |
-| Personal Data Hub            | **0.4.66**          | 个人数据采集、索引与受控访问                                                            |
+安装 `npm i -g chainlesschain@0.166.150 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`、`cc doctor`。在 `cc setup`、`cc ui` 或 IDE「配置大模型」选择 LK 渠道；已保存渠道（含火山）的 Key 会在切回时恢复，LK 主备和协议共用 Key。账户入口可刷新动态价格、余额、Key 额度和实际 API 账单，金额单位为“算力”，与本地 Token 估算分开展示。
 
-CLI .149 的不可变发行源为 `168a3d561b5a16e9d27b060944c63b2264c99df0`，CLI CI **76/76**、Strict Sandbox **6/6** 通过。Open VSX **0.37.188** 已公开且回读通过，推荐 CLI .149；JetBrains **0.4.203** 推荐同一 CLI，已通过完整正式门禁并上传，待商店审核及公开下载核验。产品 **v5.0.3.146** 尚不作为已核对的公开下载推荐，客户端仍为 **v5.0.3.145**。
+[本轮安装、渠道状态与使用限制](./cli-ide-update-2026-11-14-150)。桌面源码已支持加密连接历史和账户查询，PC/mobile 公开安装包仍为 **v5.0.3.145**。Microsoft Marketplace 未由本批标签发布；既有生产权限和自动晋升边界保持。
 
-```bash
-npm i -g chainlesschain@0.166.149 --registry https://registry.npmjs.org
-cc --version
-cc doctor
-```
+| 组件               | 版本与状态                                            |
+| ------------------ | ----------------------------------------------------- |
+| CLI                | **0.166.150**；OIDC、来源及公开字节核验通过           |
+| VS Code / Open VSX | **0.37.189**；推荐 CLI .150，公开 VSIX 与正式制品一致 |
+| JetBrains          | **0.4.204**；已公开核验，推荐 CLI .150                |
+| PC / mobile        | 公开 **v5.0.3.145**；桌面 LK 新功能尚需新版安装包     |
 
-[本轮升级指南](./cli-ide-update-2026-11-13-149) · [CLI 使用指南](./cli) · [IDE 安装与配置](./ide-plugin) · [运行时设计](https://design.chainlesschain.com/release-runtime-update-2026-11-13-149.html)
+Session Core **0.3.27**、Agent Protocol **0.1.13**、Agent SDK **0.2.18**、Context/Memory Kernel **0.1.12** 保持原版本。
 
 ## 近期能力与交付边界
 

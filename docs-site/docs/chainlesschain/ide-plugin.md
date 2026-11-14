@@ -1,6 +1,14 @@
 # IDE 插件使用指南（VS Code / JetBrains）
 
-## 当前发行核对（2026-11-14）
+## 当前发行核对（2026-11-15）
+
+CLI **0.166.150** 已通过 [GitHub Actions OIDC 发布](https://github.com/chainlesschain/chainlesschain/actions/runs/43642085522)，准确源码的完整 CLI CI / Strict Sandbox、公开包字节及签名来源均已核验。Open VSX **0.37.189** 已公开且与正式 VSIX 一致；JetBrains **0.4.204** 已公开核验。两款插件推荐 CLI **0.166.150**。
+
+安装 `npm i -g chainlesschain@0.166.150 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`、`cc doctor`。在 `cc setup`、`cc ui` 或 IDE「配置大模型」选择 LK 渠道；已保存渠道（含火山）的 Key 会在切回时恢复，LK 主备和协议共用 Key。账户入口可刷新动态价格、余额、Key 额度和实际 API 账单，金额单位为“算力”，与本地 Token 估算分开展示。
+
+[本轮安装、渠道状态与使用限制](./cli-ide-update-2026-11-14-150)。桌面源码已支持加密连接历史和账户查询，PC/mobile 公开安装包仍为 **v5.0.3.145**。Microsoft Marketplace 未由本批标签发布；既有生产权限和自动晋升边界保持。
+
+## 历史发行核对（2026-11-14）
 
 CLI **0.166.149** 已通过准确提交的 CLI CI **76/76**、Strict Sandbox **6/6** 和 [Actions OIDC 发布回读](https://github.com/chainlesschain/chainlesschain/actions/runs/43475425890)，公开 npm 包与正式制品逐字节一致。Open VSX **0.37.188** 已公开且与正式 VSIX 字节一致，推荐 CLI **0.166.149**。JetBrains **0.4.203** 推荐同一 CLI，已通过完整正式门禁并上传，待商店审核及公开下载核验。
 
@@ -56,7 +64,11 @@ VS Code 与 JetBrains 共享 CLI 的模型入门推荐目录，配置读取结�
 
 ## 安装与升级
 
-CLI **0.166.149** 与 Open VSX **0.37.188** 已公开并完成字节回读。JetBrains **0.4.203** 推荐 CLI .149，已通过完整正式门禁并上传，待商店审核及公开下载核验；当前已核验公开 JetBrains **0.4.202** 推荐 CLI .148。按[当前渠道状态](./cli-ide-update-2026-11-13-149)安装并重启聊天宿主，运行 Doctor 核对实际 CLI 路径。自进化配置入口在命令面板或设置/动作中的 **Skill 自进化配置**；生产权限、运行时证据和自动晋升边界保持不变。
+CLI **0.166.150** 已通过 [GitHub Actions OIDC 发布](https://github.com/chainlesschain/chainlesschain/actions/runs/43642085522)，准确源码的完整 CLI CI / Strict Sandbox、公开包字节及签名来源均已核验。Open VSX **0.37.189** 已公开且与正式 VSIX 一致；JetBrains **0.4.204** 已公开核验。两款插件推荐 CLI **0.166.150**。
+
+安装 `npm i -g chainlesschain@0.166.150 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`、`cc doctor`。在 `cc setup`、`cc ui` 或 IDE「配置大模型」选择 LK 渠道；已保存渠道（含火山）的 Key 会在切回时恢复，LK 主备和协议共用 Key。账户入口可刷新动态价格、余额、Key 额度和实际 API 账单，金额单位为“算力”，与本地 Token 估算分开展示。
+
+[本轮安装、渠道状态与使用限制](./cli-ide-update-2026-11-14-150)。桌面源码已支持加密连接历史和账户查询，PC/mobile 公开安装包仍为 **v5.0.3.145**。Microsoft Marketplace 未由本批标签发布；既有生产权限和自动晋升边界保持。
 
 ## 重复调查与证据总结（公开 .93）
 

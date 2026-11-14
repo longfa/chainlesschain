@@ -59,8 +59,8 @@ export default defineConfig({
           { text: "ChainlessChain系统", link: "/chainlesschain/overview" },
           { text: "厂家管理系统", link: "/manufacturer/overview" },
           {
-            text: "当前安装与升级（11-14）",
-            link: "/chainlesschain/cli-ide-update-2026-11-13-149",
+            text: "当前安装与升级（11-15）",
+            link: "/chainlesschain/cli-ide-update-2026-11-14-150",
           },
         ],
       },
@@ -1431,6 +1431,10 @@ export default defineConfig({
               text: "CLI / IDE 升级记录",
               collapsed: true,
               items: [
+                {
+                  text: "11-15 CLI .150 / LK 与账户配置",
+                  link: "/chainlesschain/cli-ide-update-2026-11-14-150",
+                },
                 {
                   text: "11-14 CLI .149 / IDE 渠道状态",
                   link: "/chainlesschain/cli-ide-update-2026-11-13-149",
