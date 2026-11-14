@@ -27,6 +27,7 @@ export async function saveLlmApiKey(ws, apiKey) {
 }
 
 export async function readLlmConnection(ws) {
+  await ws.waitConnected?.(8000);
   const response = await ws.sendRaw({ type: "llm-config-get" }, 15000);
   if (response?.success !== true || !response.config)
     throw new Error("无法读取连接配置");
@@ -34,6 +35,7 @@ export async function readLlmConnection(ws) {
 }
 
 export async function saveLlmConnection(ws, connection) {
+  await ws.waitConnected?.(8000);
   const response = await ws.sendRaw(
     { type: "llm-configure", connection },
     15000,

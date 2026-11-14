@@ -1,6 +1,10 @@
 import { describe, it, expect, vi } from "vitest";
 import { useLlmConfiguration } from "../../src/composables/useLlmConfiguration.js";
 import { lkConnection, lkModels } from "../../src/utils/lk-channel.js";
+import {
+  readLlmConnection,
+  saveLlmConnection,
+} from "../../src/utils/llm-config.js";
 
 function setup(initial = {}) {
   let stored = {
@@ -46,6 +50,26 @@ function setup(initial = {}) {
 }
 
 describe("LK Web configuration", () => {
+  it("waits for initial connection or reconnection before configuration frames", async () => {
+    for (const action of [readLlmConnection, saveLlmConnection]) {
+      let connected;
+      const ws = {
+        waitConnected: vi.fn(
+          () =>
+            new Promise((resolve) => {
+              connected = resolve;
+            }),
+        ),
+        sendRaw: vi.fn().mockResolvedValue({ success: true, config: {} }),
+      };
+      const pending = action(ws, { provider: "custom" });
+      expect(ws.waitConnected).toHaveBeenCalledWith(8000);
+      expect(ws.sendRaw).not.toHaveBeenCalled();
+      connected();
+      await pending;
+      expect(ws.sendRaw).toHaveBeenCalledOnce();
+    }
+  });
   it("routes every chat model to its documented protocol on both addresses", () => {
     for (const address of ["primary", "backup"]) {
       for (const model of lkModels.filter((entry) => entry.type === "chat")) {

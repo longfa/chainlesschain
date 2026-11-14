@@ -68,7 +68,7 @@ node packages/cli/scripts/sync-lk-model-catalog.mjs --input path/to/models.json
 
 ## 本次验证
 
-- Web 全部 129 个单元测试文件、2485 项测试及生产构建通过；连接配置和认证路由的后端回归 34 项通过。
+- Web 全部 129 个单元测试文件、2486 项测试及生产构建通过；连接配置和认证路由的后端回归 34 项通过。
 - 8 项 Node 回归检查通过：覆盖 IDE 目录同步、全部 83 个对话模型的主备路径、协议错配拒绝、媒体模型隔离、桌面预设切换及凭证归属。
 - VS Code 相关回归 36 项通过；JetBrains 修改使用 JDK 21 编译并通过原生 Swing 表单 smoke 检查，完整宿主矩阵以官方 CI 为准。
 - 桌面设置组件的 Vue script/template 编译通过；没有执行整仓构建或完整 E2E。
