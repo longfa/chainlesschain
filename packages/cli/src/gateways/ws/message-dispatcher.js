@@ -153,6 +153,14 @@ export async function handleLlmConnection(server, id, ws, message) {
       "maxTokens",
     ])
       if (Object.hasOwn(result, key)) config[key] = result[key];
+    config.savedConnections = (result.savedConnections || []).map((row) => ({
+      provider: row.provider,
+      model: row.model,
+      baseUrl: row.baseUrl,
+      visionModel: row.visionModel,
+      hasKey: row.hasKey === true,
+      channel: row.channel === "lk" ? "lk" : null,
+    }));
     server._send(ws, { id, type: "llm-config-result", success: true, config });
   } catch {
     server._send(ws, {
@@ -162,6 +170,29 @@ export async function handleLlmConnection(server, id, ws, message) {
       message: reading
         ? "Could not read LLM configuration"
         : "Could not save LLM connection; check protocol, endpoint, model and channel key",
+    });
+  }
+}
+
+export async function handleLlmAccount(server, id, ws, message) {
+  try {
+    const { queryLkAccount } = await import("../../lib/lk-account.js");
+    const options = {};
+    for (const key of ["days", "scope", "model", "limit", "offset"])
+      if (message[key] !== undefined) options[key] = message[key];
+    const account = await queryLkAccount(options);
+    server._send(ws, {
+      id,
+      type: "llm-account-result",
+      success: true,
+      account,
+    });
+  } catch {
+    server._send(ws, {
+      id,
+      type: "error",
+      code: "LLM_ACCOUNT_FAILED",
+      message: "请先保存 LK 连接及 Key，并检查查询参数",
     });
   }
 }
@@ -217,6 +248,7 @@ export function createWsMessageDispatcher(server) {
           handleConfigSetSecret(server, id, ws, message),
         "llm-config-get": () => handleLlmConnection(server, id, ws, message),
         "llm-configure": () => handleLlmConnection(server, id, ws, message),
+        "llm-account": () => handleLlmAccount(server, id, ws, message),
         "slash-command": () => server._handleSlashCommand(id, ws, message),
         "session-answer": () => server._handleSessionAnswer(id, ws, message),
         "approval-grants-list": () =>

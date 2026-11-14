@@ -4,6 +4,7 @@
 
 - Add the LK aggregator with documented primary/backup addresses, exact model aliases and protocol-aware selection. The shared catalog contains 83 chat models plus 114 media entries; media task execution is not included. Preserve saved aliases and keep credentials scoped to the selected endpoint. Three tiny live protocol probes and authenticated pricing queries succeeded; this does not certify the whole model catalog.
 - Recommend CLI 0.166.150; publish only after its verified npm availability.
+- Add read-only refresh of LK dynamic model prices, account balance, Key quota and actual API charges through the saved CLI connection. Keep platform credits separate from local token-cost estimates.
 
 All notable changes to this extension are documented here.
 

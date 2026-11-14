@@ -1043,6 +1043,32 @@ function registerCoreHandlers(ctx) {
     }
   });
 
+  authorizedIpcMain.handle("llm:lk-account", async (_event, input = {}) => {
+    try {
+      const config = getConfiguration().getAll();
+      const current = config[config.provider] || {};
+      const { fetchLkAccount, formatLkAccount } = require("./lk-account-api");
+      const options = {};
+      for (const key of ["days", "scope", "limit", "offset"])
+        if (input?.[key] !== undefined) options[key] = input[key];
+      const baseUrl = String(current.baseURL || "").replace(/\/+$/, "");
+      const account = await fetchLkAccount(
+        {
+          provider: config.provider,
+          baseUrl: /^https:\/\/api\.lk(?:888|666)\.ai$/.test(baseUrl)
+            ? baseUrl + "/v1"
+            : baseUrl,
+          model: current.model,
+          apiKey: current.apiKey,
+        },
+        options,
+      );
+      return { ...account, formattedText: formatLkAccount(account) };
+    } catch {
+      throw privacy.failure("lk-account");
+    }
+  });
+
   /**
    * 设置 LLM 配置
    * Channel: 'llm:set-config'
@@ -1057,7 +1083,8 @@ function registerCoreHandlers(ctx) {
         llmConfig.set(key, submittedConfig[key]);
       });
 
-      llmConfig.save();
+      if ((await llmConfig.save()) === false)
+        throw new Error("Configuration save failed");
 
       // 🔥 在测试模式下，不重新初始化LLM Manager，保持使用Mock LLM
       const isTestMode =

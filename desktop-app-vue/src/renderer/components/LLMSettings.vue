@@ -7,6 +7,18 @@
         :wrapper-col="{ span: 18 }"
         @finish="handleSave"
       >
+        <a-form-item v-if="form.savedConnections?.length" label="已保存渠道">
+          <a-select
+            v-model:value="form.restoreConnectionId"
+            placeholder="选择后保存，自动恢复该渠道凭证"
+            :options="
+              form.savedConnections.map((row) => ({
+                value: row.id,
+                label: `${row.channel === 'lk' ? 'LK API' : row.provider} · ${row.model}`,
+              }))
+            "
+          />
+        </a-form-item>
         <a-form-item label="渠道预设">
           <a-space wrap>
             <span>LK API</span>
@@ -84,6 +96,34 @@
               >
             </div>
           </details>
+        </a-form-item>
+        <a-form-item label="LK 价格与实际账单">
+          <a-space wrap
+            ><a-select
+              v-model:value="accountDays"
+              :options="[
+                { value: 1, label: '最近 1 天' },
+                { value: 7, label: '最近 7 天' },
+                { value: 30, label: '最近 30 天' },
+              ]"
+            /><a-select
+              v-model:value="accountScope"
+              :options="[
+                { value: 'key', label: '当前 Key API 用量' },
+                { value: 'user', label: '全部 Key API 用量' },
+              ]"
+            /><a-button :loading="accountLoading" @click="refreshAccount"
+              >刷新价格与余额</a-button
+            ></a-space
+          >
+          <p>
+            查询已保存 LK 连接；修改后请先保存。Token
+            统计与平台实扣算力分开展示。
+          </p>
+          <pre
+            v-if="accountText"
+            style="white-space: pre-wrap; max-height: 420px; overflow: auto"
+            >{{ accountText }}</pre>
         </a-form-item>
         <!-- 提供商选择 -->
         <a-form-item label="服务提供商">
@@ -452,9 +492,32 @@
 <script setup>
 import { logger } from "@/utils/logger";
 
-import { ref, reactive, computed, onMounted } from "vue";
+import { ref, reactive, computed, onMounted, watch } from "vue";
 import { message } from "ant-design-vue";
 import TokenStatsCard from "./TokenStatsCard.vue";
+const accountDays = ref(1),
+  accountScope = ref("key"),
+  accountLoading = ref(false),
+  accountText = ref("");
+let accountGeneration = 0;
+const refreshAccount = async () => {
+  accountLoading.value = true;
+  accountText.value = "";
+  const generation = ++accountGeneration;
+  try {
+    const result = await window.electronAPI.llm.getLkAccount({
+      days: accountDays.value,
+      scope: accountScope.value,
+    });
+    if (generation === accountGeneration)
+      accountText.value = result.formattedText;
+  } catch {
+    if (generation === accountGeneration)
+      accountText.value = "查询失败，请确认已保存 LK 连接及 Key 后重试";
+  } finally {
+    accountLoading.value = false;
+  }
+};
 import {
   LK_CHANNEL,
   LK_MODELS,
@@ -488,6 +551,9 @@ const applyLkPreset = () => {
     name: LK_CHANNEL.name,
     baseURL: connection.baseUrl,
     apiKey: sameChannel ? previous.apiKey : "",
+    apiKeyConfigured: form.savedConnections.some(
+      (row) => row.channel === "lk" && row.hasKey,
+    ),
     model: connection.model,
   };
   form.provider = connection.provider;
@@ -561,6 +627,8 @@ const filterOption = (input, option) => {
 
 // 表单数据
 const form = reactive({
+  savedConnections: [],
+  restoreConnectionId: "",
   provider: "ollama",
 
   ollama: {
@@ -622,6 +690,20 @@ const form = reactive({
 });
 
 // 超时时间（秒）
+watch(
+  () => [
+    form.provider,
+    form[form.provider]?.baseURL,
+    form[form.provider]?.model,
+    form.restoreConnectionId,
+    accountDays.value,
+    accountScope.value,
+  ],
+  () => {
+    accountGeneration++;
+    accountText.value = "";
+  },
+);
 const timeoutSeconds = computed({
   get: () => Math.round(form.options.timeout / 1000),
   set: (val) => {
@@ -652,6 +734,7 @@ const handleSave = async () => {
     // 转换为普通对象以避免结构化克隆错误
     const plainConfig = JSON.parse(JSON.stringify(form));
     await window.electronAPI.llm.setConfig(plainConfig);
+    await loadConfig();
     message.success("配置已保存");
     await checkStatus();
   } catch (error) {
@@ -666,27 +749,55 @@ const handleSave = async () => {
 const handleTest = async () => {
   testing.value = true;
   try {
+    if (form.restoreConnectionId) {
+      await window.electronAPI.llm.setConfig(JSON.parse(JSON.stringify(form)));
+      await loadConfig();
+    }
     // 验证必填字段
     const activeConfig = form[form.provider];
     if (form.provider !== "ollama" && !activeConfig?.model?.trim()) {
       throw new Error("请先输入模型名称");
     }
-    if (form.provider === "gemini" && !form.gemini.apiKey) {
+    if (
+      form.provider === "gemini" &&
+      !form.gemini.apiKey &&
+      !form.gemini.apiKeyConfigured
+    ) {
       throw new Error("请先输入 Gemini API Key");
     }
-    if (form.provider === "openai" && !form.openai.apiKey) {
+    if (
+      form.provider === "openai" &&
+      !form.openai.apiKey &&
+      !form.openai.apiKeyConfigured
+    ) {
       throw new Error("请先输入 OpenAI API Key");
     }
-    if (form.provider === "anthropic" && !form.anthropic.apiKey) {
+    if (
+      form.provider === "anthropic" &&
+      !form.anthropic.apiKey &&
+      !form.anthropic.apiKeyConfigured
+    ) {
       throw new Error("请先输入 Claude API Key");
     }
-    if (form.provider === "volcengine" && !form.volcengine.apiKey) {
+    if (
+      form.provider === "volcengine" &&
+      !form.volcengine.apiKey &&
+      !form.volcengine.apiKeyConfigured
+    ) {
       throw new Error("请先输入火山引擎 API Key");
     }
-    if (form.provider === "deepseek" && !form.deepseek.apiKey) {
+    if (
+      form.provider === "deepseek" &&
+      !form.deepseek.apiKey &&
+      !form.deepseek.apiKeyConfigured
+    ) {
       throw new Error("请先输入 DeepSeek API Key");
     }
-    if (form.provider === "custom" && !form.custom.baseURL) {
+    if (
+      form.provider === "custom" &&
+      !form.custom.baseURL &&
+      !form.custom.baseURLConfigured
+    ) {
       throw new Error("请先输入自定义 API 地址");
     }
 

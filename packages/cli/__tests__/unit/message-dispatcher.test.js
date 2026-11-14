@@ -43,7 +43,7 @@ describe("ws message dispatcher", () => {
     server._saveLlmConnection = vi.fn();
     server._readLlmConnection = vi.fn();
     const dispatcher = createWsMessageDispatcher(server);
-    for (const type of ["llm-config-get", "llm-configure"])
+    for (const type of ["llm-config-get", "llm-configure", "llm-account"])
       await dispatcher.dispatch(
         "client-1",
         {},
@@ -93,6 +93,7 @@ describe("ws message dispatcher", () => {
     expect(server._send.mock.calls[1][1].config).toEqual({
       provider: "custom",
       hasKey: true,
+      savedConnections: [],
     });
     server._saveLlmConnection.mockImplementation(() => {
       throw new Error("fixture-secret");

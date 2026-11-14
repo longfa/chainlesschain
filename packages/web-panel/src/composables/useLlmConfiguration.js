@@ -25,6 +25,7 @@ export function useLlmConfiguration(ws, providersStore, message) {
     configReady = ref(false);
   const showRestartHint = ref(false),
     loaded = ref(null);
+  const savedConnections = ref([]);
   const channel = ref("manual"),
     lkProtocol = ref("openai"),
     lkAddress = ref("primary");
@@ -57,9 +58,20 @@ export function useLlmConfiguration(ws, providersStore, message) {
       normalized(configForm.baseUrl) === normalized(loaded.value.baseUrl),
   );
   const keyPlaceholder = computed(() =>
-    sameDestination.value && loaded.value?.hasKey
-      ? "已保存密钥 · 留空保留"
+    hasSavedKey.value
+      ? "此渠道密钥已保存 · 留空自动恢复"
       : "输入此渠道的 API Key",
+  );
+  const hasSavedKey = computed(
+    () =>
+      (sameDestination.value && loaded.value?.hasKey) ||
+      savedConnections.value.some(
+        (row) =>
+          row.hasKey &&
+          ((lkSelection(configForm) && row.channel === "lk") ||
+            (row.provider === configForm.provider &&
+              normalized(row.baseUrl) === normalized(configForm.baseUrl))),
+      ),
   );
   const connectionDirty = computed(
     () =>
@@ -85,6 +97,8 @@ export function useLlmConfiguration(ws, providersStore, message) {
     for (const key of [...connectionKeys, "hasKey", "temperature", "maxTokens"])
       safe[key] = snapshot[key];
     loaded.value = safe;
+    savedConnections.value =
+      snapshot.savedConnections || savedConnections.value;
     Object.assign(configForm, {
       provider: safe.provider,
       model: safe.model || "",
@@ -117,10 +131,34 @@ export function useLlmConfiguration(ws, providersStore, message) {
   }
   function handleChannelChange() {
     configForm.apiKey = "";
-    if (channel.value === "lk") applyLk();
+    if (channel.value === "lk") {
+      const saved = savedConnections.value.find((row) => row.channel === "lk");
+      if (saved) selectSavedConnection(saved);
+      else applyLk();
+    }
   }
   function handleProviderChange() {
     configForm.apiKey = "";
+    const saved = savedConnections.value.find(
+      (row) => row.provider === configForm.provider && row.channel !== "lk",
+    );
+    if (saved) selectSavedConnection(saved);
+  }
+  function selectSavedConnection(saved) {
+    Object.assign(configForm, {
+      provider: saved.provider,
+      model: saved.model,
+      baseUrl: saved.baseUrl,
+      visionModel: saved.visionModel || "",
+      apiKey: "",
+      allowHttp: false,
+    });
+    const selected = lkSelection(saved);
+    channel.value = selected ? "lk" : "manual";
+    if (selected) {
+      lkProtocol.value = selected.protocol;
+      lkAddress.value = selected.address;
+    }
   }
   function resetForm() {
     if (loaded.value) showSnapshot(loaded.value);
@@ -155,7 +193,7 @@ export function useLlmConfiguration(ws, providersStore, message) {
       const selection = lkSelection(draft);
       if (selection) {
         lkConnection(selection.protocol, selection.address, draft.model);
-        if (!draft.apiKey && !(sameDestination.value && loaded.value?.hasKey))
+        if (!draft.apiKey && !hasSavedKey.value)
           throw new Error("新 LK 地址需要填写渠道 API Key");
       }
       for (const key of ["temperature", "maxTokens"]) {
@@ -231,6 +269,8 @@ export function useLlmConfiguration(ws, providersStore, message) {
     lkChannel,
     lkModelOptions,
     keyPlaceholder,
+    savedConnections,
+    selectSavedConnection,
     connectionDirty,
     remoteHttp,
     applyLk,

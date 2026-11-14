@@ -10,6 +10,31 @@ const {
   getLlmConfigurationState,
 } = require("../src/llm-config");
 
+test("LK account queries use only the saved CLI configuration and hide failed subprocess output", async () => {
+  const { queryLkAccount } = require("../src/llm-config");
+  const calls = [];
+  const execFile = (command, args, options, callback) => {
+    calls.push(args);
+    callback(null, "账户余额：0 算力", "");
+    return { stdin: { on() {}, end() {} } };
+  };
+  const result = await queryLkAccount({ command: "cc", deps: { execFile } });
+  assert.equal(result.ok, true);
+  assert.equal(result.detail, "账户余额：0 算力");
+  assert.deepEqual(calls, [["llm", "account"]]);
+  const failed = await queryLkAccount({
+    command: "cc",
+    deps: {
+      execFile: (_c, _a, _o, cb) => {
+        cb(new Error("private"), "private", "private");
+        return { stdin: { on() {}, end() {} } };
+      },
+    },
+  });
+  assert.equal(failed.ok, false);
+  assert.ok(!failed.detail.includes("private"));
+});
+
 test("LLM setup keeps the API key out of argv and uses the resolved CLI", async () => {
   setResolvedCli("chainlesschain");
   const calls = [];

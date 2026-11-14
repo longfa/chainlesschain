@@ -11,9 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added - cc CLI 0.166.150: LK aggregator model configuration (candidate, 2026-11-14)
+### Added - cc CLI 0.166.150: LK channel, dynamic billing and saved credentials (candidate, 2026-11-15)
 
 - Add the LK aggregator with documented primary/backup addresses, exact model aliases and protocol-aware selection. The shared catalog contains 83 chat models plus 114 media entries; media task execution is not included. Preserve saved aliases and keep credentials scoped to the selected endpoint. Three tiny live protocol probes and authenticated pricing queries succeeded; this does not certify the whole model catalog.
+- Add fresh authenticated LK prices, account balance, Key quota and actual API charges; keep platform credits separate from local Token estimates. Preserve endpoint-scoped credentials across Volcengine and all other channels, with a shared LK key across hosts/protocols. Support CLI, Web, IDE configuration and desktop encrypted history.
 - Add LK selection to the `cc ui` Web panel with protocol-filtered models, primary/backup addresses and saved aliases. Persist endpoint and credential atomically through authenticated structured messages, return only a non-secret snapshot, and confirm saves by readback.
 - Pair with VS Code/Open VSX 0.37.189 and JetBrains 0.4.204; child npm packages remain unchanged. Require complete exact-source CLI CI and Strict Sandbox matrices, then OIDC publication and public package readback before IDE publication.
 

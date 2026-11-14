@@ -20,7 +20,11 @@ vi.mock("../../src/lib/config-manager.js", () => ({
   setSecretConfigValue: (key, value, opts) => {
     const next = structuredClone(state.config);
     opts.configMutator(next);
-    next.llm.apiKey = value;
+    let target = next;
+    const path = key.split(".");
+    for (const part of path.slice(0, -1)) target = target[part] ||= {};
+    target[path.at(-1)] = value;
+    opts.storedValueMutator?.(next, value);
     state.calls.push(next);
   },
 }));

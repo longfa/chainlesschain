@@ -221,6 +221,22 @@ public final class LlmConfig {
         return readConnection((args, stdin) -> runCli(args, stdin));
     }
 
+    public static List<Connection> readSavedConnections() {
+        List<Connection> connections = new ArrayList<>();
+        CliResult result = runCli(args("llm", "connections", "--json"));
+        try {
+            Map<String,Object> document = MiniJson.parseObject(result.output.trim());
+            Object rows = document == null ? null : document.get("savedConnections");
+            if (result.ok && rows instanceof List) for (Object row : (List<?>) rows) {
+                if (row instanceof Map) {
+                    Map<?,?> value = (Map<?,?>) row;
+                    connections.add(new Connection(cleanConfigValue(value.get("provider")), cleanConfigValue(value.get("model")), cleanConfigValue(value.get("baseUrl")), cleanConfigValue(value.get("visionModel")), Boolean.TRUE.equals(value.get("hasKey"))));
+                }
+            }
+        } catch (RuntimeException ignored) { }
+        return connections;
+    }
+
     static Connection readConnection(CliRunner cli) {
         CliResult result = cli.run(args("config", "list", "--json"), null);
         if (!result.ok) throw new IllegalStateException("Could not read the saved CLI configuration: " + result.failure);
@@ -650,6 +666,12 @@ public final class LlmConfig {
     public static CliResult testLlm() {
         CliResult r = runCli(args("llm", "test"));
         return new CliResult(r.ok, tail(r.output, 300));
+    }
+
+    /** Read-only account query, using the saved connection's credential. */
+    public static CliResult queryLkAccount() {
+        CliResult result = runCli(args("llm", "account"));
+        return result.ok ? result : new CliResult(false, "无法查询 LK 账户，请更新 CLI 并确认已保存 LK 连接及 Key。");
     }
 
     private static boolean notBlank(String s) {

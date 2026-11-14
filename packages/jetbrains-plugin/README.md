@@ -1,5 +1,7 @@
 # ChainlessChain IDE Bridge (JetBrains)
 
+This candidate also adds fresh LK model prices, balance, Key quota and actual API billing (cc llm account), plus saved credentials for every configured channel, including Volcengine. Switch back using Saved connections without re-entering the Key; LK hosts and protocols share one credential. Desktop source supports the same account queries and encrypted connection history.
+
 ## LK channel release candidate
 
 CLI **0.166.150**, VS Code/Open VSX **0.37.189** and JetBrains **0.4.204** are prepared for this release. They add LK primary/backup configuration and 83 protocol-filtered chat models, with a shared 197-entry model directory. Publication is pending exact-source CI, npm OIDC and registry readback; the preceding public versions below remain authoritative until verification. [LK setup and limits](../../docs/configuration/lk-api-channel.md).

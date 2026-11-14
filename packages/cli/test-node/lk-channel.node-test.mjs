@@ -121,6 +121,7 @@ function desktopSettings() {
           }
         : value,
     onMounted() {},
+    watch() {},
     LK_CHANNEL,
     LK_MODELS,
     resolveLkConnection,

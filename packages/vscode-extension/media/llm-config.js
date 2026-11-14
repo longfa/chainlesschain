@@ -4,6 +4,7 @@ const vscode = acquireVsCodeApi();
 const $ = (id) => document.getElementById(id);
 let current = null,
   lkCatalog = null,
+  savedConnections = [],
   presets = [],
   busy = false,
   dirty = false;
@@ -28,14 +29,23 @@ function update() {
   const same =
     p === current?.provider &&
     normalized($("baseUrl").value.trim()) === normalized(current?.baseUrl);
-  $("apiKey").placeholder =
-    same && current?.hasKey ? "已保存密钥 · 留空保留" : "输入此服务的 API Key";
-  $("key-hint").textContent =
-    same && current?.hasKey
-      ? "已有密钥不会显示或回传到页面。留空即可保留。"
-      : p === "custom" && !lk
-        ? "本地算力平台的密钥按平台要求填写，可留空；更换地址不会复用原服务的密钥。"
-        : "新服务或新中转地址需填写对应密钥，原服务的密钥不会被复用。";
+  const savedKey =
+    (same && current?.hasKey) ||
+    savedConnections.some(
+      (row) =>
+        row.hasKey &&
+        ((lk && row.channel === "lk") ||
+          (row.provider === p &&
+            normalized(row.baseUrl) === normalized($("baseUrl").value.trim()))),
+    );
+  $("apiKey").placeholder = savedKey
+    ? "此渠道密钥已保存 · 留空自动恢复"
+    : "输入此服务的 API Key";
+  $("key-hint").textContent = savedKey
+    ? "此渠道凭证已保存，留空会自动恢复；密钥不会回传到页面。"
+    : p === "custom" && !lk
+      ? "本地算力平台的密钥按平台要求填写，可留空；更换地址不会复用原服务的密钥。"
+      : "新服务或新中转地址需填写对应密钥，原服务的密钥不会被复用。";
   $("url-hint").textContent =
     p === "ollama"
       ? "例如 http://localhost:11434；不要填写 /api/generate。"
@@ -60,11 +70,14 @@ function update() {
   $("save").disabled = busy || !dirty;
   $("test").disabled = busy || dirty || !current?.model;
   $("reload").disabled = busy;
+  $("account").disabled = busy || dirty || !current?.hasKey || !lk;
+  if (dirty) $("account-result").textContent = "";
   $("dirty").textContent = dirty
     ? "有未保存的修改 · 保存后再测试"
     : "配置已同步";
 }
 function fill(c) {
+  $("account-result").textContent = "";
   const lk =
     lkCatalog &&
     Object.values(lkCatalog.channel.addresses).some((origin) =>
@@ -109,6 +122,17 @@ function fill(c) {
   update();
 }
 $("preset").onchange = () => {
+  const saved = savedConnections.find((row) =>
+    $("preset").value === "lk"
+      ? row.channel === "lk"
+      : row.provider === $("preset").value && row.channel !== "lk",
+  );
+  if (saved) {
+    fill(saved);
+    dirty = true;
+    update();
+    return;
+  }
   if ($("preset").value === "lk") {
     $("protocol").value = "openai";
     $("lk-address").value = "primary";
@@ -190,12 +214,36 @@ $("form").onsubmit = (event) => {
   vscode.postMessage({ type: "save", answers });
 };
 $("reload").onclick = () => vscode.postMessage({ type: "reload" });
+$("saved-connection").onchange = () => {
+  const index = $("saved-connection").value;
+  if (index === "" || !savedConnections[index]) return;
+  fill(savedConnections[index]);
+  dirty = true;
+  update();
+};
 $("test").onclick = () => vscode.postMessage({ type: "test" });
+$("account").onclick = () => {
+  if (busy || dirty) return;
+  $("account-result").textContent = "正在读取动态价格与账单…";
+  vscode.postMessage({ type: "account" });
+};
 window.addEventListener("message", ({ data: m }) => {
   if (m.type === "config") {
     current = m.current;
     presets = m.presets;
     lkCatalog = m.lkCatalog;
+    savedConnections = m.savedConnections || [];
+    $("saved-connection").replaceChildren();
+    for (const [index, row] of [
+      { label: "选择已保存渠道" },
+      ...savedConnections,
+    ].entries()) {
+      const option = document.createElement("option");
+      option.value = index === 0 ? "" : String(index - 1);
+      option.textContent =
+        row.label || `${row.provider} · ${row.baseUrl} · ${row.model}`;
+      $("saved-connection").append(option);
+    }
     $("preset").replaceChildren();
     for (const p of [
       { id: "relay", label: "自定义 / 中转站" },
@@ -214,6 +262,8 @@ window.addEventListener("message", ({ data: m }) => {
   } else if (m.type === "notice") {
     $("notice").textContent = m.text;
     $("notice").className = "notice " + m.kind;
+  } else if (m.type === "account") {
+    $("account-result").textContent = m.text;
   }
 });
 vscode.postMessage({ type: "ready" });

@@ -215,6 +215,8 @@ function configurationState(
   const value = cleanConfigValue(provider);
   if (
     (requireProvider && !value) ||
+    // Reject control characters in metadata before it reaches the UI.
+    // eslint-disable-next-line no-control-regex
     (value && (value.length > 256 || /[\u0000-\u001f\u007f]/.test(value)))
   )
     return unavailableConfiguration(source);
@@ -410,6 +412,25 @@ async function applyLlmConnection({ command, answers, deps } = {}) {
   };
 }
 
+async function queryLkAccount({ command, deps } = {}) {
+  const result = await runCli(command, ["llm", "account"], deps);
+  return result.ok
+    ? { ok: true, detail: result.stdout.slice(0, 40000) }
+    : {
+        ok: false,
+        detail: "无法查询 LK 账户，请更新 CLI 并确认已保存 LK 连接及 Key。",
+      };
+}
+
+async function getSavedLlmConnections({ command, deps } = {}) {
+  const result = await runCli(command, ["llm", "connections", "--json"], deps);
+  try {
+    return result.ok ? JSON.parse(result.stdout).savedConnections || [] : [];
+  } catch {
+    return [];
+  }
+}
+
 module.exports = {
   PROVIDER_PRESETS,
   hasUnsafeShellChars,
@@ -428,4 +449,6 @@ module.exports = {
   applyLlmConfig,
   testLlm,
   applyLlmConnection,
+  queryLkAccount,
+  getSavedLlmConnections,
 };

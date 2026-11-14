@@ -102,7 +102,7 @@ describe("LK Web configuration", () => {
     expect(form.lkAddress.value).toBe("backup");
     expect(form.configForm.model).toBe("team/future");
     expect(form.configForm.apiKey).toBe("");
-    expect(form.keyPlaceholder.value).toContain("留空保留");
+    expect(form.keyPlaceholder.value).toContain("自动恢复");
     form.configForm.model = "changed";
     form.resetForm();
     expect(form.configForm.apiKey).toBe("");
@@ -133,6 +133,51 @@ describe("LK Web configuration", () => {
       baseUrl: "https://api.lk666.ai/v1",
       apiKey: "",
     });
+  });
+
+  it("restores saved Volcengine settings and reuses saved LK credentials across hosts/protocols", async () => {
+    const savedConnections = [
+      {
+        provider: "volcengine",
+        model: "ep-saved",
+        baseUrl: "https://ark.cn-beijing.volces.com/api/v3",
+        hasKey: true,
+        channel: null,
+      },
+      {
+        provider: "custom",
+        model: "tt-6-luna",
+        baseUrl: "https://api.lk888.ai/v1",
+        hasKey: true,
+        channel: "lk",
+      },
+    ];
+    const { form, ws, message } = setup({ savedConnections });
+    await form.loadConfig();
+    form.configForm.provider = "volcengine";
+    form.handleProviderChange();
+    expect(form.configForm.model).toBe("ep-saved");
+    expect(form.keyPlaceholder.value).toContain("自动恢复");
+    form.channel.value = "lk";
+    form.handleChannelChange();
+    form.lkProtocol.value = "anthropic";
+    form.lkAddress.value = "backup";
+    form.applyLk();
+    expect(form.keyPlaceholder.value).toContain("自动恢复");
+    await form.saveConfig();
+    expect(message.error).not.toHaveBeenCalled();
+    expect(ws.sendRaw).toHaveBeenCalledWith(
+      {
+        type: "llm-configure",
+        connection: expect.objectContaining({
+          provider: "anthropic",
+          baseUrl: "https://api.lk666.ai/v1",
+          apiKey: "",
+        }),
+      },
+      15000,
+    );
+    expect(form.configForm.apiKey).toBe("");
   });
 
   it("requires a channel key before any write to a new LK address", async () => {

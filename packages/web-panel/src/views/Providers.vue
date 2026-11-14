@@ -204,6 +204,24 @@
       >
         <a-form :model="configForm" layout="vertical" class="config-form">
           <div class="config-grid">
+            <a-form-item
+              v-if="savedConnections.length"
+              label="已保存渠道（自动恢复凭证）"
+            >
+              <a-select
+                placeholder="选择之前保存的渠道"
+                :disabled="configSaving || configLoading"
+                :options="
+                  savedConnections.map((row, index) => ({
+                    value: index,
+                    label: `${row.provider} · ${row.baseUrl} · ${row.model}`,
+                  }))
+                "
+                @change="
+                  (index) => selectSavedConnection(savedConnections[index])
+                "
+              />
+            </a-form-item>
             <a-form-item label="服务渠道">
               <a-select
                 v-model:value="channel"
@@ -340,8 +358,8 @@
             style="margin-bottom: 16px"
           >
             <template #message
-              >模型按协议筛选，支持在模型名称中填写新别名。新地址需填写 LK
-              密钥。</template
+              >模型按协议筛选，支持填写新别名。首次配置填写 LK
+              Key，主备和协议切换会恢复已存凭证。</template
             >
             <template #description>
               目录包含 197 个模型，其中 83
@@ -368,7 +386,8 @@
             允许以未加密 HTTP 访问此远程接口
           </a-checkbox>
           <p style="color: var(--text-muted)">
-            密钥留空仅保留同一已保存地址的密钥。测试连接会发送一次简短请求，可能产生费用。
+            密钥留空会恢复该渠道已保存的凭证。首次配置新服务时填写其自己的
+            Key。测试连接会发送一次简短请求，可能产生费用。
           </p>
 
           <div
@@ -406,6 +425,13 @@
           </div>
         </a-form>
       </a-card>
+      <LkAccount
+        v-if="channel === 'lk'"
+        :disabled="
+          !configReady || connectionDirty || configSaving || configLoading
+        "
+        :connection-id="`${configForm.provider}:${configForm.baseUrl}:${configForm.model}`"
+      />
     </div>
   </div>
 </template>
@@ -417,6 +443,7 @@ import { message } from "ant-design-vue";
 import { useProvidersStore } from "../stores/providers.js";
 import { useWsStore } from "../stores/ws.js";
 import { useLlmConfiguration } from "../composables/useLlmConfiguration.js";
+import LkAccount from "../components/LkAccount.vue";
 
 const providersStore = useProvidersStore();
 const ws = useWsStore();
@@ -433,6 +460,8 @@ const {
   lkChannel,
   lkModelOptions,
   keyPlaceholder,
+  savedConnections,
+  selectSavedConnection,
   connectionDirty,
   remoteHttp,
   applyLk,

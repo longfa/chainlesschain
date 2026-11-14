@@ -37,6 +37,16 @@ ${LK_MODELS.map((m) => `        new Model(${[m.id, m.label, m.type, m.protocol].
 const outputs = [
   [
     new URL(
+      "../../../desktop-app-vue/src/main/llm/lk-account-api.js",
+      import.meta.url,
+    ),
+    readFileSync(
+      new URL("../src/lib/lk-account-api.cjs", import.meta.url),
+      "utf8",
+    ),
+  ],
+  [
+    new URL(
       "../../web-panel/src/vendor/lk-channel-presets.json",
       import.meta.url,
     ),
@@ -71,7 +81,7 @@ for (const [path, expected] of outputs) {
     const equal = path.pathname.endsWith(".json")
       ? JSON.stringify(JSON.parse(actual)) ===
         JSON.stringify(JSON.parse(expected))
-      : actual === expected;
+      : actual === expected.replaceAll("\r\n", "\n");
     if (!equal) throw new Error(`Stale LK IDE catalog: ${path.pathname}`);
   } else {
     mkdirSync(new URL(".", path), { recursive: true });

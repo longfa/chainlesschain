@@ -46,6 +46,7 @@ import {
 import { normalizeOllamaBaseUrl } from "../lib/ollama-base-url.js";
 import {
   readLlmConnectionInput,
+  readLlmConnection,
   saveLlmConnection,
 } from "../lib/llm-connection-config.js";
 import {
@@ -54,6 +55,7 @@ import {
 } from "../lib/llm-connection-probe.js";
 import { resolveModelCapabilityProfile } from "../lib/model-capabilities.js";
 import { resolveLlmConnection } from "../lib/llm-connection-resolution.js";
+import { queryLkAccount, formatLkAccount } from "../lib/lk-account.js";
 
 /**
  * Resolve the effective `cc llm test` target from CLI flags + persisted config.
@@ -157,6 +159,49 @@ export function formatLlmCapabilities(profile) {
 
 export function registerLlmCommand(program) {
   const llm = program.command("llm").description("LLM provider management");
+  llm
+    .command("connections")
+    .description("Read saved connection metadata without credentials")
+    .option("--json", "Output structured metadata")
+    .action(() => {
+      try {
+        console.log(JSON.stringify(readLlmConnection()));
+      } catch {
+        logger.error("Could not read saved LLM connections");
+        process.exitCode = 1;
+      }
+    });
+
+  llm
+    .command("account")
+    .description(
+      "Query fresh LK prices, account balance, Key quota and actual API charges",
+    )
+    .option("--days <days>", "Usage window, 1–30 days", "1")
+    .option("--scope <scope>", "Usage scope: key or user (all API keys)", "key")
+    .option(
+      "--model <model>",
+      "Model for dynamic pricing (default: saved model)",
+    )
+    .option("--limit <limit>", "Billing records per page, 1–200", "20")
+    .option("--offset <offset>", "Billing record offset", "0")
+    .option("--json", "Output structured account data without credentials")
+    .action(async (options) => {
+      try {
+        const result = await queryLkAccount(options);
+        console.log(
+          options.json
+            ? JSON.stringify(result, null, 2)
+            : formatLkAccount(result),
+        );
+        if (Object.keys(result.errors).length === 4) process.exitCode = 1;
+      } catch {
+        logger.error(
+          "Could not query LK account. Save an LK connection with its own API key; check days, scope and pagination.",
+        );
+        process.exitCode = 1;
+      }
+    });
 
   llm
     .command("capabilities")
