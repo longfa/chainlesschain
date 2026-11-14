@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { LK_CHANNEL, LK_MODELS } from "../src/lib/llm-channel-presets.js";
 
@@ -37,6 +37,17 @@ ${LK_MODELS.map((m) => `        new Model(${[m.id, m.label, m.type, m.protocol].
 const outputs = [
   [
     new URL(
+      "../../web-panel/src/vendor/lk-channel-presets.json",
+      import.meta.url,
+    ),
+    JSON.stringify(
+      { sourceSha256: digest, channel: LK_CHANNEL, models: LK_MODELS },
+      null,
+      2,
+    ) + "\n",
+  ],
+  [
+    new URL(
       "../../vscode-extension/src/vendor/lk-channel-presets.json",
       import.meta.url,
     ),
@@ -62,6 +73,9 @@ for (const [path, expected] of outputs) {
         JSON.stringify(JSON.parse(expected))
       : actual === expected;
     if (!equal) throw new Error(`Stale LK IDE catalog: ${path.pathname}`);
-  } else writeFileSync(path, expected);
+  } else {
+    mkdirSync(new URL(".", path), { recursive: true });
+    writeFileSync(path, expected);
+  }
 }
-console.log("LK catalogs synchronized across CLI / VS Code / JetBrains");
+console.log("LK catalogs synchronized across CLI / Web / VS Code / JetBrains");

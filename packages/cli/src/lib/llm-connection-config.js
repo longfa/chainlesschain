@@ -1,8 +1,10 @@
 import { BUILT_IN_PROVIDERS } from "./llm-providers.js";
 import { normalizeOllamaBaseUrl } from "./ollama-base-url.js";
+import { isLkEndpoint, resolveLkConnection } from "./llm-channel-presets.js";
 import {
   setSecretConfigValue,
   updateConfigAtomically,
+  loadConfig,
 } from "./config-manager.js";
 
 export function normalizeLlmConnection(input) {
@@ -69,6 +71,15 @@ export function normalizeLlmConnection(input) {
       "Use the API base path, not a completion/messages endpoint",
     );
   value.baseUrl = url.href.replace(/\/+$/, "");
+  if (isLkEndpoint(value.baseUrl)) {
+    const expected = resolveLkConnection(
+      ["custom", "openai"].includes(value.provider) ? "openai" : value.provider,
+      "primary",
+      { model: value.model },
+    );
+    if (url.pathname.replace(/\/+$/, "") !== new URL(expected.baseUrl).pathname)
+      throw new Error("LK Base URL does not match the selected protocol");
+  }
   if (value.provider === "ollama") {
     value.baseUrl = normalizeOllamaBaseUrl(value.baseUrl);
   }
@@ -87,7 +98,8 @@ export function saveLlmConnection(input, { storage = "auto" } = {}) {
         current.baseUrl || BUILT_IN_PROVIDERS[current.provider]?.baseUrl || "",
       ).replace(/\/+$/, "") === value.baseUrl;
     if (
-      !["ollama", "custom"].includes(value.provider) &&
+      (isLkEndpoint(value.baseUrl) ||
+        !["ollama", "custom"].includes(value.provider)) &&
       !value.apiKey &&
       (!sameEndpoint || !current.apiKey)
     )
@@ -120,6 +132,22 @@ export function saveLlmConnection(input, { storage = "auto" } = {}) {
     model: value.model,
     baseUrl: value.baseUrl,
     visionModel: value.visionModel || null,
+  };
+}
+
+/** A non-secret snapshot for authenticated configuration UIs. */
+export function readLlmConnection() {
+  const current =
+    loadConfig({ resolveSecrets: false, failIfUnavailable: true }).llm || {};
+  const provider = current.provider || "ollama";
+  return {
+    provider,
+    model: current.model || "",
+    baseUrl: current.baseUrl || BUILT_IN_PROVIDERS[provider]?.baseUrl || "",
+    visionModel: current.visionModel || "",
+    hasKey: Boolean(current.apiKey),
+    temperature: current.temperature ?? 0.7,
+    maxTokens: current.maxTokens ?? 4096,
   };
 }
 

@@ -11,6 +11,7 @@ const state = vi.hoisted(() => ({
   calls: [],
 }));
 vi.mock("../../src/lib/config-manager.js", () => ({
+  loadConfig: () => structuredClone(state.config),
   updateConfigAtomically: (mutate) => {
     const next = structuredClone(state.config);
     mutate(next);
@@ -27,10 +28,53 @@ import {
   normalizeLlmConnection,
   saveLlmConnection,
   readLlmConnectionInput,
+  readLlmConnection,
 } from "../../src/lib/llm-connection-config.js";
 import { probeLlmConnection } from "../../src/lib/llm-connection-probe.js";
 import { Readable } from "node:stream";
 describe("LLM custom connection", () => {
+  it("returns non-secret UI configuration and rejects incompatible LK models", () => {
+    expect(readLlmConnection()).toMatchObject({
+      provider: "openai",
+      hasKey: true,
+    });
+    expect(readLlmConnection()).not.toHaveProperty("apiKey");
+    expect(() =>
+      normalizeLlmConnection({
+        provider: "custom",
+        model: "fb-5-2",
+        baseUrl: "https://api.lk888.ai/v1",
+      }),
+    ).toThrow("protocol");
+    expect(() =>
+      normalizeLlmConnection({
+        provider: "gemini",
+        model: "gem-3.8-flash",
+        baseUrl: "https://api.lk666.ai/v1",
+      }),
+    ).toThrow("protocol");
+    state.calls.length = 0;
+    expect(() =>
+      saveLlmConnection({
+        provider: "custom",
+        model: "tt-6-luna",
+        baseUrl: "https://api.lk888.ai/v1",
+      }),
+    ).toThrow("own API key");
+    expect(state.calls).toHaveLength(0);
+    saveLlmConnection({
+      provider: "custom",
+      model: "tt-6-luna",
+      baseUrl: "https://api.lk888.ai/v1",
+      apiKey: "fixture-channel-key",
+    });
+    expect(state.calls).toHaveLength(1);
+    expect(state.calls[0].llm).toMatchObject({
+      provider: "custom",
+      baseUrl: "https://api.lk888.ai/v1",
+      apiKey: "fixture-channel-key",
+    });
+  });
   const draft = {
     provider: "openai",
     model: "my/custom-model",

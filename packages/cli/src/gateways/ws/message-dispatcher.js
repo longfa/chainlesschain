@@ -132,6 +132,40 @@ export async function handleConfigSetSecret(server, id, ws, message) {
   }
 }
 
+export async function handleLlmConnection(server, id, ws, message) {
+  const reading = message.type === "llm-config-get";
+  try {
+    const configApi = await import("../../lib/llm-connection-config.js");
+    const result = reading
+      ? await (server._readLlmConnection || configApi.readLlmConnection)()
+      : await (server._saveLlmConnection || configApi.saveLlmConnection)(
+          message.connection,
+        );
+    // Select fields explicitly: injected storage backends cannot echo secrets.
+    const config = {};
+    for (const key of [
+      "provider",
+      "model",
+      "baseUrl",
+      "visionModel",
+      "hasKey",
+      "temperature",
+      "maxTokens",
+    ])
+      if (Object.hasOwn(result, key)) config[key] = result[key];
+    server._send(ws, { id, type: "llm-config-result", success: true, config });
+  } catch {
+    server._send(ws, {
+      id,
+      type: "error",
+      code: reading ? "LLM_CONFIG_READ_FAILED" : "LLM_CONFIG_SAVE_FAILED",
+      message: reading
+        ? "Could not read LLM configuration"
+        : "Could not save LLM connection; check protocol, endpoint, model and channel key",
+    });
+  }
+}
+
 export function createWsMessageDispatcher(server) {
   return {
     async dispatch(clientId, ws, message) {
@@ -181,6 +215,8 @@ export function createWsMessageDispatcher(server) {
           server._handlePermissionRulesSet(id, ws, message),
         "config-set-secret": () =>
           handleConfigSetSecret(server, id, ws, message),
+        "llm-config-get": () => handleLlmConnection(server, id, ws, message),
+        "llm-configure": () => handleLlmConnection(server, id, ws, message),
         "slash-command": () => server._handleSlashCommand(id, ws, message),
         "session-answer": () => server._handleSessionAnswer(id, ws, message),
         "approval-grants-list": () =>

@@ -2,7 +2,7 @@
 
 ## LK channel release candidate
 
-CLI **0.166.150**, VS Code/Open VSX **0.37.189** and JetBrains **0.4.204** are prepared for this release. They add LK primary/backup configuration and 83 protocol-filtered chat models, with a shared 197-entry model directory. Publication is pending exact-source CI, npm OIDC and registry readback; the preceding public versions below remain authoritative until verification. [LK setup and limits](docs/configuration/lk-api-channel.md).
+CLI **0.166.150**, VS Code/Open VSX **0.37.189** and JetBrains **0.4.204** are prepared for this release. They add LK primary/backup configuration in CLI setup, the `cc ui` Web panel and IDE settings, with 83 protocol-filtered chat models, with a shared 197-entry model directory. Publication is pending exact-source CI, npm OIDC and registry readback; the preceding public versions below remain authoritative until verification. [LK setup and limits](docs/configuration/lk-api-channel.md).
 
 ## 2026-11-14 CLI / IDE publication status
 

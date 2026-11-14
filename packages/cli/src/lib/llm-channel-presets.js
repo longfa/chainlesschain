@@ -53,6 +53,15 @@ export const LK_CHANNEL = {
   },
 };
 
+export function isLkEndpoint(baseUrl) {
+  const base = String(baseUrl || "")
+    .trim()
+    .replace(/\/+$/, "");
+  return Object.values(LK_CHANNEL.addresses).some((origin) =>
+    [origin + "/v1", origin + "/v1beta"].includes(base),
+  );
+}
+
 export function resolveLkConnection(
   protocol = "anthropic",
   address = "primary",
