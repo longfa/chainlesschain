@@ -310,6 +310,65 @@ test("POSIX survivor diagnostics capture only bounded process state and signal-z
   );
 });
 
+test("POSIX survivor receipts separate live, zombie, escaped group, and changed start evidence", () => {
+  const snapshot = (state, groupPid, started, groupPresent = true) =>
+    capturePosixCleanupDiagnostic(123, 100, {
+      runPs: () => ({
+        status: 0,
+        stdout: `123 1 ${groupPid} ${state} ${started}\n`,
+      }),
+      probe(target) {
+        if (target < 0 && !groupPresent)
+          throw Object.assign(new Error("private diagnostic path"), {
+            code: "ESRCH",
+          });
+      },
+    });
+  const initial = snapshot("S", 100, "Mon Nov 9 07:21:16 2026");
+  const live = snapshot("R", 100, "Mon Nov 9 07:21:16 2026");
+  const zombie = snapshot("Z", 100, "Mon Nov 9 07:21:16 2026", false);
+  const escaped = snapshot("S", 200, "Mon Nov 9 07:21:16 2026", false);
+  const changedStart = snapshot("S", 100, "Mon Nov 9 07:21:17 2026");
+
+  assert.equal(
+    initial.snapshot.startResolution,
+    "POSIX-lstart-seconds-not-unique-identity",
+  );
+  assert.equal(live.snapshot.state, "R");
+  assert.equal(live.snapshot.started, initial.snapshot.started);
+  assert.equal(live.snapshot.groupPid, live.expectedGroupPid);
+  assert.equal(live.pidProbe.result, "success");
+  assert.equal(live.groupProbe.result, "success");
+
+  // A positive PID probe can still succeed for a zombie. It cannot turn the
+  // original survivor assertion into a passing result.
+  assert.equal(zombie.snapshot.state, "Z");
+  assert.equal(zombie.pidProbe.result, "success");
+  assert.equal(zombie.groupProbe.errno, "ESRCH");
+
+  assert.equal(escaped.snapshot.groupPid, 200);
+  assert.notEqual(escaped.snapshot.groupPid, escaped.expectedGroupPid);
+  assert.equal(escaped.snapshot.state, "S");
+  assert.equal(escaped.pidProbe.result, "success");
+  assert.equal(escaped.groupProbe.errno, "ESRCH");
+
+  // Different start seconds prove a changed observed process. Equal seconds
+  // alone cannot rule out reuse, because ps lstart has only second resolution.
+  assert.notEqual(changedStart.snapshot.started, initial.snapshot.started);
+  assert.equal(
+    changedStart.snapshot.startResolution,
+    "POSIX-lstart-seconds-not-unique-identity",
+  );
+  assert.equal(
+    live.snapshot.startResolution,
+    "POSIX-lstart-seconds-not-unique-identity",
+  );
+  for (const receipt of [initial, live, zombie, escaped, changedStart]) {
+    assert.ok(Buffer.byteLength(JSON.stringify(receipt)) < 1024);
+    assert.doesNotMatch(JSON.stringify(receipt), /private diagnostic path/);
+  }
+});
+
 test("POSIX survivor diagnostics reject oversized, malformed, multiple, or wrong-identity ps rows without disclosure", () => {
   for (const stdout of [
     "private".repeat(400),

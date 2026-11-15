@@ -235,6 +235,43 @@ describe("sealed evolution artifact history", () => {
     expect(f.hooks.clockCalls).toBe(129 * 5 + 1);
   });
 
+  it("retains both expiry and backward-clock evidence across different history items", () => {
+    const f = fixture();
+    f.hooks.firstLeaseMs = 1;
+    vi.spyOn(performance, "now").mockReturnValue(100);
+    f.hooks.onResolve = (count) => {
+      if (count === 2) f.hooks.now += 2;
+    };
+    const opens = countOpens(f.store._indexFile(), (count) => {
+      if (count === 2) f.hooks.now -= 1;
+    });
+    let failure, released;
+    try {
+      released = f.read(f.requests(2));
+    } catch (error) {
+      failure = error;
+    }
+    expect(released).toBeUndefined();
+    expect(failure).toMatchObject({
+      code: EVOLUTION_ARTIFACT_EXPIRED_CODE,
+      message: "artifact authority expired before ledger history release",
+    });
+    expect(storageDiagnostics.storageFailureReason(failure)).toBe(
+      "history-clock-window",
+    );
+    expect(storageDiagnostics.storageFailureClockWindow(failure)).toEqual({
+      windowSize: 2,
+      backwardCount: 1,
+      expiredCount: 1,
+      minRemainingMs: 0,
+      maxReadAgeMs: 1,
+      elapsedMs: 0,
+    });
+    expect(opens()).toBe(2);
+    expect(f.hooks.calls).toBe(2);
+    expect(f.hooks.clockCalls).toBe(11);
+  });
+
   it("preserves the identical rejection when recording its diagnostic throws", () => {
     const f = fixture();
     countOpens(f.store._indexFile(), (count) => {
