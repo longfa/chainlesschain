@@ -757,3 +757,99 @@ Windows / Node.js 22.20.0 的最终 **12 文件一次完整回归：285 项通�
 本批为未发布源码，公开 CLI/IDE 版本不变。完整 retention/inventory 图、实际 storageGraphDigest、独立安装认可与受保护 pin/高水位、强制业务路由、真实 producer、candidate alias 及 release lease/恢复仍需完成。`productionAuthority=false`、`runtimeEvidence=false`、自动晋升 **HOLD** 保持；真实 A/B/C 与新的原 36+9 模型任务仍未执行。
 
 另一次独立补充回归覆盖 CLI deployment config、VS Code deployment config 与 local UI deployment 三文件，**46 项通过、零失败和跳过**；该次只核对既有配置合同，不代表 JetBrains/VS Code 原生 GUI、真实模型任务或生产部署已验收。与上述 12 文件结果分开记录，不称作一次 15 文件运行。
+
+## 41 本地 retention 副本的有界回读与原目录汇总（2026-11-15）
+
+接续第 40 节，原 immutable segment store 只定义外部 authority 的同步 retain/resolve 端口，没有可认领的本地文件后端。本批新增 [evolution-file-retained-segment-backend.js](../../../packages/cli/src/lib/evolution/evolution-file-retained-segment-backend.js)，显式打开已有的规范绝对目录，publisher 由部署宿主提供。适配器自身不创建目录、不修复权限、不签发 retention proof，也不提供 WORM 声明；现有 immutable segment port 继续验证 scope、版本、内容摘要、保留期限与独立 verifier。测试 publisher 仍为显式 TEST-ONLY HMAC，不是生产保留权威。
+
+本地文件约定为 `<segmentRef hex>.json`，仅含 `bytes` canonical base64 与原 `proof`。复用既有 physical state reader 的完整 BigInt path/fd 与原目录身份、NONBLOCK/NOFOLLOW、单链接 regular file、有界分块读取、EOF probe、读后复核和失败关闭 fd。编码文件最多 90 MiB，解码 segment 最多 64 MiB；严格 UTF-8、JSON 字段和 canonical base64 校验拒绝静默纠错。POSIX 目录必须已有 0700，Windows 没有新增 ACL authority。缺失目录/引用文件保持拒绝，合法原目录内 leaf rename 更新可回读。publisher 执行前后复查原目录，但不是整个发布事务的原子保护。
+
+file backend → immutable segment port → v2 manifest backend → journal 的私有关联提供原目录能力，结构副本、代理和普通外部端口不能凭公开字段取得能力。observed-text retained replay 前后与固定 head 的最终 verification 前后复查该目录，snapshot 和 anchor history 临时结果增加 `retainedSegmentDirectoryBoundaryDigest` / `retainedSegmentDirectoryBoundaryRechecked` / `retainedSegmentBoundaryScope`。摘要域为 `chainlesschain.rrsi-retained-segment-directory-boundary/v1`，scope 为 `original-local-retained-segment-directory`；不使用本地适配器的原外部端口三字段为 null / false / null。持久 index/anchor、签名、CAS 与 `localCompositionDigest` 不变。
+
+新增单元覆盖 descriptor 部分读取及实际字节/EOF 计量、禁止整文件读取和 mkdir/chmod、缺失目录/文件、真实同字节目录复制、恢复原目录、junction/symlink alias、hardlink、等长重写、读取 I/O 故障与 fd 关闭、严格编码、路径逃逸、预算和 publisher 后目录复查。新增集成使用真实 preparation、observed 文本与签名 v2 retained replay，覆盖 capability 私有传递、外部端口不认领、签名损坏、同字节复制/缺失、恢复、独立重开、独立 Ed25519 anchor history 以及最终 verification 返回后的目录替换。新 Node 子进程在 15 秒 watchdog 内重开相同历史，核对完整临时报告；这不是跨主机防克隆或生产安装认可。
+
+Windows / Node.js 22.20.0 最终一次 **11 文件、150 项全部通过，零失败和跳过**；其中新增单元 25 项、集成 10 项，既有回归 115 项，不累计前轮重叠结果。运行集合为 `evolution-file-retained-segment-backend`、`evolution-immutable-ledger-segment-store`、`evolution-ledger-v2-manifest-backend`、`evolution-ledger-v2-journal`、`evolution-manifest-component-ownership`、`rrsi-observed-text-index`、`rrsi-tenant-index-anchor-history` 七个 unit 文件，以及 `rrsi-retained-segment-directory-boundary`、`rrsi-manifest-directory-capability`、`rrsi-witness-directory-boundary`、`rrsi-tenant-index-anchor-history-process` 四个 integration 文件。使用仓库现有 Vitest 配置及原测试预算。变更 JS 的 ESLint 零问题，全部变更的 Prettier 与 `git diff --check` 通过。本机结果不替代准确提交的 Linux/macOS/Windows Actions、Strict Sandbox 或真实模型效果验收。
+
+本批为未发布源码，不更改公开 CLI/IDE 版本或模型任务分数。完整 retention/inventory 图、实际 storageGraphDigest、独立安装认可、受保护 pin/高水位、强制业务路由、真实 producer、candidate alias 和 release lease/恢复继续开放。`fullPhysicalStorageGraphVerified=false`、`storageGraphDigestVerified=false`、`productionAuthority=false`、`runtimeEvidence=false` 与自动晋升 HOLD 保持；真实 A/B/C 和新一轮原 36+9 模型任务未执行。
+
+## 42 已认证 manifest 分段引用清单与历史绑定（2026-11-15）
+
+接续第 41 节，新增 `inspectEvolutionLedgerReferencedSegmentInventory()` 复用原 manifest 链的 normalize/signature、链接、payload parse 和 immutable segment proof 验证。在一次实际 resolve 中收集每个引用的 manifest/content 摘要、版本、序号、要求/实际保留期限、proofDigest 与解码 payload 字节数；按原链顺序冻结 entries，以 schema/NUL 域计算 inventoryDigest。旧 verify/readEvents 返回格式不变；新检查最多接受 4096 个引用，超限在实际 segment resolve 前拒绝。单段仍沿用已有字节上限，没有新增更小的累计 I/O 预算；payloadBytes 总数不等于验证全流程读取量。
+
+v2 backend 的私有关联提供只接受原 factory 对象的 capture，journal 沿原 backend 传递，不接受调用者的清单、替代 head 或其它上下文。读取使用 coherent snapshot 而不执行 recovery：缺失 witness 或部分提交保持拒绝，不尝试修复。完整链验证后再次比较 head/catalog latest/witness checkpoint，并复核原目录能力；`recheck()` 重新认证全部引用，固定 head 下合法续期的新 proofDigest 同样使旧清单失效。顺序检查不构成原子多文件快照、跨进程防回滚或任意 ABA 防御。
+
+observed-text 历史把清单与实际 replay 的 sequence/event head 绑定；清单复验放在最后一次 journal head 验证之前。snapshot 和签名 anchor history 临时结果增加 `retainedSegmentInventoryDigest` / `retainedSegmentInventoryVerified` / `retainedSegmentInventoryScope` / `retainedSegmentInventoryCount` / `retainedSegmentInventoryPayloadBytes`。scope 明确为 `authenticated-manifest-referenced-segments`，不是磁盘目录枚举；不引用的 orphan 不会被当作已发布分段，也不会因这个清单被删除。持久 index/anchor、签名、CAS 和 `localCompositionDigest` 不变。
+
+新增单元覆盖全引用与真实 payload 字节数、确定性摘要、遗漏/倒序/重复引用、缺失/替换字节、伪造签名、有效重签后的错误 storageVersion、合法 proof 续期以及 resolve 前数量上限；backend 覆盖空状态、真实追加后旧清单失效、resolve 回调中实际推进 head、部分提交不修复，以及结构副本/代理不执行调用者 trap。集成核对实际 catalog 的完整引用、原文件解码字节与 proofDigest，确认未引用 orphan 不进入清单；同 head 更新真实 TEST-ONLY HMAC proof 后，旧 inventory/history 拒绝、新报告记录新摘要，恢复原证明后可继续原报告回读。既有目录故障、独立进程重开和 Ed25519 anchor history 继续参与回归。
+
+Windows / Node.js 22.20.0 最终一次 **12 文件、181 项全部通过，零失败和跳过**。本节新增 19 项（manifest chain 11、backend 5、集成 3）；其余 162 项为既有回归，不与第 41 节或开发阶段重复累计。运行集合为第 41 节的 11 文件，加 `__tests__/unit/evolution-ledger-manifest-chain.test.js`，使用原 Vitest 配置及既有预算。最终命令追加 `--reporter=default --reporter=json --outputFile=../../.work/evolution-referenced-inventory-20261115/vitest.json`，本机原始报告保留在 `.work/evolution-referenced-inventory-20261115/vitest.json`，该本地文件未作为公开发行证据归档。变更 JS 的 ESLint 零问题，Prettier 与 `git diff --check` 通过；本地结果不替代准确提交的三系统 Actions/Strict Sandbox 或真实模型验收。
+
+开发阶段首个完整运行为 178 通过/3 失败：清单检查抢先报错，遮蔽既有 head-change 提示，造成 unit 和跨进程各一项断言失败；跨进程后续一项又因前一项未更新 latest 而失败。保持原断言，以初次 journal head 校验 → inventory 复验 → 再次 journal head 校验保留原错误语义，并覆盖新增 verifier 回调之后的源 head 变化。修复后的相关三文件 49 项通过，随后上述完整 181 项通过，不把前轮结果累计为额外覆盖。
+
+完整磁盘 inventory、实际 storageGraphDigest、独立安装认可、受保护 pin/高水位、强制业务路由、真实 producer、alias、release lease/恢复和真实 A/B/C 继续开放。`directoryInventoryVerified=false`、`fullPhysicalStorageGraphVerified=false`、`storageGraphDigestVerified=false` 与生产自动晋升 HOLD 保持；未发布包、未改变模型任务分数。
+
+## 43 Observed 文本及关联声明链的产物依赖清单（2026-11-15）
+
+接续第 42 节，observed-text 的原回读已经逐项认证 record/manifest/chunk 和关联 preparation 声明，但还没有把这些实际读取的依赖汇总。本批在显式历史 capture 中收集元数据；普通读取与发布路径不创建 inventory。每次 resolve 继续调用原 branded artifact resolver，并显式核对 bytes 的 SHA-256 与 ref digest；通过 schema/type、artifactTenant/audience/purpose、ledger retention、内容验证和 canonical 编码后才入表。同一引用只去重元数据与大小，不跳过实际使用处的认证，冲突 ref 直接 HOLD。
+
+新增 `captureRrsiObservedTextArtifactInventory()` 只接受原 index，不接受调用者裁剪的引用列表或替换上下文。生成 `chainlesschain.rrsi-observed-artifact-inventory/v1`，摘要固定 tenant/indexId、真实 journal checkpoint、artifactScope 和按 ref 排序的唯一 entries；每项含 ref/digest、类型、retention 和实际 canonical record 字节数。保留原 BOM/CRLF/Unicode 文本的验证链，正文/base64 和临时 resolution receipt 不进入结果。唯一项数沿用 ArtifactPorts 的 10000 项上限，单次 resolve 沿用 1 MiB；大小总和只计唯一产物，不冒充原始文本长度或全流程累计读取预算。
+
+snapshot 与签名 anchor history 临时投影增加 `observedArtifactInventoryDigest` / `observedArtifactInventoryVerified` / `observedArtifactInventoryScope` / `observedArtifactInventoryCount` / `observedArtifactInventoryPayloadBytes`。旧 head 提示保持；复验在 retained segment inventory 后重新读取所有已捕获引用，验证当前 authority 与实际内容，再复查 journal head 和原目录。文本 chunk 是 manifest 的间接引用，单靠 journal head 验证可能仍通过；新复验必须拒绝其缺失、损坏或当前授权撤销，不跨调用缓存成功。
+
+新增 14 项真实集成覆盖：空 inventory 不虚构依赖；两个 restriction record 共享一个 manifest/三块大文本 chunk 的去重与实际文件字节；真实声明链与完整引用集合；摘要/深冻结/隐私与生产权限 false；四类产物缺失及恢复；journal head 仍真实时的间接 chunk 损坏；两次当前 authority 撤销检查与测试恢复；无关联的真实签名产物不改变选定依赖；15 秒 watchdog 内的新 Node 进程与独立重开；真实 Ed25519 anchor history、结构副本/代理/替代上下文拒绝，以及失败后原文件字节保持。权限撤销只通过显式 TEST-ONLY fixture 控制，不是生产 authority 配置。
+
+开发阶段首轮为 13 通过/1 失败：测试直接覆盖 ArtifactStore 在 Windows 发布的只读 leaf，收到原生 EPERM，尚未触发内容故障。修正 fixture 为保留原只读文件、在同一 pathname 放入真正损坏副本，最后恢复原文件；没有降低生产文件权限或放宽原校验。修正后的相关三文件 50 项全部通过；后续完整回归单独记录，不重复累计。
+
+Windows / Node.js 22.20.0 最终一次 **13 文件、195 项全部通过，零失败和跳过**，包括本节新增 14 项与既有 181 项，不累计开发阶段的重复运行。文件集合为第 42 节 12 文件，加 `__tests__/integration/rrsi-observed-artifact-inventory.test.js`；继续使用原 Vitest 配置和预算。JSON 原始报告位于本机 `.work/evolution-observed-artifact-inventory-20261115/vitest.json`，未作为公开发行原件归档。变更 JS 的 ESLint 零问题，Prettier 与 `git diff --check` 通过；该本地结果不替代准确提交的 Linux/macOS/Windows Actions/Strict Sandbox 或真实模型验收。
+
+本批仍为未发布源码。scope 仅为 `observed-text-and-associated-preparation-artifacts`，其它业务、全索引与磁盘 orphan 未被穷举；顺序读取不是原子快照或跨调用 leaf pin。`artifactStoreInventoryVerified=false`、完整存储图、独立安装/受保护 pin、强制业务路由、producer、alias/lease、真实 A/B/C 与生产自动晋升 HOLD 保持，未改变模型任务成绩。
+
+## 44 原本地 retention 全目录审计与残留分类（2026-11-15）
+
+接续第 42/43 节，普通链回放只验证引用，无法据此认领原 retention 目录全部文件。本批新增独立审计：file backend 的私有 scanner 有界枚举原目录全部名称，仅接受小写 SHA-256 hex + `.json`；每份文件先以完整 BigInt 身份和稳定 descriptor 窗口读取，再由实际 immutable segment store 独立认证 bytes/proof/tenant/ledger/epoch/版本和原保留声明。raw scanner 不提供认证权威，只有原 store 的固定 callback 可产生 `allFileProofsVerified` 报告。原外部或包装端口仍可普通读写，但新本地审计返回 null。
+
+每次扫描最多 4096 文件、256 MiB 累计编码字节预算，构造可缩小而不可放大；每文件的 EOF probe 另预留一字节，剩余不足时在 descriptor 内容读取前拒绝，不重置上限。原单文件 90 MiB 编码/64 MiB 解码上限保留。directory handle 始终关闭，文件沿用原 reader 的失败关闭 fd。报告分别计实际 encoded 与 decoded bytes，不把请求长度、零字节 EOF 返回或其它验证链 I/O 混入这些大小总和；256 MiB 也不是整个高层审计调用的所有 I/O 上限。
+
+低层 `chainlesschain.evolution-local-retained-file-inventory/v1` 绑定原目录与 store、全部文件的完整身份/变更元数据、编码摘要/大小及已验证的证明摘要、序号、版本、保留期限和 payload 大小。全部 consumer/verifier 回调后再检查目录清单及早先文件；捕获的物理复验仅执行 metadata/list 操作，不调用证明 verifier。高层 `captureEvolutionLedgerV2JournalLocalRetentionInventory()` 沿原组件绑定当前 coherent manifest head 与 reference inventory，逐项匹配内容/证明/版本/范围/大小，分类为 `referenced` 或 `unreferenced-retained`。高层最后一次 coherent checkpoint 回读后再执行原物理复验，覆盖签名/验证回调后的等字节换 inode 窗口；不运行 recovery，不修复或删除残留。
+
+本批新增单元覆盖真实全目录枚举及 handle 关闭、未知文件名在内容读取前拒绝、文件数量上限、累计预算剩余耗尽及准确 EOF/实际字节计量、两项完整 stat 字段 Number 回退模型、后续 callback 修改早先文件、callback 新增文件、无 callback 的物理复验、等字节 leaf 替换、伪造端口/异步 consumer 和无效预算。新增集成使用真实 v2 migration/journal/retained 文件验证完整大小/身份、有效签名残留不发布/不删除、filename-content 替换、错误签名及有效重签后的跨 tenant/epoch、未知 temporary 保持、目录伪装 leaf、逐次撤销验证、后续 reference verifier 中的实际同字节新 inode、更换上下文/代理拒绝、自定义外部端口不认领、15 秒新进程重开与真实追加后的旧审计失效。
+
+Windows / Node.js 22.20.0 最终一次 **14 文件、219 项全部通过，零失败和跳过**；本节新增单元 10 项、集成 14 项，既有 195 项不重复累计。运行集合为第 43 节 13 文件，加 `__tests__/integration/evolution-local-retention-inventory.test.js`，原配置/预算保持。JSON 原始报告保留在本机 `.work/evolution-local-retention-audit-20261115/vitest.json`，未作为公开发行原件归档。变更 JS 的 ESLint 零问题，Prettier 与 `git diff --check` 通过；结果不替代准确提交的三系统 Actions、Strict Sandbox 或真实模型验收。Number 回退是明确 stat 故障模型，未把它称作原生文件系统精度故障实测。
+
+审计仅覆盖原本地 retention 目录和当前 manifest 链；不证明 source WAL 已完全同步、不穷举 ArtifactStore/Wiki/其它运行组件、不认证注入 fsImpl 的真实性、统一 authority epoch 或外部 WORM。顺序目录/文件复查不是原子快照或任意 ABA 防御。`localDirectoryInventoryVerified` 只限本目录；`externalWormVerified=false`、`fullPhysicalStorageGraphVerified=false`、独立安装/受保护 pin、强制业务路由、producer、alias/lease、真实 A/B/C 和生产自动晋升 HOLD 保持。原普通 history/index/anchor/签名/CAS 语义与公开版本不变，未发布包或改变模型任务成绩。
+
+## 45 原 ArtifactStore 全索引与文件对应审计（2026-11-15）
+
+接续第 43/44 节，新增 `captureEvolutionArtifactStoreLocalInventory()`：仅接收原 `EvolutionArtifactPorts`，且实际 store 必须保持仓库默认 list/get/path/integrity/filesDir 读取实现。原 ports 的私有构造关联提供操作，不接受调用者提供的路径、行过滤器、签名摘要或替代 context。自定义 store/subclass 返回 null；捕获后发生方法漂移时，旧 inventory 复验必须拒绝，不能把 unavailable 当成功。普通 publish/resolve/history 语义不变。
+
+在原 sealed root/files 目录窗口内读取完整 bounded index，检查所有 row/id/file/recordDigest、文件数量和预期 payload 总大小；root 必须恰含 files/index.jsonl，files 必须与全部 row 一一对应。不跳过 unsigned、跨 tenant、unknown/missing/duplicate 或失效 row。每项按其原已签 purpose/type/retention 调用原私有认证、current authority、payload digest/canonical/schema 与 lineage/index 验证，并保留全部 lease 到本轮末尾复核。全部 authority/clock callback 后再次核对原 index 身份/快照、目录名集合和所有先前文件的完整 BigInt 元数据，拒绝后续 callback 中同字节换 inode 或实际 concurrent publication。
+
+constructor 新增只用于显式审计的可缩小预算，默认 10000 文件/256 MiB payload；可信 row 的 size 加每文件 EOF probe 一字节先完整计量，超限在 authority/payload 前拒绝。单文件仍为 1 MiB，index 仍为 64 MiB 单独有界读取，不把多轮 recheck 或 index I/O 混为 payload 累计预算。新操作本身不初始化、不补建、不修复、不清理目录或过期/未索引产物；constructor 原有布局准备行为并未改变。
+
+结果 schema 为 `chainlesschain.evolution-local-artifact-store-inventory/v1`，固定 tenant/audience、原目录能力、index 的完整身份/raw bytes 摘要、全部排序文件的 ref/envelopeDigest/type/purpose/retention/大小与身份。逐项 canonical JSON 经数量与长度 framing 生成 entriesDigest；schema/NUL 域的 inventoryDigest 绑定该摘要与 metadata，不让大结果受单产物 JSON 数组节点/字节上限误限。正文和随时间变化的 resolution/authority receipt 不进入结果，新进程与合法 clock 前进可重建相同证据。
+
+新增真实集成覆盖全目录大小/身份/摘要与两种合法 purpose、空 store、payload/index 缺失不补建、index 同字节换 inode、未索引文件与未知 lock 保持、directory handle 关闭、内容替换/hardlink/重复 row/错误签名、当前撤销、clock 前进稳定性、后续 authority callback 改早先文件、实际 callback publication、较早 lease 在扫描末尾过期、authority 前预算拒绝、禁止 readFileSync、自定义 store 不认领、unsigned 普通 row/真实跨 tenant row 拒绝、TTL 到期不清理、非法预算、原方法漂移与恢复、伪造/代理/context、15 秒 Node 子进程重开，以及新发布后旧证据失效/原字节保持。
+
+开发首轮 fixture 选择了 ledger retention 不允许的 purpose/type 配对，在 preparation 即被原门禁拒绝，21 项未运行；改为原允许的 `skill-mutation-audit / skill-mutation`，生产白名单与验证均未放宽。随后新增首批 21 项通过；补充 index/TTL/混合 row/预算后相关四文件 68 项通过，不与最终完整结果重复累计。
+
+Windows / Node.js 22.20.0 最终一次 **20 文件、396 项通过、1 项既有平台条件跳过、零失败**，共 397 项。本节新增 27 项真实集成全部通过；其余 369 项通过与 1 项 skip 是既有回归，不累计开发阶段重复运行。skip 为原 `evolution-artifact-ports.test.js` 在 Windows 不运行的 index symlink 场景。运行集合为第 44 节 14 文件，加本节 `evolution-local-artifact-inventory.test.js` 及原 artifact-ports、directory-boundary、index-readback、index-cache、byte-boundary 五个 unit 文件。继续使用原 Vitest 配置和预算，JSON 原始报告位于本机 `.work/evolution-local-artifact-audit-20261115/vitest.json`，未作为公开发行原件归档。变更 JS 的 ESLint 零问题，Prettier 与 `git diff --check` 通过；不替代准确提交的三系统 Actions/Strict Sandbox 或真实模型验收。
+
+本批为未发布源码；`localIndexFileCorrespondenceVerified` / `signaturesAndCurrentAuthorityVerified` 仅表示本 store、本次顺序扫描。统一 authority epoch、跨组件原子快照、source WAL/其它运行组件全图、独立安装/受保护 pin、producer、alias/lease、真实 A/B/C 与生产自动晋升 HOLD 保持；`fullPhysicalStorageGraphVerified=false`、`externalWormVerified=false`，未改变公开版本或模型任务成绩。
+
+## 46 不恢复的 source WAL / v2 全事件镜像检查（2026-11-15）
+
+接续第 44/45 节，在组合目录审计之前确认：现有 source read/verify 会 cleanup/recover，v2 read 也会 finalize 旧前缀，不能直接声称只读。新增 `getEvolutionLedgerReadOnlyHistoryReader()` 只为原 ledger + 原 file witness 注册，跳过 writer lock、debris 清理、bootstrap/fencing/HEAD 替换、incremental cache 与 state-snapshot fallback；每次冷读原 identity/store marker/anchor/segment 与提交 witness。需要恢复的 source 状态直接拒绝，既不删除 tail，也不恢复 HEAD/初始化 witness。上限 10000 事件，超限在逐 anchor/segment 验证前拒绝，不返回截断前缀；原普通容量和恢复行为保持。
+
+file witness 新只读入口保持原有签名/trust epoch/历史字节上限和目录复查，却不调用 signer、不生成 absent proof、不准备权限。分段 load 将只读选项传入实际 segment reader；POSIX 文件不是已有 0600 时拒绝且不 chmod，Windows 不声称新增 ACL authority。两项 witness wire schema 常量移动到独立的 `evolution-witness-contracts.js` 并由旧 ledger 重导出，避免新的只读工厂关系产生模块循环，持久字符串/域/签名字节不变。
+
+source 冷读末尾重新验证当前 witness、重读 HEAD，比较 anchor/segment 名称并逐一检查所有已读文件的完整 BigInt 身份和纳秒变更元数据。v2 新 reader 限定原 catalog/head、原 file witness 和本地 retention，没有对应能力的包装/外部组件返回 null，不通过普通恢复路径补位。`captureEvolutionLedgerV2JournalSourceConsistency()` 沿原 journal 私有关联执行 source→v2→source：frontier 必须稳定，ledger/epoch/tenant/sequence/head 必须匹配，全部完整 canonical events 必须一致。WAL 领先 v2 时明确 HOLD，只有外部显式恢复后才可重新认证。
+
+source framing 摘要按事件数及逐事件 canonical JSON 字节长度绑定全内容；一致性报告只保留 frontier/hash/manifest head/count，不包含事件正文、临时 verifiedAt 或新的签名。schema 为 `chainlesschain.evolution-source-v2-consistency/v1`，`sourceEventsExactlyMirrored` 只针对两条原日志。本层不重新验证所有事件引用产物的当前权限，不穷举 source 根的 snapshot/其它文件，也没有把所有目录审计合为整体物理图；`artifactCurrentAuthorityVerified=false`、`fullPhysicalStorageGraphVerified=false`，独立安装/受保护高水位、真实 producer、alias/lease、A/B/C 与生产自动晋升 HOLD 保持。
+
+新增集成以真实 v1→v2 migration 及原签名数据覆盖：只读零写入/权限修复、完整 payload 镜像、已提交 WAL 未 finalize 的拒绝及显式恢复、after-segment/after-anchor/after-witness 三个真实 crashHook 窗口的保留、真实 staging debris 不清理、缺失 source HEAD/witness 与 manifest witness 不补建、后续 descriptor read 中实际替换早先事件为同字节新 inode、原组件包装不认领、伪造/proxy/context、15 秒新进程重开。新增 witness 单元覆盖 missing 不签 absent、提交状态不签名/准备权限、真实分段与 epoch 撤销及恢复，以及 POSIX 宽权限不修复。
+
+测试夹具的首个完整尝试改写了文件系统适配器的原生形态，在 Windows 私有存储 worker 等待中被主动终止，不计为通过或超时验收。改用保持原适配器的 fs 观测后，首轮又暴露重复安装 spy 导致自身递归（1 通过/11 失败及 teardown 错误）；固定原函数引用并在每题恢复 spy 后，生产验证与时限均未放宽。新 source 集成最终定向 14/14 通过，witness/source 前一轮 88 通过/1 POSIX 条件跳过，不重复累计到后续完整结果。
+
+Windows / Node.js 22.20.0 最终一次完整回归为 **26 文件、653 项通过、11 项平台条件跳过、零失败**，共 664 项，耗时 275.41 秒。运行集合为第 45 节的 20 文件，加 `evolution-ledger.test.js`、`evolution-file-witness.test.js`、`evolution-read-only-source-history.test.js`、`evolution-witness-state-boundary.test.js`、`evolution-witness-directory-boundary.test.js` 与 `evolution-ledger-file-backend.test.js`。本节新增 17 项通过、1 项 POSIX 条件跳过（14 项 source 集成与 4 项 witness 单元）；其余为既有回归，不重复累计此前定向运行。11 项跳过由原 ArtifactStore index symlink 1 项、witness-state 的权限/符号链接场景 7 项、witness-directory 的 FIFO 场景 2 项及新增 POSIX witness 权限 1 项组成。沿用原 Vitest 配置与时限，原始 JSON 报告位于本机 `.work/evolution-read-only-source-audit-20261115/vitest.json`，未作为公开发行原件归档。变更 JS 的 ESLint、Prettier 和 `git diff --check` 通过；本地结果不替代准确提交的三系统 Actions/Strict Sandbox 或真实模型验收。
+
+本批未发布或改变公开版本/模型任务成绩。只读表示这些新操作不发出 mutation/recovery 请求，constructor 原有初始化与显式 recover 仍各自存在；签名/文件系统/verifier 来自显式宿主，顺序读取不构成统一 authority epoch、跨组件原子快照、任意 ABA 防御或独立安装认可。

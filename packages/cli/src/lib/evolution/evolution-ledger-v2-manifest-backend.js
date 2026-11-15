@@ -1,13 +1,18 @@
 import { types as utilTypes } from "node:util";
 import { createHash } from "node:crypto";
 
-import { captureImmutableLedgerSegmentStorePort } from "./evolution-immutable-ledger-segment-store.js";
+import {
+  captureImmutableLedgerSegmentStorePort,
+  captureImmutableLedgerSegmentStoreDirectoryBoundary,
+  captureImmutableLedgerSegmentStoreFileInventory,
+} from "./evolution-immutable-ledger-segment-store.js";
 import {
   captureEvolutionLedgerManifestAuthority,
   deriveEvolutionLedgerManifestHead,
   sealEvolutionLedgerManifestSegment,
   verifyEvolutionLedgerManifestChain,
   readEvolutionLedgerManifestEvents,
+  inspectEvolutionLedgerReferencedSegmentInventory,
 } from "./evolution-ledger-manifest-chain.js";
 import {
   captureEvolutionLedgerManifestHeadStore,
@@ -23,6 +28,7 @@ import {
   captureEvolutionLedgerManifestWitnessAdapter,
   captureEvolutionLedgerManifestWitnessDirectoryBoundaries,
   hasEvolutionLedgerManifestWitnessDirectoryBoundaries,
+  getEvolutionLedgerManifestWitnessReadOnlyReader,
 } from "./evolution-ledger-manifest-witness-adapter.js";
 
 export const EVOLUTION_LEDGER_V2_MANIFEST_BACKEND_SCHEMA =
@@ -65,6 +71,7 @@ const APPEND_KEYS = new Set([
 const VERIFY_KEYS = new Set();
 const BACKENDS = new WeakSet();
 const ORIGINAL_MANIFEST_COMPONENTS = new WeakMap();
+const READ_ONLY_EVENT_READERS = new WeakMap();
 
 export class EvolutionLedgerV2ManifestBackendError extends Error {
   constructor(code, message, options = undefined) {
@@ -619,9 +626,120 @@ export function createEvolutionLedgerV2ManifestBackend(options = undefined) {
     catalog,
     headStore,
     witnessAdapter,
+    segmentStore,
     boundaries: null,
+    captureReferencedInventory() {
+      // Inspection must not repair a partial checkpoint or publish any state.
+      const read = () => {
+        const boundaries = hasEvolutionLedgerV2ManifestDirectoryBoundaries(
+          backend,
+        )
+          ? captureEvolutionLedgerV2ManifestDirectoryBoundaries(backend)
+          : null;
+        const witness =
+          captureEvolutionLedgerV2ManifestWitnessDirectoryBoundaries(backend);
+        const retained =
+          captureEvolutionLedgerV2RetainedSegmentDirectoryBoundary(backend);
+        const recheckDirectories = () => {
+          boundaries?.catalog.recheck();
+          boundaries?.head.recheck();
+          witness?.recheck();
+          retained?.recheck();
+        };
+        const before = coherentSnapshot(catalog, headStore, witnessAdapter);
+        if (before.head === null)
+          throw failure(
+            EVOLUTION_LEDGER_V2_MANIFEST_INVALID_CODE,
+            "an empty manifest chain has no referenced inventory",
+          );
+        const snapshot = inspectEvolutionLedgerReferencedSegmentInventory({
+          authority: manifestAuthority,
+          descriptor: normalizedDescriptor,
+          head: before.head,
+          manifests: catalog.list(),
+          segmentStore,
+        });
+        const after = coherentSnapshot(catalog, headStore, witnessAdapter);
+        if (canonical(before) !== canonical(after))
+          throw failure(
+            EVOLUTION_LEDGER_V2_MANIFEST_CORRUPT_CODE,
+            "manifest checkpoint changed during referenced inventory readback",
+          );
+        recheckDirectories();
+        return snapshot;
+      };
+      const snapshot = read();
+      return Object.freeze({
+        snapshot,
+        recheck(...args) {
+          if (args.length)
+            throw new TypeError(
+              "referenced inventory takes no replacement context",
+            );
+          if (read().inventoryDigest !== snapshot.inventoryDigest)
+            throw failure(
+              EVOLUTION_LEDGER_V2_MANIFEST_CORRUPT_CODE,
+              "referenced segment inventory changed after capture",
+            );
+          return true;
+        },
+      });
+    },
   });
+  const readOnlyWitness =
+    getEvolutionLedgerManifestWitnessReadOnlyReader(witnessAdapter);
+  if (
+    readOnlyWitness !== null &&
+    hasEvolutionLedgerV2ManifestDirectoryBoundaries(backend)
+  )
+    READ_ONLY_EVENT_READERS.set(
+      backend,
+      Object.freeze((...args) => {
+        if (args.length)
+          throw new TypeError(
+            "read-only manifest events take no replacement context",
+          );
+        const retention =
+          captureEvolutionLedgerV2RetainedSegmentDirectoryBoundary(backend);
+        if (retention === null) return null;
+        const directories =
+          captureEvolutionLedgerV2ManifestDirectoryBoundaries(backend);
+        const witnessDirectories =
+          captureEvolutionLedgerV2ManifestWitnessDirectoryBoundaries(backend);
+        const observer = Object.freeze({ read: readOnlyWitness });
+        const before = coherentSnapshot(catalog, headStore, observer);
+        if (before.head === null)
+          throw failure(
+            EVOLUTION_LEDGER_V2_MANIFEST_INVALID_CODE,
+            "read-only manifest events require a committed head",
+          );
+        const result = readEvolutionLedgerManifestEvents({
+          authority: manifestAuthority,
+          descriptor: normalizedDescriptor,
+          head: before.head,
+          manifests: catalog.list(),
+          segmentStore,
+        });
+        const after = coherentSnapshot(catalog, headStore, observer);
+        if (canonical(before) !== canonical(after))
+          throw failure(
+            EVOLUTION_LEDGER_V2_MANIFEST_CORRUPT_CODE,
+            "manifest checkpoint changed during read-only event capture",
+          );
+        directories.catalog.recheck();
+        directories.head.recheck();
+        witnessDirectories.recheck();
+        retention.recheck();
+        return result;
+      }),
+    );
   return backend;
+}
+
+export function getEvolutionLedgerV2ReadOnlyEventsReader(value) {
+  if (arguments.length !== 1 || !ORIGINAL_MANIFEST_COMPONENTS.has(value))
+    throw new TypeError("one original v2 manifest backend is required");
+  return READ_ONLY_EVENT_READERS.get(value) ?? null;
 }
 
 /** Local metadata only. Capturing these components does not authenticate state. */
@@ -672,4 +790,127 @@ export function captureEvolutionLedgerV2ManifestBackend(value) {
 
 export function isEvolutionLedgerV2ManifestBackend(value) {
   return BACKENDS.has(value);
+}
+
+export function captureEvolutionLedgerV2RetainedSegmentDirectoryBoundary(
+  value,
+) {
+  if (arguments.length !== 1 || !ORIGINAL_MANIFEST_COMPONENTS.has(value))
+    throw new TypeError("one original v2 manifest backend is required");
+  return captureImmutableLedgerSegmentStoreDirectoryBoundary(
+    ORIGINAL_MANIFEST_COMPONENTS.get(value).segmentStore,
+  );
+}
+
+/** Original factory chain only; caller-supplied manifests cannot trim inventory. */
+export function captureEvolutionLedgerV2ReferencedSegmentInventory(value) {
+  if (arguments.length !== 1 || !ORIGINAL_MANIFEST_COMPONENTS.has(value))
+    throw new TypeError("one original v2 manifest backend is required");
+  return ORIGINAL_MANIFEST_COMPONENTS.get(value).captureReferencedInventory();
+}
+
+/** Full local retention audit is explicit; ordinary referenced replay is unchanged. */
+export function captureEvolutionLedgerV2LocalRetentionInventory(value) {
+  if (arguments.length !== 1 || !ORIGINAL_MANIFEST_COMPONENTS.has(value))
+    throw new TypeError("one original v2 manifest backend is required");
+  const components = ORIGINAL_MANIFEST_COMPONENTS.get(value);
+  const read = () => {
+    const files = captureImmutableLedgerSegmentStoreFileInventory(
+      components.segmentStore,
+    );
+    if (files === null) return null;
+    const before = coherentSnapshot(
+      components.catalog,
+      components.headStore,
+      components.witnessAdapter,
+    );
+    const references = components.captureReferencedInventory();
+    const after = coherentSnapshot(
+      components.catalog,
+      components.headStore,
+      components.witnessAdapter,
+    );
+    if (
+      canonical(before) !== canonical(after) ||
+      before.head?.headDigest !== references.snapshot.head.headDigest
+    )
+      throw failure(
+        EVOLUTION_LEDGER_V2_MANIFEST_CORRUPT_CODE,
+        "manifest checkpoint changed during local retention audit",
+      );
+    const referenced = new Map(
+      references.snapshot.entries.map((entry) => [entry.segmentRef, entry]),
+    );
+    const entries = files.snapshot.entries.map((entry) => {
+      const reference = referenced.get(entry.segmentRef);
+      if (reference) {
+        if (
+          [
+            "contentDigest",
+            "proofDigest",
+            "storageVersion",
+            "sequenceStart",
+            "sequenceEnd",
+            "payloadBytes",
+          ].some((field) => reference[field] !== entry[field])
+        )
+          throw failure(
+            EVOLUTION_LEDGER_V2_MANIFEST_CORRUPT_CODE,
+            "referenced segment differs from the complete local file inventory",
+          );
+        referenced.delete(entry.segmentRef);
+      }
+      return Object.freeze({
+        ...entry,
+        disposition: reference ? "referenced" : "unreferenced-retained",
+        manifestDigest: reference?.manifestDigest ?? null,
+      });
+    });
+    if (referenced.size)
+      throw failure(
+        EVOLUTION_LEDGER_V2_MANIFEST_CORRUPT_CODE,
+        "referenced segments are missing from local file inventory",
+      );
+    // After ALL signing/verifier callbacks, check captured files without invoking
+    // those callbacks again. This is still a sequential, local state window.
+    files.recheckPhysicalSnapshot();
+    const core = Object.freeze({
+      schema: "chainlesschain.evolution-local-retention-audit/v1",
+      scope: "original-local-retention-directory-and-current-manifest-chain",
+      head: references.snapshot.head,
+      directoryInventoryDigest: files.snapshot.inventoryDigest,
+      referencedInventoryDigest: references.snapshot.inventoryDigest,
+      entries: Object.freeze(entries),
+      fileCount: entries.length,
+      referencedCount: references.snapshot.segmentCount,
+      unreferencedCount: entries.length - references.snapshot.segmentCount,
+      totalEncodedBytes: files.snapshot.totalEncodedBytes,
+      totalPayloadBytes: files.snapshot.totalPayloadBytes,
+      localDirectoryInventoryVerified: true,
+      externalWormVerified: false,
+      fullPhysicalStorageGraphVerified: false,
+      grantsMutationOrPromotionAuthority: false,
+    });
+    return Object.freeze({
+      ...core,
+      auditDigest: `sha256:${createHash("sha256").update(`${core.schema}\0`).update(canonical(core)).digest("hex")}`,
+    });
+  };
+  const snapshot = read();
+  if (snapshot === null) return null;
+  return Object.freeze({
+    snapshot,
+    recheck(...args) {
+      if (args.length)
+        throw new TypeError(
+          "local retention audit takes no replacement context",
+        );
+      if (read().auditDigest !== snapshot.auditDigest)
+        throw failure(
+          EVOLUTION_LEDGER_V2_MANIFEST_CORRUPT_CODE,
+          "local retention inventory changed after capture",
+        );
+      return true;
+    },
+  });
 }

@@ -17,6 +17,9 @@ export const EVOLUTION_LEDGER_SEGMENT_MANIFEST_SCHEMA =
   "chainlesschain.evolution-ledger-segment-manifest/v2";
 export const EVOLUTION_LEDGER_MANIFEST_HEAD_SCHEMA =
   "chainlesschain.evolution-ledger-manifest-head/v2";
+export const EVOLUTION_LEDGER_REFERENCED_SEGMENT_INVENTORY_SCHEMA =
+  "chainlesschain.evolution-ledger-referenced-segment-inventory/v1";
+export const EVOLUTION_LEDGER_REFERENCED_SEGMENT_INVENTORY_LIMIT = 4096;
 
 export const EVOLUTION_LEDGER_MANIFEST_INVALID_CODE =
   "CC_EVOLUTION_LEDGER_MANIFEST_INVALID";
@@ -1153,7 +1156,7 @@ export function verifyEvolutionLedgerSegmentManifest(options = undefined) {
   );
 }
 
-function verifyChain(options, includeEvents) {
+function verifyChain(options, includeEvents, includeInventory = false) {
   const fields = exactRecord(
     options,
     VERIFY_CONFIG_KEYS,
@@ -1183,6 +1186,16 @@ function verifyChain(options, includeEvents) {
   }
   let previous = null;
   const events = [];
+  const entries = [];
+  let totalPayloadBytes = 0;
+  if (
+    includeInventory &&
+    manifests.length > EVOLUTION_LEDGER_REFERENCED_SEGMENT_INVENTORY_LIMIT
+  )
+    throw failure(
+      EVOLUTION_LEDGER_MANIFEST_INVALID_CODE,
+      "referenced segment inventory exceeds segment limit",
+    );
   for (const rawManifest of manifests) {
     const manifest = normalizeManifest(rawManifest, descriptorValue, authority);
     if (
@@ -1237,6 +1250,24 @@ function verifyChain(options, includeEvents) {
         "manifest event digests differ from immutable bytes",
       );
     }
+    if (includeInventory) {
+      totalPayloadBytes += resolution.bytes.length;
+      entries.push(
+        Object.freeze({
+          manifestSequence: manifest.manifestSequence,
+          manifestDigest: manifest.manifestDigest,
+          segmentRef: manifest.segmentRef,
+          contentDigest: manifest.contentDigest,
+          storageVersion: manifest.storageVersion,
+          sequenceStart: manifest.sequenceStart,
+          sequenceEnd: manifest.sequenceEnd,
+          minimumRetainedUntil: manifest.retainedUntil,
+          proofDigest: resolution.proof.proofDigest,
+          retainedUntil: resolution.proof.retainedUntil,
+          payloadBytes: resolution.bytes.length,
+        }),
+      );
+    }
     previous = manifest;
   }
   const head = normalizeHead(data(fields, "head"), descriptorValue, authority);
@@ -1250,6 +1281,32 @@ function verifyChain(options, includeEvents) {
       EVOLUTION_LEDGER_MANIFEST_CORRUPT_CODE,
       "manifest head does not bind the final manifest",
     );
+  }
+  if (includeInventory) {
+    const core = Object.freeze({
+      schema: EVOLUTION_LEDGER_REFERENCED_SEGMENT_INVENTORY_SCHEMA,
+      scope: "authenticated-manifest-referenced-segments",
+      descriptor: descriptorValue,
+      manifestAuthority: authority.descriptor,
+      segmentStore: store.descriptor,
+      head,
+      entries: Object.freeze(entries),
+      segmentCount: entries.length,
+      totalPayloadBytes,
+      referencedContentsVerified: true,
+      directoryInventoryVerified: false,
+      fullPhysicalStorageGraphVerified: false,
+      grantsMutationOrPromotionAuthority: false,
+    });
+    return Object.freeze({
+      ...core,
+      inventoryDigest: sha256(
+        Buffer.from(
+          `${EVOLUTION_LEDGER_REFERENCED_SEGMENT_INVENTORY_SCHEMA}\0${canonical(core)}`,
+          "utf8",
+        ),
+      ),
+    });
   }
   return Object.freeze({
     authenticated: true,
@@ -1266,4 +1323,11 @@ export function verifyEvolutionLedgerManifestChain(options = undefined) {
 
 export function readEvolutionLedgerManifestEvents(options = undefined) {
   return verifyChain(options, true);
+}
+
+/** Complete references of the supplied signed chain, never a directory listing. */
+export function inspectEvolutionLedgerReferencedSegmentInventory(
+  options = undefined,
+) {
+  return verifyChain(options, false, true);
 }

@@ -1,5 +1,10 @@
 import { createHash } from "node:crypto";
 import { types as utilTypes } from "node:util";
+import {
+  hasEvolutionFileRetainedSegmentDirectoryBoundary,
+  captureEvolutionFileRetainedSegmentDirectoryBoundary,
+  captureEvolutionFileRetainedSegmentScanner,
+} from "./evolution-file-retained-segment-backend.js";
 
 export const EVOLUTION_IMMUTABLE_LEDGER_SEGMENT_STORE_SCHEMA =
   "chainlesschain.evolution-immutable-ledger-segment-store/v1";
@@ -27,6 +32,10 @@ const DIGEST = /^sha256:[a-f0-9]{64}$/u;
 const MAX_SEGMENT_BYTES = 64 * 1024 * 1024;
 const RETENTION_MODES = new Set(["compliance", "legal-hold"]);
 const STORES = new WeakSet();
+const ORIGINAL_BACKENDS = new WeakMap();
+const FILE_INVENTORY_READERS = new WeakMap();
+export const EVOLUTION_LOCAL_RETAINED_FILE_INVENTORY_SCHEMA =
+  "chainlesschain.evolution-local-retained-file-inventory/v1";
 const VERIFIERS = new WeakSet();
 
 const DESCRIPTOR_KEYS = new Set([
@@ -779,7 +788,110 @@ export function createImmutableLedgerSegmentStorePort(options = undefined) {
     },
   });
   STORES.add(port);
+  ORIGINAL_BACKENDS.set(port, backend);
+  if (hasEvolutionFileRetainedSegmentDirectoryBoundary(backend)) {
+    const scan = captureEvolutionFileRetainedSegmentScanner(backend);
+    FILE_INVENTORY_READERS.set(port, () => {
+      const observed = scan((raw, evidence) => {
+        const proof = normalizeProof(raw.proof);
+        const request = resolveRequest(
+          {
+            contentDigest: evidence.segmentRef,
+            segmentRef: evidence.segmentRef,
+            minimumRetainedUntil: proof.retainedUntil,
+            sequenceStart: proof.sequenceStart,
+            sequenceEnd: proof.sequenceEnd,
+            storageVersion: proof.storageVersion,
+          },
+          normalizedDescriptor,
+        );
+        const resolved = normalizeResolution(
+          raw,
+          request,
+          normalizedDescriptor,
+          verifier,
+        );
+        return Object.freeze({
+          ...evidence,
+          contentDigest: request.contentDigest,
+          proofDigest: resolved.proof.proofDigest,
+          storageVersion: resolved.proof.storageVersion,
+          sequenceStart: resolved.proof.sequenceStart,
+          sequenceEnd: resolved.proof.sequenceEnd,
+          retainedUntil: resolved.proof.retainedUntil,
+          payloadBytes: resolved.bytes.length,
+        });
+      });
+      const core = Object.freeze({
+        schema: EVOLUTION_LOCAL_RETAINED_FILE_INVENTORY_SCHEMA,
+        scope: "complete-original-local-retained-directory",
+        store: port.descriptor,
+        directory: observed.directory,
+        entries: observed.entries,
+        fileCount: observed.entries.length,
+        totalEncodedBytes: observed.totalEncodedBytes,
+        totalPayloadBytes: observed.entries.reduce(
+          (sum, entry) => sum + entry.payloadBytes,
+          0,
+        ),
+        maximumFiles: observed.maximumFiles,
+        maximumEncodedBytes: observed.maximumEncodedBytes,
+        allFileProofsVerified: true,
+        externalWormVerified: false,
+        fullPhysicalStorageGraphVerified: false,
+        grantsMutationOrPromotionAuthority: false,
+      });
+      const snapshot = Object.freeze({
+        ...core,
+        inventoryDigest: sha256(
+          Buffer.from(
+            `${EVOLUTION_LOCAL_RETAINED_FILE_INVENTORY_SCHEMA}\0${canonical(core)}`,
+            "utf8",
+          ),
+        ),
+      });
+      return Object.freeze({
+        snapshot,
+        recheckPhysicalSnapshot: observed.recheckMetadata,
+      });
+    });
+  }
   return port;
+}
+
+/** Explicit audit. Custom/external ports do not acquire a local directory. */
+export function captureImmutableLedgerSegmentStoreFileInventory(value) {
+  if (arguments.length !== 1 || !ORIGINAL_BACKENDS.has(value))
+    throw new TypeError("one original immutable segment store is required");
+  const read = FILE_INVENTORY_READERS.get(value);
+  if (!read) return null;
+  const initial = read();
+  const snapshot = initial.snapshot;
+  return Object.freeze({
+    snapshot,
+    recheckPhysicalSnapshot: initial.recheckPhysicalSnapshot,
+    recheck(...args) {
+      if (args.length)
+        throw new TypeError(
+          "local retained inventory takes no replacement context",
+        );
+      if (read().snapshot.inventoryDigest !== snapshot.inventoryDigest)
+        throw failure(
+          EVOLUTION_IMMUTABLE_LEDGER_SEGMENT_CORRUPT_CODE,
+          "local retained file inventory changed after capture",
+        );
+      return true;
+    },
+  });
+}
+
+/** A custom or wrapped backend never acquires local file ownership by shape. */
+export function captureImmutableLedgerSegmentStoreDirectoryBoundary(value) {
+  if (arguments.length !== 1 || !ORIGINAL_BACKENDS.has(value))
+    throw new TypeError("one original immutable segment store is required");
+  const backend = ORIGINAL_BACKENDS.get(value);
+  if (!hasEvolutionFileRetainedSegmentDirectoryBoundary(backend)) return null;
+  return captureEvolutionFileRetainedSegmentDirectoryBoundary(backend);
 }
 
 export function captureImmutableLedgerSegmentStorePort(

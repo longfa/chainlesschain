@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added - cc CLI 0.166.151: bounded self-evolution storage audits (candidate, 2026-11-15)
+
+- Add a bounded local retained-segment file backend and carry original directory ownership and authenticated manifest references through observed-text and signed-anchor history. Persistent signatures, CAS and index formats remain unchanged.
+- Audit every local retention file and the default ArtifactStore's complete index/files correspondence. Reject unknown, missing, duplicate, damaged or unauthorized entries without cleaning or repairing storage; preserve explicit scan budgets and final physical identity rechecks.
+- Add original source-WAL and v2-manifest readers that do not recover, initialize, repair permissions or sign absent witnesses. Compare complete event payloads across a stable source/v2/source window; hold unsynchronized WAL, crash debris and missing witnesses for explicit recovery.
+- Local Windows regression: 26 files, 653 passed, 11 platform-specific skips and zero failures. Require exact-source Linux/Windows/macOS CLI CI and Strict Sandbox before Actions OIDC publication, then public byte/provenance and registry-only dependency readback.
+- Child npm packages are unchanged. Existing Open VSX 0.37.189 and JetBrains 0.4.204 retain their published CLI 0.166.150 recommendation; no IDE or native-client release is included. Complete physical runtime graphs, independent installation/pins, real A/B/C acceptance and automatic promotion remain incomplete; HOLD remains.
+
 ### Added - cc CLI 0.166.150: LK channel, dynamic billing and saved credentials (candidate, 2026-11-15)
 
 - Add the LK aggregator with documented primary/backup addresses, exact model aliases and protocol-aware selection. The shared catalog contains 83 chat models plus 114 media entries; media task execution is not included. Preserve saved aliases and keep credentials scoped to the selected endpoint. Three tiny live protocol probes and authenticated pricing queries succeeded; this does not certify the whole model catalog.

@@ -9,11 +9,16 @@ import {
   EVOLUTION_LEDGER_MAX_EVENTS,
   EVOLUTION_LEDGER_V2_MIGRATION_INTENT,
   EVOLUTION_LEDGER_V2_CUTOVER_COMPLETED,
+  getEvolutionLedgerReadOnlyHistoryReader,
 } from "./evolution-ledger.js";
 import {
   captureEvolutionLedgerV2ManifestBackend,
   captureEvolutionLedgerV2ManifestDirectoryBoundaries,
   captureEvolutionLedgerV2ManifestWitnessDirectoryBoundaries,
+  captureEvolutionLedgerV2RetainedSegmentDirectoryBoundary,
+  captureEvolutionLedgerV2ReferencedSegmentInventory,
+  captureEvolutionLedgerV2LocalRetentionInventory,
+  getEvolutionLedgerV2ReadOnlyEventsReader,
   hasEvolutionLedgerV2ManifestDirectoryBoundaries,
 } from "./evolution-ledger-v2-manifest-backend.js";
 
@@ -23,6 +28,9 @@ export const EVOLUTION_LEDGER_V2_FINALIZATION_SCHEMA =
   "chainlesschain.evolution-ledger-v2-finalization/v2";
 const JOURNALS = new WeakSet();
 const MANIFEST_BACKENDS = new WeakMap();
+const READ_ONLY_BINDINGS = new WeakMap();
+export const EVOLUTION_LEDGER_V2_SOURCE_AUDIT_HELD_CODE =
+  "CC_EVOLUTION_LEDGER_V2_SOURCE_AUDIT_HELD";
 const RESERVED = new Set([
   EVOLUTION_LEDGER_V2_MIGRATION_INTENT,
   EVOLUTION_LEDGER_V2_CUTOVER_COMPLETED,
@@ -525,6 +533,13 @@ export function createEvolutionLedgerV2Journal(options) {
   locked(recover);
   JOURNALS.add(journal);
   MANIFEST_BACKENDS.set(journal, backend);
+  READ_ONLY_BINDINGS.set(
+    journal,
+    Object.freeze({
+      readSource: getEvolutionLedgerReadOnlyHistoryReader(ledger),
+      readManifest: getEvolutionLedgerV2ReadOnlyEventsReader(backend),
+    }),
+  );
   return journal;
 }
 
@@ -552,6 +567,106 @@ export function captureEvolutionLedgerV2JournalWitnessDirectoryBoundaries(
 
 export function isEvolutionLedgerV2Journal(value) {
   return JOURNALS.has(value);
+}
+
+export function captureEvolutionLedgerV2JournalRetainedSegmentDirectoryBoundary(
+  value,
+) {
+  if (arguments.length !== 1 || !MANIFEST_BACKENDS.has(value))
+    throw new TypeError("one original v2 journal is required");
+  return captureEvolutionLedgerV2RetainedSegmentDirectoryBoundary(
+    MANIFEST_BACKENDS.get(value),
+  );
+}
+
+export function captureEvolutionLedgerV2JournalReferencedSegmentInventory(
+  value,
+) {
+  if (arguments.length !== 1 || !MANIFEST_BACKENDS.has(value))
+    throw new TypeError("one original v2 journal is required");
+  return captureEvolutionLedgerV2ReferencedSegmentInventory(
+    MANIFEST_BACKENDS.get(value),
+  );
+}
+
+export function captureEvolutionLedgerV2JournalLocalRetentionInventory(value) {
+  if (arguments.length !== 1 || !MANIFEST_BACKENDS.has(value))
+    throw new TypeError("one original v2 journal is required");
+  return captureEvolutionLedgerV2LocalRetentionInventory(
+    MANIFEST_BACKENDS.get(value),
+  );
+}
+
+/** Existing source and witnessed v2 only. No source locks or v2 recovery. */
+export function captureEvolutionLedgerV2JournalSourceConsistency(value) {
+  if (arguments.length !== 1 || !READ_ONLY_BINDINGS.has(value))
+    throw new TypeError("one original v2 journal is required");
+  const { readSource, readManifest } = READ_ONLY_BINDINGS.get(value);
+  if (readSource === null || readManifest === null) return null;
+  const held = (message) =>
+    fail(message, undefined, EVOLUTION_LEDGER_V2_SOURCE_AUDIT_HELD_CODE);
+  const read = () => {
+    const before = readSource();
+    const manifest = readManifest();
+    if (manifest === null) return null;
+    const after = readSource();
+    if (
+      before.eventsDigest !== after.eventsDigest ||
+      canonical(before.frontier) !== canonical(after.frontier)
+    )
+      held("source frontier changed during v2 consistency audit");
+    const frontier = before.frontier;
+    if (
+      manifest.head.ledgerId !== frontier.ledgerId ||
+      manifest.head.epoch !== frontier.epoch ||
+      manifest.head.tenantId !== value.descriptor.tenantId ||
+      manifest.head.sequence !== frontier.sequence ||
+      manifest.head.eventDigest !== frontier.headDigest ||
+      manifest.events.length !== before.events.length
+    )
+      held(
+        "source WAL is not exactly finalized in the current v2 manifest head",
+      );
+    for (let index = 0; index < before.events.length; index++)
+      if (canonical(before.events[index]) !== canonical(manifest.events[index]))
+        held(
+          "v2 event payload differs from the original authenticated source event",
+        );
+    const core = Object.freeze({
+      schema: "chainlesschain.evolution-source-v2-consistency/v1",
+      sourceFrontier: frontier,
+      sourceEventsDigest: before.eventsDigest,
+      manifestHead: manifest.head,
+      manifestCount: manifest.manifestCount,
+      eventCount: before.events.length,
+      readOnlyOpen: true,
+      recoveryPerformed: false,
+      sourceEventsExactlyMirrored: true,
+      artifactCurrentAuthorityVerified: false,
+      fullPhysicalStorageGraphVerified: false,
+      grantsMutationOrPromotionAuthority: false,
+    });
+    return Object.freeze({
+      ...core,
+      consistencyDigest: `sha256:${createHash("sha256").update(`${core.schema}\0`).update(canonical(core)).digest("hex")}`,
+    });
+  };
+  const snapshot = read();
+  if (snapshot === null) return null;
+  return Object.freeze({
+    snapshot,
+    recheck(...args) {
+      if (args.length)
+        throw new TypeError("source consistency takes no replacement context");
+      const current = read();
+      if (
+        current === null ||
+        current.consistencyDigest !== snapshot.consistencyDigest
+      )
+        held("source/v2 consistency changed after capture");
+      return true;
+    },
+  });
 }
 
 // Production factory receives authenticated scope, not a structural ledger or a

@@ -4,6 +4,8 @@ import { isProxy } from "node:util/types";
 import {
   captureEvolutionLedgerV2JournalManifestDirectoryBoundaries,
   captureEvolutionLedgerV2JournalWitnessDirectoryBoundaries,
+  captureEvolutionLedgerV2JournalRetainedSegmentDirectoryBoundary,
+  captureEvolutionLedgerV2JournalReferencedSegmentInventory,
 } from "./evolution-ledger-v2-journal.js";
 import { captureRrsiRegistryStorePolicy } from "./rrsi-registry-store-policy.js";
 import {
@@ -15,6 +17,7 @@ import {
   EvolutionArtifactPorts,
   EVOLUTION_DURABLE_ARTIFACT_RECORD_SCHEMA,
   captureEvolutionArtifactStoreDirectoryBoundary,
+  EVOLUTION_ARTIFACT_MAX_INDEX_ENTRIES,
 } from "./evolution-artifact-ports.js";
 import {
   EVOLUTION_ARTIFACT_REF_SCHEMA,
@@ -44,6 +47,8 @@ export const RRSI_OBSERVED_TEXT_CHUNK_BYTES = 64 * 1024;
 export const RRSI_OBSERVED_TEXT_EVENT_TYPE =
   "rrsi.content-restriction.observed";
 export const RRSI_OBSERVED_TEXT_HOLD_CODE = "CC_RRSI_CONTENT_PROVENANCE_HOLD";
+export const RRSI_OBSERVED_ARTIFACT_INVENTORY_SCHEMA =
+  "chainlesschain.rrsi-observed-artifact-inventory/v1";
 const CHUNK_TYPE = "rrsi-observed-text-chunk";
 const MANIFEST_TYPE = "rrsi-observed-text-manifest";
 const EVENT_TYPE = "rrsi-content-restriction-event";
@@ -226,7 +231,7 @@ export function createRrsiObservedTextIndex(input) {
     purpose: descriptor.purpose,
     retention: "ledger",
   };
-  function resolve(reference, type, validate) {
+  function resolve(reference, type, validate, inventory = null) {
     const copied = ref(reference);
     const resolution = options.ledgerArtifactResolver({
       ledgerId: originalIdentity.ledgerId,
@@ -241,7 +246,8 @@ export function createRrsiObservedTextIndex(input) {
       resolution.ref !== copied.ref ||
       resolution.digest !== copied.digest ||
       !Buffer.isBuffer(resolution.bytes) ||
-      resolution.bytes.length > 1024 * 1024
+      resolution.bytes.length > 1024 * 1024 ||
+      hashBytes(resolution.bytes) !== copied.digest
     )
       hold("retained text artifact cannot be authenticated");
     const stored = JSON.parse(
@@ -272,6 +278,20 @@ export function createRrsiObservedTextIndex(input) {
     const validated = validate(stored.value);
     if (!Buffer.from(rrsiCanonical(stored)).equals(resolution.bytes))
       hold("retained text artifact is not exact canonical bytes");
+    if (inventory !== null) {
+      const entry = Object.freeze({
+        ref: Object.freeze(copied),
+        type,
+        retention: "ledger",
+        payloadBytes: resolution.bytes.length,
+      });
+      const previous = inventory.get(copied.ref);
+      if (previous && !same(previous, entry))
+        hold("observed artifact inventory contains conflicting references");
+      if (!previous && inventory.size >= EVOLUTION_ARTIFACT_MAX_INDEX_ENTRIES)
+        hold("observed artifact inventory exceeds the index entry limit");
+      inventory.set(copied.ref, entry);
+    }
     return validated;
   }
   function publish(type, value, assertOwnership, validate) {
@@ -342,12 +362,17 @@ export function createRrsiObservedTextIndex(input) {
     });
     return value;
   }
-  function readBytes(reference, expectedDigest) {
-    const manifest = resolve(reference, MANIFEST_TYPE, validateManifest);
+  function readBytes(reference, expectedDigest, inventory = null) {
+    const manifest = resolve(
+      reference,
+      MANIFEST_TYPE,
+      validateManifest,
+      inventory,
+    );
     if (manifest.skillTextDigest !== expectedDigest)
       hold("text manifest belongs to another Skill text digest");
     const chunks = manifest.chunks.map((entry, index) => {
-      const value = resolve(entry.ref, CHUNK_TYPE, validateChunk);
+      const value = resolve(entry.ref, CHUNK_TYPE, validateChunk, inventory);
       if (
         value.chunkDigest !== entry.chunkDigest ||
         value.byteLength !== entry.byteLength ||
@@ -481,6 +506,7 @@ export function createRrsiObservedTextIndex(input) {
     events,
     beforeSequence = events.length + 1,
     historyCache = new Map(),
+    inventory = null,
   ) {
     const registration = association.registrationRecord;
     if (
@@ -564,6 +590,7 @@ export function createRrsiObservedTextIndex(input) {
           item.subjectRef,
           "rrsi-history-event",
           snapshotRrsiData,
+          inventory,
         );
         rrsiId(candidate.operationId, "History declaration operation ID");
         if (operations.has(candidate.operationId))
@@ -614,7 +641,11 @@ export function createRrsiObservedTextIndex(input) {
     manifestBoundaries = null,
     witnessBoundary = null,
     manifestWitnessBoundary = null,
+    retainedSegmentBoundary = null,
+    collectArtifacts = false,
   ) {
+    const artifacts = collectArtifacts ? new Map() : null;
+    retainedSegmentBoundary?.recheck();
     witnessBoundary?.recheck();
     manifestWitnessBoundary?.recheck();
     manifestBoundaries?.catalog.recheck();
@@ -650,7 +681,12 @@ export function createRrsiObservedTextIndex(input) {
         event.decision !== "quarantined"
       )
         hold("text restriction history scope or capacity differs");
-      const record = resolve(event.subjectRef, EVENT_TYPE, validateRecord);
+      const record = resolve(
+        event.subjectRef,
+        EVENT_TYPE,
+        validateRecord,
+        artifacts,
+      );
       const operationId = `rrsi-text.${rrsiHash(RECORD_SCHEMA, { skillTextDigest: record.skillTextDigest, association: record.association, restrictions: record.restrictions }).slice(7)}`;
       if (
         record.ordinal !== records.length + 1 ||
@@ -678,8 +714,13 @@ export function createRrsiObservedTextIndex(input) {
         events,
         event.sequence,
         historyCache,
+        artifacts,
       );
-      const text = readBytes(record.manifestRef, record.skillTextDigest);
+      const text = readBytes(
+        record.manifestRef,
+        record.skillTextDigest,
+        artifacts,
+      );
       const previous = entries.get(record.skillTextDigest);
       if (previous && previous.text !== text)
         hold("same text digest has conflicting retained bytes");
@@ -711,7 +752,62 @@ export function createRrsiObservedTextIndex(input) {
     manifestBoundaries?.catalog.recheck();
     witnessBoundary?.recheck();
     manifestWitnessBoundary?.recheck();
-    return { head: before, events, records, entries, operations };
+    retainedSegmentBoundary?.recheck();
+    return { head: before, events, records, entries, operations, artifacts };
+  }
+
+  function artifactInventorySnapshot(artifacts, checkpoint) {
+    const entries = Object.freeze(
+      [...artifacts.values()].sort((a, b) =>
+        a.ref.ref < b.ref.ref ? -1 : a.ref.ref > b.ref.ref ? 1 : 0,
+      ),
+    );
+    const core = Object.freeze({
+      schema: RRSI_OBSERVED_ARTIFACT_INVENTORY_SCHEMA,
+      scope: "observed-text-and-associated-preparation-artifacts",
+      tenantId: descriptor.tenantId,
+      indexId: descriptor.indexId,
+      checkpoint: Object.freeze({ ...checkpoint }),
+      artifactScope: Object.freeze({
+        artifactTenantId: descriptor.artifactTenantId,
+        audience: descriptor.audience,
+        purpose: descriptor.purpose,
+      }),
+      entries,
+      artifactCount: entries.length,
+      totalPayloadBytes: entries.reduce(
+        (sum, entry) => sum + entry.payloadBytes,
+        0,
+      ),
+      referencedContentsVerified: true,
+      artifactStoreInventoryVerified: false,
+      fullPhysicalStorageGraphVerified: false,
+      generationProvenanceVerified: false,
+      grantsMutationOrPromotionAuthority: false,
+    });
+    return Object.freeze({
+      ...core,
+      inventoryDigest: rrsiHash(RRSI_OBSERVED_ARTIFACT_INVENTORY_SCHEMA, core),
+    });
+  }
+
+  function recheckArtifactInventory(snapshot) {
+    artifactBoundary.recheck();
+    const artifacts = new Map();
+    const validators = new Map([
+      [EVENT_TYPE, validateRecord],
+      [MANIFEST_TYPE, validateManifest],
+      [CHUNK_TYPE, validateChunk],
+      ["rrsi-history-event", snapshotRrsiData],
+    ]);
+    for (const entry of snapshot.entries)
+      resolve(entry.ref, entry.type, validators.get(entry.type), artifacts);
+    artifactBoundary.recheck();
+    if (
+      artifactInventorySnapshot(artifacts, snapshot.checkpoint)
+        .inventoryDigest !== snapshot.inventoryDigest
+    )
+      hold("observed artifact inventory changed after capture");
   }
   function historyPrefix(state, checkpoint) {
     rrsiExact(
@@ -771,6 +867,14 @@ export function createRrsiObservedTextIndex(input) {
       hold("observed history requires at most two checkpoints");
     const manifestBoundaries =
       captureEvolutionLedgerV2JournalManifestDirectoryBoundaries(ledger);
+    const retainedSegmentBoundary =
+      captureEvolutionLedgerV2JournalRetainedSegmentDirectoryBoundary(ledger);
+    const retainedSegmentDirectoryBoundaryDigest = retainedSegmentBoundary
+      ? rrsiHash(
+          "chainlesschain.rrsi-retained-segment-directory-boundary/v1",
+          retainedSegmentBoundary.descriptor,
+        )
+      : null;
     const witnessBoundary =
       captureEvolutionLedgerFileBackendWitnessDirectoryBoundaries(backend);
     const sourceWitnessDirectoryBoundaryDigest = rrsiHash(
@@ -795,7 +899,20 @@ export function createRrsiObservedTextIndex(input) {
       manifestBoundaries,
       witnessBoundary,
       manifestWitnessBoundary,
+      retainedSegmentBoundary,
+      true,
     );
+    const artifactInventory = artifactInventorySnapshot(
+      state.artifacts,
+      state.head,
+    );
+    const inventory =
+      captureEvolutionLedgerV2JournalReferencedSegmentInventory(ledger);
+    if (
+      inventory.snapshot.head.sequence !== state.head.sequence ||
+      inventory.snapshot.head.eventDigest !== state.head.headDigest
+    )
+      hold("referenced inventory differs from the observed history head");
     // Anchor v1 cannot represent the genuine null digest at sequence zero.
     // Fresh v2 migration events are included in this nonempty event prefix.
     const current = historyPrefix(state, state.head);
@@ -829,6 +946,18 @@ export function createRrsiObservedTextIndex(input) {
         current,
         prefixes,
         localRetainedHistoryReplayed: true,
+        observedArtifactInventoryDigest: artifactInventory.inventoryDigest,
+        observedArtifactInventoryVerified: true,
+        observedArtifactInventoryScope: artifactInventory.scope,
+        observedArtifactInventoryCount: artifactInventory.artifactCount,
+        observedArtifactInventoryPayloadBytes:
+          artifactInventory.totalPayloadBytes,
+        retainedSegmentInventoryDigest: inventory.snapshot.inventoryDigest,
+        retainedSegmentInventoryVerified: true,
+        retainedSegmentInventoryScope: inventory.snapshot.scope,
+        retainedSegmentInventoryCount: inventory.snapshot.segmentCount,
+        retainedSegmentInventoryPayloadBytes:
+          inventory.snapshot.totalPayloadBytes,
         artifactStoreDirectoryBoundaryDigest,
         artifactStoreDirectoryBoundaryRechecked: true,
         artifactStoreBoundaryScope: "root-and-files-directories",
@@ -849,6 +978,12 @@ export function createRrsiObservedTextIndex(input) {
         manifestWitnessBoundaryScope:
           manifestWitnessBoundary?.descriptor.scope ?? null,
         fullPhysicalStorageGraphVerified: false,
+        retainedSegmentDirectoryBoundaryDigest,
+        retainedSegmentDirectoryBoundaryRechecked:
+          retainedSegmentBoundary !== null,
+        retainedSegmentBoundaryScope: retainedSegmentBoundary
+          ? "original-local-retained-segment-directory"
+          : null,
         tenantWideIndexAuthorityVerified: false,
         generationProvenanceVerified: false,
         grantsMutationOrPromotionAuthority: false,
@@ -857,6 +992,7 @@ export function createRrsiObservedTextIndex(input) {
     );
     const recheck = () =>
       guarded(() => {
+        retainedSegmentBoundary?.recheck();
         witnessBoundary.recheck();
         manifestWitnessBoundary?.recheck();
         manifestBoundaries?.catalog.recheck();
@@ -865,16 +1001,21 @@ export function createRrsiObservedTextIndex(input) {
         artifactBoundary.recheck();
         if (!same(state.head, head(methods.verify())))
           hold("observed history head changed after prefix capture");
+        inventory.recheck();
+        recheckArtifactInventory(artifactInventory);
+        if (!same(state.head, head(methods.verify())))
+          hold("observed history head changed after prefix capture");
         artifactBoundary.recheck();
         sourceJournalBoundary.recheck();
         manifestBoundaries?.head.recheck();
         manifestBoundaries?.catalog.recheck();
         witnessBoundary.recheck();
         manifestWitnessBoundary?.recheck();
+        retainedSegmentBoundary?.recheck();
         return true;
       });
     recheck();
-    return Object.freeze({ snapshot, recheck });
+    return Object.freeze({ snapshot, recheck, artifactInventory });
   }
   function lookup(skillTextDigest) {
     rrsiDigest(skillTextDigest, "Skill text digest");
@@ -1046,6 +1187,20 @@ export function createRrsiObservedTextIndex(input) {
       inspectRestrictions: index.inspectRestrictions,
       captureHistoryCheckpoints: (input) =>
         guarded(() => captureHistoryCheckpoints(input)),
+      captureArtifactInventory: () =>
+        guarded(() => {
+          const captured = captureHistoryCheckpoints({ checkpoints: [] });
+          return Object.freeze({
+            snapshot: captured.artifactInventory,
+            recheck: (...args) => {
+              if (args.length)
+                throw new TypeError(
+                  "observed artifact inventory takes no replacement context",
+                );
+              return captured.recheck();
+            },
+          });
+        }),
     }),
   );
   return index;
@@ -1055,4 +1210,11 @@ export function captureRrsiObservedTextIndex(value) {
   const captured = INDEXES.get(value);
   if (!captured) hold("a genuine observed text index is required");
   return captured;
+}
+
+/** Only the original index can select its replayed artifact references. */
+export function captureRrsiObservedTextArtifactInventory(value) {
+  if (arguments.length !== 1 || !INDEXES.has(value))
+    throw new TypeError("one original observed text index is required");
+  return INDEXES.get(value).captureArtifactInventory();
 }

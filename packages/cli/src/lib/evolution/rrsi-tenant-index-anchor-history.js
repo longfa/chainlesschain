@@ -152,6 +152,26 @@ export function verifyRrsiTenantIndexAnchorHistory(input) {
         manifestWitnessDirectoryBoundaryRechecked:
           snapshot.manifestWitnessDirectoryBoundaryRechecked,
         manifestWitnessBoundaryScope: snapshot.manifestWitnessBoundaryScope,
+        retainedSegmentDirectoryBoundaryDigest:
+          snapshot.retainedSegmentDirectoryBoundaryDigest,
+        retainedSegmentDirectoryBoundaryRechecked:
+          snapshot.retainedSegmentDirectoryBoundaryRechecked,
+        retainedSegmentBoundaryScope: snapshot.retainedSegmentBoundaryScope,
+        retainedSegmentInventoryDigest: snapshot.retainedSegmentInventoryDigest,
+        observedArtifactInventoryDigest:
+          snapshot.observedArtifactInventoryDigest,
+        observedArtifactInventoryVerified:
+          snapshot.observedArtifactInventoryVerified,
+        observedArtifactInventoryScope: snapshot.observedArtifactInventoryScope,
+        observedArtifactInventoryCount: snapshot.observedArtifactInventoryCount,
+        observedArtifactInventoryPayloadBytes:
+          snapshot.observedArtifactInventoryPayloadBytes,
+        retainedSegmentInventoryVerified:
+          snapshot.retainedSegmentInventoryVerified,
+        retainedSegmentInventoryScope: snapshot.retainedSegmentInventoryScope,
+        retainedSegmentInventoryCount: snapshot.retainedSegmentInventoryCount,
+        retainedSegmentInventoryPayloadBytes:
+          snapshot.retainedSegmentInventoryPayloadBytes,
         previous: snapshot.prefixes[0],
         current: snapshot.current,
         signaturesVerifiedRelativeToExplicitKey: true,

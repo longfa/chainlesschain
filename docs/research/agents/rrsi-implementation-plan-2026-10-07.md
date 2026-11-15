@@ -363,6 +363,18 @@ PM 试点通过后，增加 CLI 的缺陷定位、跨文件修改、取消恢复
 
 第 34 节将目录绑定与稳定文件内核复用于实际 witness 主文件及被引用分段，使用独立错误码、完整 BigInt、原字节／累计预算和 NONBLOCK／NOFOLLOW；权限准备先于正式读取窗口且核对 inode 连续。分段目录的首次发布建目录与只读捕获分开，读取不补建或修复该目录，绑定后丢失／复制／junction 均拒绝；正常验证或 absent 签名返回前复验原目录。原分段 hash、签名缓存、epoch／撤销、ancestry 和 CAS 不改。主文件初始 ENOENT 仍可 empty，不是受保护高水位；写／耐久确认仍为独立边界。下一步继续闭合实际 journal／retention／authority 图，再结合独立安装认可、持久 pin／高水位和强制业务路由，不能将本地 witness 声明作为完整图或安装权威。
 
+第 41 节补入外部 retention authority 的已有本地副本文件适配器，以及原目录能力到 v2 journal／observed-text／anchor history 的私有传递。文件读取复用完整 BigInt 与有界 descriptor 窗口，编码与解码大小分别受限，原目录丢失／复制替换、内容损坏及最终 verification 后变化均拒绝；自定义外部端口继续可用但不认领本地目录。适配器不初始化目录、不签发 retention proof、不提供 WORM 或生产权威；持久 index／anchor 格式与原签名／CAS 不变。完整 inventory/storage graph、独立安装认可、受保护 pin／高水位、强制业务路由、真实 producer、alias 与 release lease／恢复继续开放，真实 A/B/C 与自动晋升 HOLD 保持。详见实施进度第 41 节。
+
+第 42 节为原 v2 manifest 链增加已认证分段引用清单：逐一验证链上 payload、版本与 retention proof，摘要绑定当前 coherent head、原 authority/store、完整引用序列和实际 payload 字节数。工厂捕获与复验不接受调用者裁剪清单，不执行 checkpoint recovery；同 head 的有效 proof 更新也会使旧清单失效。临时 observed/anchor history 投影承接五个 inventory 字段，持久格式不变。范围仅为链上引用，最多 4096 项，不枚举未提交 orphan，不证明完整磁盘 inventory/物理图、外部 WORM、原子快照或独立安装认可。下一步继续闭合完整 storage graph 与安装/受保护持久状态，再接强制业务路由与真实 producer；生产自动晋升 HOLD 保持。
+
+第 43 节补齐 observed-text 回读实际使用的 ArtifactStore 依赖：restriction record、manifest、间接 chunk 及关联 preparation 声明链产物。摘要绑定真实 head、tenant/索引/scope 和排序去重的 ref/digest、类型、ledger retention 与实际 canonical record 大小，重验逐项重新核对当前 authority 和字节；不因共享引用去重缓存认证成功。同 head 的间接 chunk 删除/损坏/撤销必须拒绝；未关联的有效产物不污染这份清单。范围仍为选定文本及声明链，不是 ArtifactStore 全索引或完整物理图；没有独立安装/受保护 pin、跨进程防回滚、producer 或发布准入。下一步继续闭合整体布局、完整 inventory 与独立安装权威，再接强制业务路由，真实实验及自动晋升 HOLD 保持。
+
+第 44 节增加本地 retention 全目录显式审计。原 file backend 的有界枚举与文件稳定窗口，经过原 immutable store 对每份 proof 的独立验证后，绑定当前 manifest 引用清单，将已引用文件和未发布残留分别报告；未知名、错误 scope/签名、引用缺失、读取中变化或累计预算耗尽均 HOLD，不自动清理或启用。每次扫描最多 4096 文件/256 MiB 编码预算，后续文件只使用实际剩余量；完整调用还包含其它验证 I/O。审计只覆盖原本地 retention 目录，不证明全 WAL/ArtifactStore/其它组件、外部 WORM、安装认可或跨进程防回滚。下一步继续认证其它组件的完整 inventory 和整体布局，再与独立安装及受保护持久状态接线；生产自动晋升 HOLD 保持。
+
+第 45 节补齐原 ArtifactStore 的全 index/files 对应审计，只允许仓库默认原读取实现；完整索引与全部文件严格对应，逐项验证签名、tenant/purpose/retention、当前 authority、真实 canonical 内容和 lease，结束前重验 index/目录/全部文件身份。未知、缺失、重复、未签或跨租户行及过期产物均拒绝，不选择性过滤或清理。constructor 可缩小 10000 文件/256 MiB payload 默认限额，预算在 payload/authority 前预检，index 另受原 64 MiB 限制。新操作不改变普通读写或发布。范围仍是原 store，不替代整套运行图、source WAL 与独立安装/受保护高水位；后续继续整体布局和跨组件绑定，生产自动晋升 HOLD 保持。
+
+第 46 节先关闭组合审计的隐式 recovery 缺口：source 原 ledger 新增无锁、无清理/初始化/权限修复、无缓存或 snapshot fallback 的 cold reader，保留需要恢复的所有文件；v2 原组件增加同样不恢复的全事件读取。source→v2→source 要求 frontier 稳定且全部事件 payload 相等，WAL 已提交而 v2 未 finalize 时 HOLD，不自动补写。只读 source 上限 10000 事件，超限不截断；原普通读取与恢复合同不变。此层仅认证两条原日志的镜像关系，尚未把完整目录审计、source 全 inventory、独立安装/受保护 pin、高水位与业务路由串成生产准入，自动晋升 HOLD 保持。
+
 父版本接线已增加真正 Skill Registry/预期 Ledger 的回读绑定及 PM broad 的 off/shadow 初步组装，并将 Registry transaction ports、实际 History、原 ArtifactPorts/resolver 与真正 v1/v2 backend 关联。预占和实际 host 调用前重读当前父版本，父版本失效仍允许既有历史对账。它不认证生产 Ledger 权威、永久来源约束或锚点稳定性，不替代原 CAS；持久 store identity、writer floor、来源 cutover、完整生产准入、enforced 和晋级门仍待实施，参与写者的维护排他过渡层已接入实际写边界，首次旧部署排空仍需独立认证；详见进度第 9、19、20 节。
 
 新存储已新增前置 v2 store-policy 日志与 fresh pair 创建，按 prepared→markers-installed→committed 认证随机目录、配对标记与 writer floor；真正的 component binding 已接入当前 Registry 构造，保留 namespace 及其物理路径别名不允许无绑定的 v1 初始化，见进度第 21、22 节。第 23 节新增独立 runtime attachment，以八条原 Ledger 事件认证六个空运行目录；恢复仅续建完整登记前缀之后的缺失后缀，未登记残留、已登记目录丢失或替换均 HOLD。显式绑定后 Registry 仍为空只读模式，构造不创建目录、不恢复事务、不清理残留，业务写入和迁移保持 HOLD；旧绑定不会自动升级。它不升级既有 v1 存储，也不认证历史旧二进制已经排空。后续优先实现永久内容来源登记与 alias finalization，再接运行布局和业务写边界。Registry 文本 contentDigest 与 RRSI artifact manifest 的 contentDigest 语义不同，必须关联真实 UTF-8 Skill 内容，不能复用候选 ID 或 manifest 摘要当来源主键。保留 provisioning policy v1 的不可变摘要，后续来源能力通过独立的认证关联接入。

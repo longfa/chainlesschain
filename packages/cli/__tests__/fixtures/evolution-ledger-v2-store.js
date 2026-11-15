@@ -18,6 +18,7 @@ import { createEvolutionLedgerFileManifestHeadBackend } from "../../src/lib/evol
 import { createEvolutionFileWitness } from "../../src/lib/evolution/evolution-file-witness.js";
 import { createEvolutionLedgerManifestWitnessAdapter } from "../../src/lib/evolution/evolution-ledger-manifest-witness-adapter.js";
 import { createEvolutionLedgerV2ManifestBackend } from "../../src/lib/evolution/evolution-ledger-v2-manifest-backend.js";
+import { createEvolutionFileRetainedSegmentBackend } from "../../src/lib/evolution/evolution-file-retained-segment-backend.js";
 import {
   openEvolutionDurableStore,
   evolutionDurableStoreConfiguration,
@@ -60,6 +61,29 @@ export function createLedgerV2FixtureBackend(root, request, options = {}) {
   };
   const segmentPath = (reference) =>
     path.join(segmentDirectory, `${reference.slice(7)}.json`);
+  const retentionBackend = {
+    retain(input) {
+      return publishRetainedSegment(input);
+    },
+    resolve(input) {
+      const stored = JSON.parse(
+        fs.readFileSync(segmentPath(input.segmentRef), "utf8"),
+      );
+      return {
+        schema: EVOLUTION_IMMUTABLE_LEDGER_SEGMENT_RESOLUTION_SCHEMA,
+        found: true,
+        bytes: Buffer.from(stored.bytes, "base64"),
+        proof: stored.proof,
+      };
+    },
+  };
+  const fileRetentionBackend = options.originalRetentionPorts
+    ? createEvolutionFileRetainedSegmentBackend({
+        directoryPath: segmentDirectory,
+        fsImpl,
+        retain: retentionBackend.retain,
+      })
+    : null;
   const segments = createImmutableLedgerSegmentStorePort({
     descriptor: storeDescriptor,
     proofVerifier: createImmutableLedgerSegmentProofVerifier({
@@ -69,59 +93,52 @@ export function createLedgerV2FixtureBackend(root, request, options = {}) {
         proofAlgorithm: "test-hmac-sha256",
         verifierArtifactDigest: digest("b"),
       },
-      verify: (proof) =>
-        proof.signature === hmac("retention", proof.proofDigest),
-    }),
-    backend: {
-      retain(input) {
-        counts.retain++;
-        fault("before-retain");
-        const proof = {
-          authorityId: storeDescriptor.authorityId,
-          authorityRevision: 1,
-          contentDigest: input.contentDigest,
-          epoch: input.epoch,
-          issuedAt: new Date(clock()).toISOString(),
-          ledgerId: input.ledgerId,
-          proofAlgorithm: "test-hmac-sha256",
-          proofDigest: digest("0"),
-          retainedUntil: "2037-09-09T00:00:00.000Z",
-          retentionMode: "compliance",
-          schema: EVOLUTION_IMMUTABLE_LEDGER_SEGMENT_RETENTION_PROOF_SCHEMA,
-          segmentRef: input.segmentRef,
-          sequenceEnd: input.sequenceEnd,
-          sequenceStart: input.sequenceStart,
-          signature: "pending",
-          storageVersion: "test-version-1",
-          tenantId: input.tenantId,
-        };
-        proof.proofDigest = computeImmutableLedgerSegmentProofDigest(proof);
-        proof.signature = hmac("retention", proof.proofDigest);
-        const target = segmentPath(input.segmentRef);
-        const serialized = JSON.stringify({
-          bytes: Buffer.from(input.bytes).toString("base64"),
-          proof,
-        });
-        if (!fs.existsSync(target))
-          fs.writeFileSync(target, serialized, { flag: "wx", mode: 0o600 });
-        else if (fs.readFileSync(target, "utf8") !== serialized)
-          throw new Error("retained fixture content differs");
-        fault("after-retain");
-        return proof;
-      },
-      resolve(input) {
-        const stored = JSON.parse(
-          fs.readFileSync(segmentPath(input.segmentRef), "utf8"),
+      verify: (proof) => {
+        options.retentionProofControl?.onVerify?.(proof);
+        return (
+          options.retentionProofControl?.revoked !== true &&
+          proof.signature === hmac("retention", proof.proofDigest)
         );
-        return {
-          schema: EVOLUTION_IMMUTABLE_LEDGER_SEGMENT_RESOLUTION_SCHEMA,
-          found: true,
-          bytes: Buffer.from(stored.bytes, "base64"),
-          proof: stored.proof,
-        };
       },
-    },
+    }),
+    backend: fileRetentionBackend ?? retentionBackend,
   });
+  function publishRetainedSegment(input) {
+    counts.retain++;
+    fault("before-retain");
+    const proof = {
+      authorityId: storeDescriptor.authorityId,
+      authorityRevision: 1,
+      contentDigest: input.contentDigest,
+      epoch: input.epoch,
+      issuedAt: new Date(clock()).toISOString(),
+      ledgerId: input.ledgerId,
+      proofAlgorithm: "test-hmac-sha256",
+      proofDigest: digest("0"),
+      retainedUntil: "2037-09-09T00:00:00.000Z",
+      retentionMode: "compliance",
+      schema: EVOLUTION_IMMUTABLE_LEDGER_SEGMENT_RETENTION_PROOF_SCHEMA,
+      segmentRef: input.segmentRef,
+      sequenceEnd: input.sequenceEnd,
+      sequenceStart: input.sequenceStart,
+      signature: "pending",
+      storageVersion: "test-version-1",
+      tenantId: input.tenantId,
+    };
+    proof.proofDigest = computeImmutableLedgerSegmentProofDigest(proof);
+    proof.signature = hmac("retention", proof.proofDigest);
+    const target = segmentPath(input.segmentRef);
+    const serialized = JSON.stringify({
+      bytes: Buffer.from(input.bytes).toString("base64"),
+      proof,
+    });
+    if (!fs.existsSync(target))
+      fs.writeFileSync(target, serialized, { flag: "wx", mode: 0o600 });
+    else if (fs.readFileSync(target, "utf8") !== serialized)
+      throw new Error("retained fixture content differs");
+    fault("after-retain");
+    return proof;
+  }
   const authority = createEvolutionLedgerManifestAuthority({
     descriptor: {
       algorithm: "test-hmac-sha256",
@@ -229,6 +246,8 @@ export function createLedgerV2FixtureBackend(root, request, options = {}) {
     backend,
     counts,
     segmentDirectory,
+    fileRetentionBackend,
+    segments,
     storage,
     catalogBackend,
     headBackend,

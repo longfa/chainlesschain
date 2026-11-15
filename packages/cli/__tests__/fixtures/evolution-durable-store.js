@@ -57,6 +57,7 @@ export function evolutionDurableStoreConfiguration(
     streamId = "pruning",
     audience = "evolution-runtime",
     fsImpl = null,
+    artifactAuthorityControl = null,
   } = {},
 ) {
   const descriptor = Object.freeze({
@@ -85,10 +86,13 @@ export function evolutionDurableStoreConfiguration(
     },
     currentAuthorityResolver: {
       resolve(request) {
+        const revoked =
+          artifactAuthorityControl?.revokedDigests?.has(request.digest) ===
+          true;
         const core = {
           action: request.action,
           algorithm,
-          allowed: true,
+          allowed: !revoked,
           audience: request.audience,
           checkedAt: new Date(NOW).toISOString(),
           decisionExpiresAt: new Date(NOW + 60_000).toISOString(),
@@ -104,7 +108,7 @@ export function evolutionDurableStoreConfiguration(
           requestedAt: request.requestedAt,
           retention: request.retention,
           revocationRevision: 1,
-          revoked: false,
+          revoked,
           schema: EVOLUTION_ARTIFACT_AUTHORITY_DECISION_SCHEMA,
           tenantId: request.tenantId,
           type: request.type,

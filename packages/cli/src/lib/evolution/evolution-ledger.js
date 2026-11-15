@@ -17,6 +17,15 @@ import {
 import { withFileLock } from "../with-file-lock.js";
 import { isLocalUiEvolutionFileSystem } from "./evolution-windows-directory-durability.js";
 import { isProductionEvolutionFileSystem } from "./evolution-private-storage.js";
+import { getEvolutionFileWitnessReadOnlyReader } from "./evolution-file-witness.js";
+import {
+  EVOLUTION_LEDGER_WITNESS_SCHEMA,
+  EVOLUTION_LEDGER_WITNESS_ANCESTRY_SCHEMA,
+} from "./evolution-witness-contracts.js";
+export {
+  EVOLUTION_LEDGER_WITNESS_SCHEMA,
+  EVOLUTION_LEDGER_WITNESS_ANCESTRY_SCHEMA,
+};
 import {
   assertKnowledgeWikiSourceAdmission,
   WIKI_SOURCE_ADMISSION_INVALID_CODE,
@@ -39,10 +48,6 @@ export const EVOLUTION_LEDGER_VERIFICATION_SCHEMA =
   "chainlesschain.evolution-ledger-verification/v2";
 export const EVOLUTION_LEDGER_QUERY_SCHEMA =
   "chainlesschain.evolution-ledger-query-result/v1";
-export const EVOLUTION_LEDGER_WITNESS_SCHEMA =
-  "chainlesschain.evolution-ledger-witness/v1";
-export const EVOLUTION_LEDGER_WITNESS_ANCESTRY_SCHEMA =
-  "chainlesschain.evolution-ledger-witness-ancestry/v1";
 export const EVOLUTION_LEDGER_STORE_MARKER_SCHEMA =
   "chainlesschain.evolution-ledger-store-marker/v1";
 export const EVOLUTION_LEDGER_AUDIT_EXPORT_SCHEMA =
@@ -65,6 +70,10 @@ export const EVOLUTION_LEDGER_V2_MIGRATION_INTENT =
 export const EVOLUTION_LEDGER_V2_CUTOVER_COMPLETED =
   "evolution.ledger-v2.cutover-completed";
 const MIGRATION_SOURCES = new WeakMap();
+const READ_ONLY_HISTORY_READERS = new WeakMap();
+export const EVOLUTION_LEDGER_READ_ONLY_HELD_CODE =
+  "CC_EVOLUTION_LEDGER_READ_ONLY_HELD";
+export const EVOLUTION_LEDGER_READ_ONLY_MAX_EVENTS = 10_000;
 const DIRECTORY_BOUNDARIES = new WeakMap();
 const VERIFIED_HISTORY_READERS = new WeakMap();
 const DEFAULT_APPEND_PORTS = new WeakSet();
@@ -569,7 +578,7 @@ function isUnsafeAsyncResult(value) {
   const descriptor = Object.getOwnPropertyDescriptor(value, "then");
   return Boolean(
     descriptor &&
-      (!("value" in descriptor) || typeof descriptor.value === "function"),
+    (!("value" in descriptor) || typeof descriptor.value === "function"),
   );
 }
 
@@ -1975,6 +1984,7 @@ export class EvolutionLedger {
   #verifySignature;
   #verifyWitnessSignature;
   #witness;
+  #readOnlyWitness;
   #witnessTrust;
 
   constructor({
@@ -2046,6 +2056,7 @@ export class EvolutionLedger {
     this.#trust = normalizeTrust(trust);
     this.#witnessTrust = normalizeTrust(witnessTrust);
     this.#witness = captureWitness(witness);
+    this.#readOnlyWitness = getEvolutionFileWitnessReadOnlyReader(witness);
     this.#clock = Object.freeze((...args) => clock(...args));
     this.#lockClock = Object.freeze((...args) => lockClock(...args));
     this.#random = Object.freeze((...args) => random(...args));
@@ -2352,6 +2363,48 @@ export class EvolutionLedger {
     ) {
       DEFAULT_APPEND_PORTS.add(this);
     }
+    if (new.target === EvolutionLedger && this.#readOnlyWitness !== null)
+      READ_ONLY_HISTORY_READERS.set(
+        this,
+        Object.freeze((...args) => {
+          if (args.length)
+            throw new TypeError(
+              "read-only source history takes no replacement context",
+            );
+          const state = this.#loadState({ readOnly: true });
+          const frontier = deepFreeze({
+            ledgerId: state.identity.ledgerId,
+            identityDigest: state.identity.identityDigest,
+            epoch: state.identity.epoch,
+            sequence: state.head.sequence,
+            headDigest: state.head.headDigest,
+            anchorDigest: state.head.anchorDigest,
+            storeMarkerDigest: state.identity.storeMarkerDigest,
+            storeMarkerEntryDigest: state.identity.storeMarkerEntryDigest,
+            witnessId: this.#witness.id,
+            witnessDigest: state.witness.witnessDigest,
+            witnessGeneration: state.witness.generation,
+          });
+          const hash = crypto
+            .createHash("sha256")
+            .update("chainlesschain.evolution-read-only-source-events/v1\0")
+            .update(`${state.events.length}\0`);
+          for (const event of state.events) {
+            const json = canonicalJson(event);
+            hash.update(`${Buffer.byteLength(json)}:`).update(json);
+          }
+          return deepFreeze({
+            schema: "chainlesschain.evolution-read-only-source-history/v1",
+            frontier,
+            events: state.events,
+            eventsDigest: `sha256:${hash.digest("hex")}`,
+            readOnlyOpen: true,
+            recoveryPerformed: false,
+            fullPhysicalStorageGraphVerified: false,
+            grantsMutationOrPromotionAuthority: false,
+          });
+        }),
+      );
     Object.freeze(this);
   }
 
@@ -2936,7 +2989,30 @@ export class EvolutionLedger {
     return proof;
   }
 
-  #readWitness() {
+  #readWitness(readOnly = false) {
+    if (readOnly) {
+      if (this.#readOnlyWitness === null)
+        throw ledgerError(
+          EVOLUTION_LEDGER_READ_ONLY_HELD_CODE,
+          "source witness has no original read-only reader",
+        );
+      let record;
+      try {
+        record = this.#readOnlyWitness();
+      } catch (cause) {
+        throw ledgerError(
+          "CC_EVOLUTION_LEDGER_WITNESS_UNAVAILABLE",
+          "read-only source witness failed closed",
+          { cause },
+        );
+      }
+      if (isUnsafeAsyncResult(record))
+        throw ledgerError(
+          "CC_EVOLUTION_LEDGER_WITNESS_UNAVAILABLE",
+          "read-only witness must be synchronous",
+        );
+      return this.#verifyWitnessRecord(record);
+    }
     return this.#callWitness("read", {
       ledgerTrust: this.#trust,
       witnessTrust: this.#witnessTrust,
@@ -4429,18 +4505,78 @@ export class EvolutionLedger {
     return state;
   }
 
-  #loadState({ allowInitialize = false, incremental = false } = {}) {
+  #loadState({
+    allowInitialize = false,
+    incremental = false,
+    readOnly = false,
+  } = {}) {
     this.#assertBoundaries();
-    this.#cleanupDebris();
-    let witnessed = this.#readWitness();
+    const held = (message) => {
+      throw ledgerError(EVOLUTION_LEDGER_READ_ONLY_HELD_CODE, message);
+    };
+    const noDebris = () => {
+      for (const directory of [
+        this.#paths.rootDir,
+        this.#paths.segmentDir,
+        this.#paths.authorityRootDir,
+        this.#paths.anchorDir,
+      ])
+        for (const entry of this.#fs.readdirSync(directory, {
+          withFileTypes: true,
+        }))
+          if (
+            entry.name.startsWith(".stage-") ||
+            entry.name.startsWith(".replace-") ||
+            entry.name.endsWith(".tmp")
+          )
+            held("read-only source history encountered recovery debris");
+    };
+    const observedFiles = [];
+    const readFile = (file, maximum, label, options = {}) => {
+      if (!readOnly)
+        return this.#readCanonicalFile(file, maximum, label, options);
+      let before = null;
+      try {
+        before = this.#fs.lstatSync(file, { bigint: true });
+      } catch (cause) {
+        if (!(options.allowMissing && cause?.code === "ENOENT"))
+          throw ledgerError(
+            "CC_EVOLUTION_LEDGER_STORE_UNSAFE",
+            "read-only source file is unavailable",
+            { cause },
+          );
+      }
+      const value = this.#readCanonicalFile(file, maximum, label, options);
+      if (value === null) {
+        if (before !== null)
+          held("source file disappeared during read-only capture");
+        return null;
+      }
+      if (before === null)
+        held("source file appeared during read-only capture");
+      assertPhysicalFile(before, maximum, label);
+      const after = this.#fs.lstatSync(file, { bigint: true });
+      assertPhysicalFile(after, maximum, label);
+      if (!samePhysicalFile(before, after))
+        held("source file changed during read-only capture");
+      observedFiles.push({
+        file,
+        maximum,
+        fingerprint: physicalFileFingerprint(after),
+      });
+      return value;
+    };
+    if (readOnly) noDebris();
+    else this.#cleanupDebris();
+    let witnessed = this.#readWitness(readOnly);
 
-    const identityFile = this.#readCanonicalFile(
+    const identityFile = readFile(
       this.#paths.identityPath,
       64 * 1024,
       "ledger identity",
       { allowMissing: true },
     );
-    let storeMarkerFile = this.#readCanonicalFile(
+    let storeMarkerFile = readFile(
       this.#paths.storeMarkerPath,
       64 * 1024,
       "store incarnation marker",
@@ -4456,12 +4592,9 @@ export class EvolutionLedger {
       SEGMENT_FILE_PATTERN,
       "segment directory",
     );
-    let headFile = this.#readCanonicalFile(
-      this.#paths.headPath,
-      64 * 1024,
-      "ledger HEAD",
-      { allowMissing: true },
-    );
+    let headFile = readFile(this.#paths.headPath, 64 * 1024, "ledger HEAD", {
+      allowMissing: true,
+    });
 
     if (!identityFile) {
       if (
@@ -4520,6 +4653,7 @@ export class EvolutionLedger {
     }
     if (anchorNames.length === 0 || !headFile) {
       if (witnessed.status === "absent") {
+        if (readOnly) held("source bootstrap requires recovery");
         this.#recoverUnwitnessedBootstrap(
           identity,
           anchorNames,
@@ -4537,7 +4671,13 @@ export class EvolutionLedger {
       );
     }
 
-    if (anchorNames.length > EVOLUTION_LEDGER_MAX_EVENTS + 1) {
+    if (
+      anchorNames.length >
+      (readOnly
+        ? EVOLUTION_LEDGER_READ_ONLY_MAX_EVENTS
+        : EVOLUTION_LEDGER_MAX_EVENTS) +
+        1
+    ) {
       throw ledgerError(
         "CC_EVOLUTION_LEDGER_CAPACITY_EXCEEDED",
         "anchor chain exceeds ledger capacity",
@@ -4550,13 +4690,10 @@ export class EvolutionLedger {
       identity,
       { standalone: true },
     );
-    const cached = this.#cachedPrefix(
-      identity,
-      anchorNames,
-      segmentNames,
-      incremental,
-    );
-    if (!cached) {
+    const cached = readOnly
+      ? null
+      : this.#cachedPrefix(identity, anchorNames, segmentNames, incremental);
+    if (!cached && !readOnly) {
       const snapshotted = this.#tryStateSnapshot(
         identity,
         storeMarker,
@@ -4591,7 +4728,7 @@ export class EvolutionLedger {
         }
         continue;
       }
-      const anchorFile = this.#readCanonicalFile(
+      const anchorFile = readFile(
         path.join(this.#paths.anchorDir, name),
         64 * 1024,
         `anchor ${index}`,
@@ -4617,7 +4754,7 @@ export class EvolutionLedger {
 
       const segmentName = segmentFileName(index, anchor.segmentDigest);
       expectedSegments.add(segmentName);
-      const segmentFile = this.#readCanonicalFile(
+      const segmentFile = readFile(
         path.join(this.#paths.segmentDir, segmentName),
         EVOLUTION_LEDGER_MAX_EVENT_BYTES,
         `event segment ${index}`,
@@ -4652,6 +4789,7 @@ export class EvolutionLedger {
     let removedOrphan = false;
     for (const name of segmentNames) {
       if (expectedSegments.has(name)) continue;
+      if (readOnly) held("unanchored source segment requires recovery");
       const match = SEGMENT_FILE_PATTERN.exec(name);
       const sequence = Number(match[1]);
       if (sequence !== events.length + 1) {
@@ -4702,6 +4840,7 @@ export class EvolutionLedger {
     }
     let authoritativeHead = head;
     if (witnessed.status === "absent") {
+      if (readOnly) held("source witness initialization requires recovery");
       if (
         anchors.length !== 1 ||
         events.length !== 0 ||
@@ -4749,6 +4888,7 @@ export class EvolutionLedger {
         witnessedEvent,
       );
       if (witnessed.sequence < maximumAnchor.sequence) {
+        if (readOnly) held("unwitnessed source tail requires recovery");
         if (
           head.anchorDigest !== witnessed.anchorDigest ||
           maximumAnchor.sequence !== witnessed.sequence + 1
@@ -4802,6 +4942,7 @@ export class EvolutionLedger {
       maximumEvent,
     );
     if (head.sequence < maximumAnchor.sequence) {
+      if (readOnly) held("source HEAD requires recovery");
       const bytes = serializeRecord(maximumAnchor, 64 * 1024, "head anchor");
       this.#replaceHead(bytes);
       authoritativeHead = maximumAnchor;
@@ -4820,6 +4961,46 @@ export class EvolutionLedger {
       storeMarker,
       witness: witnessed,
     });
+    if (readOnly) {
+      const currentWitness = this.#readWitness(true);
+      if (currentWitness.witnessDigest !== witnessed.witnessDigest)
+        held("source witness changed during read-only capture");
+      const currentHead = readFile(
+        this.#paths.headPath,
+        64 * 1024,
+        "read-only source HEAD",
+      );
+      if (
+        canonicalJson(currentHead.record) !== canonicalJson(authoritativeHead)
+      )
+        held("source HEAD changed during read-only capture");
+      if (
+        JSON.stringify(
+          this.#listFiles(
+            this.#paths.anchorDir,
+            ANCHOR_FILE_PATTERN,
+            "anchor directory",
+          ),
+        ) !== JSON.stringify(anchorNames) ||
+        JSON.stringify(
+          this.#listFiles(
+            this.#paths.segmentDir,
+            SEGMENT_FILE_PATTERN,
+            "segment directory",
+          ),
+        ) !== JSON.stringify(segmentNames)
+      )
+        held("source immutable inventory changed during read-only capture");
+      noDebris();
+      for (const observed of observedFiles) {
+        const stat = this.#fs.lstatSync(observed.file, { bigint: true });
+        assertPhysicalFile(stat, observed.maximum, "read-only source release");
+        if (physicalFileFingerprint(stat) !== observed.fingerprint)
+          held("source file changed before read-only history release");
+      }
+      this.#assertBoundaries();
+      return verifiedState;
+    }
     return this.#rememberState(
       verifiedState,
       anchorNames,
@@ -5806,6 +5987,13 @@ export function getEvolutionLedgerVerifiedHistoryReader(ledger) {
   if (arguments.length !== 1)
     throw new TypeError("verified history capture takes one original ledger");
   return VERIFIED_HISTORY_READERS.get(ledger) ?? null;
+}
+
+/** A cold authenticated prefix with no lock, cleanup, snapshot fallback or recovery. */
+export function getEvolutionLedgerReadOnlyHistoryReader(ledger) {
+  if (arguments.length !== 1)
+    throw new TypeError("read-only history capture takes one original ledger");
+  return READ_ONLY_HISTORY_READERS.get(ledger) ?? null;
 }
 
 /** Construction identity only: custom filesystem/lock/crash ports keep phases. */

@@ -43,6 +43,7 @@ import {
 } from "./evolution-ledger.js";
 
 const ARTIFACT_STORE_DIRECTORY_BOUNDARIES = new WeakMap();
+const ARTIFACT_STORE_LOCAL_INVENTORIES = new WeakMap();
 // Derived lookup tables belong only to deeply frozen parsed index rows.
 // Every reuse reattests current descriptor bytes; authority and payloads are
 // never cached. All duplicate matches remain in these derived lookup tables.
@@ -130,6 +131,9 @@ export const EVOLUTION_ARTIFACT_MAX_CANONICAL_BYTES = 1024 * 1024;
 export const EVOLUTION_ARTIFACT_MAX_ENVELOPE_BYTES = 4096;
 export const EVOLUTION_ARTIFACT_MAX_INDEX_ENTRIES = 10_000;
 export const EVOLUTION_ARTIFACT_MAX_INDEX_BYTES = 64 * 1024 * 1024;
+export const EVOLUTION_ARTIFACT_LOCAL_INVENTORY_SCHEMA =
+  "chainlesschain.evolution-local-artifact-store-inventory/v1";
+export const EVOLUTION_ARTIFACT_LOCAL_INVENTORY_MAX_BYTES = 256 * 1024 * 1024;
 export const EVOLUTION_ARTIFACT_DEFAULT_TTL_MS = 15 * 60 * 1000;
 export const EVOLUTION_ARTIFACT_MAX_TTL_MS = 24 * 60 * 60 * 1000;
 export const EVOLUTION_ARTIFACT_RETENTIONS = Object.freeze(["ttl", "ledger"]);
@@ -428,6 +432,8 @@ const CONSTRUCTOR_OPTION_KEYS = new Set([
   "envelopeSigner",
   "envelopeVerifier",
   "now",
+  "maximumInventoryFiles",
+  "maximumInventoryBytes",
   "tenantId",
 ]);
 const CONSTRUCTOR_REQUIRED_KEYS = new Set([
@@ -2640,6 +2646,7 @@ export class EvolutionArtifactPorts {
   #verifyEnvelope;
   #resolveCurrentAuthority;
   #now;
+  #inventoryLimits;
 
   constructor(options = {}) {
     assertOptionalExactRecord(
@@ -2712,6 +2719,30 @@ export class EvolutionArtifactPorts {
       throw new TypeError("EvolutionArtifactPorts now must be a function");
     }
     this.#now = Object.freeze((...args) => now(...args));
+    const maximumFiles = Object.hasOwn(options, "maximumInventoryFiles")
+      ? ownData(
+          options,
+          "maximumInventoryFiles",
+          "EvolutionArtifactPorts constructor options",
+        )
+      : EVOLUTION_ARTIFACT_MAX_INDEX_ENTRIES;
+    const maximumBytes = Object.hasOwn(options, "maximumInventoryBytes")
+      ? ownData(
+          options,
+          "maximumInventoryBytes",
+          "EvolutionArtifactPorts constructor options",
+        )
+      : EVOLUTION_ARTIFACT_LOCAL_INVENTORY_MAX_BYTES;
+    if (
+      !Number.isSafeInteger(maximumFiles) ||
+      maximumFiles < 1 ||
+      maximumFiles > EVOLUTION_ARTIFACT_MAX_INDEX_ENTRIES ||
+      !Number.isSafeInteger(maximumBytes) ||
+      maximumBytes < 2 ||
+      maximumBytes > EVOLUTION_ARTIFACT_LOCAL_INVENTORY_MAX_BYTES
+    )
+      throw new TypeError("local artifact inventory limits are invalid");
+    this.#inventoryLimits = Object.freeze({ maximumFiles, maximumBytes });
     const layout = this.#store.layout;
     const directoryBoundary = deepFreeze({
       schema: "chainlesschain.evolution-artifact-store-directory-boundary/v1",
@@ -2748,11 +2779,254 @@ export class EvolutionArtifactPorts {
         recheck: Object.freeze(recheck),
       }),
     );
+    if (new.target === EvolutionArtifactPorts)
+      ARTIFACT_STORE_LOCAL_INVENTORIES.set(this, () =>
+        this.#readLocalInventory(),
+      );
     Object.freeze(this);
   }
 
   #clock() {
     return normalizeClockValue(this.#now());
+  }
+
+  #readLocalInventory() {
+    // No custom hook may acquire the native store's complete inventory claim.
+    if (
+      !this.#store.repositoryInstance ||
+      this.#store.list !== null ||
+      this.#store.get !== null ||
+      !this.#store.canUseSealedDirectoryRead()
+    )
+      return null;
+    const fail = (message) => {
+      throw artifactError(EVOLUTION_ARTIFACT_INTEGRITY_FAILED_CODE, message);
+    };
+    const layout = this.#store.layout;
+    const limits = this.#inventoryLimits;
+    const list = (directory, maximum) => {
+      const handle = fs.opendirSync(directory);
+      const names = new Set();
+      try {
+        let entry;
+        while ((entry = handle.readSync()) !== null) {
+          if (names.has(entry.name) || names.size >= maximum)
+            fail(
+              "local artifact inventory has duplicate names or exceeds file limit",
+            );
+          names.add(entry.name);
+        }
+      } finally {
+        handle.closeSync();
+      }
+      return [...names].sort();
+    };
+    const pin = (target, maximumBytes) => {
+      const stat = fs.lstatSync(target, { bigint: true });
+      assertIndexStat(stat, "local artifact inventory file");
+      if (stat.size > BigInt(maximumBytes))
+        fail("local artifact inventory file exceeds byte limit");
+      return Object.freeze({
+        ...Object.fromEntries(
+          INDEX_STAT_FIELDS.map((field) => [field, String(stat[field])]),
+        ),
+        birthtimeMs: physicalIdentity(stat).birthtimeMs,
+      });
+    };
+    const same = (left, right) =>
+      Object.keys(left).every((key) => left[key] === right[key]);
+    try {
+      return withSealedStoreDirectoryRead(this.#store, (directoryScope) => {
+        const indexIdentity = pin(
+          layout.indexPath,
+          EVOLUTION_ARTIFACT_MAX_INDEX_BYTES,
+        );
+        const snapshot = readTrustedIndexSnapshot(layout);
+        this.#indexLedgerBatchEntries(snapshot.entries);
+        if (snapshot.entries.length > limits.maximumFiles)
+          fail("local artifact inventory exceeds index row limit");
+        const rows = [...snapshot.entries].sort((a, b) =>
+          a.id < b.id ? -1 : a.id > b.id ? 1 : 0,
+        );
+        const names = new Set();
+        let budget = 0;
+        for (const entry of rows) {
+          assertExactRecord(
+            entry,
+            INDEX_ENTRY_KEYS,
+            "local artifact inventory index row",
+            EVOLUTION_ARTIFACT_INTEGRITY_FAILED_CODE,
+          );
+          if (
+            !ARTIFACT_ID_PATTERN.test(entry.id) ||
+            entry.file !== `${entry.id}.json` ||
+            names.has(entry.file) ||
+            !Number.isSafeInteger(entry.size) ||
+            entry.size < 1 ||
+            entry.size > EVOLUTION_ARTIFACT_MAX_CANONICAL_BYTES
+          )
+            fail(
+              "local artifact inventory has invalid or duplicate index rows",
+            );
+          names.add(entry.file);
+          budget += entry.size + 1;
+          if (budget > limits.maximumBytes)
+            fail("local artifact inventory exceeds aggregate payload budget");
+          this.#assertUniqueRecordDigest(
+            entry.recordDigest,
+            entry.id,
+            snapshot.entries,
+          );
+        }
+        const expectedFiles = [...names].sort();
+        const checkNames = () => {
+          if (
+            JSON.stringify(list(layout.rootDir, 2)) !==
+              JSON.stringify(["files", "index.jsonl"]) ||
+            JSON.stringify(list(layout.filesDir, limits.maximumFiles)) !==
+              JSON.stringify(expectedFiles)
+          )
+            fail(
+              "local artifact inventory directory names differ from the complete index",
+            );
+        };
+        checkNames();
+        const window = [];
+        const entries = [];
+        for (const entry of rows) {
+          const target = path.join(layout.filesDir, entry.file);
+          const identity = pin(target, EVOLUTION_ARTIFACT_MAX_CANONICAL_BYTES);
+          const lineage = ownData(entry, "lineage", "local artifact index row");
+          assertExactRecord(
+            lineage,
+            LINEAGE_KEYS,
+            "local artifact lineage",
+            EVOLUTION_ARTIFACT_INTEGRITY_FAILED_CODE,
+          );
+          const envelope = ownData(
+            lineage,
+            "envelope",
+            "local artifact lineage",
+          );
+          const parsed = parseCanonicalEnvelope(envelope);
+          const options = normalizeResolveOptions(
+            {
+              tenantId: this.#tenantId,
+              expectedDigest: entry.recordDigest,
+              expectedType: parsed.core.type,
+              purpose: parsed.core.purpose,
+            },
+            this.#tenantId,
+            this.#audience,
+            this.#allowedTypes,
+          );
+          const resolved = this.#resolveAuthenticatedEntry(
+            envelope,
+            options,
+            entry.id,
+            null,
+            true,
+            entry,
+            window,
+            null,
+            null,
+            directoryScope,
+          );
+          if (
+            !same(identity, pin(target, EVOLUTION_ARTIFACT_MAX_CANONICAL_BYTES))
+          )
+            fail("local artifact inventory file changed during authentication");
+          entries.push(
+            deepFreeze({
+              id: entry.id,
+              file: entry.file,
+              ref: resolved.artifactRef,
+              type: resolved.authentication.core.type,
+              purpose: resolved.authentication.core.purpose,
+              retention: resolved.authentication.core.retention,
+              envelopeDigest: resolved.authentication.envelopeDigest,
+              payloadBytes: resolved.bytes.length,
+              identity,
+            }),
+          );
+        }
+        readTrustedIndexSnapshot(layout, snapshot);
+        const completed = this.#clock().milliseconds;
+        if (
+          window.some(
+            (lease) =>
+              completed < lease.checkedAt || completed >= lease.expiresAt,
+          )
+        )
+          throw artifactError(
+            EVOLUTION_ARTIFACT_EXPIRED_CODE,
+            "artifact authority expired before local inventory release",
+          );
+        // All caller authority/clock hooks have finished. Release only after
+        // native directory/index/leaf metadata and byte-snapshot checks.
+        if (
+          !same(
+            indexIdentity,
+            pin(layout.indexPath, EVOLUTION_ARTIFACT_MAX_INDEX_BYTES),
+          )
+        )
+          fail("local artifact inventory index changed during authentication");
+        checkNames();
+        for (const entry of entries)
+          if (
+            !same(
+              entry.identity,
+              pin(
+                path.join(layout.filesDir, entry.file),
+                EVOLUTION_ARTIFACT_MAX_CANONICAL_BYTES,
+              ),
+            )
+          )
+            fail("local artifact inventory file changed before release");
+        directoryScope.check();
+        const metadata = deepFreeze({
+          schema: EVOLUTION_ARTIFACT_LOCAL_INVENTORY_SCHEMA,
+          scope: "complete-original-evolution-artifact-store",
+          tenantId: this.#tenantId,
+          audience: this.#audience,
+          directoryBoundary:
+            ARTIFACT_STORE_DIRECTORY_BOUNDARIES.get(this).descriptor,
+          indexIdentity,
+          indexBytesDigest: snapshot.bytesDigest,
+          entriesDigest: indexEntriesFingerprint(
+            entries,
+            "local artifact inventory entries",
+          ),
+          fileCount: entries.length,
+          totalPayloadBytes: entries.reduce(
+            (sum, entry) => sum + entry.payloadBytes,
+            0,
+          ),
+          maximumFiles: limits.maximumFiles,
+          maximumPayloadBytes: limits.maximumBytes,
+          localIndexFileCorrespondenceVerified: true,
+          signaturesAndCurrentAuthorityVerified: true,
+          fullPhysicalStorageGraphVerified: false,
+          externalWormVerified: false,
+          grantsMutationOrPromotionAuthority: false,
+        });
+        return deepFreeze({
+          ...metadata,
+          entries,
+          inventoryDigest: domainDigest(
+            `${EVOLUTION_ARTIFACT_LOCAL_INVENTORY_SCHEMA}\0`,
+            metadata,
+          ),
+        });
+      });
+    } catch (cause) {
+      if (isEvolutionArtifactPortError(cause)) throw cause;
+      throw artifactError(
+        EVOLUTION_ARTIFACT_INTEGRITY_FAILED_CODE,
+        "local artifact inventory read failed",
+        { cause },
+      );
+    }
   }
 
   #boundedIndexEntries() {
@@ -4726,6 +5000,36 @@ export function captureEvolutionArtifactStoreDirectoryBoundary(value) {
     );
   boundary.recheck();
   return boundary;
+}
+
+/** Explicit native-store audit. No caller paths, row filters or trust fallbacks. */
+export function captureEvolutionArtifactStoreLocalInventory(value) {
+  if (arguments.length !== 1 || !ARTIFACT_STORE_LOCAL_INVENTORIES.has(value))
+    throw new TypeError(
+      "one original EvolutionArtifactPorts object is required",
+    );
+  const read = ARTIFACT_STORE_LOCAL_INVENTORIES.get(value);
+  const snapshot = read();
+  if (snapshot === null) return null;
+  return Object.freeze({
+    snapshot,
+    recheck(...args) {
+      if (args.length)
+        throw new TypeError(
+          "local artifact inventory takes no replacement context",
+        );
+      const current = read();
+      if (
+        current === null ||
+        current.inventoryDigest !== snapshot.inventoryDigest
+      )
+        throw artifactError(
+          EVOLUTION_ARTIFACT_INTEGRITY_FAILED_CODE,
+          "local artifact inventory changed after capture",
+        );
+      return true;
+    },
+  });
 }
 
 Object.freeze(EvolutionArtifactPorts.prototype);

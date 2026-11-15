@@ -1,5 +1,9 @@
 # CLI 命令行工具
 
+## CLI 0.166.151 发布候选（2026-11-15）
+
+候选版新增有界本地 retention/ArtifactStore 审计，以及不执行恢复的 source WAL/v2 全事件一致性检查。准确提交的三系统门禁、OIDC 发布和公开回读完成前，已核验公开版本仍为下方 **0.166.150**。本批仅发布 CLI，现有 IDE 配对与客户端版本保持；自动晋升仍 **HOLD**。[发布范围与进度](./cli-ide-update-2026-11-15-151)。
+
 ## 当前发行核对（2026-11-15）
 
 CLI **0.166.150** 已通过 [GitHub Actions OIDC 发布](https://github.com/chainlesschain/chainlesschain/actions/runs/43642085522)，准确源码的完整 CLI CI / Strict Sandbox、公开包字节及签名来源均已核验。Open VSX **0.37.189** 已公开且与正式 VSIX 一致；JetBrains **0.4.204** 已公开核验。两款插件推荐 CLI **0.166.150**。

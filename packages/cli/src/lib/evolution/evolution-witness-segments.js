@@ -168,6 +168,8 @@ export function createEvolutionWitnessSegments({
       const bytes = readBytes(
         segmentPath(digest),
         maximumHistoryBytes - storedBytes,
+        false,
+        options.readOnly === true,
       );
       storedBytes += bytes.length;
       if (hash(bytes) !== digest)

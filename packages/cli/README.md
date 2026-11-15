@@ -2,6 +2,12 @@
 
 Command-line interface for installing, configuring, and managing [ChainlessChain](https://www.chainlesschain.com), including the coding agent, governed tools, sessions, memory, and IDE integrations.
 
+## CLI 0.166.151 release candidate (2026-11-15)
+
+CLI **0.166.151** prepares bounded self-evolution retention/ArtifactStore audits and a source-WAL/v2 consistency check that preserves crash debris and never performs recovery. Publication requires the exact release commit's complete CLI CI and Strict Sandbox matrices, Actions OIDC publishing, and public package/provenance verification. Until those finish, the verified public version and installation command remain **0.166.150** below.
+
+This CLI-only release leaves child npm versions unchanged. Published Open VSX **0.37.189** and JetBrains **0.4.204** still recommend CLI **0.166.150**; native clients remain **v5.0.3.145**. Complete runtime storage graphs, independent installer/pins and real A/B/C acceptance remain incomplete; automatic promotion remains **HOLD**. [Release scope and status](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-15-151.md).
+
 ## Public CLI 0.166.150 / IDE pairing (2026-11-15)
 
 CLI **0.166.150** is public through [GitHub Actions OIDC](https://github.com/chainlesschain/chainlesschain/actions/runs/43642085522). Exact source `b2af25c65d34f1ee34cdddf308b5a8e57bb4f198` passed all configured CLI CI and Strict Sandbox jobs on Linux, Windows and macOS. Public archive byte identity, signed provenance and registry-only child dependencies are verified.

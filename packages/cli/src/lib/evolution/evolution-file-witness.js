@@ -16,7 +16,7 @@ import {
 import {
   EVOLUTION_LEDGER_WITNESS_ANCESTRY_SCHEMA,
   EVOLUTION_LEDGER_WITNESS_SCHEMA,
-} from "./evolution-ledger.js";
+} from "./evolution-witness-contracts.js";
 
 export const EVOLUTION_FILE_WITNESS_STORE_SCHEMA =
   "chainlesschain.evolution-file-witness-store/v1";
@@ -35,6 +35,7 @@ const MAXIMUM_CACHED_TEXT_BYTES = 16 * 1024 * 1024;
 const MAXIMUM_TRUST_EPOCH_CHARS = 256;
 const MAXIMUM_TRUST_EPOCH_RETRIES = 2;
 const DIRECTORY_BOUNDARIES = new WeakMap();
+const READ_ONLY_READERS = new WeakMap();
 const STORE_KEYS = new Set([
   "current",
   "discardedAnchors",
@@ -653,20 +654,41 @@ export function createEvolutionFileWitness({
     return store;
   };
 
-  const readBytes = (file, byteLimit = maximumBytes, allowAbsent = false) => {
+  const readBytes = (
+    file,
+    byteLimit = maximumBytes,
+    allowAbsent = false,
+    readOnly = false,
+  ) => {
     recheckStorage();
     const reader = file === target ? rootReader : checkSegments();
     const bytes = reader.read(file, {
       maximumBytes: byteLimit,
       allowAbsent,
-      prepareFile: (name) => ensurePrivateFile(name, secureFileOptions),
+      prepareFile: readOnly
+        ? (name) => {
+            if (
+              process.platform !== "win32" &&
+              (fsImpl.lstatSync(name, { bigint: true }).mode & 0o7777n) !==
+                0o600n
+            )
+              throw new Error(
+                "read-only witness requires existing private file permissions",
+              );
+          }
+        : (name) => ensurePrivateFile(name, secureFileOptions),
     });
     recheckStorage();
     return bytes;
   };
 
   const readStore = (options = {}) => {
-    const bytes = readBytes(target, maximumHistoryBytes, true);
+    const bytes = readBytes(
+      target,
+      maximumHistoryBytes,
+      options.readOnly !== true,
+      options.readOnly === true,
+    );
     if (bytes === null) {
       const store = emptyStore();
       recheckStorage();
@@ -967,6 +989,19 @@ export function createEvolutionFileWitness({
   };
   captureDirectories();
   DIRECTORY_BOUNDARIES.set(witness, captureDirectories);
+  READ_ONLY_READERS.set(
+    witness,
+    Object.freeze((...args) => {
+      if (args.length)
+        throw new TypeError("read-only witness takes no replacement context");
+      const store = readStore({ readOnly: true });
+      if (store.current.status !== "committed")
+        throw new Error(
+          "read-only witness requires an existing committed checkpoint",
+        );
+      return store.current;
+    }),
+  );
   return witness;
 }
 
@@ -982,4 +1017,11 @@ export function captureEvolutionFileWitnessDirectoryBoundaries(witness) {
 /** Pure ownership probe: never inspects caller methods, getters or proxies. */
 export function hasEvolutionFileWitnessDirectoryBoundaries(witness) {
   return DIRECTORY_BOUNDARIES.has(witness);
+}
+
+/** Pure factory lookup. No synthetic absent signature or permission preparation. */
+export function getEvolutionFileWitnessReadOnlyReader(witness) {
+  if (arguments.length !== 1)
+    throw new TypeError("read-only witness capture takes one original witness");
+  return READ_ONLY_READERS.get(witness) ?? null;
 }
