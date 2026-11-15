@@ -4,7 +4,7 @@ layout: home
 hero:
   name: ChainlessChain
   text: 去中心化个人 AI 管理平台
-  tagline: "CLI 0.166.149 / Open VSX 0.37.188 已公开；JetBrains .203 已上传待审，客户端公开版仍为 v5.0.3.145"
+  tagline: "CLI 0.166.150 / Open VSX 0.37.189 已公开；JetBrains .204 已公开核验，客户端公开版仍为 v5.0.3.145"
   image:
     src: /logo.png
     alt: ChainlessChain Logo
@@ -21,9 +21,9 @@ hero:
 
 features:
   - icon: ⚠️
-    title: CLI .149 与 IDE 发布状态
-    details: "CLI .149 / Open VSX .188 均已公开并完成字节回读，推荐配对使用。JetBrains .203 已上传待审，当前已核验公开 .202 推荐 CLI .148；客户端仍为 .145。"
-    link: /chainlesschain/cli-ide-update-2026-11-13-149
+    title: LK 渠道、动态账单与凭证保留
+    details: "CLI .150 / Open VSX .189 已公开核验；JetBrains .204 已公开核验。新增 LK 主备与协议配置、动态价格和实际 API 账单，火山等各渠道 Key 切换后保留。"
+    link: /chainlesschain/cli-ide-update-2026-11-14-150
   - icon: 🔗
     title: CLI / IDE 与桌面目标草稿
     details: "CLI .140 修复损坏工具参数恢复与可信摘要；桌面目标草稿互通仍需匹配客户端构建、显式授权及原生确认，CLI 或插件发布不能替代产品验收。"
@@ -74,7 +74,7 @@ features:
     link: /chainlesschain/desktop-model-governance
   - icon: 🧑‍💻
     title: IDE Bridge 当前公开配对
-    details: "Open VSX .185 与已审核公开的 JetBrains .199 均推荐 CLI .146；VS Code 官方编辑器可安装公开 VSIX，Microsoft Marketplace 仍未发布。"
+    details: "Open VSX .189 推荐 CLI .150；JetBrains .204 已公开核验并推荐同一 CLI。Microsoft Marketplace 未由本批标签发布。"
     link: /chainlesschain/ide-plugin
   - icon: 🔐
     title: 安全优先

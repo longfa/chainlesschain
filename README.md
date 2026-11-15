@@ -1,10 +1,14 @@
 # ChainlessChain - 基于U盾和SIMKey的个人移动AI管理系统
 
-This candidate also adds fresh LK model prices, balance, Key quota and actual API billing (cc llm account), plus saved credentials for every configured channel, including Volcengine. Switch back using Saved connections without re-entering the Key; LK hosts and protocols share one credential. Desktop source supports the same account queries and encrypted connection history.
+## 2026-11-15 CLI / IDE 发布状态
 
-## LK channel release candidate
+CLI **0.166.150** 已通过 [GitHub Actions OIDC 发布](https://github.com/chainlesschain/chainlesschain/actions/runs/43642085522)。准确源码 `b2af25c65d34f1ee34cdddf308b5a8e57bb4f198` 的完整 CLI CI 和 Strict Sandbox 跨系统检查通过，公开 npm 包字节、签名来源和子包依赖已核验。安装：`npm i -g chainlesschain@0.166.150 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`、`cc doctor`。
 
-CLI **0.166.150**, VS Code/Open VSX **0.37.189** and JetBrains **0.4.204** are prepared for this release. They add LK primary/backup configuration in CLI setup, the `cc ui` Web panel and IDE settings, with 83 protocol-filtered chat models, with a shared 197-entry model directory. Publication is pending exact-source CI, npm OIDC and registry readback; the preceding public versions below remain authoritative until verification. [LK setup and limits](docs/configuration/lk-api-channel.md).
+Open VSX **0.37.189** 已公开且与正式 VSIX 逐字节一致；JetBrains **0.4.204** 已公开核验。两款插件均推荐 CLI **0.166.150**。Microsoft Marketplace 未由本批标签发布；PC/mobile 公开客户端仍为 **v5.0.3.145**，桌面源码改动尚需新版安装包。
+
+CLI、`cc ui` Web 和 IDE 新增 LK 主备渠道及三种协议的 83 个对话模型，共享 197 项模型目录。LK 价格、余额、Key 额度和实际 API 账单可动态查询，金额单位为平台“算力”；账单不含 Token 明细，与本地 Token 估算分开展示。火山等各渠道的 Key 独立保存，切回自动恢复；LK 主备与协议共用已保存 Key。桌面源码也支持加密连接历史和账户查询。媒体任务提交和轮询未包含在聊天设置中。
+
+[接入说明](docs/configuration/lk-api-channel.md) · [升级指南](docs-site/docs/chainlesschain/cli-ide-update-2026-11-14-150.md) · [发布证据](docs/research/cli/evidence/release150-public/publication.json)。既有部署权限和自动晋升限制保持。
 
 ## 2026-11-14 CLI / IDE 发布状态
 

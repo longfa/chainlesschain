@@ -1,16 +1,24 @@
 # chainlesschain CLI
 
-This candidate also adds fresh LK model prices, balance, Key quota and actual API billing (cc llm account), plus saved credentials for every configured channel, including Volcengine. Switch back using Saved connections without re-entering the Key; LK hosts and protocols share one credential. Desktop source supports the same account queries and encrypted connection history.
-
-## LK channel release candidate
-
-CLI **0.166.150**, VS Code/Open VSX **0.37.189** and JetBrains **0.4.204** are prepared for this release. They add LK primary/backup configuration in CLI setup, the `cc ui` Web panel and IDE settings, with 83 protocol-filtered chat models, with a shared 197-entry model directory. Publication is pending exact-source CI, npm OIDC and registry readback; the preceding public versions below remain authoritative until verification. [LK setup and limits](../../docs/configuration/lk-api-channel.md).
-
 Command-line interface for installing, configuring, and managing [ChainlessChain](https://www.chainlesschain.com), including the coding agent, governed tools, sessions, memory, and IDE integrations.
 
-## Public CLI 0.166.149 / IDE pairing (2026-11-14)
+## Public CLI 0.166.150 / IDE pairing (2026-11-15)
 
-Source development after this public release adds original source-journal and manifest-witness directory checks to retained-history reports, including rechecks after final journal verification. These changes are **unreleased**. Legacy single-file witnesses report only their original state directory; wrapped/custom manifest witnesses remain usable without claiming original-directory ownership. Directory metadata does not establish complete retention/storage graphs or production authority; automatic promotion remains **HOLD**. [Implementation progress, section 40](../../docs/research/agents/rrsi-implementation-progress-2026-10-07.md).
+CLI **0.166.150** is public through [GitHub Actions OIDC](https://github.com/chainlesschain/chainlesschain/actions/runs/43642085522). Exact source `b2af25c65d34f1ee34cdddf308b5a8e57bb4f198` passed all configured CLI CI and Strict Sandbox jobs on Linux, Windows and macOS. Public archive byte identity, signed provenance and registry-only child dependencies are verified.
+
+Install `npm i -g chainlesschain@0.166.150 --registry https://registry.npmjs.org`, restart CLI/IDE hosts, then run `cc --version` and `cc doctor`.
+
+Open VSX **0.37.189** is [public](https://github.com/chainlesschain/chainlesschain/actions/runs/43646453630) and byte-identical to the official VSIX. JetBrains **0.4.204** is publicly verified. Both recommend CLI **0.166.150**. Child package versions remain unchanged. Microsoft Marketplace is not published by these tag workflows; public PC/mobile clients remain **v5.0.3.145**.
+
+This release adds fresh LK model prices, balance, Key quota and actual API billing (`cc llm account`), plus saved credentials for every configured channel, including Volcengine. Saved connections restore the Key when switching back; LK hosts and protocols share one credential. Desktop source supports the same account queries and encrypted connection history; a new desktop installer is not part of this release.
+
+CLI setup, `cc ui` and IDE settings offer the LK primary/backup endpoints and 83 protocol-filtered chat models from a shared 197-entry catalog. Account prices and bills use platform credits (算力); bill records have no Token counts, so local Token estimates remain separate. Media task submission and polling are not part of these chat settings.
+
+[LK setup and limits](../../docs/configuration/lk-api-channel.md) · [Upgrade guide](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-14-150.md) · [Publication evidence](../../docs/research/cli/evidence/release150-public/publication.json). Existing production authority and automatic-promotion limits remain.
+
+## Previous public CLI 0.166.149 / IDE pairing (2026-11-14)
+
+Development after the historical .149 release added original source-journal and manifest-witness directory checks to retained-history reports, including rechecks after final journal verification. These changes were unreleased at the .149 snapshot; the current .150 source includes them. Legacy single-file witnesses report only their original state directory; wrapped/custom manifest witnesses remain usable without claiming original-directory ownership. Directory metadata does not establish complete retention/storage graphs or production authority; automatic promotion remains **HOLD**. [Implementation progress, section 40](../../docs/research/agents/rrsi-implementation-progress-2026-10-07.md).
 
 CLI **0.166.149** is public through [GitHub Actions OIDC](https://github.com/chainlesschain/chainlesschain/actions/runs/43475425890). Exact source `168a3d561b5a16e9d27b060944c63b2264c99df0` passed all **76 CLI CI** and **6 Strict Sandbox** jobs on all configured systems. The official workflow verified child registry bytes, registry-only dependencies and CLI provenance. An independent public download is byte-identical to the immutable official tarball. [Publication evidence](../../docs/research/cli/evidence/release149-public/publication.json).
 

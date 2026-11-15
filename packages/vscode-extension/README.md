@@ -4,13 +4,33 @@ ChainlessChain agent workspace for VS Code-compatible editors with streaming cha
 
 ## Release pairing
 
-This candidate also adds fresh LK model prices, balance, Key quota and actual API billing (cc llm account), plus saved credentials for every configured channel, including Volcengine. Switch back using Saved connections without re-entering the Key; LK hosts and protocols share one credential. Desktop source supports the same account queries and encrypted connection history.
+Version **0.37.189** recommends CLI **`0.166.150`** and pairs with JetBrains **0.4.204**.
 
-Version **0.37.189** recommends CLI **`0.166.150`** and pairs with source JetBrains **0.4.204**. These candidates add LK primary/backup configuration and 83 protocol-filtered chat models, with a shared 197-entry model directory. Publication is pending exact-source CI, npm OIDC and registry readback; the preceding public versions below remain authoritative until verification. Child package versions remain unchanged. [LK setup and limits](../../docs/configuration/lk-api-channel.md).
-
-The channel uses native OpenAI, Anthropic and Gemini adapters. Its media directory is an interface reference; task submission and polling are not implemented in these chat panels. Account model permissions and pricing remain platform-controlled. Existing deployment gates and HOLD remain. [Previous publication evidence](../../docs/research/cli/evidence/release149-public/publication.json).
+This release adds fresh LK model prices, balance, Key quota and actual API billing (`cc llm account`), plus saved credentials for every configured channel, including Volcengine. Saved connections restore the Key when switching back; LK hosts and protocols share one credential. Desktop source supports the same account queries and encrypted connection history; a new desktop installer is not part of this release.
 
 ## Current release
+
+<!-- release189-status -->
+
+Open VSX version **0.37.189** pairs with public CLI `0.166.150`.
+
+| Component                 | Current public status                                       |
+| ------------------------- | ----------------------------------------------------------- |
+| VS Code extension         | **0.37.189**; verified public Open VSX release              |
+| Recommended CLI           | **`chainlesschain@0.166.150`**; verified public npm package |
+| Base bridge compatibility | `cc >= 0.162.190`; newer features require the paired CLI    |
+
+Open VSX **0.37.189** is [public and byte-verified](https://github.com/chainlesschain/chainlesschain/actions/runs/43646453630), and recommends CLI **0.166.150**. CLI `0.166.150` is the recommended public CLI; Using `@0.166.150` selects this verified pairing. Install `npm i -g chainlesschain@0.166.150 --registry https://registry.npmjs.org`, restart the host, then run `cc --version` and `cc doctor`.
+
+The immutable extension tag is `ide-vscode-v0.37.189`.
+
+[Download chainlesschain-ide-0.37.189.vsix](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.189/file/chainlesschain.chainlesschain-ide-0.37.189.vsix). JetBrains **0.4.204** is publicly verified and recommends the same CLI. Microsoft Marketplace is not published by this tag workflow. Base bridge compatibility remains `cc >= 0.162.190`; the new configuration and account commands require the paired CLI.
+
+Open **Configure LLM** to select LK, protocol, endpoint and model, restore a saved channel, or refresh the saved LK account. Prices and actual bills use 算力; Token estimates are separate. The 197-entry media/chat directory includes 83 chat models; media task submission and polling are not implemented in these settings.
+
+[Setup and limits](../../docs/configuration/lk-api-channel.md) · [Publication evidence](../../docs/research/cli/evidence/release150-public/publication.json).
+
+### Previous verified release (0.37.188)
 
 <!-- release188-status -->
 

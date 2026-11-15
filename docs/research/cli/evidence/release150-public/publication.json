@@ -1,0 +1,129 @@
+{
+  "schema": 1,
+  "checkedAt": "2026-11-14T23:40:04.753508+00:00",
+  "source": "b2af25c65d34f1ee34cdddf308b5a8e57bb4f198",
+  "cli": {
+    "version": "0.166.150",
+    "status": "verified-public",
+    "source": "b2af25c65d34f1ee34cdddf308b5a8e57bb4f198",
+    "method": "GitHub Actions OIDC Trusted Publishing",
+    "runId": 43642085522,
+    "tag": "v-npm-0-166-150",
+    "officialWorkflowConclusion": "success",
+    "workflowAttempt": 1,
+    "publicRegistryBytesVerified": true,
+    "byteIdentical": true,
+    "sha256": "5f1e4a788662f02a1c61ffe1bb74014de22bc70710a7200eb0a3281117498c68",
+    "bytes": 9651294,
+    "sha512": "cd8368eeead18a4a384fb0b33ba423b3940f36c56266b9294bbc5c18efdbd11d1a83ca3a5e94fbce6926d309623563c84b46c73271b686a805ae7d2c66facbf1",
+    "provenanceVerified": true,
+    "independentReadbackRunId": 43645997338,
+    "localCryptographicProvenanceRecheck": false,
+    "localPublicArchiveReadback": true,
+    "exactSourceGates": [
+      {
+        "name": "CLI CI",
+        "runId": 43630195823,
+        "attempt": 1,
+        "passed": 76,
+        "total": 76
+      },
+      {
+        "name": "CLI Strict Sandbox",
+        "runId": 43630195774,
+        "attempt": 1,
+        "passed": 6,
+        "total": 6
+      }
+    ]
+  },
+  "ide": {
+    "vscode": {
+      "version": "0.37.189",
+      "source": "b2af25c65d34f1ee34cdddf308b5a8e57bb4f198",
+      "status": "verified-public",
+      "tag": "ide-vscode-v0.37.189",
+      "runId": 43646453630,
+      "workflowAttempt": 1,
+      "recommendedCliVersion": "0.166.150",
+      "officialWorkflowConclusion": "success",
+      "publicRegistryBytesVerified": true,
+      "byteIdentical": true,
+      "sha256": "59ac1dc6f0c44afbe3df88c5b18e4914a547105ea152cf68870234982102c5c8",
+      "bytes": 778611,
+      "listed": true,
+      "downloadable": true,
+      "downloadUrl": "https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.189/file/chainlesschain.chainlesschain-ide-0.37.189.vsix",
+      "jobs": {
+        "passed": 11,
+        "notApplicableSkipped": 3
+      },
+      "microsoftMarketplace": {
+        "status": "not-published-by-this-tag-workflow"
+      }
+    },
+    "jetbrains": {
+      "version": "0.4.204",
+      "source": "b2af25c65d34f1ee34cdddf308b5a8e57bb4f198",
+      "status": "verified-public",
+      "tag": "ide-jetbrains-v0.4.204",
+      "runId": 43646453588,
+      "workflowAttempt": 1,
+      "recommendedCliVersion": "0.166.150",
+      "officialWorkflowConclusion": "success",
+      "officialUploadVerified": true,
+      "publicListingVerified": true,
+      "publicDownloadVerified": true,
+      "updateId": 1220887,
+      "listed": true,
+      "approved": true,
+      "hidden": false,
+      "officialArchiveSha256": "0ea7332dbf62e22b09a85d3d06160546e66ecf65029ee2f0a79288ba39b172dd",
+      "officialArchiveBytes": 1620354,
+      "publicArchiveSha256": "2cb770f12557f55710771fe5fc3e8e1ef53f73b67ecba90f7b11ed7cdedf6cd1",
+      "publicArchiveBytes": 1626014,
+      "archiveBytesIdentical": false,
+      "zipEntryContentsIdentical": true,
+      "downloadUrl": "https://plugins.jetbrains.com/files/32208/1220887/chainlesschain-ide-bridge-0.4.204.zip",
+      "jobs": {
+        "passed": 13,
+        "notApplicableSkipped": 6
+      }
+    }
+  },
+  "ideSourceGates": [
+    {
+      "name": "IDE Extensions",
+      "runId": 43630195763,
+      "passed": 18,
+      "total": 19,
+      "notApplicableSkipped": [
+        "JetBrains Marketplace (post-publish verification)"
+      ]
+    },
+    {
+      "name": "IDE ARM64 Host Validation",
+      "runId": 43630195871,
+      "passed": 11,
+      "total": 11
+    }
+  ],
+  "limits": {
+    "productionAuthority": false,
+    "runtimeEvidence": false,
+    "automaticPromotion": "HOLD",
+    "paidReadiness": "NOT_PAID_READY",
+    "nativeAdmission": "NOT_ADMITTED",
+    "additionalModelTaskAcceptance": false,
+    "publicClients": "v5.0.3.145",
+    "microsoftMarketplace": "not-published-by-these-tag-workflows"
+  },
+  "proofs": {
+    "cli": [
+      "chainlesschain-npm-readback.json",
+      "chainlesschain-npm-provenance.json",
+      "chainlesschain-release.json",
+      "cli-release-gates.json"
+    ]
+  }
+}

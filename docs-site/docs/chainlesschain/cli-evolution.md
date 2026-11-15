@@ -1,6 +1,8 @@
 # 自进化系统 (evolution)
 
-> 2026-11-14 当前 CLI：**0.166.149** 已通过准确提交的全平台 CLI CI / Strict Sandbox 和 Actions OIDC 发布回读。新增保留历史的原始 catalog/head 目录边界重验，限于本地目录元数据；`productionAuthority=false`、`runtimeEvidence=false`、`automaticPromotion=HOLD` 保持。Open VSX .188 已公开并回读通过，JetBrains .203 已通过完整正式门禁并上传，待商店审核及公开下载核验，详见[当前升级与渠道状态](./cli-ide-update-2026-11-13-149)。本轮没有新增模型任务验收。
+> 2026-11-15 当前 CLI **0.166.150** 与 Open VSX **0.37.189** 已公开核验；JetBrains **0.4.204** 已公开核验，推荐 CLI .150。LK 渠道、动态账户查询和各渠道凭证保留见[安装与使用说明](./cli-ide-update-2026-11-14-150)。既有自进化授权及自动晋升边界保持。
+
+> 2026-11-14 历史快照：当时 CLI：**0.166.149** 已通过准确提交的全平台 CLI CI / Strict Sandbox 和 Actions OIDC 发布回读。新增保留历史的原始 catalog/head 目录边界重验，限于本地目录元数据；`productionAuthority=false`、`runtimeEvidence=false`、`automaticPromotion=HOLD` 保持。Open VSX .188 已公开并回读通过，JetBrains .203 已通过完整正式门禁并上传，待商店审核及公开下载核验，详见[当前升级与渠道状态](./cli-ide-update-2026-11-13-149)。本轮没有新增模型任务验收。
 
 ## 历史发行快照
 
