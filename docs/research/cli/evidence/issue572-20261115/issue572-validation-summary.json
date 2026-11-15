@@ -1,0 +1,1366 @@
+{
+  "issue": 572,
+  "platform": "Windows x64",
+  "source": "https://github.com/openai/codex/issues/60529#issuecomment-6761957474",
+  "releaseSources": {
+    "0.169.0": "https://github.com/openai/codex/releases/tag/rust-v0.169.0",
+    "0.171.0-alpha.5": "https://github.com/openai/codex/releases/tag/rust-v0.171.0-alpha.5"
+  },
+  "actualModelTurns": 0,
+  "scope": "Synthetic legacy rollouts only; isolated fresh CODEX_HOME for each case; no thread/start or turn/start",
+  "scriptExitZeroMeansCompatibilityPass": false,
+  "probeSourceSha256": {
+    "issue572-upstream-repro.py": "b81f38c69bd88365d06de20f9a1166049388f64a46317703180bf0b582bf47b4",
+    "issue572-partial.py": "0ac81914d9481a5157736a5417005070a5f4dc0906ff4c53bfe0cbccdf9e701c"
+  },
+  "versions": {
+    "0.169.0": {
+      "nativeSha256": "ce1945eb440b5481ed1233ebaf32b7056ee7e4e452fa62ffe1cbfb26103cdee0",
+      "reportedVersion": "codex-cli 0.169.0",
+      "runs": {
+        "emptyIndex": {
+          "rawEvidence": {
+            "file": "issue572-stable-0169-upstream.txt",
+            "bytes": 7890,
+            "sha256": "69c3103256fe8cde49328fe54eca2d9e4df3885437f316eaa6d8de2c83e39a6d"
+          },
+          "observedScriptExitCode": 0,
+          "cases": [
+            {
+              "rollouts": 2,
+              "limit": 1,
+              "mtime": "oneSecondApart",
+              "direction": "asc",
+              "initialIndex": "empty",
+              "databaseOnlyBeforeAndAfterCopyEmpty": true,
+              "initialIndexEvidence": "asserted by unmodified upstream probe before and after rollout creation",
+              "cold": {
+                "pages": [
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000001"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 1,
+                "returned": 1,
+                "expected": 2,
+                "complete": false,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": true
+              },
+              "afterFullRepair": {
+                "pages": [
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000001"],
+                    "nextCursor": "2026-01-02T00:00:00Z|00000000-0000-0000-0000-000000000001"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000002"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 2,
+                "returned": 2,
+                "expected": 2,
+                "complete": true,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": false
+              }
+            },
+            {
+              "rollouts": 2,
+              "limit": 1,
+              "mtime": "oneSecondApart",
+              "direction": "desc",
+              "initialIndex": "empty",
+              "databaseOnlyBeforeAndAfterCopyEmpty": true,
+              "initialIndexEvidence": "asserted by unmodified upstream probe before and after rollout creation",
+              "cold": {
+                "pages": [
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000002"],
+                    "nextCursor": "2026-01-02T00:00:01Z|00000000-0000-0000-0000-000000000002"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000001"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 2,
+                "returned": 2,
+                "expected": 2,
+                "complete": true,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": false
+              },
+              "afterFullRepair": {
+                "pages": [
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000002"],
+                    "nextCursor": "2026-01-02T00:00:01Z|00000000-0000-0000-0000-000000000002"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000001"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 2,
+                "returned": 2,
+                "expected": 2,
+                "complete": true,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": false
+              }
+            },
+            {
+              "rollouts": 5,
+              "limit": 2,
+              "mtime": "oneSecondApart",
+              "direction": "asc",
+              "initialIndex": "empty",
+              "databaseOnlyBeforeAndAfterCopyEmpty": true,
+              "initialIndexEvidence": "asserted by unmodified upstream probe before and after rollout creation",
+              "cold": {
+                "pages": [
+                  {
+                    "ids": [
+                      "00000000-0000-0000-0000-000000000001",
+                      "00000000-0000-0000-0000-000000000002"
+                    ],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 2,
+                "returned": 2,
+                "expected": 5,
+                "complete": false,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": true
+              },
+              "afterFullRepair": {
+                "pages": [
+                  {
+                    "ids": [
+                      "00000000-0000-0000-0000-000000000001",
+                      "00000000-0000-0000-0000-000000000002"
+                    ],
+                    "nextCursor": "2026-01-02T00:00:01Z|00000000-0000-0000-0000-000000000002"
+                  },
+                  {
+                    "ids": [
+                      "00000000-0000-0000-0000-000000000003",
+                      "00000000-0000-0000-0000-000000000004"
+                    ],
+                    "nextCursor": "2026-01-02T00:00:03Z|00000000-0000-0000-0000-000000000004"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000005"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 5,
+                "returned": 5,
+                "expected": 5,
+                "complete": true,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": false
+              }
+            },
+            {
+              "rollouts": 5,
+              "limit": 2,
+              "mtime": "oneSecondApart",
+              "direction": "desc",
+              "initialIndex": "empty",
+              "databaseOnlyBeforeAndAfterCopyEmpty": true,
+              "initialIndexEvidence": "asserted by unmodified upstream probe before and after rollout creation",
+              "cold": {
+                "pages": [
+                  {
+                    "ids": [
+                      "00000000-0000-0000-0000-000000000005",
+                      "00000000-0000-0000-0000-000000000004"
+                    ],
+                    "nextCursor": "2026-01-02T00:00:03Z|00000000-0000-0000-0000-000000000004"
+                  },
+                  {
+                    "ids": [
+                      "00000000-0000-0000-0000-000000000003",
+                      "00000000-0000-0000-0000-000000000002"
+                    ],
+                    "nextCursor": "2026-01-02T00:00:01Z|00000000-0000-0000-0000-000000000002"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000001"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 5,
+                "returned": 5,
+                "expected": 5,
+                "complete": true,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": false
+              },
+              "afterFullRepair": {
+                "pages": [
+                  {
+                    "ids": [
+                      "00000000-0000-0000-0000-000000000005",
+                      "00000000-0000-0000-0000-000000000004"
+                    ],
+                    "nextCursor": "2026-01-02T00:00:03Z|00000000-0000-0000-0000-000000000004"
+                  },
+                  {
+                    "ids": [
+                      "00000000-0000-0000-0000-000000000003",
+                      "00000000-0000-0000-0000-000000000002"
+                    ],
+                    "nextCursor": "2026-01-02T00:00:01Z|00000000-0000-0000-0000-000000000002"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000001"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 5,
+                "returned": 5,
+                "expected": 5,
+                "complete": true,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": false
+              }
+            },
+            {
+              "rollouts": 5,
+              "limit": 1,
+              "mtime": "tied",
+              "direction": "asc",
+              "initialIndex": "empty",
+              "databaseOnlyBeforeAndAfterCopyEmpty": true,
+              "initialIndexEvidence": "asserted by unmodified upstream probe before and after rollout creation",
+              "cold": {
+                "pages": [
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000001"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 1,
+                "returned": 1,
+                "expected": 5,
+                "complete": false,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": true
+              },
+              "afterFullRepair": {
+                "pages": [
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000001"],
+                    "nextCursor": "2026-01-02T00:00:00Z|00000000-0000-0000-0000-000000000001"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000002"],
+                    "nextCursor": "2026-01-02T00:00:00.001Z|00000000-0000-0000-0000-000000000002"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000003"],
+                    "nextCursor": "2026-01-02T00:00:00.002Z|00000000-0000-0000-0000-000000000003"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000004"],
+                    "nextCursor": "2026-01-02T00:00:00.003Z|00000000-0000-0000-0000-000000000004"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000005"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 5,
+                "returned": 5,
+                "expected": 5,
+                "complete": true,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": false
+              }
+            },
+            {
+              "rollouts": 5,
+              "limit": 1,
+              "mtime": "tied",
+              "direction": "desc",
+              "initialIndex": "empty",
+              "databaseOnlyBeforeAndAfterCopyEmpty": true,
+              "initialIndexEvidence": "asserted by unmodified upstream probe before and after rollout creation",
+              "cold": {
+                "pages": [
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000004"],
+                    "nextCursor": "2026-01-02T00:00:00.001Z|00000000-0000-0000-0000-000000000004"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000005"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 2,
+                "returned": 2,
+                "expected": 5,
+                "complete": false,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": true
+              },
+              "afterFullRepair": {
+                "pages": [
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000001"],
+                    "nextCursor": "2026-01-02T00:00:00.004Z|00000000-0000-0000-0000-000000000001"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000002"],
+                    "nextCursor": "2026-01-02T00:00:00.003Z|00000000-0000-0000-0000-000000000002"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000003"],
+                    "nextCursor": "2026-01-02T00:00:00.002Z|00000000-0000-0000-0000-000000000003"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000004"],
+                    "nextCursor": "2026-01-02T00:00:00.001Z|00000000-0000-0000-0000-000000000004"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000005"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 5,
+                "returned": 5,
+                "expected": 5,
+                "complete": true,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": false
+              }
+            }
+          ]
+        },
+        "partialIndex": {
+          "rawEvidence": {
+            "file": "issue572-stable-0169-partial.txt",
+            "bytes": 9624,
+            "sha256": "c88966b34be7aef63a097a7a5b0d1c3be7772c7cb031374447f1e87a084837b5"
+          },
+          "observedScriptExitCode": 0,
+          "cases": [
+            {
+              "rollouts": 5,
+              "limit": 2,
+              "mtime": "oneSecondApart",
+              "direction": "asc",
+              "initialIndex": "empty",
+              "databaseOnlyBeforeAndAfterCopyEmpty": true,
+              "initialIndexEvidence": "raw database-only responses stored in partial-index output",
+              "seedPage": {
+                "ids": [
+                  "00000000-0000-0000-0000-000000000001",
+                  "00000000-0000-0000-0000-000000000002"
+                ],
+                "nextCursor": null
+              },
+              "partialIndexIds": [
+                "00000000-0000-0000-0000-000000000001",
+                "00000000-0000-0000-0000-000000000002"
+              ],
+              "partialIndexCount": 2,
+              "postSeed": {
+                "pages": [
+                  {
+                    "ids": [
+                      "00000000-0000-0000-0000-000000000001",
+                      "00000000-0000-0000-0000-000000000002"
+                    ],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 2,
+                "returned": 2,
+                "expected": 5,
+                "complete": false,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": true
+              },
+              "afterFullRepair": {
+                "pages": [
+                  {
+                    "ids": [
+                      "00000000-0000-0000-0000-000000000001",
+                      "00000000-0000-0000-0000-000000000002"
+                    ],
+                    "nextCursor": "2026-01-02T00:00:01Z|00000000-0000-0000-0000-000000000002"
+                  },
+                  {
+                    "ids": [
+                      "00000000-0000-0000-0000-000000000003",
+                      "00000000-0000-0000-0000-000000000004"
+                    ],
+                    "nextCursor": "2026-01-02T00:00:03Z|00000000-0000-0000-0000-000000000004"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000005"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 5,
+                "returned": 5,
+                "expected": 5,
+                "complete": true,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": false
+              }
+            },
+            {
+              "rollouts": 5,
+              "limit": 2,
+              "mtime": "oneSecondApart",
+              "direction": "desc",
+              "initialIndex": "empty",
+              "databaseOnlyBeforeAndAfterCopyEmpty": true,
+              "initialIndexEvidence": "raw database-only responses stored in partial-index output",
+              "seedPage": {
+                "ids": [
+                  "00000000-0000-0000-0000-000000000005",
+                  "00000000-0000-0000-0000-000000000004"
+                ],
+                "nextCursor": "2026-01-02T00:00:03Z|00000000-0000-0000-0000-000000000004"
+              },
+              "partialIndexIds": [
+                "00000000-0000-0000-0000-000000000005",
+                "00000000-0000-0000-0000-000000000004",
+                "00000000-0000-0000-0000-000000000003",
+                "00000000-0000-0000-0000-000000000002"
+              ],
+              "partialIndexCount": 4,
+              "postSeed": {
+                "pages": [
+                  {
+                    "ids": [
+                      "00000000-0000-0000-0000-000000000005",
+                      "00000000-0000-0000-0000-000000000004"
+                    ],
+                    "nextCursor": "2026-01-02T00:00:03Z|00000000-0000-0000-0000-000000000004"
+                  },
+                  {
+                    "ids": [
+                      "00000000-0000-0000-0000-000000000003",
+                      "00000000-0000-0000-0000-000000000002"
+                    ],
+                    "nextCursor": "2026-01-02T00:00:01Z|00000000-0000-0000-0000-000000000002"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000001"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 5,
+                "returned": 5,
+                "expected": 5,
+                "complete": true,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": false
+              },
+              "afterFullRepair": {
+                "pages": [
+                  {
+                    "ids": [
+                      "00000000-0000-0000-0000-000000000005",
+                      "00000000-0000-0000-0000-000000000004"
+                    ],
+                    "nextCursor": "2026-01-02T00:00:03Z|00000000-0000-0000-0000-000000000004"
+                  },
+                  {
+                    "ids": [
+                      "00000000-0000-0000-0000-000000000003",
+                      "00000000-0000-0000-0000-000000000002"
+                    ],
+                    "nextCursor": "2026-01-02T00:00:01Z|00000000-0000-0000-0000-000000000002"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000001"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 5,
+                "returned": 5,
+                "expected": 5,
+                "complete": true,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": false
+              }
+            },
+            {
+              "rollouts": 5,
+              "limit": 1,
+              "mtime": "tied",
+              "direction": "asc",
+              "initialIndex": "empty",
+              "databaseOnlyBeforeAndAfterCopyEmpty": true,
+              "initialIndexEvidence": "raw database-only responses stored in partial-index output",
+              "seedPage": {
+                "ids": ["00000000-0000-0000-0000-000000000001"],
+                "nextCursor": null
+              },
+              "partialIndexIds": ["00000000-0000-0000-0000-000000000001"],
+              "partialIndexCount": 1,
+              "postSeed": {
+                "pages": [
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000001"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 1,
+                "returned": 1,
+                "expected": 5,
+                "complete": false,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": true
+              },
+              "afterFullRepair": {
+                "pages": [
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000001"],
+                    "nextCursor": "2026-01-02T00:00:00Z|00000000-0000-0000-0000-000000000001"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000002"],
+                    "nextCursor": "2026-01-02T00:00:00.001Z|00000000-0000-0000-0000-000000000002"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000003"],
+                    "nextCursor": "2026-01-02T00:00:00.002Z|00000000-0000-0000-0000-000000000003"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000004"],
+                    "nextCursor": "2026-01-02T00:00:00.003Z|00000000-0000-0000-0000-000000000004"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000005"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 5,
+                "returned": 5,
+                "expected": 5,
+                "complete": true,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": false
+              }
+            },
+            {
+              "rollouts": 5,
+              "limit": 1,
+              "mtime": "tied",
+              "direction": "desc",
+              "initialIndex": "empty",
+              "databaseOnlyBeforeAndAfterCopyEmpty": true,
+              "initialIndexEvidence": "raw database-only responses stored in partial-index output",
+              "seedPage": {
+                "ids": ["00000000-0000-0000-0000-000000000004"],
+                "nextCursor": "2026-01-02T00:00:00.001Z|00000000-0000-0000-0000-000000000004"
+              },
+              "partialIndexIds": [
+                "00000000-0000-0000-0000-000000000004",
+                "00000000-0000-0000-0000-000000000005"
+              ],
+              "partialIndexCount": 2,
+              "postSeed": {
+                "pages": [
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000004"],
+                    "nextCursor": "2026-01-02T00:00:00.001Z|00000000-0000-0000-0000-000000000004"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000005"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 2,
+                "returned": 2,
+                "expected": 5,
+                "complete": false,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": true
+              },
+              "afterFullRepair": {
+                "pages": [
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000001"],
+                    "nextCursor": "2026-01-02T00:00:00.004Z|00000000-0000-0000-0000-000000000001"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000002"],
+                    "nextCursor": "2026-01-02T00:00:00.003Z|00000000-0000-0000-0000-000000000002"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000003"],
+                    "nextCursor": "2026-01-02T00:00:00.002Z|00000000-0000-0000-0000-000000000003"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000004"],
+                    "nextCursor": "2026-01-02T00:00:00.001Z|00000000-0000-0000-0000-000000000004"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000005"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 5,
+                "returned": 5,
+                "expected": 5,
+                "complete": true,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": false
+              }
+            }
+          ]
+        }
+      }
+    },
+    "0.171.0-alpha.5": {
+      "nativeSha256": "f9e343c2060e7d22ccc5273ad488a725d3774bba53b5abe8985dbb2c154e484e",
+      "reportedVersion": "codex-cli 0.171.0-alpha.5",
+      "runs": {
+        "emptyIndex": {
+          "rawEvidence": {
+            "file": "issue572-alpha5-upstream.txt",
+            "bytes": 9254,
+            "sha256": "27a1875e3f8ed79da31b8d43381ba74b7d0514add7208fd2c4bb2b2cef8d4a52"
+          },
+          "observedScriptExitCode": 0,
+          "cases": [
+            {
+              "rollouts": 2,
+              "limit": 1,
+              "mtime": "oneSecondApart",
+              "direction": "asc",
+              "initialIndex": "empty",
+              "databaseOnlyBeforeAndAfterCopyEmpty": true,
+              "initialIndexEvidence": "asserted by unmodified upstream probe before and after rollout creation",
+              "cold": {
+                "pages": [
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000001"],
+                    "nextCursor": "2026-01-02T00:00:00Z|00000000-0000-0000-0000-000000000001"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000002"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 2,
+                "returned": 2,
+                "expected": 2,
+                "complete": true,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": false
+              },
+              "afterFullRepair": {
+                "pages": [
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000001"],
+                    "nextCursor": "2026-01-02T00:00:00Z|00000000-0000-0000-0000-000000000001"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000002"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 2,
+                "returned": 2,
+                "expected": 2,
+                "complete": true,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": false
+              }
+            },
+            {
+              "rollouts": 2,
+              "limit": 1,
+              "mtime": "oneSecondApart",
+              "direction": "desc",
+              "initialIndex": "empty",
+              "databaseOnlyBeforeAndAfterCopyEmpty": true,
+              "initialIndexEvidence": "asserted by unmodified upstream probe before and after rollout creation",
+              "cold": {
+                "pages": [
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000002"],
+                    "nextCursor": "2026-01-02T00:00:01Z|00000000-0000-0000-0000-000000000002"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000001"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 2,
+                "returned": 2,
+                "expected": 2,
+                "complete": true,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": false
+              },
+              "afterFullRepair": {
+                "pages": [
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000002"],
+                    "nextCursor": "2026-01-02T00:00:01Z|00000000-0000-0000-0000-000000000002"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000001"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 2,
+                "returned": 2,
+                "expected": 2,
+                "complete": true,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": false
+              }
+            },
+            {
+              "rollouts": 5,
+              "limit": 2,
+              "mtime": "oneSecondApart",
+              "direction": "asc",
+              "initialIndex": "empty",
+              "databaseOnlyBeforeAndAfterCopyEmpty": true,
+              "initialIndexEvidence": "asserted by unmodified upstream probe before and after rollout creation",
+              "cold": {
+                "pages": [
+                  {
+                    "ids": [
+                      "00000000-0000-0000-0000-000000000001",
+                      "00000000-0000-0000-0000-000000000002"
+                    ],
+                    "nextCursor": "2026-01-02T00:00:01Z|00000000-0000-0000-0000-000000000002"
+                  },
+                  {
+                    "ids": [
+                      "00000000-0000-0000-0000-000000000003",
+                      "00000000-0000-0000-0000-000000000004"
+                    ],
+                    "nextCursor": "2026-01-02T00:00:03Z|00000000-0000-0000-0000-000000000004"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000005"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 5,
+                "returned": 5,
+                "expected": 5,
+                "complete": true,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": false
+              },
+              "afterFullRepair": {
+                "pages": [
+                  {
+                    "ids": [
+                      "00000000-0000-0000-0000-000000000001",
+                      "00000000-0000-0000-0000-000000000002"
+                    ],
+                    "nextCursor": "2026-01-02T00:00:01Z|00000000-0000-0000-0000-000000000002"
+                  },
+                  {
+                    "ids": [
+                      "00000000-0000-0000-0000-000000000003",
+                      "00000000-0000-0000-0000-000000000004"
+                    ],
+                    "nextCursor": "2026-01-02T00:00:03Z|00000000-0000-0000-0000-000000000004"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000005"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 5,
+                "returned": 5,
+                "expected": 5,
+                "complete": true,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": false
+              }
+            },
+            {
+              "rollouts": 5,
+              "limit": 2,
+              "mtime": "oneSecondApart",
+              "direction": "desc",
+              "initialIndex": "empty",
+              "databaseOnlyBeforeAndAfterCopyEmpty": true,
+              "initialIndexEvidence": "asserted by unmodified upstream probe before and after rollout creation",
+              "cold": {
+                "pages": [
+                  {
+                    "ids": [
+                      "00000000-0000-0000-0000-000000000005",
+                      "00000000-0000-0000-0000-000000000004"
+                    ],
+                    "nextCursor": "2026-01-02T00:00:03Z|00000000-0000-0000-0000-000000000004"
+                  },
+                  {
+                    "ids": [
+                      "00000000-0000-0000-0000-000000000003",
+                      "00000000-0000-0000-0000-000000000002"
+                    ],
+                    "nextCursor": "2026-01-02T00:00:01Z|00000000-0000-0000-0000-000000000002"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000001"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 5,
+                "returned": 5,
+                "expected": 5,
+                "complete": true,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": false
+              },
+              "afterFullRepair": {
+                "pages": [
+                  {
+                    "ids": [
+                      "00000000-0000-0000-0000-000000000005",
+                      "00000000-0000-0000-0000-000000000004"
+                    ],
+                    "nextCursor": "2026-01-02T00:00:03Z|00000000-0000-0000-0000-000000000004"
+                  },
+                  {
+                    "ids": [
+                      "00000000-0000-0000-0000-000000000003",
+                      "00000000-0000-0000-0000-000000000002"
+                    ],
+                    "nextCursor": "2026-01-02T00:00:01Z|00000000-0000-0000-0000-000000000002"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000001"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 5,
+                "returned": 5,
+                "expected": 5,
+                "complete": true,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": false
+              }
+            },
+            {
+              "rollouts": 5,
+              "limit": 1,
+              "mtime": "tied",
+              "direction": "asc",
+              "initialIndex": "empty",
+              "databaseOnlyBeforeAndAfterCopyEmpty": true,
+              "initialIndexEvidence": "asserted by unmodified upstream probe before and after rollout creation",
+              "cold": {
+                "pages": [
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000001"],
+                    "nextCursor": "2026-01-02T00:00:00Z|00000000-0000-0000-0000-000000000001"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000002"],
+                    "nextCursor": "2026-01-02T00:00:00.001Z|00000000-0000-0000-0000-000000000002"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000003"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 3,
+                "returned": 3,
+                "expected": 5,
+                "complete": false,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": true
+              },
+              "afterFullRepair": {
+                "pages": [
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000001"],
+                    "nextCursor": "2026-01-02T00:00:00Z|00000000-0000-0000-0000-000000000001"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000002"],
+                    "nextCursor": "2026-01-02T00:00:00.001Z|00000000-0000-0000-0000-000000000002"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000003"],
+                    "nextCursor": "2026-01-02T00:00:00.002Z|00000000-0000-0000-0000-000000000003"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000004"],
+                    "nextCursor": "2026-01-02T00:00:00.004Z|00000000-0000-0000-0000-000000000004"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000005"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 5,
+                "returned": 5,
+                "expected": 5,
+                "complete": true,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": false
+              }
+            },
+            {
+              "rollouts": 5,
+              "limit": 1,
+              "mtime": "tied",
+              "direction": "desc",
+              "initialIndex": "empty",
+              "databaseOnlyBeforeAndAfterCopyEmpty": true,
+              "initialIndexEvidence": "asserted by unmodified upstream probe before and after rollout creation",
+              "cold": {
+                "pages": [
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000004"],
+                    "nextCursor": "2026-01-02T00:00:00.001Z|00000000-0000-0000-0000-000000000004"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000005"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 2,
+                "returned": 2,
+                "expected": 5,
+                "complete": false,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": true
+              },
+              "afterFullRepair": {
+                "pages": [
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000001"],
+                    "nextCursor": "2026-01-02T00:00:00.004Z|00000000-0000-0000-0000-000000000001"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000002"],
+                    "nextCursor": "2026-01-02T00:00:00.003Z|00000000-0000-0000-0000-000000000002"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000003"],
+                    "nextCursor": "2026-01-02T00:00:00.002Z|00000000-0000-0000-0000-000000000003"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000004"],
+                    "nextCursor": "2026-01-02T00:00:00.001Z|00000000-0000-0000-0000-000000000004"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000005"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 5,
+                "returned": 5,
+                "expected": 5,
+                "complete": true,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": false
+              }
+            }
+          ]
+        },
+        "partialIndex": {
+          "rawEvidence": {
+            "file": "issue572-alpha5-partial.txt",
+            "bytes": 11116,
+            "sha256": "1ac043530aca45cba2dea0d932fd396ee80cae75318fcbe77432bf61671cd68e"
+          },
+          "observedScriptExitCode": 0,
+          "cases": [
+            {
+              "rollouts": 5,
+              "limit": 2,
+              "mtime": "oneSecondApart",
+              "direction": "asc",
+              "initialIndex": "empty",
+              "databaseOnlyBeforeAndAfterCopyEmpty": true,
+              "initialIndexEvidence": "raw database-only responses stored in partial-index output",
+              "seedPage": {
+                "ids": [
+                  "00000000-0000-0000-0000-000000000001",
+                  "00000000-0000-0000-0000-000000000002"
+                ],
+                "nextCursor": "2026-01-02T00:00:01Z|00000000-0000-0000-0000-000000000002"
+              },
+              "partialIndexIds": [
+                "00000000-0000-0000-0000-000000000001",
+                "00000000-0000-0000-0000-000000000002",
+                "00000000-0000-0000-0000-000000000003"
+              ],
+              "partialIndexCount": 3,
+              "postSeed": {
+                "pages": [
+                  {
+                    "ids": [
+                      "00000000-0000-0000-0000-000000000001",
+                      "00000000-0000-0000-0000-000000000002"
+                    ],
+                    "nextCursor": "2026-01-02T00:00:01Z|00000000-0000-0000-0000-000000000002"
+                  },
+                  {
+                    "ids": [
+                      "00000000-0000-0000-0000-000000000003",
+                      "00000000-0000-0000-0000-000000000004"
+                    ],
+                    "nextCursor": "2026-01-02T00:00:03Z|00000000-0000-0000-0000-000000000004"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000005"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 5,
+                "returned": 5,
+                "expected": 5,
+                "complete": true,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": false
+              },
+              "afterFullRepair": {
+                "pages": [
+                  {
+                    "ids": [
+                      "00000000-0000-0000-0000-000000000001",
+                      "00000000-0000-0000-0000-000000000002"
+                    ],
+                    "nextCursor": "2026-01-02T00:00:01Z|00000000-0000-0000-0000-000000000002"
+                  },
+                  {
+                    "ids": [
+                      "00000000-0000-0000-0000-000000000003",
+                      "00000000-0000-0000-0000-000000000004"
+                    ],
+                    "nextCursor": "2026-01-02T00:00:03Z|00000000-0000-0000-0000-000000000004"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000005"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 5,
+                "returned": 5,
+                "expected": 5,
+                "complete": true,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": false
+              }
+            },
+            {
+              "rollouts": 5,
+              "limit": 2,
+              "mtime": "oneSecondApart",
+              "direction": "desc",
+              "initialIndex": "empty",
+              "databaseOnlyBeforeAndAfterCopyEmpty": true,
+              "initialIndexEvidence": "raw database-only responses stored in partial-index output",
+              "seedPage": {
+                "ids": [
+                  "00000000-0000-0000-0000-000000000005",
+                  "00000000-0000-0000-0000-000000000004"
+                ],
+                "nextCursor": "2026-01-02T00:00:03Z|00000000-0000-0000-0000-000000000004"
+              },
+              "partialIndexIds": [
+                "00000000-0000-0000-0000-000000000005",
+                "00000000-0000-0000-0000-000000000004",
+                "00000000-0000-0000-0000-000000000003",
+                "00000000-0000-0000-0000-000000000002"
+              ],
+              "partialIndexCount": 4,
+              "postSeed": {
+                "pages": [
+                  {
+                    "ids": [
+                      "00000000-0000-0000-0000-000000000005",
+                      "00000000-0000-0000-0000-000000000004"
+                    ],
+                    "nextCursor": "2026-01-02T00:00:03Z|00000000-0000-0000-0000-000000000004"
+                  },
+                  {
+                    "ids": [
+                      "00000000-0000-0000-0000-000000000003",
+                      "00000000-0000-0000-0000-000000000002"
+                    ],
+                    "nextCursor": "2026-01-02T00:00:01Z|00000000-0000-0000-0000-000000000002"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000001"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 5,
+                "returned": 5,
+                "expected": 5,
+                "complete": true,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": false
+              },
+              "afterFullRepair": {
+                "pages": [
+                  {
+                    "ids": [
+                      "00000000-0000-0000-0000-000000000005",
+                      "00000000-0000-0000-0000-000000000004"
+                    ],
+                    "nextCursor": "2026-01-02T00:00:03Z|00000000-0000-0000-0000-000000000004"
+                  },
+                  {
+                    "ids": [
+                      "00000000-0000-0000-0000-000000000003",
+                      "00000000-0000-0000-0000-000000000002"
+                    ],
+                    "nextCursor": "2026-01-02T00:00:01Z|00000000-0000-0000-0000-000000000002"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000001"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 5,
+                "returned": 5,
+                "expected": 5,
+                "complete": true,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": false
+              }
+            },
+            {
+              "rollouts": 5,
+              "limit": 1,
+              "mtime": "tied",
+              "direction": "asc",
+              "initialIndex": "empty",
+              "databaseOnlyBeforeAndAfterCopyEmpty": true,
+              "initialIndexEvidence": "raw database-only responses stored in partial-index output",
+              "seedPage": {
+                "ids": ["00000000-0000-0000-0000-000000000001"],
+                "nextCursor": "2026-01-02T00:00:00Z|00000000-0000-0000-0000-000000000001"
+              },
+              "partialIndexIds": [
+                "00000000-0000-0000-0000-000000000001",
+                "00000000-0000-0000-0000-000000000002"
+              ],
+              "partialIndexCount": 2,
+              "postSeed": {
+                "pages": [
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000001"],
+                    "nextCursor": "2026-01-02T00:00:00Z|00000000-0000-0000-0000-000000000001"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000002"],
+                    "nextCursor": "2026-01-02T00:00:00.001Z|00000000-0000-0000-0000-000000000002"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000003"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 3,
+                "returned": 3,
+                "expected": 5,
+                "complete": false,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": true
+              },
+              "afterFullRepair": {
+                "pages": [
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000001"],
+                    "nextCursor": "2026-01-02T00:00:00Z|00000000-0000-0000-0000-000000000001"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000002"],
+                    "nextCursor": "2026-01-02T00:00:00.001Z|00000000-0000-0000-0000-000000000002"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000003"],
+                    "nextCursor": "2026-01-02T00:00:00.002Z|00000000-0000-0000-0000-000000000003"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000004"],
+                    "nextCursor": "2026-01-02T00:00:00.004Z|00000000-0000-0000-0000-000000000004"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000005"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 5,
+                "returned": 5,
+                "expected": 5,
+                "complete": true,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": false
+              }
+            },
+            {
+              "rollouts": 5,
+              "limit": 1,
+              "mtime": "tied",
+              "direction": "desc",
+              "initialIndex": "empty",
+              "databaseOnlyBeforeAndAfterCopyEmpty": true,
+              "initialIndexEvidence": "raw database-only responses stored in partial-index output",
+              "seedPage": {
+                "ids": ["00000000-0000-0000-0000-000000000004"],
+                "nextCursor": "2026-01-02T00:00:00.001Z|00000000-0000-0000-0000-000000000004"
+              },
+              "partialIndexIds": [
+                "00000000-0000-0000-0000-000000000004",
+                "00000000-0000-0000-0000-000000000005"
+              ],
+              "partialIndexCount": 2,
+              "postSeed": {
+                "pages": [
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000004"],
+                    "nextCursor": "2026-01-02T00:00:00.001Z|00000000-0000-0000-0000-000000000004"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000005"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 2,
+                "returned": 2,
+                "expected": 5,
+                "complete": false,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": true
+              },
+              "afterFullRepair": {
+                "pages": [
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000001"],
+                    "nextCursor": "2026-01-02T00:00:00.004Z|00000000-0000-0000-0000-000000000001"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000002"],
+                    "nextCursor": "2026-01-02T00:00:00.003Z|00000000-0000-0000-0000-000000000002"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000003"],
+                    "nextCursor": "2026-01-02T00:00:00.002Z|00000000-0000-0000-0000-000000000003"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000004"],
+                    "nextCursor": "2026-01-02T00:00:00.001Z|00000000-0000-0000-0000-000000000004"
+                  },
+                  {
+                    "ids": ["00000000-0000-0000-0000-000000000005"],
+                    "nextCursor": null
+                  }
+                ],
+                "found": 5,
+                "returned": 5,
+                "expected": 5,
+                "complete": true,
+                "duplicateIds": false,
+                "pageSizeExceeded": false,
+                "terminalCursorNull": true,
+                "prematureTerminal": false
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}
