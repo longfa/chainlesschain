@@ -4,7 +4,7 @@ layout: home
 hero:
   name: ChainlessChain
   text: 系统设计文档
-  tagline: "CLI 0.166.149 / Open VSX 0.37.188 已公开；JetBrains .203 已上传待审，PC/mobile 当前公开 .145"
+  tagline: "CLI 0.166.150 / Open VSX 0.37.189 / JetBrains 0.4.204 已公开；PC/mobile 当前公开 .145"
   image:
     src: /logo.png
     alt: ChainlessChain Logo
@@ -22,8 +22,8 @@ hero:
 features:
   - icon: 🛡️
     title: 主线 Runtime 与发行边界
-    details: "CLI .149 / Open VSX .188 已通过正式门禁及公开回读，JetBrains .203 已上传待审。原始目录边界检查限于本地元数据，运行时证据、生产权限和自动晋升仍不具备。"
-    link: /release-runtime-update-2026-11-13-149
+    details: "CLI .150 / Open VSX .189 / JetBrains .204 已通过正式门禁及公开回读；两款 IDE 均推荐 CLI .150。LK 渠道提供保存连接、动态算力价格和真实 API 账单。生产权限和自动晋升仍不具备。"
+    link: /release-runtime-update-2026-11-15-150
   - icon: 🏢
     title: 组织目标、授权记忆与站内通知（主线）
     details: 历史产品 .140 已包含显式巡检、多级审批、独立验收、共享记忆与授权通知；当前 .145 独立发行，记忆不自动注入模型。
@@ -80,6 +80,12 @@ features:
     title: 企业级功能
     details: RBAC权限、SOC2合规、SCIM用户配置、DLP数据防泄漏、SIEM安全信息管理
 ---
+
+## 2026-11-15 当前发行与 LK 渠道
+
+公开组合 **CLI 0.166.150 / Session Core 0.3.27 / Open VSX 0.37.189 / JetBrains 0.4.204**，两款 IDE 均推荐 CLI .150。准确发行源码 `b2af25c65d34f1ee34cdddf308b5a8e57bb4f198`；npm、Open VSX 和 JetBrains 均已公开核验。JetBrains 商店包 ZIP 整体字节因重新打包不同，但各文件内容一致。PC/mobile 公开安装包仍为 **v5.0.3.145**。
+
+CLI、cc ui 与两款 IDE 支持 LK 主备地址、共用 Key 和各渠道凭证保存/切回恢复（含火山）。公开目录 **197** 项，其中聊天选择器按协议提供 **83** 项对话模型；媒体模型仅为目录和接口参考。动态价格、余额、Key 额度和真实 API 账单以平台**算力**计，账单没有 Token 数。桌面源码支持账户查询，但尚未随新的桌面安装包公开。**NOT_PAID_READY / NOT_ADMITTED / HOLD** 与历史模型任务验收范围保持。[本轮设计与发行证据](/release-runtime-update-2026-11-15-150)。
 
 ## 2026-11-10 当前发行与主线核对
 

@@ -137,6 +137,10 @@ export default defineConfig({
             link: "/modules/110-agent-platform-release-boundaries",
           },
           {
+            text: "CLI .150 / LK 渠道与公开发行",
+            link: "/release-runtime-update-2026-11-15-150",
+          },
+          {
             text: "CLI .149 / IDE 渠道与运行时边界",
             link: "/release-runtime-update-2026-11-13-149",
           },
@@ -305,6 +309,10 @@ export default defineConfig({
                 {
                   text: "CLI Runtime 当前实现与公开发行",
                   link: "/cli-runtime-current",
+                },
+                {
+                  text: "11-15：CLI .150 / LK 渠道与公开发行",
+                  link: "/release-runtime-update-2026-11-15-150",
                 },
                 {
                   text: "11-14：CLI .149 / IDE 渠道与目录边界",
@@ -1158,6 +1166,10 @@ export default defineConfig({
               text: "运行时设计记录",
               collapsed: true,
               items: [
+                {
+                  text: "CLI .150 / LK 渠道与公开发行",
+                  link: "/release-runtime-update-2026-11-15-150",
+                },
                 {
                   text: "CLI .149 / IDE 渠道与目录边界",
                   link: "/release-runtime-update-2026-11-13-149",

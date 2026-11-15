@@ -1,5 +1,9 @@
 # 设计文档
 
+## 2026-11-15 当前发行与 LK 渠道
+
+CLI **0.166.150**、Open VSX **0.37.189** 与 JetBrains **0.4.204** 均已公开核验，两款 IDE 推荐 CLI .150；准确发行源码为 `b2af25c65d34f1ee34cdddf308b5a8e57bb4f198`。LK 主备地址共用 Key，各渠道凭证切回可恢复（含火山）；197 项目录仅 83 项对话模型进入按协议筛选的聊天选择器。动态价格、余额、Key 额度与真实 API 账单使用平台算力，账单没有 Token 数。PC/mobile 公开安装包仍为 **v5.0.3.145**；**NOT_PAID_READY / NOT_ADMITTED / HOLD** 保留。[本轮设计与发行边界](./release-runtime-update-2026-11-15-150.md)。
+
 ## 2026-11-09 当前发行与主线核对
 
 公开组合 **CLI 0.166.145 / Session Core 0.3.27 / Open VSX 0.37.181 / JetBrains 0.4.198**，两款 IDE 推荐 CLI .145。Open VSX 下载突破 **7 万+**（项目方确认）。PC/mobile 仍为 **v5.0.3.145**；源码产品 .146 与 VS Code .182 不作为已发布下载推荐。

@@ -1,5 +1,11 @@
 # CLI Runtime 当前架构与实现
 
+## 2026-11-15 当前公开范围与 LK 渠道
+
+CLI **0.166.150**、Open VSX **0.37.189**、JetBrains **0.4.204** 已从准确源码 `b2af25c65d34f1ee34cdddf308b5a8e57bb4f198` 公开核验，两款 IDE 推荐 CLI .150。CLI、cc ui、IDE 支持 LK 主备字母域名、共用 Key、各渠道（含火山）保存并切回恢复。197 项目录中的 83 项对话模型按协议进入聊天选择器；媒体模型仍为目录参考。LK 动态价格、余额、Key 额度与真实 API 账单使用平台算力；账单没有 Token 数。桌面源码支持账户查询，公开 PC/mobile 安装包仍为 **v5.0.3.145**。[本轮设计与发行回执](./release-runtime-update-2026-11-15-150.md)。
+
+本轮没有新增模型任务验收；**NOT_PAID_READY / NOT_ADMITTED / HOLD** 保留。下文带日期段落为对应时点的历史快照。
+
 ## 2026-11-10 当前公开范围与主线
 
 按 `main@6338e6a1b` 核对：CLI **0.166.146** / Agent Protocol **0.1.13** / Context-Memory Kernel **0.1.12** / Agent SDK **0.2.18** 已公开，Session Core 保持 **0.3.27**。Open VSX **0.37.185** 与已批准列出的 JetBrains **0.4.199** 均推荐 CLI .146；VS Code 发行来源 `2ae832f90` 与 CLI/JetBrains 来源 `daafda2cf` 分别保留。PC/mobile 当前公开 **v5.0.3.145**；.146 仍待修复 Android bundle 携带旧 CLI .145 的问题并完成公开资产核验，其他构建成功不构成发布声明。

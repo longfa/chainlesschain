@@ -1,5 +1,7 @@
 # ChainlessChain - 基于U盾和SIMKey的个人移动AI管理系统
 
+文档基线（2026-11-15）：依据最新 Git 提交与已核验发行版本更新。查看 [LK 用户配置与账单](docs-site/docs/chainlesschain/cli-llm.md) 和 [渠道架构、凭证隔离与发布设计](docs/design/release-runtime-update-2026-11-15-150.md)。
+
 ## 2026-11-15 CLI / IDE 发布状态
 
 CLI **0.166.150** 已通过 [GitHub Actions OIDC 发布](https://github.com/chainlesschain/chainlesschain/actions/runs/43642085522)。准确源码 `b2af25c65d34f1ee34cdddf308b5a8e57bb4f198` 的完整 CLI CI 和 Strict Sandbox 跨系统检查通过，公开 npm 包字节、签名来源和子包依赖已核验。安装：`npm i -g chainlesschain@0.166.150 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`、`cc doctor`。

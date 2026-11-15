@@ -1,5 +1,7 @@
 # ChainlessChain - Personal Mobile AI Management System Based on USB Key and SIMKey
 
+Documentation baseline (2026-11-15): updated from current Git history and verified public releases. See [LK configuration and billing](docs-site/docs/chainlesschain/cli-llm.md) and [channel architecture and credential isolation](docs/design/release-runtime-update-2026-11-15-150.md).
+
 ## Public CLI 0.166.150 / IDE pairing (2026-11-15)
 
 CLI **0.166.150** is public through [GitHub Actions OIDC](https://github.com/chainlesschain/chainlesschain/actions/runs/43642085522). Exact source `b2af25c65d34f1ee34cdddf308b5a8e57bb4f198` passed all configured CLI CI and Strict Sandbox jobs on Linux, Windows and macOS. Public archive byte identity, signed provenance and registry-only child dependencies are verified.
