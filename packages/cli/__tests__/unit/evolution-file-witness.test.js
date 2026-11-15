@@ -6,8 +6,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   EVOLUTION_FILE_WITNESS_STORE_SCHEMA,
   createEvolutionFileWitness,
+  getEvolutionFileWitnessReadOnlyReader as readOnly,
 } from "../../src/lib/evolution/evolution-file-witness.js";
 import { EVOLUTION_SEGMENTED_WITNESS_SCHEMA } from "../../src/lib/evolution/evolution-witness-segments.js";
+import { openWitnessBoundaryFixture } from "../fixtures/evolution-witness-boundary.js";
 
 const SECRET = "test-only-independent-file-witness-key";
 const TRUST = Object.freeze({
@@ -101,6 +103,75 @@ describe("createEvolutionFileWitness", () => {
       ...overrides,
     });
   }
+
+  it("does not synthesize or sign an absent state for a read-only open", () => {
+    const witness = create();
+    ports.signer.sign.mockClear();
+    expect(() => readOnly(witness)()).toThrow();
+    expect(ports.signer.sign).not.toHaveBeenCalled();
+    expect(fs.existsSync(filePath)).toBe(false);
+  });
+
+  it("reads a committed checkpoint without signing or file preparation", () => {
+    const witness = create();
+    const current = witness.initialize({
+      expected: witness.read(),
+      snapshot: snapshot(witnessId, 0),
+    });
+    ports.signer.sign.mockClear();
+    const chmod = vi.spyOn(fs, "chmodSync").mockImplementation(() => {
+      throw new Error("permission repair forbidden");
+    });
+    try {
+      expect(readOnly(witness)()).toEqual(current);
+      expect(readOnly({ ...witness })).toBeNull();
+      expect(() => readOnly(witness, {})).toThrow(TypeError);
+      expect(() => readOnly(witness)({})).toThrow(TypeError);
+      expect(ports.signer.sign).not.toHaveBeenCalled();
+      expect(chmod).not.toHaveBeenCalled();
+    } finally {
+      chmod.mockRestore();
+    }
+  });
+
+  it("uses read-only segment reads and retains current trust-epoch revocation checks", () => {
+    const fixture = openWitnessBoundaryFixture(
+      path.join(root, "segmented-readonly"),
+    );
+    expect(fixture.segmentFiles.length).toBeGreaterThan(0);
+    const read = readOnly(fixture.witness);
+    const chmod = vi.spyOn(fs, "chmodSync").mockImplementation(() => {
+      throw new Error("permission repair forbidden");
+    });
+    try {
+      expect(read()).toEqual(fixture.current);
+      fixture.policy.revoked = true;
+      fixture.policy.epoch = "read-only-revoked";
+      expect(() => read()).toThrow();
+      fixture.policy.revoked = false;
+      fixture.policy.epoch = "read-only-recovered";
+      expect(read()).toEqual(fixture.current);
+      expect(chmod).not.toHaveBeenCalled();
+    } finally {
+      chmod.mockRestore();
+    }
+  });
+
+  it.runIf(process.platform !== "win32")(
+    "holds widened witness file permissions without repairing them",
+    () => {
+      const witness = create();
+      witness.initialize({
+        expected: witness.read(),
+        snapshot: snapshot(witnessId, 0),
+      });
+      fs.chmodSync(filePath, 0o640);
+      expect(() => readOnly(witness)()).toThrow(
+        /existing private file permissions/u,
+      );
+      expect(fs.lstatSync(filePath).mode & 0o777).toBe(0o640);
+    },
+  );
 
   it("persists monotonic CAS history and authenticated ancestry across reopen", () => {
     const first = create();

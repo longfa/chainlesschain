@@ -555,3 +555,61 @@ source journal 与 v2 manifest 使用不同的 witness，分别沿 file backend 
 原 witness 已捕获分段 reader 时，scope 为 `original-witness-state-and-segment-directories`；旧单文件 witness 的分段 reader 尚不存在时，只报告 `original-witness-state-directory`，不会为了收集能力创建目录或补获调用者新建的路径。由 witness 自身正常写入首次创建并捕获分段 reader 后，可获得新的两目录能力。自定义 manifest witness 保留原读写合同，但其三字段为 null / false / null。
 
 本批没有修改持久 index、anchor、witness 状态格式、签名、CAS 或 `localCompositionDigest`。目录能力既不读取叶字节，也不认证完整 retention/inventory、独立安装或生产权限。`fullPhysicalStorageGraphVerified=false` 与 `storageGraphDigestVerified=false` 保持；真实 A/B/C、模型任务增益与自动晋升仍未完成。实现与本地验证见 [RRSI 进度第 40 节](../../research/agents/rrsi-implementation-progress-2026-10-07.md)。本节不代表已公开 CLI 0.166.149 包含本次未发布改动。
+
+## 本地 retention 副本读取与历史目录复核（2026-11-15，未发布源码）
+
+`createEvolutionFileRetainedSegmentBackend` 为外部 retention authority 的本地副本提供文件适配器。宿主显式提供已有的规范绝对目录、文件系统端口及 `retain` publisher；构造和读取不会创建目录、修复权限、签发证明或安装生产权限。publisher 负责发布 `<segmentRef 的 SHA-256 hex>.json`，内容为 `{bytes: 标准带 padding 的 base64, proof: 原保留证明}`。真正 immutable segment port 继续认证 scope、摘要、保留期限、版本与独立 proof verifier，目录能力不替代这些检查。
+
+适配器复用 physical state reader：捕获原目录完整 BigInt 身份，每次读取以 path/fd 的完整元数据检查稳定窗口，限制编码文件至多 90 MiB、解码 segment 至多 64 MiB，分块读取并探测 EOF，拒绝链接、缺失、读取中变化及非 canonical base64，失败关闭 fd。POSIX 目录必须已有 0700 权限；Windows 沿用底层文件身份规则，没有新增 ACL authority。publisher 前后同样复核原目录。这些顺序检查不构成原子文件系统事务。
+
+原 file backend → immutable segment port → v2 manifest backend → journal 的私有关联，将本地目录能力传入 observed-text retained replay 和最终 head verification 前后的检查。临时历史报告新增 `retainedSegmentDirectoryBoundaryDigest`、`retainedSegmentDirectoryBoundaryRechecked`、`retainedSegmentBoundaryScope`，独立摘要域为 `chainlesschain.rrsi-retained-segment-directory-boundary/v1`。真实本地适配器的 scope 为 `original-local-retained-segment-directory`；既有外部或包装端口维持原行为，三字段为 null / false / null。持久 index、anchor、签名、CAS 和 `localCompositionDigest` 不变。
+
+这只认证原组合中的本地目录与逐次读取窗口，不认证外部 WORM、完整 inventory/storage graph、文件系统端口真实性、安装认可、受保护 pin/高水位或 producer 来源。`fullPhysicalStorageGraphVerified=false`、`storageGraphDigestVerified=false` 与生产自动晋升 HOLD 保持。实现及本地测试范围见 [RRSI 进度第 41 节](../../research/agents/rrsi-implementation-progress-2026-10-07.md)。
+
+## Manifest 引用的分段清单（2026-11-15，未发布源码）
+
+`captureEvolutionLedgerV2JournalReferencedSegmentInventory()` 沿原 journal/backend 私有关联读取当前 catalog、head 与 witness，验证完整 manifest 链及每个实际 retained payload/proof 后，生成 `chainlesschain.evolution-ledger-referenced-segment-inventory/v1`。清单固定链作用域、authority/store 描述符和完整 head；各项按 manifest sequence 排列，记录 manifest/content 摘要、segmentRef、storageVersion、序号区间、要求/实际保留期限、proofDigest 与实际解码 payload 字节数。`inventoryDigest` 采用 schema 加 NUL 的独立域，确定性绑定以上内容。旧 verify/readEvents API 的返回格式保持不变。
+
+工厂捕获入口只接受原 backend/journal，不接受调用者提供的清单或替代 head；纯链检查 helper 只验证其显式提供的链，不能据此认领部署当前状态。工厂读取前后比较 coherent checkpoint，末尾重验已捕获的原目录；不调用 checkpoint recovery，也不补写缺失 witness。`recheck()` 重新认证全部引用并比较 inventoryDigest，追加或同 head 下合法更新 proof 都使旧清单失效。检查最多 4096 个 manifest 引用，超限在 resolve 前拒绝；单段读取沿用既有上限，`totalPayloadBytes` 是该次已验证 payload 的实际大小总和，不是整条运行链累计 I/O 上限。
+
+observed-text snapshot 与签名 anchor history 的临时结果增加 `retainedSegmentInventoryDigest`、`retainedSegmentInventoryVerified`、`retainedSegmentInventoryScope`、`retainedSegmentInventoryCount` 与 `retainedSegmentInventoryPayloadBytes`。清单须与 observed history 的 sequence/event head 一致；其复验先于最后一次 journal head 验证。清单 scope 为 `authenticated-manifest-referenced-segments`，不枚举磁盘中的未提交 orphan；`directoryInventoryVerified=false`，完整物理图、安装/路由权威和自动晋升仍未认证。上述顺序复查不是原子多文件快照或任意 ABA 防御。持久 index/anchor、签名、CAS 与 `localCompositionDigest` 均不变，详见 [RRSI 进度第 42 节](../../research/agents/rrsi-implementation-progress-2026-10-07.md)。
+
+## Observed 文本的产物依赖清单（2026-11-15，未发布源码）
+
+`captureRrsiObservedTextArtifactInventory()` 只接受原 observed-text index。在完整历史回读中汇总实际认证的 restriction record、文本 manifest、全部间接 chunk，以及关联 preparation 的声明链产物，生成 `chainlesschain.rrsi-observed-artifact-inventory/v1`。按 canonical ref 排序，对共享引用仅计一次大小；同一引用每次实际使用时仍重新认证，不因元数据去重跳过权限检查。摘要绑定 tenant、indexId、真实 journal checkpoint、artifactTenant/audience/purpose 和每项 ref/digest、类型、ledger retention 与 canonical record 字节数。输出不含原始文本、base64 正文或随时间变化的 resolution receiptDigest。
+
+历史快照及签名 anchor history 的临时检查增加 `observedArtifactInventoryDigest`、`observedArtifactInventoryVerified`、`observedArtifactInventoryScope`、`observedArtifactInventoryCount`、`observedArtifactInventoryPayloadBytes`。复验保持原 journal head 提示，在分段清单检查后重新读取每个已捕获产物，并重新校验当前 authority、真实 bytes/digest、类型、scope、retention 与 canonical 编码，最后再次检查 journal head 和原目录。间接 chunk 删除、篡改或撤销即使没有改变 journal head，也必须拒绝；恢复原文件或测试 authority 后可重新认证，不缓存上次成功。
+
+scope 为 `observed-text-and-associated-preparation-artifacts`。未被该文本及其关联声明链引用的有效产物不加入清单；普通 ArtifactStore、其它业务事件和磁盘 orphan 未被本清单穷举。唯一项数沿用 ArtifactPorts 的 10000 项上限，单次解析沿用 1 MiB 上限；`totalPayloadBytes` 是唯一 canonical 产物的大小总和，不是原始文本长度或整个验证流程的累计 I/O。目录和文件窗口仍是顺序检查，没有新增原子快照、跨调用 leaf inode pin、独立安装/路由或 producer authority。`artifactStoreInventoryVerified=false`、完整存储图与生产自动晋升 HOLD 保持；持久 index/anchor、签名、CAS 与 `localCompositionDigest` 不变。实现与本地验证见 [RRSI 进度第 43 节](../../research/agents/rrsi-implementation-progress-2026-10-07.md)。
+
+## 本地 retention 全目录显式审计（2026-11-15，未发布源码）
+
+`captureEvolutionLedgerV2JournalLocalRetentionInventory()` 沿原 journal/backend/store 打开独立只读审计。与普通 referenced replay 分开，它枚举原 retention 目录的所有名称，逐个通过完整 BigInt 身份/稳定 descriptor 读取、原 immutable store 的内容摘要、签名与 scope 验证，再与当前已验签 manifest 链绑定。未知或重复名称、非单链接 regular file、目录或文件变化、缺失引用、错误证明或预算耗尽均拒绝；不创建、修复、删除、启用文件，也不执行 checkpoint recovery。自定义/外部 retention 端口返回 null，不认领本地目录。
+
+低层 `chainlesschain.evolution-local-retained-file-inventory/v1` 固定原目录、store 描述符、每个文件的原身份/元数据、编码字节数与 SHA-256，以及实际 payload 大小和经验证的 proofDigest/版本/序号/保留期限。该层既验证引用文件也验证残留文件的签名 scope，残留的原保留声明不等于已满足任何将来的发布计划。高层 `chainlesschain.evolution-local-retention-audit/v1` 将全部文件与当前 manifest head 和 referenced inventory 摘要合并，分别标记 `referenced` 与 `unreferenced-retained`；未引用文件的 manifestDigest 为 null。auditDigest 用 schema/NUL 域计算。它不证明 source WAL 已完全同步到该 manifest head。
+
+每次目录扫描默认最多 4096 文件、256 MiB 累计编码读取预算，可在构造时缩小，不能放大；仍受原单文件 90 MiB/解码 64 MiB 限制。预算为每文件 EOF probe 另预留一字节，后续文件使用真实剩余量，不重置默认上限。`totalEncodedBytes` 只计成功读到的正文，probe 的实际 EOF 返回为零；解码大小另行汇总。完整审计和 `recheck()` 还包含 manifest 引用验证及额外扫描，因此 256 MiB 是每次目录扫描的预算，不是整条调用的所有 I/O 上限。
+
+全部签名/验证回调完成后重新枚举目录、核对早先文件的完整元数据与原目录。物理快照复验不再次执行 signer/verifier 回调；它不能代替下一次完整认证。顺序检查不是原子文件系统快照或统一 authority epoch，不防任意 ABA；所注入 fsImpl 的真实性、外部 WORM、其它目录、独立安装/跨进程防回滚、生产权限与自动晋升仍未认证。`localDirectoryInventoryVerified` 仅表示这条原本地目录的审计通过，`externalWormVerified=false`、`fullPhysicalStorageGraphVerified=false` 与 HOLD 保持。既有普通 history/index/anchor 格式不变，相关实现见 [RRSI 进度第 44 节](../../research/agents/rrsi-implementation-progress-2026-10-07.md)。
+
+## ArtifactStore 全索引/文件对应审计（2026-11-15，未发布源码）
+
+`captureEvolutionArtifactStoreLocalInventory()` 为原 `EvolutionArtifactPorts` 增加显式只读操作。它要求仓库默认 ArtifactStore 的原读取方法，复用 bounded index、sealed root/files 目录窗口和原认证/授权/内容验证链；自定义 store hook 或 subclass 不获得完整目录声明。普通 publish/resolve/history 行为保持；新审计不初始化目录、不修复索引、不清理过期或未索引文件。
+
+读取完整可信 index，先检查所有 id/file/recordDigest 唯一性与预算，再要求 root 仅含 `files`/`index.jsonl`，且 `files/` 名称与全部 index row 严格一一对应。未知 root 项、未索引文件、缺失文件、普通 unsigned row、跨 tenant row 或失效签名/当前权限均拒绝，不过滤成一个“已验证子集”。每项仍由自己的已签 purpose/type/retention 认证；不同合法 purpose 可以共存，过期 TTL 不能因这是审计而绕过原门禁。回读完成后复核所有授权 lease，再检查原 index 元数据/字节快照、全部目录项及早先 payload 的完整 BigInt 身份，拒绝后续 callback 中的同字节换 inode 或 concurrent publication。
+
+constructor 可用 `maximumInventoryFiles` / `maximumInventoryBytes` 缩小默认的 10000 文件/256 MiB payload 累计预算，不允许放大。按全部可信 row 的实际 size 加每文件一字节 EOF probe 预先计量，超限在任何 authority callback/payload read 前拒绝；实际读取仍须精确等于签名记录大小并受单文件 1 MiB 限制。index 的有界读取沿用 64 MiB 上限，不计入 payload 预算；`recheck()` 是新一次完整扫描，不把多轮 I/O 称为单次预算。
+
+`chainlesschain.evolution-local-artifact-store-inventory/v1` 固定原目录能力、index 完整身份和 raw bytes 摘要，以及有序文件元数据。每项含 ref/digest、envelopeDigest、type/purpose/retention、实际 canonical record 大小与物理身份，不包含正文或临时 resolution/authority receipt。`entriesDigest` 对排序后的逐项 canonical JSON 做数量/长度 framing；schema/NUL 域的 inventoryDigest 绑定 metadata 和该 entriesDigest，避免给 10000 项结果误施整个数组的单产物 JSON 节点/大小限制。
+
+`localIndexFileCorrespondenceVerified` 与 `signaturesAndCurrentAuthorityVerified` 只覆盖该原 store 的这次顺序扫描；原嵌套目录能力仍保持自己的局部证明标志。这不是跨目录原子快照、统一 authority epoch、全 source journal/Wiki/运行图或独立安装认可。`fullPhysicalStorageGraphVerified=false`、`externalWormVerified=false`、生产自动晋升 HOLD 保持；详见 [RRSI 进度第 45 节](../../research/agents/rrsi-implementation-progress-2026-10-07.md)。
+
+## 不恢复的 source WAL / v2 一致性审计（2026-11-15，未发布源码）
+
+普通 `EvolutionLedger.read/verify` 与 v2 journal 读取承担既有 recovery 职责，不能作为“只读总审计”的无副作用前提。新增 `getEvolutionLedgerReadOnlyHistoryReader()` 沿原 ledger 私有关联取得 cold reader：不取得 writer lock、不调用 signer、不初始化 witness、不准备/修复 witness 文件权限、不清理 debris、不使用 incremental/state-snapshot fallback，也不更新普通状态缓存。每次完整验证当前 source identity、store marker、anchor/event 链与实际已提交 witness；需要 bootstrap、HEAD 补齐、未见证 tail 或孤立 segment 清理时直接拒绝，并保留原文件供单独恢复流程处理。
+
+source cold reader 上限为 10000 个事件，超过时拒绝，不返回截断前缀；普通 ledger 的既有容量保持。读取仍受原单文件/历史上限约束，没有新增整个调用的更小累计 I/O 预算。末尾复核当前 witness/HEAD、anchor/segment 名称和所有实际读取文件的完整 BigInt 元数据，覆盖后续读取或验证回调对早先文件的修改。它不是 source 目录中所有 snapshot/其它文件的完整 inventory。原 file witness 的独立只读入口同样拒绝 missing/absent checkpoint；分段读取不调用 `ensurePrivateFile`，POSIX 已有文件必须 0600，否则保持错误权限并拒绝。Windows 不新增 ACL authority。
+
+`captureEvolutionLedgerV2JournalSourceConsistency()` 捕获原 source 与原 v2 backend；v2 使用已有原 catalog/head、原 file witness 和原本地 retention 的只读读取，不进入 recovery。按 source → v2 → source 的顺序要求 frontier 保持，逐事件比较完整 canonical payload，而非只比较数量或客户端 digest。source WAL 已提交但尚未 finalize 到 v2 时必须拒绝，不在审计中补写；恢复仍需显式调用既有流程。原组件被包装/自定义而缺少这种只读能力时返回 null，不回退普通读取。
+
+`chainlesschain.evolution-source-v2-consistency/v1` 记录 source frontier、全部事件的 framing 摘要、当前 manifest head/count 和 eventCount，以 schema/NUL 域绑定 consistencyDigest，不输出事件正文。`sourceEventsExactlyMirrored` 仅证明这两条原认证日志在本次顺序窗口相等，`artifactCurrentAuthorityVerified=false`、`fullPhysicalStorageGraphVerified=false`；它尚未与第 44/45 节的完整目录审计合为生产运行图，也不认证独立安装、高水位或自动晋升。旧 witness 两个 schema 常量抽到无工厂依赖的 `evolution-witness-contracts.js` 并从原 ledger 继续导出，持久格式和签名字节保持。详见 [RRSI 进度第 46 节](../../research/agents/rrsi-implementation-progress-2026-10-07.md)。

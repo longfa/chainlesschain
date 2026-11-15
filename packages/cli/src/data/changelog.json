@@ -3,6 +3,19 @@
   "releases": [
     {
       "productVersion": null,
+      "cliVersion": "0.166.151",
+      "cliVersions": ["0.166.150", "0.166.151"],
+      "date": "2026-11-15",
+      "title": "",
+      "sections": [
+        {
+          "heading": "Added - cc CLI 0.166.151: bounded self-evolution storage audits (candidate, 2026-11-15)",
+          "body": "- Add a bounded local retained-segment file backend and carry original directory ownership and authenticated manifest references through observed-text and signed-anchor history. Persistent signatures, CAS and index formats remain unchanged.\n- Audit every local retention file and the default ArtifactStore's complete index/files correspondence. Reject unknown, missing, duplicate, damaged or unauthorized entries without cleaning or repairing storage; preserve explicit scan budgets and final physical identity rechecks.\n- Add original source-WAL and v2-manifest readers that do not recover, initialize, repair permissions or sign absent witnesses. Compare complete event payloads across a stable source/v2/source window; hold unsynchronized WAL, crash debris and missing witnesses for explicit recovery.\n- Local Windows regression: 26 files, 653 passed, 11 platform-specific skips and zero failures. Require exact-source Linux/Windows/macOS CLI CI and Strict Sandbox before Actions OIDC publication, then public byte/provenance and registry-only dependency readback.\n- Child npm packages are unchanged. Existing Open VSX 0.37.189 and JetBrains 0.4.204 retain their published CLI 0.166.150 recommendation; no IDE or native-client release is included. Complete physical runtime graphs, independent installation/pins, real A/B/C acceptance and automatic promotion remain incomplete; HOLD remains."
+        }
+      ]
+    },
+    {
+      "productVersion": null,
       "cliVersion": "0.166.150",
       "cliVersions": ["0.166.150"],
       "date": "2026-11-15",

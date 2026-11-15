@@ -2,6 +2,10 @@
 
 文档基线（2026-11-15）：依据最新 Git 提交与已核验发行版本更新。查看 [LK 用户配置与账单](docs-site/docs/chainlesschain/cli-llm.md) 和 [渠道架构、凭证隔离与发布设计](docs/design/release-runtime-update-2026-11-15-150.md)。
 
+## CLI 0.166.151 发布候选（2026-11-15）
+
+本批准备发布自进化本地 retention/ArtifactStore 全目录审计与不恢复的 source WAL/v2 一致性检查。候选版 **0.166.151** 尚待准确提交的完整三系统 CLI CI / Strict Sandbox、Actions OIDC 发布及公开包回读；已核验公开版本和安装命令仍为下方 **0.166.150**。本批仅发布 CLI，子包版本保持，Open VSX **0.37.189** 与 JetBrains **0.4.204** 仍推荐 **0.166.150**，PC/mobile 仍为 **v5.0.3.145**。自动晋升保持 **HOLD**；详见[本批范围与进度](docs-site/docs/chainlesschain/cli-ide-update-2026-11-15-151.md)。
+
 ## 2026-11-15 CLI / IDE 发布状态
 
 CLI **0.166.150** 已通过 [GitHub Actions OIDC 发布](https://github.com/chainlesschain/chainlesschain/actions/runs/43642085522)。准确源码 `b2af25c65d34f1ee34cdddf308b5a8e57bb4f198` 的完整 CLI CI 和 Strict Sandbox 跨系统检查通过，公开 npm 包字节、签名来源和子包依赖已核验。安装：`npm i -g chainlesschain@0.166.150 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`、`cc doctor`。

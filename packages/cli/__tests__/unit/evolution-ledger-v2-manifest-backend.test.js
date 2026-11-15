@@ -29,6 +29,7 @@ import {
   EVOLUTION_LEDGER_V2_MANIFEST_CONFLICT_SCHEMA,
   EVOLUTION_LEDGER_V2_MANIFEST_APPEND_RECEIPT_SCHEMA,
   createEvolutionLedgerV2ManifestBackend,
+  captureEvolutionLedgerV2ReferencedSegmentInventory as captureInventory,
 } from "../../src/lib/evolution/evolution-ledger-v2-manifest-backend.js";
 
 const STORE_SECRET = "v2-backend-store-secret";
@@ -342,6 +343,124 @@ function root() {
     path.join(fs.realpathSync.native(os.tmpdir()), "cc-v2-backend-"),
   );
 }
+
+describe("original backend referenced segment inventories", () => {
+  function cleanup(directory) {
+    const temp = fs.realpathSync.native(os.tmpdir());
+    if (
+      path.dirname(directory) !== temp ||
+      !path.basename(directory).startsWith("cc-v2-backend-")
+    )
+      throw new Error("unsafe inventory cleanup");
+    fs.rmSync(directory, { recursive: true, force: true });
+  }
+  function withFixture(operation, options) {
+    const directory = root();
+    try {
+      operation(fixture(directory, options));
+    } finally {
+      cleanup(directory);
+    }
+  }
+  function append(value, letter) {
+    const checkpoint = value.backend.read();
+    return value.backend.appendSegment({
+      eventDigests: [digest(letter)],
+      expectedHeadDigest: checkpoint.head?.headDigest ?? null,
+      expectedWitnessDigest: checkpoint.witness.witnessDigest,
+      minimumRetainedUntil: MINIMUM_RETENTION,
+    });
+  }
+
+  it("refuses empty state without publishing a segment or repairing a head", () => {
+    withFixture((value) => {
+      expect(() => captureInventory(value.backend)).toThrow(/empty manifest/u);
+      expect(value.segments.backend.retain).not.toHaveBeenCalled();
+      expect(value.heads.compareAndSet).not.toHaveBeenCalled();
+    });
+  });
+
+  it("captures the complete factory catalog and rejects old inventory after append", () => {
+    withFixture((value) => {
+      append(value, "c");
+      const first = captureInventory(value.backend);
+      expect(first.recheck()).toBe(true);
+      expect(() => first.recheck({})).toThrow(TypeError);
+      append(value, "d");
+      const second = captureInventory(value.backend);
+      expect(first.snapshot.segmentCount).toBe(1);
+      expect(second.snapshot.segmentCount).toBe(2);
+      expect(first.snapshot.inventoryDigest).not.toBe(
+        second.snapshot.inventoryDigest,
+      );
+      expect(() => first.recheck()).toThrow(/changed after capture/u);
+      expect(second.recheck()).toBe(true);
+    });
+  });
+
+  it("rejects checkpoint changes made during actual segment resolution", () => {
+    withFixture((value) => {
+      append(value, "c");
+      const resolve = value.segments.backend.resolve.getMockImplementation();
+      let fired = false;
+      value.segments.backend.resolve.mockImplementationOnce((request) => {
+        const result = resolve(request);
+        append(value, "d");
+        fired = true;
+        return result;
+      });
+      expect(() => captureInventory(value.backend)).toThrow(
+        /checkpoint changed/u,
+      );
+      expect(fired).toBe(true);
+      expect(captureInventory(value.backend).snapshot.segmentCount).toBe(2);
+    });
+  });
+
+  it("does not repair a prepared checkpoint with a missing witness", () => {
+    let attempts = 0;
+    withFixture(
+      (value) => {
+        expect(() => append(value, "c")).toThrow();
+        expect(attempts).toBe(1);
+        expect(() => captureInventory(value.backend)).toThrow();
+        expect(attempts).toBe(1);
+        expect(value.witness.read().status).toBe("absent");
+      },
+      {
+        witnessPort: (witness) => ({
+          id: witness.id,
+          read: witness.read.bind(witness),
+          compareAndSwap() {
+            attempts++;
+            throw new Error("unavailable checkpoint writer");
+          },
+        }),
+      },
+    );
+  });
+
+  it("rejects structural and proxy backends without executing their traps", () => {
+    let traps = 0;
+    const fake = new Proxy(
+      {},
+      {
+        get() {
+          traps++;
+          throw new Error("trap");
+        },
+      },
+    );
+    const revoked = Proxy.revocable({}, {});
+    revoked.revoke();
+    for (const value of [fake, revoked.proxy, {}, null])
+      expect(() => captureInventory(value)).toThrow(TypeError);
+    withFixture((value) =>
+      expect(() => captureInventory(value.backend, {})).toThrow(TypeError),
+    );
+    expect(traps).toBe(0);
+  });
+});
 
 describe("Evolution Ledger v2 manifest backend", () => {
   it("publishes a segment only after CAS and witnessed durable readback", () => {

@@ -18,6 +18,8 @@ import {
   createEvolutionLedgerManifestAuthority,
   sealEvolutionLedgerManifestSegment,
   verifyEvolutionLedgerManifestChain,
+  inspectEvolutionLedgerReferencedSegmentInventory as inspectInventory,
+  EVOLUTION_LEDGER_REFERENCED_SEGMENT_INVENTORY_LIMIT,
 } from "../../src/lib/evolution/evolution-ledger-manifest-chain.js";
 import {
   EVOLUTION_LEDGER_MANIFEST_HEAD_CAS_RESULT_SCHEMA,
@@ -172,6 +174,132 @@ function seal({ previousHead = null, eventDigests = [eventDigest("c")] } = {}) {
   });
   return { ...fixture, first, manifestAuthority };
 }
+
+describe("authenticated manifest referenced segment inventory", () => {
+  function inventoryFixture() {
+    const fixture = seal();
+    const second = sealEvolutionLedgerManifestSegment({
+      authority: fixture.manifestAuthority,
+      descriptor: chainDescriptor(),
+      eventDigests: [eventDigest("d"), eventDigest("e")],
+      minimumRetainedUntil: MINIMUM_RETENTION,
+      now: () => Date.parse("2026-09-09T00:01:00.000Z"),
+      previousHead: fixture.first.head,
+      segmentStore: fixture.store,
+    });
+    return {
+      ...fixture,
+      second,
+      request: {
+        authority: fixture.manifestAuthority,
+        descriptor: chainDescriptor(),
+        head: second.head,
+        manifests: [fixture.first.manifest, second.manifest],
+        segmentStore: fixture.store,
+      },
+    };
+  }
+
+  it("reads each signed reference once and reports exact validated proof and payload sizes", () => {
+    const fixture = inventoryFixture();
+    fixture.backend.resolve.mockClear();
+    const result = inspectInventory(fixture.request);
+    expect(fixture.backend.resolve).toHaveBeenCalledTimes(2);
+    expect(result).toMatchObject({
+      scope: "authenticated-manifest-referenced-segments",
+      head: fixture.second.head,
+      segmentCount: 2,
+      referencedContentsVerified: true,
+      directoryInventoryVerified: false,
+      fullPhysicalStorageGraphVerified: false,
+      grantsMutationOrPromotionAuthority: false,
+    });
+    expect(result.entries.map((entry) => entry.manifestSequence)).toEqual([
+      1, 2,
+    ]);
+    expect(result.totalPayloadBytes).toBe(
+      [...fixture.records.values()].reduce(
+        (total, record) => total + record.bytes.length,
+        0,
+      ),
+    );
+    for (const entry of result.entries) {
+      const stored = fixture.records.get(entry.segmentRef);
+      expect(entry.proofDigest).toBe(stored.proof.proofDigest);
+      expect(entry.storageVersion).toBe(stored.proof.storageVersion);
+      expect(entry.payloadBytes).toBe(stored.bytes.length);
+      expect(Object.isFrozen(entry)).toBe(true);
+    }
+    expect(Object.isFrozen(result.entries)).toBe(true);
+    expect(inspectInventory(fixture.request)).toEqual(result);
+    expect(JSON.stringify(result.entries)).not.toContain("signature");
+  });
+
+  it.each(["omit-first", "omit-last", "reverse", "duplicate"])(
+    "rejects an incomplete or reordered inventory: %s",
+    (mode) => {
+      const { request } = inventoryFixture();
+      const [first, second] = request.manifests;
+      const manifests = {
+        "omit-first": [second],
+        "omit-last": [first],
+        reverse: [second, first],
+        duplicate: [first, first, second],
+      }[mode];
+      expect(() => inspectInventory({ ...request, manifests })).toThrow();
+    },
+  );
+
+  it.each(["missing", "bytes", "proof", "version"])(
+    "rejects changed referenced retention state: %s",
+    (mode) => {
+      const fixture = inventoryFixture();
+      const reference = fixture.first.manifest.segmentRef;
+      const stored = fixture.records.get(reference);
+      if (mode === "missing") fixture.records.delete(reference);
+      if (mode === "bytes") stored.bytes = Buffer.from("substituted");
+      if (mode === "proof")
+        stored.proof = { ...stored.proof, signature: "forged" };
+      if (mode === "version") {
+        const proof = { ...stored.proof, storageVersion: "version-2" };
+        proof.proofDigest = computeImmutableLedgerSegmentProofDigest(proof);
+        proof.signature = hmac(STORE_SECRET, proof.proofDigest);
+        stored.proof = proof;
+      }
+      expect(() => inspectInventory(fixture.request)).toThrow();
+    },
+  );
+
+  it("binds a renewed valid retention proof to a different inventory digest", () => {
+    const fixture = inventoryFixture();
+    const initial = inspectInventory(fixture.request);
+    const stored = fixture.records.get(fixture.first.manifest.segmentRef);
+    const proof = {
+      ...stored.proof,
+      retainedUntil: "2038-09-09T00:00:00.000Z",
+    };
+    proof.proofDigest = computeImmutableLedgerSegmentProofDigest(proof);
+    proof.signature = hmac(STORE_SECRET, proof.proofDigest);
+    stored.proof = proof;
+    const changed = inspectInventory(fixture.request);
+    expect(changed.head).toEqual(initial.head);
+    expect(changed.inventoryDigest).not.toBe(initial.inventoryDigest);
+  });
+
+  it("limits inventory cardinality before resolving any segment", () => {
+    const fixture = inventoryFixture();
+    fixture.backend.resolve.mockClear();
+    expect(() =>
+      inspectInventory({
+        ...fixture.request,
+        manifests: Array(
+          EVOLUTION_LEDGER_REFERENCED_SEGMENT_INVENTORY_LIMIT + 1,
+        ).fill(fixture.first.manifest),
+      }),
+    ).toThrow(/segment limit/u);
+    expect(fixture.backend.resolve).not.toHaveBeenCalled();
+  });
+});
 
 function expectCorrupt(operation, message) {
   try {

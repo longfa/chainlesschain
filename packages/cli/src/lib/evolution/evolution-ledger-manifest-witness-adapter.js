@@ -2,6 +2,7 @@ import { types as utilTypes } from "node:util";
 import {
   captureEvolutionFileWitnessDirectoryBoundaries,
   hasEvolutionFileWitnessDirectoryBoundaries,
+  getEvolutionFileWitnessReadOnlyReader,
 } from "./evolution-file-witness.js";
 
 import { EVOLUTION_LEDGER_WITNESS_SCHEMA } from "./evolution-ledger.js";
@@ -27,6 +28,7 @@ export const EVOLUTION_LEDGER_MANIFEST_WITNESS_COMMIT_UNKNOWN_CODE =
 const DIGEST = /^sha256:[a-f0-9]{64}$/u;
 const ADAPTERS = new WeakSet();
 const ORIGINAL_WITNESSES = new WeakMap();
+const READ_ONLY_READERS = new WeakMap();
 const CONFIG_KEYS = new Set(["descriptor", "manifestAuthority", "witness"]);
 const DESCRIPTOR_KEYS = new Set([
   "epoch",
@@ -389,10 +391,10 @@ export function createEvolutionLedgerManifestWitnessAdapter(
   );
   const witness = captureWitness(data(fields, "witness"));
 
-  const read = () => {
+  const readUsing = (operation) => {
     let raw;
     try {
-      raw = sync(witness.read(), "manifest witness read result");
+      raw = sync(operation(), "manifest witness read result");
     } catch (cause) {
       if (cause instanceof EvolutionLedgerManifestWitnessError) throw cause;
       throw failure(
@@ -408,6 +410,7 @@ export function createEvolutionLedgerManifestWitnessAdapter(
       EVOLUTION_LEDGER_MANIFEST_WITNESS_CORRUPT_CODE,
     );
   };
+  const read = () => readUsing(witness.read);
 
   const adapter = Object.freeze({
     descriptor: Object.freeze({
@@ -529,6 +532,14 @@ export function createEvolutionLedgerManifestWitnessAdapter(
   });
   ADAPTERS.add(adapter);
   ORIGINAL_WITNESSES.set(adapter, data(fields, "witness"));
+  const readOnly = getEvolutionFileWitnessReadOnlyReader(
+    data(fields, "witness"),
+  );
+  if (readOnly !== null)
+    READ_ONLY_READERS.set(
+      adapter,
+      Object.freeze(() => readUsing(readOnly)),
+    );
   return adapter;
 }
 
@@ -563,6 +574,12 @@ export function hasEvolutionLedgerManifestWitnessDirectoryBoundaries(value) {
   return hasEvolutionFileWitnessDirectoryBoundaries(
     ORIGINAL_WITNESSES.get(value),
   );
+}
+
+export function getEvolutionLedgerManifestWitnessReadOnlyReader(value) {
+  if (arguments.length !== 1)
+    throw new TypeError("read-only manifest witness capture takes one adapter");
+  return READ_ONLY_READERS.get(value) ?? null;
 }
 
 export function captureEvolutionLedgerManifestWitnessDirectoryBoundaries(
