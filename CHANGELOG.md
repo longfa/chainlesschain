@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed - cc CLI 0.166.152: preserve wrapped POSIX witness refusal evidence (candidate, 2026-11-15)
+
+- Preserve immutable candidate 0.166.151 and its tag after the exact-source Ubuntu unit matrix found a POSIX-only test assertion mismatch. The 0.166.151 publication was cancelled before npm publishing; verified public CLI remains 0.166.150.
+- Assert the existing witness reader's outer error code/message and the original permission-refusal cause together, while checking that mode 0640 is unchanged and neither chmod nor signing occurs. Production permission checks, read bounds and recovery behavior are unchanged.
+- Carry forward the bounded self-evolution storage audits from candidate 0.166.151. Require complete exact-source three-OS CLI CI and Strict Sandbox again before OIDC publication and public readback; do not reuse the older candidate's successful jobs as release evidence.
+
 ### Added - cc CLI 0.166.151: bounded self-evolution storage audits (candidate, 2026-11-15)
 
 - Add a bounded local retained-segment file backend and carry original directory ownership and authenticated manifest references through observed-text and signed-anchor history. Persistent signatures, CAS and index formats remain unchanged.

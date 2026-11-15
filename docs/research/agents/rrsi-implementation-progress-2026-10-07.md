@@ -853,3 +853,15 @@ source framing 摘要按事件数及逐事件 canonical JSON 字节长度绑定�
 Windows / Node.js 22.20.0 最终一次完整回归为 **26 文件、653 项通过、11 项平台条件跳过、零失败**，共 664 项，耗时 275.41 秒。运行集合为第 45 节的 20 文件，加 `evolution-ledger.test.js`、`evolution-file-witness.test.js`、`evolution-read-only-source-history.test.js`、`evolution-witness-state-boundary.test.js`、`evolution-witness-directory-boundary.test.js` 与 `evolution-ledger-file-backend.test.js`。本节新增 17 项通过、1 项 POSIX 条件跳过（14 项 source 集成与 4 项 witness 单元）；其余为既有回归，不重复累计此前定向运行。11 项跳过由原 ArtifactStore index symlink 1 项、witness-state 的权限/符号链接场景 7 项、witness-directory 的 FIFO 场景 2 项及新增 POSIX witness 权限 1 项组成。沿用原 Vitest 配置与时限，原始 JSON 报告位于本机 `.work/evolution-read-only-source-audit-20261115/vitest.json`，未作为公开发行原件归档。变更 JS 的 ESLint、Prettier 和 `git diff --check` 通过；本地结果不替代准确提交的三系统 Actions/Strict Sandbox 或真实模型验收。
 
 本批未发布或改变公开版本/模型任务成绩。只读表示这些新操作不发出 mutation/recovery 请求，constructor 原有初始化与显式 recover 仍各自存在；签名/文件系统/verifier 来自显式宿主，顺序读取不构成统一 authority epoch、跨组件原子快照、任意 ABA 防御或独立安装认可。
+
+## 47 首轮正式发行门禁与 POSIX 断言修复（2026-11-15）
+
+用户授权发布后，候选 CLI 0.166.151 以准确源码 `8c379d490af23c8d7f5397e1b58e63c2f1584fb5` 提交至 [PR #625](https://github.com/chainlesschain/chainlesschain/pull/625)，推送不可变标签 `v-npm-0-166-151`，由既有 Actions OIDC 工作流等待完整三系统门禁。发布前独立下载 13 个原版本子包并核对公开归档 SHA-512 与依赖版本范围；子包源码相对于 .150 发行源未变。原工作区缺少 npm executable links，恢复标准链接后 pre-commit ESLint/Prettier、暂存安全映射、changelog parity 和命令生成检查通过。强制重建原 Web Panel 后，原源码/egress 审计的 91 个 candidate 均通过。桌面 pre-push 类型检查因缺少 ant-design-vue 等本机依赖失败；CLI 单独标签沿用仓库 post-commit 的 `--no-verify` 推送方式，正式准确提交门禁未跳过。
+
+.151 的 [Strict Sandbox](https://github.com/chainlesschain/chainlesschain/actions/runs/43678721538) 成功，但 [CLI CI Ubuntu unit shard 3/4](https://github.com/chainlesschain/chainlesschain/actions/runs/43678721577/job/132712516668) 为 482 文件通过、1 文件失败、2 文件跳过，10735 项通过、1 项失败、30 项跳过，其余三系统矩阵当时仍未全部完成。唯一失败是本节新增 POSIX 只读 witness 权限测试：原 physical reader 正常将内部权限拒绝包为 `CC_EVOLUTION_WITNESS_STATE_READ_FAILED` / `witness bounded read failed`，内部文本在 `cause`，但测试将内部文本匹配到了外层异常。第 46 节 Windows 本地的该项条件跳过不能替代 POSIX 实测。
+
+取消尚未进入 npm publish 的 [.151 发布工作流](https://github.com/chainlesschain/chainlesschain/actions/runs/43679089063)，保留原不可变标签，不强推或移动发行身份。修复候选改为 CLI **0.166.152**：测试同时检查稳定外层 code/message 和原权限 cause，检查 mode 0640 原样保留，并增加禁止 chmod/signer 的直接断言；跨平台 missing-witness 用例同步检查外层与 ENOENT cause。生产读取、权限门禁、字节预算、签名和恢复逻辑均不改。更新 CLI/lock、生成 changelog、根中英文 README 与公开升级指南，准确保留已公开 .150 和 IDE 实际配对。
+
+修复后本机 Windows / Node.js 22.20.0 的 witness/source 两文件定向回归为 **90 项通过、1 项 POSIX 条件跳过、零失败**，changelog parity 另 1 项通过；不与第 46 节旧提交的完整 653 项重复累计，也不声称 POSIX 用例已在本机执行。新准确提交仍须完整三系统 CLI CI/Strict Sandbox，再由新不可变标签、既有 OIDC 和公开包/来源/registry-only 安装验证完成发布，不能拿旧提交的成功检查替代。
+
+截至本节核对，npm 公开 CLI 仍为 **0.166.150**，.151 不存在；.152 只是修复候选。子包版本、已公开 IDE 推荐 .150、PC/mobile v5.0.3.145 和生产自动晋升 **HOLD** 均保持，未新增模型任务验收。

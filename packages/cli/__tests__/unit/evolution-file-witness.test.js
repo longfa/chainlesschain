@@ -5,6 +5,7 @@ import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   EVOLUTION_FILE_WITNESS_STORE_SCHEMA,
+  EVOLUTION_WITNESS_STATE_READ_FAILED_CODE,
   createEvolutionFileWitness,
   getEvolutionFileWitnessReadOnlyReader as readOnly,
 } from "../../src/lib/evolution/evolution-file-witness.js";
@@ -107,7 +108,13 @@ describe("createEvolutionFileWitness", () => {
   it("does not synthesize or sign an absent state for a read-only open", () => {
     const witness = create();
     ports.signer.sign.mockClear();
-    expect(() => readOnly(witness)()).toThrow();
+    expect(() => readOnly(witness)()).toThrow(
+      expect.objectContaining({
+        code: EVOLUTION_WITNESS_STATE_READ_FAILED_CODE,
+        message: "witness bounded read failed",
+        cause: expect.objectContaining({ code: "ENOENT" }),
+      }),
+    );
     expect(ports.signer.sign).not.toHaveBeenCalled();
     expect(fs.existsSync(filePath)).toBe(false);
   });
@@ -166,10 +173,23 @@ describe("createEvolutionFileWitness", () => {
         snapshot: snapshot(witnessId, 0),
       });
       fs.chmodSync(filePath, 0o640);
+      ports.signer.sign.mockClear();
+      const chmod = vi.spyOn(fs, "chmodSync").mockImplementation(() => {
+        throw new Error("permission repair forbidden");
+      });
       expect(() => readOnly(witness)()).toThrow(
-        /existing private file permissions/u,
+        expect.objectContaining({
+          code: EVOLUTION_WITNESS_STATE_READ_FAILED_CODE,
+          message: "witness bounded read failed",
+          cause: expect.objectContaining({
+            message:
+              "read-only witness requires existing private file permissions",
+          }),
+        }),
       );
       expect(fs.lstatSync(filePath).mode & 0o777).toBe(0o640);
+      expect(chmod).not.toHaveBeenCalled();
+      expect(ports.signer.sign).not.toHaveBeenCalled();
     },
   );
 
