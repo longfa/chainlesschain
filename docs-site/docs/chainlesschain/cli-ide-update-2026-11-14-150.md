@@ -90,3 +90,5 @@ IDE：打开「配置大模型 / Configure LLM」，选择 LK API 聚合平台�
 - [平台定价](https://quexuan.net/api/pricing)
 - [完整接入说明](https://github.com/chainlesschain/chainlesschain/blob/main/docs/configuration/lk-api-channel.md)
 - [发布证据](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release150-public/publication.json)
+
+本次渠道功能和版本发布不改变既有模型任务验收状态：`NOT_PAID_READY`、`NOT_ADMITTED` 和自动晋升 `HOLD` 保持原有适用范围。

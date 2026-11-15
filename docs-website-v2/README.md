@@ -1,5 +1,9 @@
 # ChainlessChain 官方网站
 
+## 2026-11-15 官网发布状态
+
+官网当前公开版本为 CLI **0.166.150**、Open VSX **0.37.189**、JetBrains **0.4.204**，两款 IDE 推荐 CLI .150；准确发行源码 `b2af25c65d34f1ee34cdddf308b5a8e57bb4f198`。LK 渠道公开 197 项模型目录，其中 83 项对话模型可按协议筛选用于聊天；主备字母域名共用 Key，各渠道（含火山）保存后可切回恢复。动态价格、余额、Key 额度和真实 API 账单以平台算力计，账单没有 Token 数。桌面源码支持账户查询，公开客户端仍为 **v5.0.3.145**。[发行证据](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release150-public/publication.json) · [本轮设计](https://design.chainlesschain.com/release-runtime-update-2026-11-15-150.html)。
+
 ## 2026-11-13 官网发布状态
 
 Website release status now tracks CLI `0.166.148`, Open VSX `0.37.187`, and JetBrains `0.4.202` upload status. The website distinguishes public channels from the Marketplace pending-review build and exposes the self-evolution governance boundary.

@@ -151,7 +151,7 @@ const badges = [
           <span class="block mt-1">跨版本累计，包含修复源码后的补测；原冻结项目 41/45 单独保留。</span>
         </p>
         <p class="animate-fade-in-delay-3 mt-5 text-sm text-muted max-w-3xl">
-          CLI {CLI_VERSION} 包含本地算力配置、显式目标移交与 Memory 权威修复。原生创建与模型草稿需要匹配的新桌面构建；文档更新不新增模型任务验收。Kernel {releaseStatus.contextMemoryKernelVersion} / 当前公开客户端 {releaseStatus.productVersion}。<a class="text-ember hover:underline" href={releaseStatus.upgradeGuide}>查看升级指南 →</a>
+          CLI {CLI_VERSION} 新增 LK 模型渠道：字母 lk 主备地址共用 Key，197 项目录中 83 项对话模型可按协议选择；各渠道（含火山）切回时恢复已保存 Key。动态价格、余额、Key 额度与真实 API 账单使用平台算力，账单没有 Token 数。桌面源码支持账户查询，公开客户端仍为 {releaseStatus.productVersion}；本次不新增模型任务验收。<a class="text-ember hover:underline" href={releaseStatus.upgradeGuide}>查看升级指南 →</a>
         </p>
         <p class="mt-3 text-xs text-muted leading-relaxed max-w-3xl">
           Open VSX {VSCODE_VERSION} 已公开核验，推荐 CLI {releaseStatus.openVsxRecommendedCliVersion}。JetBrains {JETBRAINS_VERSION} 已获商店批准并公开列出，推荐 CLI {releaseStatus.jetBrainsRecommendedCliVersion}；已核对公开归档可下载。CLI 归档完整性及准确提交的三平台 CLI CI / Strict Sandbox 已核对，独立下载的 CLI 与 Open VSX 归档均与正式制品逐字节一致。JetBrains 按独立发布证据记录状态。独立的 <a class="text-ember hover:underline" href={`https://github.com/chainlesschain/chainlesschain/releases/tag/${releaseStatus.productVersion}`}>{releaseStatus.productVersion} 产品发行</a>包含桌面三平台安装包、Android APK/AAB 与签名 iOS ad-hoc IPA。文档核对基线为 {SOURCE_HEAD_COMMIT}；Microsoft Marketplace 尚未发行。
