@@ -6,7 +6,7 @@ public final class LkChannelCatalog {
     public static final String SOURCE_SHA256 = "d5c21dfbb8c171a18ff88dd5317d88231f4e19729ed9087b88cb454c2b9a24ba";
     public static final String PRIMARY = "https://api.lk888.ai";
     public static final String BACKUP = "https://api.lk666.ai";
-    public static final String PRICING_URL = "https://chainlesschain.net/api/pricing";
+    public static final String PRICING_URL = "https://quexuan.net/api/pricing";
     public static final class Model {
         public final String id, label, type, protocol;
         Model(String id, String label, String type, String protocol) {
