@@ -1,6 +1,6 @@
 # LK API 聚合渠道
 
-根据 [开发文档](https://quexuan.net/apidoc)及其公开模型目录接入。
+根据 [开发文档](https://chainlesschain.net/apidoc)及其公开模型目录接入。
 主地址为 `https://api.lk888.ai`，备用为 `https://api.lk666.ai`，域名使用字母 `lk`。
 两者为同一服务，可手动切换；不会在失败后自动重发生成请求。
 
@@ -47,7 +47,7 @@ OpenAI 渠道预设使用 Chat Completions；目录中的 Responses 支持记录
 
 ## 定价与刷新
 
-[平台定价页](https://quexuan.net/api/pricing)提供当前价格入口。匿名查询公开模型广场虽返回 200，但本次返回的价格字段全部为空；因此不能用匿名目录作为实际计费依据。运行时使用已保存 LK 连接的 API Key，通过 Skills 接口实时查询账户价格、余额和账单，不缓存到账户文件，也不把账户数据写入公共模型目录。
+[平台定价页](https://chainlesschain.net/api/pricing)提供当前价格入口。匿名查询公开模型广场虽返回 200，但本次返回的价格字段全部为空；因此不能用匿名目录作为实际计费依据。运行时使用已保存 LK 连接的 API Key，通过 Skills 接口实时查询账户价格、余额和账单，不缓存到账户文件，也不把账户数据写入公共模型目录。
 
 ```sh
 cc llm account

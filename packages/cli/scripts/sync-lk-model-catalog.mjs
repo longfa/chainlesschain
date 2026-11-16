@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 
 const sourceUrl =
-  "https://api.lingkeai.ai/gongkai/apidoc/moxing-liebiao?domain=quexuan.net";
+  "https://api.lingkeai.ai/gongkai/apidoc/moxing-liebiao?domain=chainlesschain.net";
 const inputIndex = process.argv.indexOf("--input");
 const raw =
   inputIndex >= 0
