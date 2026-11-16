@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed - cc CLI 0.166.153: replacement release repository and LK domain (candidate, 2026-11-16)
+
+- Prepare CLI-only publication from `longfa/chainlesschain` using GitHub Actions OIDC Trusted Publishing. Pin new CLI provenance to the explicitly expected repository while retaining the original authority for unchanged historical child packages; never infer the expected publisher from the attestation itself.
+- Resolve independent readback authority from immutable tag metadata, preserving historical source identities. Require the new exact commit's complete Linux/Windows/macOS CLI CI and Strict Sandbox before creating a new immutable release tag, then verify public bytes, signed provenance and registry-only child dependencies.
+- Replace LK documentation, pricing and model-directory tenant links with `chainlesschain.net` across source configuration, generated Web/IDE catalogs and public guides. Inference hosts and protocol paths remain unchanged.
+- Keep candidates 0.166.151 and 0.166.152 and their immutable identities. Verified public CLI remains 0.166.150 until this candidate is published and read back. Child package versions, public IDE pairing and PC/mobile clients remain unchanged; automatic promotion remains HOLD.
+
 ### Fixed - cc CLI 0.166.152: preserve wrapped POSIX witness refusal evidence (candidate, 2026-11-15)
 
 - Preserve immutable candidate 0.166.151 and its tag after the exact-source Ubuntu unit matrix found a POSIX-only test assertion mismatch. The 0.166.151 publication was cancelled before npm publishing; verified public CLI remains 0.166.150.

@@ -2,9 +2,9 @@
 
 Documentation baseline (2026-11-15): updated from current Git history and verified public releases. See [LK configuration and billing](docs-site/docs/chainlesschain/cli-llm.md) and [channel architecture and credential isolation](docs/design/release-runtime-update-2026-11-15-150.md).
 
-## CLI 0.166.152 release candidate (2026-11-15)
+## CLI 0.166.153 release candidate (2026-11-16)
 
-Candidate **0.166.152** adds bounded local retention/ArtifactStore audits and a source-WAL/v2 consistency check without recovery. Candidate **0.166.151** was held by a POSIX test error-layer assertion mismatch; its immutable tag is retained and publication was cancelled. The corrected candidate requires new exact-source three-OS CLI CI / Strict Sandbox, Actions OIDC publication and public readback; the verified public version and install command remain **0.166.150** below. This release changes only the CLI. Child versions remain unchanged; published Open VSX **0.37.189** and JetBrains **0.4.204** retain their **0.166.150** recommendation, and native clients remain **v5.0.3.145**. Automatic promotion remains **HOLD**. [Release scope and status](docs-site/docs/chainlesschain/cli-ide-update-2026-11-15-152.md).
+Candidate **0.166.153** carries the bounded storage audits and POSIX test correction from .151/.152, moves the release source to [longfa/chainlesschain](https://github.com/longfa/chainlesschain), and updates LK documentation, pricing and model-catalog tenant links to **chainlesschain.net**. Prior immutable tags are retained. The new exact commit must pass complete Linux/Windows/macOS CLI CI / Strict Sandbox, Actions OIDC publication and public byte/provenance readback. Until then the verified public CLI and installation command remain **0.166.150**. Child package versions are unchanged; public Open VSX **0.37.189** and JetBrains **0.4.204** retain CLI **0.166.150** pairing, native clients remain **v5.0.3.145**, and automatic promotion remains **HOLD**. [Release scope and status](docs-site/docs/chainlesschain/cli-ide-update-2026-11-16-153.md).
 
 ## Public CLI 0.166.150 / IDE pairing (2026-11-15)
 

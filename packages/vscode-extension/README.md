@@ -4,7 +4,9 @@ ChainlessChain agent workspace for VS Code-compatible editors with streaming cha
 
 ## Release pairing
 
-Version **0.37.189** recommends CLI **`0.166.150`** and pairs with JetBrains **0.4.204**.
+Version **0.37.190** recommends CLI **`0.166.153`** and pairs with JetBrains **0.4.205**.
+
+These are source candidates with updated chainlesschain.net platform links. Publish only after the CLI is publicly verified, followed by the exact-source IDE host and packaging gates. Current verified public versions remain in the section below.
 
 This release adds fresh LK model prices, balance, Key quota and actual API billing (`cc llm account`), plus saved credentials for every configured channel, including Volcengine. Saved connections restore the Key when switching back; LK hosts and protocols share one credential. Desktop source supports the same account queries and encrypted connection history; a new desktop installer is not part of this release.
 

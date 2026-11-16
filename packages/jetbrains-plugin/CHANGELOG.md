@@ -1,5 +1,10 @@
 # Changelog — ChainlessChain IDE Bridge (JetBrains)
 
+## [0.4.205] - platform domain and CLI pairing (candidate, 2026-11-16)
+
+- Use chainlesschain.net for LK pricing and synchronize the generated channel catalog digest.
+- Recommend candidate CLI 0.166.153. Publish only after that CLI is publicly verified and exact-source IDE host/Marketplace gates pass; public 0.4.204 retains CLI 0.166.150 pairing until then.
+
 ## [0.4.204] - LK aggregator model configuration (candidate, 2026-11-14)
 
 - Add the LK aggregator with documented primary/backup addresses, exact model aliases and protocol-aware selection. The shared catalog contains 83 chat models plus 114 media entries; media task execution is not included. Preserve saved aliases and keep credentials scoped to the selected endpoint. Three tiny live protocol probes and authenticated pricing queries succeeded; this does not certify the whole model catalog.

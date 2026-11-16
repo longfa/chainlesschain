@@ -2,11 +2,11 @@
 
 Command-line interface for installing, configuring, and managing [ChainlessChain](https://www.chainlesschain.com), including the coding agent, governed tools, sessions, memory, and IDE integrations.
 
-## CLI 0.166.152 release candidate (2026-11-15)
+## CLI 0.166.153 release candidate (2026-11-16)
 
-CLI **0.166.152** prepares bounded self-evolution retention/ArtifactStore audits and a source-WAL/v2 consistency check that preserves crash debris and never performs recovery. Candidate **0.166.151** was held by a POSIX test error-layer assertion mismatch; its immutable tag is retained and publication was cancelled. The corrected test verifies the outer refusal, its permission cause, unchanged file mode and no repair/signing. Publication requires the new exact release commit's complete CLI CI and Strict Sandbox matrices, Actions OIDC publishing, and public package/provenance verification. Until those finish, the verified public version and installation command remain **0.166.150** below.
+CLI **0.166.153** carries the bounded storage audits and POSIX refusal-test correction from candidates .151/.152, updates LK documentation/pricing links to **chainlesschain.net**, and prepares publication from [longfa/chainlesschain](https://github.com/longfa/chainlesschain). The original tags are retained. The new exact commit must pass complete Linux/Windows/macOS CLI CI and Strict Sandbox, then GitHub Actions OIDC publication and public byte/provenance readback. The verified public version and installation command remain **0.166.150** below until those steps finish.
 
-This CLI-only release leaves child npm versions unchanged. Published Open VSX **0.37.189** and JetBrains **0.4.204** still recommend CLI **0.166.150**; native clients remain **v5.0.3.145**. Complete runtime storage graphs, independent installer/pins and real A/B/C acceptance remain incomplete; automatic promotion remains **HOLD**. [Release scope and status](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-15-152.md).
+Only the CLI is included in this publication. Child npm versions are unchanged; their historical provenance retains the original source authority. Published Open VSX **0.37.189** and JetBrains **0.4.204** retain their CLI **0.166.150** recommendation; native clients remain **v5.0.3.145**. Complete runtime storage graphs, independent installer/pins and real A/B/C acceptance remain incomplete; automatic promotion remains **HOLD**. [Release scope and status](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-16-153.md).
 
 ## Public CLI 0.166.150 / IDE pairing (2026-11-15)
 

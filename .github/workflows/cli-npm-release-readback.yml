@@ -73,9 +73,18 @@ jobs:
           TAG_SHA=$(git rev-parse "${TAG}^{commit}")
           TAG_VERSION=$(git show "${TAG}:packages/cli/package.json" | node -e 'let s=""; process.stdin.on("data", c => s += c); process.stdin.on("end", () => process.stdout.write(JSON.parse(s).version))')
           test "$TAG_VERSION" = "$VERSION"
+          # Resolve the expected publisher from immutable release metadata so
+          # historical releases retain their original source repository.
+          TAG_REPOSITORY=$(git show "${TAG}:packages/cli/package.json" | node -e 'let s=""; process.stdin.on("data", c => s += c); process.stdin.on("end", () => process.stdout.write(JSON.parse(s).repository.url.replace(/^git\+/, "").replace(/\.git$/, "")))')
+          case "$TAG_REPOSITORY" in
+            https://github.com/chainlesschain/chainlesschain|https://github.com/longfa/chainlesschain) ;;
+            *) echo "Unrecognized release repository: $TAG_REPOSITORY" >&2; exit 1 ;;
+          esac
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "tag_sha=$TAG_SHA" >> "$GITHUB_OUTPUT"
+          echo "repository_url=$TAG_REPOSITORY" >> "$GITHUB_OUTPUT"
+          echo "repository=${TAG_REPOSITORY#https://github.com/}" >> "$GITHUB_OUTPUT"
 
       - name: Verify public registry bytes and signed provenance
         id: provenance
@@ -84,6 +93,7 @@ jobs:
           VERSION: ${{ steps.identity.outputs.version }}
           TAG: ${{ steps.identity.outputs.tag }}
           TAG_SHA: ${{ steps.identity.outputs.tag_sha }}
+          CC_NPM_PROVENANCE_REPOSITORY: ${{ steps.identity.outputs.repository_url }}
         run: |
           set -euo pipefail
           mkdir -p registry-readback readback
@@ -123,7 +133,7 @@ jobs:
           name: chainlesschain-npm-${{ steps.identity.outputs.tag_sha }}
           path: source-artifact
           github-token: ${{ github.token }}
-          repository: ${{ github.repository }}
+          repository: ${{ steps.identity.outputs.repository }}
           run-id: ${{ steps.provenance.outputs.run_id }}
 
       - name: Prove registry tarball is the immutable workflow artifact

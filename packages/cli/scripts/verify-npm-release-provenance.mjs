@@ -12,6 +12,14 @@ export const NPM_RELEASE_AUTHORITY = Object.freeze({
   builder: "https://github.com/actions/runner/github-hosted",
 });
 
+// Existing immutable child packages retain their original release authority.
+// A new CLI release may pin the explicitly authorized replacement repository;
+// never discover the expected authority from the attestation being verified.
+const RELEASE_REPOSITORIES = new Set([
+  NPM_RELEASE_AUTHORITY.repository,
+  "https://github.com/longfa/chainlesschain",
+]);
+
 const SLSA_PREDICATE = "https://slsa.dev/provenance/v1";
 const GITHUB_WORKFLOW_BUILD_TYPE =
   "https://slsa-framework.github.io/github-actions-buildtypes/workflow/v1";
@@ -326,6 +334,13 @@ async function main() {
     }
     auditPath = pathValue;
     expected = { packageName, version, commit, ref, sha512 };
+  }
+  if (!trustedAnchor && process.env.CC_NPM_PROVENANCE_REPOSITORY) {
+    const repository = process.env.CC_NPM_PROVENANCE_REPOSITORY;
+    if (!RELEASE_REPOSITORIES.has(repository)) {
+      throw new Error("unrecognized npm release repository authority");
+    }
+    expected.repository = repository;
   }
   const result = verifyNpmReleaseProvenance(readAudit(auditPath), expected);
   const output = path.resolve(

@@ -3,6 +3,19 @@
   "releases": [
     {
       "productVersion": null,
+      "cliVersion": "0.166.153",
+      "cliVersions": ["0.166.153"],
+      "date": "2026-11-16",
+      "title": "",
+      "sections": [
+        {
+          "heading": "Changed - cc CLI 0.166.153: replacement release repository and LK domain (candidate, 2026-11-16)",
+          "body": "- Prepare CLI-only publication from `longfa/chainlesschain` using GitHub Actions OIDC Trusted Publishing. Pin new CLI provenance to the explicitly expected repository while retaining the original authority for unchanged historical child packages; never infer the expected publisher from the attestation itself.\n- Resolve independent readback authority from immutable tag metadata, preserving historical source identities. Require the new exact commit's complete Linux/Windows/macOS CLI CI and Strict Sandbox before creating a new immutable release tag, then verify public bytes, signed provenance and registry-only child dependencies.\n- Replace LK documentation, pricing and model-directory tenant links with `chainlesschain.net` across source configuration, generated Web/IDE catalogs and public guides. Inference hosts and protocol paths remain unchanged.\n- Keep candidates 0.166.151 and 0.166.152 and their immutable identities. Verified public CLI remains 0.166.150 until this candidate is published and read back. Child package versions, public IDE pairing and PC/mobile clients remain unchanged; automatic promotion remains HOLD."
+        }
+      ]
+    },
+    {
+      "productVersion": null,
       "cliVersion": "0.166.152",
       "cliVersions": ["0.166.152"],
       "date": "2026-11-15",

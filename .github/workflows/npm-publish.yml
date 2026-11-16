@@ -975,6 +975,8 @@ jobs:
           node packages/cli/scripts/npm-release-artifact.mjs verify "$REGISTRY_TARBALL" "$MANIFEST"
       - name: Verify published CLI npm provenance
         shell: bash
+        env:
+          CC_NPM_PROVENANCE_REPOSITORY: ${{ github.server_url }}/${{ github.repository }}
         run: |
           set -euo pipefail
           MANIFEST=release-artifacts/chainlesschain-release.json
