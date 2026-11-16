@@ -3,6 +3,15 @@ import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { verifyReleaseMetadata } from "./verify-release-metadata.mjs";
 
+function compareVersions(left, right) {
+  const a = left.split(".").map(Number);
+  const b = right.split(".").map(Number);
+  for (let index = 0; index < 3; index += 1) {
+    if (a[index] !== b[index]) return a[index] - b[index];
+  }
+  return 0;
+}
+
 function releaseInputs() {
   const read = (path) => readFileSync(new URL(path, import.meta.url), "utf8");
   return {
@@ -34,16 +43,19 @@ function publicReleaseInputs() {
 
 test("checked-in release documentation matches the package pairing", () => {
   const inputs = releaseInputs();
-  assert.equal(
-    verifyReleaseMetadata(inputs).cliVersion,
-    inputs.cliManifest.version,
+  assert.ok(
+    compareVersions(
+      verifyReleaseMetadata(inputs).cliVersion,
+      inputs.cliManifest.version,
+    ) <= 0,
+    "an IDE candidate may recommend an older verified public CLI than the source checkout",
   );
 });
 
 test("public release documentation matches the checked-in package pairing", () => {
   const inputs = publicReleaseInputs();
   const result = verifyReleaseMetadata(inputs);
-  assert.equal(result.cliVersion, inputs.cliManifest.version);
+  assert.ok(compareVersions(result.cliVersion, inputs.cliManifest.version) <= 0);
   assert.ok(
     inputs.readme.includes(
       `Plugin **${result.pluginVersion}** is the current public release`,

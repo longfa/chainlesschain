@@ -3,8 +3,8 @@
   "channel": {
     "id": "lk",
     "name": "LK API",
-    "documentationUrl": "https://quexuan.net/apidoc",
-    "pricingUrl": "https://quexuan.net/api/pricing",
+    "documentationUrl": "https://chainlesschain.net/apidoc",
+    "pricingUrl": "https://chainlesschain.net/api/pricing",
     "addresses": {
       "primary": "https://api.lk888.ai",
       "backup": "https://api.lk666.ai"
