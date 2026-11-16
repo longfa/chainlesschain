@@ -1,6 +1,6 @@
 {
   "schema": "chainlesschain.lk-model-catalog/v1",
-  "sourceUrl": "https://api.lingkeai.ai/gongkai/apidoc/moxing-liebiao?domain=quexuan.net",
+  "sourceUrl": "https://api.lingkeai.ai/gongkai/apidoc/moxing-liebiao?domain=chainlesschain.net",
   "sourceSha256": "13312b87674ee8a38a5e9ebd476712026a9e432e465a630e33bc2359db9ec3fe",
   "runtimeVerified": false,
   "accountVerified": false,

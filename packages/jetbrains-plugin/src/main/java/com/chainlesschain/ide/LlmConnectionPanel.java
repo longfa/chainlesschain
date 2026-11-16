@@ -63,7 +63,7 @@ public final class LlmConnectionPanel extends JPanel {
             current = active; dirty = true; update();
         });
         lkModel.setPrototypeDisplayValue(new LkChannelCatalog.Model("tt-6-luna", "TT-6 luna", "chat", "openai"));
-        lkModel.setToolTipText("对话模型按协议筛选；媒体目录及定价：https://quexuan.net/api/pricing");
+        lkModel.setToolTipText("对话模型按协议筛选；媒体目录及定价：https://chainlesschain.net/api/pricing");
         JPanel body = new JPanel(new BorderLayout());
         body.add(fields, BorderLayout.NORTH);
         accountResult.setEditable(false); accountResult.setLineWrap(true); accountResult.setWrapStyleWord(true);
