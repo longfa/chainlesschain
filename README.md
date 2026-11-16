@@ -2,9 +2,9 @@
 
 文档基线（2026-11-15）：依据最新 Git 提交与已核验发行版本更新。查看 [LK 用户配置与账单](docs-site/docs/chainlesschain/cli-llm.md) 和 [渠道架构、凭证隔离与发布设计](docs/design/release-runtime-update-2026-11-15-150.md)。
 
-## CLI 0.166.152 发布候选（2026-11-15）
+## CLI 0.166.154 release candidate (2026-11-16)
 
-本批准备发布自进化本地 retention/ArtifactStore 全目录审计与不恢复的 source WAL/v2 一致性检查。原 **0.166.151** 因 POSIX 测试断言的错误层级不匹配而停止发布，保留原不可变标签；修复候选 **0.166.152** 将重新运行准确提交的完整三系统 CLI CI / Strict Sandbox，再经 Actions OIDC 发布及公开包回读。已核验公开版本和安装命令仍为下方 **0.166.150**。本批仅发布 CLI，子包版本保持，Open VSX **0.37.189** 与 JetBrains **0.4.204** 仍推荐 **0.166.150**，PC/mobile 仍为 **v5.0.3.145**。自动晋升保持 **HOLD**；详见[本批范围与进度](docs-site/docs/chainlesschain/cli-ide-update-2026-11-15-152.md)。
+Candidate 0.166.154 fixes the bounded recovery guard so repeated large stdout/stderr from check_shell cannot bypass the six-batch no-progress backstop. The release requires exact-source CLI CI and Strict Sandbox matrices, Actions OIDC publication and public readback. VS Code 0.37.191 and JetBrains 0.4.206 will pair with CLI 0.166.154 after the CLI is public.
 
 ## 2026-11-15 CLI / IDE 发布状态
 

@@ -542,6 +542,18 @@ describe("ReadFileLoopGuard recovery", () => {
     expect(guard.largeOutputs.size).toBe(1);
   });
 
+  it("detects repeated large background output exposed as stdout", () => {
+    const guard = new ReadFileLoopGuard();
+    const output = "same background document\n".repeat(1000);
+    for (let i = 0; i < 7; i++) {
+      guard.startBatch();
+      guard.record("check_shell", { stdout: output });
+      guard.finishBatch();
+    }
+    expect(guard.stalled).toBe(true);
+    expect(guard.recoveryHint).toMatch(/filter\/count/i);
+  });
+
   it("does not penalize small computed summaries or distinct large pages", () => {
     const guard = new ReadFileLoopGuard();
     for (let i = 0; i < 70; i++) {

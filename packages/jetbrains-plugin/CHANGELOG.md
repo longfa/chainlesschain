@@ -1,9 +1,9 @@
 # Changelog — ChainlessChain IDE Bridge (JetBrains)
 
-## [0.4.205] - LK platform domain update (candidate, 2026-11-16)
+## [0.4.206] - CLI recovery pairing (candidate, 2026-11-16)
 
-- Use `chainlesschain.net` for the LK pricing link shown by the IDE configuration panel.
-- Continue pairing with the verified public CLI `0.166.150`; this candidate is unpublished until the exact tag workflow and Marketplace readback pass.
+- Pair with candidate CLI `0.166.154`, which bounds repeated background stdout/stderr recovery loops.
+- Publish only after CLI `0.166.154` is publicly verified and the exact IDE source passes its host, build and Marketplace gates; public `0.4.204` remains the verified pairing until then.
 
 ## [0.4.204] - LK aggregator model configuration (candidate, 2026-11-14)
 

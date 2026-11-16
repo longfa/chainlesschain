@@ -2,6 +2,10 @@
 
 This release adds fresh LK model prices, balance, Key quota and actual API billing (`cc llm account`), plus saved credentials for every configured channel, including Volcengine. Saved connections restore the Key when switching back; LK hosts and protocols share one credential. Desktop source supports the same account queries and encrypted connection history; a new desktop installer is not part of this release.
 
+## Release candidate 0.4.206 / CLI 0.166.154
+
+This candidate pairs with CLI **0.166.154**, which bounds repeated background stdout/stderr recovery loops. Publish only after the CLI is publicly verified and the exact-source JetBrains host, build and Marketplace gates pass.
+
 ## Current release 0.4.204 / CLI 0.166.150
 
 The [official tag workflow](https://github.com/chainlesschain/chainlesschain/actions/runs/43646453588) passed the complete host, browser, build and compatibility gates. JetBrains **0.4.204** is publicly verified. It recommends public CLI **0.166.150**. Install `npm i -g chainlesschain@0.166.150 --registry https://registry.npmjs.org`, restart the host, then run `cc --version` and `cc doctor`.
@@ -315,9 +319,9 @@ See the [verified publication evidence](https://github.com/chainlesschain/chainl
 
 ## Release compatibility
 
-Plugin **0.4.205** is the current release candidate. It recommends `chainlesschain@0.166.150` and updates the LK pricing link to chainlesschain.net while retaining the CLI-owned capability status surface and Rewind fixes. The verified Marketplace release remains the prior public version until the exact tag workflow and Marketplace readback pass. [Rewind fix](https://github.com/chainlesschain/chainlesschain/pull/593).
+Plugin **0.4.206** is the current release candidate. It recommends `chainlesschain@0.166.154` and pairs with the CLI's bounded background-output recovery guard. The verified Marketplace release remains the prior public version until the exact tag workflow and Marketplace readback pass. [Rewind fix](https://github.com/chainlesschain/chainlesschain/pull/593).
 
-Install the paired public CLI with `npm i -g chainlesschain@0.166.150 --registry https://registry.npmjs.org`, restart the chat host, and run `cc --version` and `cc doctor`. Goal transfer and native Graph features require matching desktop support and explicit native authorization. Model-task improvement and automatic promotion remain unverified.
+Install the paired public CLI with `npm i -g chainlesschain@0.166.154 --registry https://registry.npmjs.org` after publication, restart the chat host, and run `cc --version` and `cc doctor`. Goal transfer and native Graph features require matching desktop support and explicit native authorization. Model-task improvement and automatic promotion remain unverified.
 
 ## Previous candidates and development notes
 
