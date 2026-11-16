@@ -2,9 +2,9 @@
 
 Documentation baseline (2026-11-15): updated from current Git history and verified public releases. See [LK configuration and billing](docs-site/docs/chainlesschain/cli-llm.md) and [channel architecture and credential isolation](docs/design/release-runtime-update-2026-11-15-150.md).
 
-## CLI 0.166.152 release candidate (2026-11-15)
+## CLI 0.166.162 release candidate (2026-11-16)
 
-Candidate **0.166.152** adds bounded local retention/ArtifactStore audits and a source-WAL/v2 consistency check without recovery. Candidate **0.166.151** was held by a POSIX test error-layer assertion mismatch; its immutable tag is retained and publication was cancelled. The corrected candidate requires new exact-source three-OS CLI CI / Strict Sandbox, Actions OIDC publication and public readback; the verified public version and install command remain **0.166.150** below. This release changes only the CLI. Child versions remain unchanged; published Open VSX **0.37.189** and JetBrains **0.4.204** retain their **0.166.150** recommendation, and native clients remain **v5.0.3.145**. Automatic promotion remains **HOLD**. [Release scope and status](docs-site/docs/chainlesschain/cli-ide-update-2026-11-15-152.md).
+Candidate **0.166.162** continues the verified 0.166.153 source and uses **chainlesschain.net** for LK documentation and pricing links across the CLI-owned catalog and generated IDE/Web projections. The API primary/backup addresses and child package versions remain unchanged. Publication requires complete exact-source Linux, Windows and macOS CLI CI / Strict Sandbox, GitHub Actions OIDC, and public registry/provenance readback; the verified public version remains **0.166.150** until those gates pass. This is a CLI-only release; published IDE artifacts remain unchanged. [Release scope and status](docs-site/docs/chainlesschain/cli-ide-update-2026-11-16-162.md).
 
 ## Public CLI 0.166.150 / IDE pairing (2026-11-15)
 

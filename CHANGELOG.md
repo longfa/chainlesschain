@@ -10,6 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > `Unreleased` is a rolling source-development log retaining historical candidate labels, not a publication ledger. Engineering checks add no model-task acceptance. Full runtime producer/storage graphs, independent installer/pins, A/B/C evaluation and automatic promotion remain incomplete. **NOT_PAID_READY / NOT_ADMITTED / HOLD** remain. Microsoft Marketplace is deferred; public PC/mobile clients remain **v5.0.3.145**.
 
 ## [Unreleased]
+
+### Fixed - cc CLI 0.166.162: continue verified source with chainlesschain.net platform links (candidate, 2026-11-16)
+
+- Carry forward the verified 0.166.153 source and the LK catalog synchronization while continuing the release as CLI 0.166.162 from the longfa repository.
+- Use `https://chainlesschain.net` for LK documentation and pricing links across the CLI-owned catalog and generated IDE/Web projections; API primary/backup addresses and child npm package versions remain unchanged.
+- Publish only after the exact 0.166.162 commit passes complete Linux, Windows and macOS CLI CI and Strict Sandbox matrices, then use GitHub Actions OIDC and public registry/provenance readback. Until that completes, the verified public CLI remains 0.166.150.
+
 ### Fixed - cc CLI 0.166.153: synchronize generated LK IDE catalogs (candidate, 2026-11-16)
 
 - Regenerate the CLI-owned LK channel catalog across the Web panel, VS Code and JetBrains outputs so the exact source digest, endpoint metadata and model compatibility arrays stay synchronized.

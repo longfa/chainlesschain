@@ -3,6 +3,19 @@
   "releases": [
     {
       "productVersion": null,
+      "cliVersion": "0.166.162",
+      "cliVersions": ["0.166.162"],
+      "date": "2026-11-16",
+      "title": "",
+      "sections": [
+        {
+          "heading": "Fixed - cc CLI 0.166.162: continue verified source with chainlesschain.net platform links (candidate, 2026-11-16)",
+          "body": "- Carry forward the verified 0.166.153 source and the LK catalog synchronization while continuing the release as CLI 0.166.162 from the longfa repository.\n- Use `https://chainlesschain.net` for LK documentation and pricing links across the CLI-owned catalog and generated IDE/Web projections; API primary/backup addresses and child npm package versions remain unchanged.\n- Publish only after the exact 0.166.162 commit passes complete Linux, Windows and macOS CLI CI and Strict Sandbox matrices, then use GitHub Actions OIDC and public registry/provenance readback. Until that completes, the verified public CLI remains 0.166.150."
+        }
+      ]
+    },
+    {
+      "productVersion": null,
       "cliVersion": "0.166.153",
       "cliVersions": ["0.166.153"],
       "date": "2026-11-16",
