@@ -136,25 +136,25 @@ function desktopSettings() {
 
 test("desktop applying LK clears another service credential and selects exact model", () => {
   const state = desktopSettings();
-  state.form.anthropic.apiKey = "official-key";
+  state.form.custom.apiKey = "official-key";
   state.applyLkPreset();
-  assert.equal(state.form.provider, "anthropic");
-  assert.equal(state.form.anthropic.apiKey, "");
-  assert.equal(state.form.anthropic.model, "fb-5-2");
-  assert.equal(state.form.anthropic.baseURL, "https://api.lk888.ai");
+  assert.equal(state.form.provider, "custom");
+  assert.equal(state.form.custom.apiKey, "");
+  assert.equal(state.form.custom.model, "tt-6.1-sol");
+  assert.equal(state.form.custom.baseURL, "https://api.lk888.ai/v1");
 });
 
 test("desktop manual backup retains only the channel key and chosen model", () => {
   const state = desktopSettings();
   state.applyLkPreset();
-  state.form.anthropic.apiKey = "channel-key";
+  state.form.custom.apiKey = "channel-key";
   state.lkAddress.value = "backup";
   state.applyLkPreset();
-  assert.equal(state.form.anthropic.apiKey, "channel-key");
-  assert.equal(state.form.anthropic.baseURL, "https://api.lk666.ai");
+  assert.equal(state.form.custom.apiKey, "channel-key");
+  assert.equal(state.form.custom.baseURL, "https://api.lk666.ai/v1");
   state.lkProtocol.value = "openai";
   state.handleLkProtocolChange();
-  assert.equal(state.lkModel.value, "tt-6-luna");
+  assert.equal(state.lkModel.value, "tt-6.1-sol");
   assert.ok(
     state.lkChatModels.value.every((model) =>
       model.compatibleProtocols.includes("openai"),
@@ -162,7 +162,7 @@ test("desktop manual backup retains only the channel key and chosen model", () =
   );
   state.applyLkPreset();
   assert.equal(state.form.provider, "custom");
-  assert.equal(state.form.custom.model, "tt-6-luna");
+  assert.equal(state.form.custom.model, "tt-6.1-sol");
   assert.equal(state.form.custom.baseURL, "https://api.lk666.ai/v1");
   assert.equal(state.form.custom.apiKey, "");
 });
