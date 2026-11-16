@@ -239,10 +239,10 @@ describe("E2E: LLM Providers & Task Model Selector", () => {
   // ─── Constants: LLM_PROVIDERS setup wizard entries ─────────
 
   describe("constants LLM_PROVIDERS", () => {
-    it("should have volcengine as first provider and include proxy entries", async () => {
+    it("should have custom as first provider and include proxy entries", async () => {
       const { LLM_PROVIDERS } = await import("../../src/constants.js");
       const keys = Object.keys(LLM_PROVIDERS);
-      expect(keys[0]).toBe("volcengine");
+      expect(keys[0]).toBe("custom");
       expect(keys).toContain("openai-proxy");
       expect(keys).toContain("anthropic-proxy");
       expect(keys).toContain("gemini-proxy");
