@@ -86,8 +86,8 @@ IDE：打开「配置大模型 / Configure LLM」，选择 LK API 聚合平台�
 
 ## 相关文档
 
-- [平台开发文档](https://quexuan.net/apidoc)
-- [平台定价](https://quexuan.net/api/pricing)
+- [平台开发文档](https://chainlesschain.net/apidoc)
+- [平台定价](https://chainlesschain.net/api/pricing)
 - [完整接入说明](https://github.com/chainlesschain/chainlesschain/blob/main/docs/configuration/lk-api-channel.md)
 - [发布证据](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release150-public/publication.json)
 
