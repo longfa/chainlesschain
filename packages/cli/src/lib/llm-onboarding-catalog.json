@@ -6,13 +6,13 @@
   "accountVerified": false,
   "providers": [
     {
-      "id": "volcengine",
-      "label": "Volcengine / Doubao (volcengine)",
-      "cliLabel": "Volcengine (火山引擎/豆包)",
-      "baseUrl": "https://ark.cn-beijing.volces.com/api/v3",
-      "defaultModel": "deepseek-v4-1-flash-economy-261017",
-      "needsKey": true,
-      "visionModel": "doubao-seed-2-0-lite-260215"
+      "id": "custom",
+      "label": "Local compute / OpenAI compatible (LEXDATA / vLLM / SGLang)",
+      "cliLabel": "本地算力平台 / OpenAI 兼容 (力数/vLLM/SGLang等)",
+      "baseUrl": "",
+      "defaultModel": "",
+      "needsKey": false,
+      "visionModel": ""
     },
     {
       "id": "ollama",
@@ -22,6 +22,15 @@
       "defaultModel": "qwen2.5:7b",
       "needsKey": false,
       "visionModel": ""
+    },
+    {
+      "id": "volcengine",
+      "label": "Volcengine / Doubao (volcengine)",
+      "cliLabel": "Volcengine (火山引擎/豆包)",
+      "baseUrl": "https://ark.cn-beijing.volces.com/api/v3",
+      "defaultModel": "deepseek-v4-1-flash-economy-261017",
+      "needsKey": true,
+      "visionModel": "doubao-seed-2-0-lite-260215"
     },
     {
       "id": "anthropic",
@@ -118,15 +127,6 @@
       "defaultModel": "gemini-2.0-flash",
       "needsKey": true,
       "isProxy": true
-    },
-    {
-      "id": "custom",
-      "label": "Local compute / OpenAI compatible (LEXDATA / vLLM / SGLang)",
-      "cliLabel": "本地算力平台 / OpenAI 兼容 (力数/vLLM/SGLang等)",
-      "baseUrl": "",
-      "defaultModel": "",
-      "needsKey": false,
-      "visionModel": ""
     }
   ]
 }

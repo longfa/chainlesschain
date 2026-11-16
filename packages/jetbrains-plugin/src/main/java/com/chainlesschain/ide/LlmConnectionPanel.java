@@ -12,6 +12,8 @@ import javax.swing.event.DocumentListener;
 
 /** Native, headless-testable connection form. Saved credentials never enter it. */
 public final class LlmConnectionPanel extends JPanel {
+    private static final int LK_INDEX = 0;
+    private static final int PRESET_OFFSET = 1;
     private final Function<String, String> text;
     private final JComboBox<String> provider = new JComboBox<>();
     private final JComboBox<String> protocol = new JComboBox<>(new String[]{
@@ -39,9 +41,8 @@ public final class LlmConnectionPanel extends JPanel {
         JLabel introduction = new JLabel(text.apply("llm.form.intro"));
         add(introduction, BorderLayout.NORTH);
         JPanel fields = new JPanel(new GridBagLayout());
-        for (LlmConfig.Preset preset : LlmConfig.PRESETS) provider.addItem(preset.label);
-        provider.addItem(text.apply("llm.form.custom"));
         provider.addItem("LK API 聚合平台");
+        for (LlmConfig.Preset preset : LlmConfig.PRESETS) provider.addItem(preset.label);
         row(fields, 0, new JLabel(text.apply("llm.form.provider")), provider);
         protocolLabel.setText(text.apply("llm.form.protocol"));
         row(fields, 1, protocolLabel, protocol);
@@ -62,7 +63,7 @@ public final class LlmConnectionPanel extends JPanel {
             load(savedConnections.get(savedConnection.getSelectedIndex() - 1));
             current = active; dirty = true; update();
         });
-        lkModel.setPrototypeDisplayValue(new LkChannelCatalog.Model("tt-6-luna", "TT-6 luna", "chat", "openai"));
+        lkModel.setPrototypeDisplayValue(new LkChannelCatalog.Model("tt-6.1-sol", "TT-6.1 sol", "chat", "openai"));
         lkModel.setToolTipText("对话模型按协议筛选；媒体目录及定价：https://chainlesschain.net/api/pricing");
         JPanel body = new JPanel(new BorderLayout());
         body.add(fields, BorderLayout.NORTH);
@@ -97,8 +98,9 @@ public final class LlmConnectionPanel extends JPanel {
             if (filling) return;
             filling = true;
             int index = provider.getSelectedIndex();
-            if (index >= 0 && index < LlmConfig.PRESETS.length) {
-                LlmConfig.Preset preset = LlmConfig.PRESETS[index];
+            int presetIndex = index - PRESET_OFFSET;
+            if (presetIndex >= 0 && presetIndex < LlmConfig.PRESETS.length) {
+                LlmConfig.Preset preset = LlmConfig.PRESETS[presetIndex];
                 baseUrl.setText(preset.baseUrl); model.setText(preset.defaultModel);
                 vision.setText(LlmConfig.suggestVisionModel(preset.id));
             } else if (isLk()) {
@@ -128,6 +130,9 @@ public final class LlmConnectionPanel extends JPanel {
             }
         });
         allowHttp.addActionListener(e -> changed());
+        filling = true;
+        applyLk(false);
+        filling = false;
         update();
     }
 
@@ -144,10 +149,12 @@ public final class LlmConnectionPanel extends JPanel {
     private String providerId() {
         int index = provider.getSelectedIndex();
         if (isLk()) return protocol.getSelectedIndex() == 0 ? "custom" : protocols[protocol.getSelectedIndex()];
-        return index >= 0 && index < LlmConfig.PRESETS.length ? LlmConfig.PRESETS[index].id : protocols[protocol.getSelectedIndex()];
+        int presetIndex = index - PRESET_OFFSET;
+        return presetIndex >= 0 && presetIndex < LlmConfig.PRESETS.length
+                ? LlmConfig.PRESETS[presetIndex].id : protocols[protocol.getSelectedIndex()];
     }
 
-    private boolean isLk() { return provider.getSelectedIndex() == LlmConfig.PRESETS.length + 1; }
+    private boolean isLk() { return provider.getSelectedIndex() == LK_INDEX; }
 
     private void fillLkModels(String selected) {
         lkModel.removeAllItems();
@@ -164,7 +171,7 @@ public final class LlmConnectionPanel extends JPanel {
     private void applyLk(boolean keepModel) {
         String previous = model.getText();
         String wire = protocols[protocol.getSelectedIndex()];
-        String defaultModel = "anthropic".equals(wire) ? "fb-5-2" : "gemini".equals(wire) ? "gem-3.8-flash" : "tt-6-luna";
+        String defaultModel = "anthropic".equals(wire) ? "fb-5-2" : "gemini".equals(wire) ? "gem-3.8-flash" : "tt-6.1-sol";
         fillLkModels(keepModel ? previous : defaultModel);
         baseUrl.setText(LkChannelCatalog.baseUrl(wire, lkAddress.getSelectedIndex() == 1));
         model.setText(keepModel ? previous : defaultModel);
@@ -179,7 +186,7 @@ public final class LlmConnectionPanel extends JPanel {
     }
 
     private void update() {
-        boolean custom = provider.getSelectedIndex() == LlmConfig.PRESETS.length;
+        boolean custom = "custom".equals(providerId()) && !isLk();
         protocol.setVisible(custom || isLk()); protocolLabel.setVisible(custom || isLk());
         lkAddress.setVisible(isLk()); lkAddressLabel.setVisible(isLk());
         lkModel.setVisible(isLk()); lkModelLabel.setVisible(isLk());
@@ -212,17 +219,17 @@ public final class LlmConnectionPanel extends JPanel {
         accountResult.setText("");
         filling = true;
         current = value;
-        int index = LlmConfig.PRESETS.length;
+        int index = PRESET_OFFSET;
         for (int i = 0; i < LlmConfig.PRESETS.length; i++) {
             LlmConfig.Preset preset = LlmConfig.PRESETS[i];
             // Provider-specific IDs retain credential and pricing identity on relays.
             if (preset.id.equals(value.provider) && (!Arrays.asList(protocols).contains(value.provider)
                     || LlmConfig.normalizedBaseUrl(preset.baseUrl)
-                    .equals(LlmConfig.normalizedBaseUrl(value.baseUrl)))) index = i;
+                    .equals(LlmConfig.normalizedBaseUrl(value.baseUrl)))) index = i + PRESET_OFFSET;
         }
         boolean lk = LkChannelCatalog.isEndpoint(value.baseUrl)
                 && Arrays.asList("custom", "openai", "anthropic", "gemini").contains(value.provider);
-        if (lk) index = LlmConfig.PRESETS.length + 1;
+        if (lk) index = LK_INDEX;
         provider.setSelectedIndex(index);
         if (lk && "custom".equals(value.provider)) protocol.setSelectedIndex(0);
         for (int i = 0; i < protocols.length; i++) if (protocols[i].equals(value.provider)) protocol.setSelectedIndex(i);

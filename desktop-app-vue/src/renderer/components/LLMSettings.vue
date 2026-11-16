@@ -524,9 +524,9 @@ import {
   resolveLkConnection,
 } from "../../../../packages/cli/src/lib/llm-channel-presets.js";
 
-const lkProtocol = ref("anthropic");
+const lkProtocol = ref("openai");
 const lkAddress = ref("primary");
-const lkModel = ref("fb-5-2");
+const lkModel = ref("tt-6.1-sol");
 const lkChatModels = computed(() =>
   LK_MODELS.filter(
     (model) =>

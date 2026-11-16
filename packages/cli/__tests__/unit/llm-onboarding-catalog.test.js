@@ -8,6 +8,7 @@ import { LLM_PROVIDERS } from "../../src/constants.js";
 import { BUILT_IN_PROVIDERS } from "../../src/lib/llm-providers.js";
 import { resolveModelCapabilityProfile } from "../../src/lib/model-capabilities.js";
 import { MODEL_CAPABILITY_CATALOG_VERSION } from "../../src/lib/model-context-catalog.js";
+import { LK_CHANNEL } from "../../src/lib/llm-channel-presets.js";
 
 const require = createRequire(import.meta.url);
 const raw = readFileSync(
@@ -22,6 +23,14 @@ const {
 } = require("../../../vscode-extension/src/llm-config.js");
 
 describe("shared new-connection model recommendations", () => {
+  it("orders local platform onboarding ahead of Ollama and keeps LK on sol 6.1", () => {
+    expect(catalog.providers.slice(0, 2).map((entry) => entry.id)).toEqual([
+      "custom",
+      "ollama",
+    ]);
+    expect(LK_CHANNEL.protocols.openai.defaultModel).toBe("tt-6.1-sol");
+  });
+
   it("keeps CLI and both IDEs synchronized with one normalized source digest", () => {
     expect(vendored.sourceSha256).toBe(
       createHash("sha256").update(raw).digest("hex"),

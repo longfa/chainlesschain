@@ -11,9 +11,9 @@ class LlmConnectionPanelTest {
         SwingUtilities.invokeAndWait(() -> {
             LlmConnectionPanel panel = new LlmConnectionPanel(key -> key);
             panel.load(new LlmConfig.Connection("openai", "old", "https://api.openai.com/v1", "", true));
-            ((JComboBox<?>) find(panel, "llm.provider")).setSelectedIndex(LlmConfig.PRESETS.length + 1);
+            ((JComboBox<?>) find(panel, "llm.provider")).setSelectedIndex(0);
             assertEquals("custom", panel.connection().provider);
-            assertEquals("tt-6-luna", panel.connection().model);
+            assertEquals("tt-6.1-sol", panel.connection().model);
             assertEquals("https://api.lk888.ai/v1", panel.connection().baseUrl);
             assertTrue(panel.needsNewKey());
             ((JComboBox<?>) find(panel, "llm.protocol")).setSelectedIndex(1);
@@ -84,7 +84,7 @@ class LlmConnectionPanelTest {
         SwingUtilities.invokeAndWait(() -> {
             LlmConnectionPanel panel = new LlmConnectionPanel(key -> key);
             panel.load(new LlmConfig.Connection("openai", "original", "https://api.openai.com/v1", "", true));
-            ((JComboBox<?>) find(panel, "llm.provider")).setSelectedIndex(LlmConfig.PRESETS.length);
+            ((JComboBox<?>) find(panel, "llm.provider")).setSelectedIndex(1);
             assertTrue(find(panel, "llm.protocol").isVisible());
             ((JComboBox<?>) find(panel, "llm.protocol")).setSelectedIndex(1);
             ((JTextField) find(panel, "llm.model")).setText("team/custom-model");
@@ -113,13 +113,13 @@ class LlmConnectionPanelTest {
             LlmConnectionPanel panel = new LlmConnectionPanel(key -> key);
             panel.load(new LlmConfig.Connection("openai", "team/custom-alias", "https://relay.example/v1", "saved-vision", true));
             JComboBox<?> providers = (JComboBox<?>) find(panel, "llm.provider");
-            assertEquals(LlmConfig.PRESETS.length, providers.getSelectedIndex());
+            assertEquals(1, providers.getSelectedIndex());
             assertEquals("team/custom-alias", panel.connection().model);
             assertEquals("https://relay.example/v1", panel.connection().baseUrl);
             assertEquals("saved-vision", panel.connection().visionModel);
             assertFalse(find(panel, "llm.save").isEnabled());
             for (int i = 0; i < LlmConfig.PRESETS.length; i++) {
-                if ("openai".equals(LlmConfig.PRESETS[i].id)) providers.setSelectedIndex(i);
+                if ("openai".equals(LlmConfig.PRESETS[i].id)) providers.setSelectedIndex(i + 1);
             }
             assertEquals("gpt-6.1-sol", panel.connection().model);
             assertEquals("https://api.openai.com/v1", panel.connection().baseUrl);
@@ -133,7 +133,7 @@ class LlmConnectionPanelTest {
             panel.load(new LlmConfig.Connection("openai", "cloud-model", "https://api.openai.com/v1", "", true));
             ((JPasswordField) find(panel, "llm.apiKey")).setText("old-cloud-key");
             JComboBox<?> choices = (JComboBox<?>) find(panel, "llm.provider");
-            for (int i = 0; i < LlmConfig.PRESETS.length; i++) if ("custom".equals(LlmConfig.PRESETS[i].id)) choices.setSelectedIndex(i);
+            for (int i = 0; i < LlmConfig.PRESETS.length; i++) if ("custom".equals(LlmConfig.PRESETS[i].id)) choices.setSelectedIndex(i + 1);
             ((JTextField) find(panel, "llm.baseUrl")).setText("http://192.168.31.79:8889/v1");
             ((JTextField) find(panel, "llm.model")).setText("glm5.3-flash-tensorfold");
             assertEquals("custom", panel.connection().provider);

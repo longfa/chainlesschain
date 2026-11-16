@@ -1,5 +1,5 @@
 {
-  "sourceSha256": "3ee5aa253337e40f11a4b9f9ca245d2162dc4c0a859845bc3c09ba711debe0b6",
+  "sourceSha256": "2ba5ca5e128348ecb26799dec4d2f2734aa76e8e7929c872f59e5587c8213dbc",
   "channel": {
     "id": "lk",
     "name": "LK API",
@@ -14,7 +14,7 @@
         "label": "OpenAI 兼容",
         "provider": "custom",
         "basePath": "/v1",
-        "defaultModel": "tt-6-luna"
+        "defaultModel": "tt-6.1-sol"
       },
       "anthropic": {
         "label": "Anthropic 兼容 (FB-5.2)",
