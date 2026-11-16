@@ -10,6 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > `Unreleased` is a rolling source-development log retaining historical candidate labels, not a publication ledger. Engineering checks add no model-task acceptance. Full runtime producer/storage graphs, independent installer/pins, A/B/C evaluation and automatic promotion remain incomplete. **NOT_PAID_READY / NOT_ADMITTED / HOLD** remain. Microsoft Marketplace is deferred; public PC/mobile clients remain **v5.0.3.145**.
 
 ## [Unreleased]
+
+### Fixed - cc CLI 0.166.154: bound repeated background output recovery (candidate, 2026-11-16)
+
+- Count repeated large `stdout` and `stderr` returned by `run_code`, `run_shell` and `check_shell` in the same bounded recovery guard as normalized output. Background polling can no longer bypass the six-batch no-progress backstop by returning the same evidence under a different field.
+- Add regression coverage for repeated `check_shell` stdout. Require complete exact-source CLI CI and Strict Sandbox matrices, Actions OIDC publication and public package/provenance readback before treating this candidate as public.
+- Pair the next IDE releases with CLI `0.166.154` only after the CLI is publicly verified.
+
 ### Fixed - cc CLI 0.166.153: synchronize generated LK IDE catalogs (candidate, 2026-11-16)
 
 - Regenerate the CLI-owned LK channel catalog across the Web panel, VS Code and JetBrains outputs so the exact source digest, endpoint metadata and model compatibility arrays stay synchronized.

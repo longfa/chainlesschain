@@ -521,24 +521,38 @@ export class ReadFileLoopGuard {
       if (result?.readProgress?.newContent === true) this.batch.advanced = true;
       if (result?.readProgress?.newContent === false) this.batch.duplicates++;
     } else if (
-      (tool === "run_code" || tool === "run_shell") &&
-      typeof result?.output === "string" &&
-      (result.output.length >= 8000 ||
-        hostToolOutputIdentity(result)?.chars >= 8000)
+      tool === "run_code" ||
+      tool === "run_shell" ||
+      tool === "check_shell"
     ) {
       // Arbitrary code may just dump the same file again. Compare returned
       // evidence, not code spelling or timings. Never cache/skip execution:
       // identical stdout does not imply identical filesystem side effects.
+      // Foreground shell output is normalized to `output`, while background
+      // polling exposes the same evidence as stdout/stderr. Inspect all
+      // supported fields so check_shell cannot bypass the repeated-output
+      // backstop merely by using a different transport shape.
+      const outputParts = [
+        result?.output,
+        result?.stdout,
+        result?.stderr,
+      ].filter((value) => typeof value === "string");
+      const output = outputParts.length ? outputParts.join("\n") : null;
       const identity = hostToolOutputIdentity(result);
-      const fingerprint = identity
-        ? `${identity.chars}:${identity.digest}`
-        : createHash("sha256").update(result.output).digest("hex");
-      if (this.largeOutputs.has(fingerprint)) this.batch.duplicates++;
-      else {
-        this.largeOutputs.add(fingerprint);
-        this.batch.advanced = true;
-        while (this.largeOutputs.size > 64)
-          this.largeOutputs.delete(this.largeOutputs.values().next().value);
+      if (
+        output !== null &&
+        (output.length >= 8000 || identity?.chars >= 8000)
+      ) {
+        const fingerprint = identity
+          ? `${identity.chars}:${identity.digest}`
+          : createHash("sha256").update(output).digest("hex");
+        if (this.largeOutputs.has(fingerprint)) this.batch.duplicates++;
+        else {
+          this.largeOutputs.add(fingerprint);
+          this.batch.advanced = true;
+          while (this.largeOutputs.size > 64)
+            this.largeOutputs.delete(this.largeOutputs.values().next().value);
+        }
       }
     } else if (actionable && !EXPLORATION_TOOLS.has(tool)) {
       this.batch.substantive = true;

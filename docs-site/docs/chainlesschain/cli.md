@@ -1,8 +1,8 @@
 # CLI 命令行工具
 
-## CLI 0.166.152 发布候选（2026-11-15）
+## CLI 0.166.154 release candidate (2026-11-16)
 
-候选版新增有界本地 retention/ArtifactStore 审计，以及不执行恢复的 source WAL/v2 全事件一致性检查。原 **0.166.151** 因 POSIX 测试错误层级断言不匹配停止发布，修复候选 **0.166.152** 重新运行准确提交的三系统门禁。OIDC 发布和公开回读完成前，已核验公开版本仍为下方 **0.166.150**。本批仅发布 CLI，现有 IDE 配对与客户端版本保持；自动晋升仍 **HOLD**。[发布范围与进度](./cli-ide-update-2026-11-15-152)。
+Candidate 0.166.154 fixes the bounded recovery guard so repeated large stdout/stderr from check_shell cannot bypass the six-batch no-progress backstop. Publication requires exact-source CLI CI and Strict Sandbox matrices, Actions OIDC and public readback. The paired IDE candidates are VS Code 0.37.191 and JetBrains 0.4.206. [Release scope and status](./cli-ide-update-2026-11-16-154).
 
 ## 当前发行核对（2026-11-15）
 
