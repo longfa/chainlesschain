@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > `Unreleased` is a rolling source-development log retaining historical candidate labels, not a publication ledger. Engineering checks add no model-task acceptance. Full runtime producer/storage graphs, independent installer/pins, A/B/C evaluation and automatic promotion remain incomplete. **NOT_PAID_READY / NOT_ADMITTED / HOLD** remain. Microsoft Marketplace is deferred; public PC/mobile clients remain **v5.0.3.145**.
 
 ## [Unreleased]
+### Fixed - cc CLI 0.166.153: synchronize generated LK IDE catalogs (candidate, 2026-11-16)
+
+- Regenerate the CLI-owned LK channel catalog across the Web panel, VS Code and JetBrains outputs so the exact source digest, endpoint metadata and model compatibility arrays stay synchronized.
+- Keep the 0.166.152 immutable candidate unchanged after its exact-source release gate exposed stale generated catalogs. Publish 0.166.153 only after complete three-platform CLI CI and Strict Sandbox gates, Actions OIDC publication and public provenance readback.
 
 ### Fixed - cc CLI 0.166.152: preserve wrapped POSIX witness refusal evidence (candidate, 2026-11-15)
 
