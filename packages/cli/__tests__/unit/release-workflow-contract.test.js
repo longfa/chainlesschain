@@ -68,7 +68,7 @@ describe("CLI release workflow contracts", () => {
   it("gates PDH release source on all three native hosts without filtered suites", () => {
     const text = workflow("cli-ci.yml");
     const job = workflowJob(text, "pdh-native-tests");
-    expect(job).toContain("os: [ubuntu-latest, windows-latest, macos-latest]");
+    expect(job).toContain("os: [ubuntu-latest, windows-latest, macos-15]");
     expect(job).toContain("fail-fast: false");
     expect(job).toContain("timeout-minutes: 25");
     expect(job).toContain(
@@ -567,15 +567,14 @@ describe("CLI release workflow contracts", () => {
   it("runs the complete native campaign contract on three hosts before CLI test fan-out", () => {
     const ci = workflow("cli-ci.yml");
     const preflight = workflowJob(ci, "native-campaign-preflight");
-    expect(preflight).toContain("needs: [docs-scope]");
+    expect(preflight).toContain("needs: [docs-scope, pdh-native-tests]");
     expect(preflight).toContain("needs.docs-scope.result == 'success'");
+    expect(preflight).toContain("needs.pdh-native-tests.result == 'success'");
     expect(preflight).toContain(
       "needs.docs-scope.outputs.docs_only == 'false'",
     );
     expect(preflight).toContain("fail-fast: false");
-    expect(preflight).toContain(
-      "os: [ubuntu-latest, windows-latest, macos-latest]",
-    );
+    expect(preflight).toContain("os: [ubuntu-latest, windows-latest]");
     expect(preflight).toContain("runs-on: ${{ matrix.os }}");
     expect(preflight).toContain(
       "ref: ${{ github.event.pull_request.head.sha || github.sha }}",
@@ -626,6 +625,9 @@ describe("CLI release workflow contracts", () => {
         "Verify native campaign dispatch and acceptance preflight without provider execution",
       ),
     ).toBe(1);
+    expect(ci).toContain(
+      "Verify macOS native campaign dispatch and acceptance preflight",
+    );
     expect(workflowJob(ci, "verify-cli")).not.toContain(
       "verify01-native-task-campaign.node-test.mjs",
     );
@@ -647,7 +649,7 @@ describe("CLI release workflow contracts", () => {
   it("runs all installed assisted regressions on the three exact-source hosts", () => {
     const verification = workflowJob(workflow("cli-ci.yml"), "verify-cli");
     expect(verification).toContain(
-      "os: [ubuntu-latest, windows-latest, macos-latest]",
+      "os: [ubuntu-latest, windows-latest, macos-15]",
     );
     expect(verification).toContain(
       "ref: ${{ github.event.pull_request.head.sha || github.sha }}",
@@ -682,7 +684,7 @@ describe("CLI release workflow contracts", () => {
       .split("  verify-cli:")[1]
       .split("  pack-linux-dryrun:")[0];
     expect(verification).toContain(
-      "os: [ubuntu-latest, windows-latest, macos-latest]",
+      "os: [ubuntu-latest, windows-latest, macos-15]",
     );
     expect(verification).toContain(
       "ref: ${{ github.event.pull_request.head.sha || github.sha }}",
