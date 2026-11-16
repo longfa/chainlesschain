@@ -462,8 +462,8 @@ jobs:
   macos-latest-capability:
     needs: [docs-scope]
     if: ${{ needs.docs-scope.result == 'success' && needs.docs-scope.outputs.docs_only == 'false' }}
-    name: "macOS latest native capability"
-    runs-on: macos-latest
+    name: "macOS native capability (macos-15)"
+    runs-on: macos-15
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v5
