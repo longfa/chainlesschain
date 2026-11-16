@@ -1,5 +1,10 @@
 name: Verify published CLI before IDE release
 description: Install the exact paired CLI and its child packages from public npm before uploading an IDE extension.
+inputs:
+  cli-version:
+    description: Exact public CLI version paired with this IDE candidate.
+    required: false
+    default: ""
 runs:
   using: composite
   steps:
@@ -9,7 +14,10 @@ runs:
       working-directory: ${{ github.workspace }}
       run: |
         set -euo pipefail
-        VERSION=$(node -p "require('./packages/cli/package.json').version")
+        VERSION="${{ inputs.cli-version }}"
+        if [ -z "$VERSION" ]; then
+          VERSION=$(node -p "require('./packages/cli/package.json').version")
+        fi
         PROBE_ROOT=$(mktemp -d "$RUNNER_TEMP/cc-ide-cli-XXXXXX")
         mkdir -p "$PROBE_ROOT/install"
         export CHAINLESSCHAIN_HOME="$PROBE_ROOT/home"
@@ -22,8 +30,9 @@ runs:
           node node_modules/chainlesschain/bin/chainlesschain.js --version > "$PROBE_ROOT/cli-version.txt"
           node node_modules/chainlesschain/bin/chainlesschain.js agent --capabilities > "$PROBE_ROOT/agent-capabilities.json"
         )
+        cp "$PROBE_ROOT/install/node_modules/chainlesschain/package.json" "$PROBE_ROOT/paired-cli-package.json"
         node scripts/verify-ide-cli-prerequisite.mjs "$PROBE_ROOT" \
-          packages/cli/package.json "$PROBE_ROOT/receipt.json"
+          "$PROBE_ROOT/paired-cli-package.json" "$PROBE_ROOT/receipt.json"
         echo "receipt=$PROBE_ROOT/receipt.json" >> "$GITHUB_OUTPUT"
     - name: Preserve public CLI prerequisite receipt
       uses: actions/upload-artifact@v6
