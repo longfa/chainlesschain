@@ -26,7 +26,7 @@ export function useLlmConfiguration(ws, providersStore, message) {
   const showRestartHint = ref(false),
     loaded = ref(null);
   const savedConnections = ref([]);
-  const channel = ref("manual"),
+  const channel = ref("lk"),
     lkProtocol = ref("openai"),
     lkAddress = ref("primary");
   const configForm = reactive({
@@ -110,7 +110,7 @@ export function useLlmConfiguration(ws, providersStore, message) {
       maxTokens: safe.maxTokens ?? 4096,
     });
     const selection = lkSelection(safe);
-    channel.value = selection ? "lk" : "manual";
+    channel.value = selection || !safe.provider ? "lk" : "manual";
     if (selection) {
       lkProtocol.value = selection.protocol;
       lkAddress.value = selection.address;

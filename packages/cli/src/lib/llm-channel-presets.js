@@ -17,7 +17,7 @@ export const LK_CHANNEL = {
       label: "OpenAI 兼容",
       provider: "custom",
       basePath: "/v1",
-      defaultModel: "tt-6-luna",
+      defaultModel: "tt-6.1-sol",
     },
     anthropic: {
       label: "Anthropic 兼容 (FB-5.2)",

@@ -227,8 +227,8 @@
                 v-model:value="channel"
                 :disabled="configSaving || configLoading"
                 :options="[
-                  { value: 'manual', label: '官方服务 / 自定义渠道' },
                   { value: 'lk', label: 'LK API 聚合平台' },
+                  { value: 'manual', label: '官方服务 / 自定义渠道' },
                 ]"
                 @change="handleChannelChange"
               />
@@ -474,15 +474,15 @@ const {
 } = useLlmConfiguration(ws, providersStore, message);
 
 const knownProviders = [
+  "custom",
   "ollama",
-  "openai",
-  "anthropic",
   "volcengine",
   "deepseek",
   "gemini",
+  "openai",
+  "anthropic",
   "groq",
   "mistral",
-  "custom",
   "zhipu",
 ];
 

@@ -246,9 +246,9 @@ window.addEventListener("message", ({ data: m }) => {
     }
     $("preset").replaceChildren();
     for (const p of [
-      { id: "relay", label: "自定义 / 中转站" },
-      ...presets,
       ...(lkCatalog ? [{ id: "lk", label: "LK API 聚合平台" }] : []),
+      ...presets,
+      { id: "relay", label: "自定义 / 中转站" },
     ]) {
       const option = document.createElement("option");
       option.value = p.id;
