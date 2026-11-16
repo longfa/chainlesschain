@@ -6,7 +6,7 @@ ChainlessChain agent workspace for VS Code-compatible editors with streaming cha
 
 This candidate also adds fresh LK model prices, balance, Key quota and actual API billing (cc llm account), plus saved credentials for every configured channel, including Volcengine. Switch back using Saved connections without re-entering the Key; LK hosts and protocols share one credential. Desktop source supports the same account queries and encrypted connection history.
 
-Version **0.37.189** recommends CLI **`0.166.150`** and pairs with source JetBrains **0.4.204**. These candidates add LK primary/backup configuration and 83 protocol-filtered chat models, with a shared 197-entry model directory. Publication is pending exact-source CI, npm OIDC and registry readback; the preceding public versions below remain authoritative until verification. Child package versions remain unchanged. [LK setup and limits](../../docs/configuration/lk-api-channel.md).
+Version **0.37.190** recommends CLI **`0.166.150`** and pairs with source JetBrains **0.4.205**. This unpublished IDE candidate only updates the LK platform domain to chainlesschain.net; the verified public pairing below remains authoritative until the exact tag workflow and Open VSX readback complete. [LK setup and limits](../../docs/configuration/lk-api-channel.md).
 
 The channel uses native OpenAI, Anthropic and Gemini adapters. Its media directory is an interface reference; task submission and polling are not implemented in these chat panels. Account model permissions and pricing remain platform-controlled. Existing deployment gates and HOLD remain. [Previous publication evidence](../../docs/research/cli/evidence/release149-public/publication.json).
 
