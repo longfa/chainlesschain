@@ -180,8 +180,11 @@ jobs:
   # the large CLI test fan-out, so late host-tool failures do not waste that run.
   native-campaign-preflight:
     name: Native campaign preflight (${{ matrix.os }})
-    needs: [docs-scope]
-    if: ${{ needs.docs-scope.result == 'success' && needs.docs-scope.outputs.docs_only == 'false' }}
+    # Let PDH consume the hosted macOS slot first. The preflight remains a
+    # required three-OS gate, but avoids starving behind its sibling matrix
+    # while both are queued together.
+    needs: [docs-scope, pdh-native-tests]
+    if: ${{ needs.docs-scope.result == 'success' && needs.docs-scope.outputs.docs_only == 'false' && needs.pdh-native-tests.result == 'success' }}
     strategy:
       fail-fast: false
       matrix:
