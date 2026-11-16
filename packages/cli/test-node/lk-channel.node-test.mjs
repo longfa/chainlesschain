@@ -164,5 +164,5 @@ test("desktop manual backup retains only the channel key and chosen model", () =
   assert.equal(state.form.provider, "custom");
   assert.equal(state.form.custom.model, "tt-6.1-sol");
   assert.equal(state.form.custom.baseURL, "https://api.lk666.ai/v1");
-  assert.equal(state.form.custom.apiKey, "");
+  assert.equal(state.form.custom.apiKey, "channel-key");
 });

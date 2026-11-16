@@ -10,7 +10,7 @@
       "sections": [
         {
           "heading": "Fixed - cc CLI 0.166.154: bound repeated background output recovery (candidate, 2026-11-16)",
-          "body": "- Count repeated large stdout and stderr returned by run_code, run_shell and check_shell in the same bounded recovery guard as normalized output. Background polling can no longer bypass the six-batch no-progress backstop by returning the same evidence under a different field.\n- Add regression coverage for repeated check_shell stdout. Require complete exact-source CLI CI and Strict Sandbox matrices, Actions OIDC publication and public package/provenance readback before treating this candidate as public.\n- Pair the next IDE releases with CLI 0.166.154 only after the CLI is publicly verified."
+          "body": "- Count repeated large `stdout` and `stderr` returned by `run_code`, `run_shell` and `check_shell` in the same bounded recovery guard as normalized output. Background polling can no longer bypass the six-batch no-progress backstop by returning the same evidence under a different field.\n- Add regression coverage for repeated `check_shell` stdout. Require complete exact-source CLI CI and Strict Sandbox matrices, Actions OIDC publication and public package/provenance readback before treating this candidate as public.\n- Pair the next IDE releases with CLI `0.166.154` only after the CLI is publicly verified."
         }
       ]
     },
