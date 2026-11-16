@@ -1,5 +1,10 @@
 # Changelog — ChainlessChain IDE Bridge (VS Code)
 
+## [0.37.190] - LK platform domain update (candidate, 2026-11-16)
+
+- Use `chainlesschain.net` for LK documentation and pricing links in the IDE configuration panel and synchronized vendor catalog.
+- Continue pairing with the verified public CLI `0.166.150`; this candidate is unpublished until the exact tag workflow and public readback pass.
+
 ## [0.37.189] - LK aggregator model configuration (candidate, 2026-11-14)
 
 - Add the LK aggregator with documented primary/backup addresses, exact model aliases and protocol-aware selection. The shared catalog contains 83 chat models plus 114 media entries; media task execution is not included. Preserve saved aliases and keep credentials scoped to the selected endpoint. Three tiny live protocol probes and authenticated pricing queries succeeded; this does not certify the whole model catalog.

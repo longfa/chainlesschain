@@ -315,7 +315,7 @@ See the [verified publication evidence](https://github.com/chainlesschain/chainl
 
 ## Release compatibility
 
-Plugin **0.4.204** recommends `chainlesschain@0.166.150`. This version adds the LK aggregation channel and protocol-filtered model directory while retaining the CLI-owned capability status surface and Rewind fixes. [Rewind fix](https://github.com/chainlesschain/chainlesschain/pull/593).
+Plugin **0.4.205** is the current release candidate. It recommends `chainlesschain@0.166.150` and updates the LK pricing link to chainlesschain.net while retaining the CLI-owned capability status surface and Rewind fixes. The verified Marketplace release remains the prior public version until the exact tag workflow and Marketplace readback pass. [Rewind fix](https://github.com/chainlesschain/chainlesschain/pull/593).
 
 Install the paired public CLI with `npm i -g chainlesschain@0.166.150 --registry https://registry.npmjs.org`, restart the chat host, and run `cc --version` and `cc doctor`. Goal transfer and native Graph features require matching desktop support and explicit native authorization. Model-task improvement and automatic promotion remain unverified.
 
