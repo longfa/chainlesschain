@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.function.Function;
 import javax.swing.*;
@@ -14,6 +15,30 @@ import javax.swing.event.DocumentListener;
 public final class LlmConnectionPanel extends JPanel {
     private static final int LK_INDEX = 0;
     private static final int PRESET_OFFSET = 1;
+
+    private static boolean presetBaseMatches(String presetBaseUrl, String savedBaseUrl) {
+        String preset = LlmConfig.normalizedBaseUrl(presetBaseUrl);
+        String saved = LlmConfig.normalizedBaseUrl(savedBaseUrl);
+        if (preset.equals(saved)) return true;
+        try {
+            URI left = URI.create(preset);
+            URI right = URI.create(saved);
+            if (!left.getScheme().equalsIgnoreCase(right.getScheme())
+                    || left.getPort() != right.getPort()
+                    || !left.getPath().equals(right.getPath())) return false;
+            return isLoopback(left.getHost()) && isLoopback(right.getHost());
+        } catch (RuntimeException ignored) {
+            return false;
+        }
+    }
+
+    private static boolean isLoopback(String host) {
+        if (host == null) return false;
+        return "localhost".equalsIgnoreCase(host)
+                || "127.0.0.1".equals(host)
+                || "::1".equals(host)
+                || "0:0:0:0:0:0:0:1".equals(host);
+    }
     private final Function<String, String> text;
     private final JComboBox<String> provider = new JComboBox<>();
     private final JComboBox<String> protocol = new JComboBox<>(new String[]{
@@ -224,8 +249,7 @@ public final class LlmConnectionPanel extends JPanel {
             LlmConfig.Preset preset = LlmConfig.PRESETS[i];
             // Provider-specific IDs retain credential and pricing identity on relays.
             if (preset.id.equals(value.provider) && (!Arrays.asList(protocols).contains(value.provider)
-                    || LlmConfig.normalizedBaseUrl(preset.baseUrl)
-                    .equals(LlmConfig.normalizedBaseUrl(value.baseUrl)))) index = i + PRESET_OFFSET;
+                    || presetBaseMatches(preset.baseUrl, value.baseUrl))) index = i + PRESET_OFFSET;
         }
         boolean lk = LkChannelCatalog.isEndpoint(value.baseUrl)
                 && Arrays.asList("custom", "openai", "anthropic", "gemini").contains(value.provider);

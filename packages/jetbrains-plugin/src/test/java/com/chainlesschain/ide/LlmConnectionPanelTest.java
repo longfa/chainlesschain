@@ -61,6 +61,17 @@ class LlmConnectionPanelTest {
         });
     }
 
+    @Test void treatsLoopbackAliasesAsTheSavedOllamaPreset() throws Exception {
+        SwingUtilities.invokeAndWait(() -> {
+            LlmConnectionPanel panel = new LlmConnectionPanel(key -> key);
+            panel.load(new LlmConfig.Connection("ollama", "saved-model", "http://127.0.0.1:11434", "", false));
+            assertEquals("ollama", panel.connection().provider);
+            assertEquals("saved-model", panel.connection().model);
+            assertTrue(find(panel, "llm.test").isEnabled());
+            assertFalse(find(panel, "llm.save").isEnabled());
+        });
+    }
+
     @Test void destinationChangesRequireANewKeyAndBlankVisionIsPreserved() throws Exception {
         SwingUtilities.invokeAndWait(() -> {
             LlmConnectionPanel panel = new LlmConnectionPanel(key -> key);
