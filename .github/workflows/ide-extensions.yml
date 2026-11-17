@@ -182,7 +182,7 @@ jobs:
             slug: linux
           - os: windows-latest
             slug: windows
-          - os: macos-latest
+          - os: macos-15-intel
             slug: macos
     steps:
       - name: Enable Windows long paths before checkout
@@ -935,7 +935,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        os: [windows-latest, ubuntu-latest, macos-15-intel]
         ide:
           - version: "2024.2"
             java: "21"
