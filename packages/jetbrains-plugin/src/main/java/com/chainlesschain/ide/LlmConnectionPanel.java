@@ -171,12 +171,19 @@ public final class LlmConnectionPanel extends JPanel {
         panel.add(input, constraints);
     }
 
-    private String providerId() {
-        int index = provider.getSelectedIndex();
-        if (isLk()) return protocol.getSelectedIndex() == 0 ? "custom" : protocols[protocol.getSelectedIndex()];
-        int presetIndex = index - PRESET_OFFSET;
+    private String selectedPresetId() {
+        int presetIndex = provider.getSelectedIndex() - PRESET_OFFSET;
         return presetIndex >= 0 && presetIndex < LlmConfig.PRESETS.length
-                ? LlmConfig.PRESETS[presetIndex].id : protocols[protocol.getSelectedIndex()];
+                ? LlmConfig.PRESETS[presetIndex].id : null;
+    }
+
+    private String providerId() {
+        if (isLk()) return protocol.getSelectedIndex() == 0 ? "custom" : protocols[protocol.getSelectedIndex()];
+        String presetId = selectedPresetId();
+        if ("custom".equals(presetId) && protocol.getSelectedIndex() != 0) {
+            return protocols[protocol.getSelectedIndex()];
+        }
+        return presetId == null ? protocols[protocol.getSelectedIndex()] : presetId;
     }
 
     private boolean isLk() { return provider.getSelectedIndex() == LK_INDEX; }
@@ -211,7 +218,8 @@ public final class LlmConnectionPanel extends JPanel {
     }
 
     private void update() {
-        boolean custom = "custom".equals(providerId()) && !isLk();
+        boolean custom = "custom".equals(selectedPresetId()) && !isLk()
+                && baseUrl.getText().trim().isEmpty();
         protocol.setVisible(custom || isLk()); protocolLabel.setVisible(custom || isLk());
         lkAddress.setVisible(isLk()); lkAddressLabel.setVisible(isLk());
         lkModel.setVisible(isLk()); lkModelLabel.setVisible(isLk());
@@ -268,12 +276,24 @@ public final class LlmConnectionPanel extends JPanel {
         update();
     }
 
-    public LlmConfig.Connection connection() { return new LlmConfig.Connection(providerId(), model.getText().trim(), baseUrl.getText().trim(), vision.getText().trim(), false); }
+    public LlmConfig.Connection connection() {
+        String id = providerId();
+        // Keep a saved provider identity while its relay URL is being displayed;
+        // the custom row prevents recommendations from overwriting that URL.
+        if (!dirty && current != null && "custom".equals(id) && !"custom".equals(current.provider)) id = current.provider;
+        return new LlmConfig.Connection(id, model.getText().trim(), baseUrl.getText().trim(), vision.getText().trim(), false);
+    }
     public String apiKey() { char[] value = key.getPassword(); try { return new String(value).trim(); } finally { Arrays.fill(value, '\0'); } }
     public boolean allowHttp() { return allowHttp.isSelected(); }
-    public boolean needsNewKey() { return (LkChannelCatalog.isEndpoint(baseUrl.getText()) || LlmConfig.requiresApiKey(providerId())) && apiKey().isEmpty() && !hasSavedKey()
-            && !(current != null && current.hasKey && providerId().equals(current.provider)
-            && LlmConfig.normalizedBaseUrl(baseUrl.getText()).equals(LlmConfig.normalizedBaseUrl(current.baseUrl))); }
+    public boolean needsNewKey() {
+        String activeProvider = !dirty && current != null ? connection().provider : providerId();
+        boolean customRemote = "custom".equals(activeProvider)
+                && baseUrl.getText().trim().toLowerCase(java.util.Locale.ROOT).startsWith("https://");
+        return (LkChannelCatalog.isEndpoint(baseUrl.getText()) || LlmConfig.requiresApiKey(activeProvider) || customRemote)
+                && apiKey().isEmpty() && !hasSavedKey()
+                && !(current != null && current.hasKey && activeProvider.equals(current.provider)
+                && LlmConfig.normalizedBaseUrl(baseUrl.getText()).equals(LlmConfig.normalizedBaseUrl(current.baseUrl)));
+    }
     public void setBusy(boolean value) { busy = value; update(); }
     private boolean hasSavedKey() {
         return savedConnections.stream().anyMatch(row -> row.hasKey && (
