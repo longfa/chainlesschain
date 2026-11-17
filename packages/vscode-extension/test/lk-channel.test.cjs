@@ -68,14 +68,14 @@ test("LK preset chooses exact alias and isolates every protocol's models", () =>
   e("apiKey").value = "old-key";
   e("preset").value = "lk";
   e("preset").onchange();
-  assert.equal(e("model").value, "tt-6.1-sol");
+  assert.equal(e("model").value, "gpt-6.1-sol");
   assert.equal(e("apiKey").value, "");
   assert.equal(e("baseUrl").value, "https://api.vv666.ai/v1");
   assert.doesNotMatch(e("key-hint").textContent, /可留空/);
   for (const [protocol, model, provider] of [
-    ["openai", "tt-6.1-sol", "custom"],
-    ["anthropic", "fb-5-2", "anthropic"],
-    ["gemini", "gem-3.8-flash", "gemini"],
+    ["openai", "gpt-6.1-sol", "custom"],
+    ["anthropic", "claude-opus-5-5", "anthropic"],
+    ["gemini", "gemini-4-carbon", "gemini"],
   ]) {
     e("protocol").value = protocol;
     e("protocol").onchange();
@@ -110,7 +110,7 @@ test("LK saved alias survives reread and never reveals its stored key", () => {
 test("LK rejects incompatible media/chat protocols and foreign credential reuse", () => {
   const draft = {
     provider: "custom",
-    model: "tt-6-luna",
+    model: "gpt-6.1-sol",
     baseUrl: "https://api.vv666.ai/v1",
     apiKey: "",
     visionModel: "",
@@ -125,7 +125,7 @@ test("LK rejects incompatible media/chat protocols and foreign credential reuse"
     /API Key/,
   );
   assert.throws(
-    () => validateAnswers({ ...draft, apiKey: "key", model: "fb-5-2" }),
+    () => validateAnswers({ ...draft, apiKey: "key", model: "claude-opus-5-5" }),
     /协议/,
   );
   assert.equal(validateAnswers({ ...draft, apiKey: "key" }).provider, "custom");

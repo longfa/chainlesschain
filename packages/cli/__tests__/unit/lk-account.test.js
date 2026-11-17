@@ -9,7 +9,7 @@ const config = {
   llm: {
     provider: "custom",
     baseUrl: "https://api.lk666.ai/v1",
-    model: "tt-6-luna",
+    model: "gpt-6.1-sol",
     apiKey: "fixture-lk-secret",
   },
 };
@@ -32,10 +32,10 @@ const fixtures = {
     limit: 20,
     offset: 0,
     records: [
-      { task_id: 12, model: "tt-6-luna", state: "success", cost: 2 },
+      { task_id: 12, model: "gpt-6.1-sol", state: "success", cost: 2 },
       {
         task_id: 13,
-        model: "tt-6-luna",
+        model: "gpt-6.1-sol",
         state: "failed",
         cost: 0,
         refunded: true,
@@ -45,7 +45,7 @@ const fixtures = {
     ],
   },
   pricing: {
-    name: "tt-6-luna",
+    name: "gpt-6.1-sol",
     available_for_this_key: true,
     channel_groups: [
       {

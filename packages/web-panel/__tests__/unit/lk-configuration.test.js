@@ -80,7 +80,7 @@ describe("LK Web configuration", () => {
         );
       }
     }
-    expect(() => lkConnection("openai", "primary", "fb-5-2")).toThrow("协议");
+    expect(() => lkConnection("openai", "primary", "claude-opus-5-5")).toThrow("协议");
     expect(() =>
       lkConnection(
         "openai",
@@ -117,7 +117,7 @@ describe("LK Web configuration", () => {
     form.handleChannelChange();
     expect(form.configForm).toMatchObject({
       provider: "custom",
-      model: "tt-6-luna",
+      model: "gpt-6.1-sol",
       apiKey: "",
     });
     form.lkProtocol.value = "anthropic";
@@ -146,7 +146,7 @@ describe("LK Web configuration", () => {
       },
       {
         provider: "custom",
-        model: "tt-6-luna",
+        model: "gpt-6.1-sol",
         baseUrl: "https://api.vv666.ai/v1",
         hasKey: true,
         channel: "lk",
@@ -209,7 +209,7 @@ describe("LK Web configuration", () => {
         type: "llm-configure",
         connection: {
           provider: "custom",
-          model: "tt-6-luna",
+          model: "gpt-6.1-sol",
           baseUrl: "https://api.vv666.ai/v1",
           visionModel: "",
           apiKey: "fixture-channel-key",
@@ -257,7 +257,7 @@ describe("LK Web configuration", () => {
   it("preserves a key only for the same saved destination and tests only saved connections", async () => {
     const { form, providers } = setup({
       provider: "custom",
-      model: "tt-6-luna",
+      model: "gpt-6.1-sol",
       baseUrl: "https://api.vv666.ai/v1",
     });
     await form.loadConfig();

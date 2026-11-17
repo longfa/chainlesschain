@@ -50,7 +50,7 @@ describe("LLM config renderer projection", () => {
         custom: {
           baseURL: "https://api.vv666.ai/v1",
           apiKey: "lk-secret",
-          model: "tt-6-luna",
+          model: "gpt-6.1-sol",
         },
         provider: "custom",
       },
@@ -73,7 +73,7 @@ describe("LLM config renderer projection", () => {
         anthropic: {
           baseURL: "https://api.lk666.ai/v1",
           apiKey: "",
-          model: "fb-5-2",
+          model: "claude-opus-5-5",
         },
       },
       config,

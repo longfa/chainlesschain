@@ -18,7 +18,7 @@ const stubs = {
 const account = {
   fetchedAt: "2026-11-15T00:00:00Z",
   origin: "https://api.vv666.ai",
-  model: "tt-6-luna",
+  model: "gpt-6.1-sol",
   days: 1,
   scope: "key",
   balance: { balance: 0, quota: { used: 2, unlimited: true } },

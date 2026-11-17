@@ -88,7 +88,7 @@ public final class LlmConnectionPanel extends JPanel {
             load(savedConnections.get(savedConnection.getSelectedIndex() - 1));
             current = active; dirty = true; update();
         });
-        lkModel.setPrototypeDisplayValue(new LkChannelCatalog.Model("tt-6.1-sol", "TT-6.1 sol", "chat", "openai"));
+        lkModel.setPrototypeDisplayValue(new LkChannelCatalog.Model("gpt-6.1-sol", "GPT-6.1 sol", "chat", "openai"));
         lkModel.setToolTipText("对话模型按协议筛选；媒体目录及定价：https://chainlesschain.net/api/pricing");
         JPanel body = new JPanel(new BorderLayout());
         body.add(fields, BorderLayout.NORTH);
@@ -203,7 +203,7 @@ public final class LlmConnectionPanel extends JPanel {
     private void applyLk(boolean keepModel) {
         String previous = model.getText();
         String wire = protocols[protocol.getSelectedIndex()];
-        String defaultModel = "anthropic".equals(wire) ? "fb-5-2" : "gemini".equals(wire) ? "gem-3.8-flash" : "tt-6.1-sol";
+        String defaultModel = "anthropic".equals(wire) ? "claude-opus-5-5" : "gemini".equals(wire) ? "gemini-4-carbon" : "gpt-6.1-sol";
         fillLkModels(keepModel ? previous : defaultModel);
         baseUrl.setText(LkChannelCatalog.baseUrl(wire, lkAddress.getSelectedIndex() == 1));
         model.setText(keepModel ? previous : defaultModel);

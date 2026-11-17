@@ -5,6 +5,7 @@ import {
   normalizeProviderBaseUrl,
 } from "./provider-protocol.js";
 import { resolveApiKeyFromHelper } from "./api-key-helper.js";
+import { canonicalLkModel, isLkEndpoint } from "./llm-channel-presets.js";
 
 const DEFAULT_PROVIDER = "ollama";
 const DEFAULT_OLLAMA_BASE_URL = "http://localhost:11434";
@@ -63,12 +64,13 @@ export function resolveLlmConnection(
       normalizeLlmEndpoint(provider, sourceBaseUrl) === normalizedBaseUrl
     );
   });
-  const model =
+  let model =
     (nonEmpty(options.model) && options.model) ||
     endpointSources.find((source) => nonEmpty(source.model))?.model ||
     defaultModel ||
     definition?.models?.[0] ||
     null;
+  if (isLkEndpoint(baseUrl)) model = canonicalLkModel(model);
   assertCustomProviderConnection(provider, { baseUrl, model });
   let apiKey =
     (nonEmpty(options.apiKey) && options.apiKey) ||

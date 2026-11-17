@@ -33,11 +33,11 @@ test("catalog preserves exact platform aliases, types and protocols", () => {
   for (const type of ["chat", "image", "video", "audio"])
     assert.ok(LK_MODELS.some((model) => model.type === type));
   assert.equal(
-    LK_MODELS.find((model) => model.id === "fb-5-2").protocol,
+    LK_MODELS.find((model) => model.id === "claude-opus-5-5").protocol,
     "anthropic",
   );
   assert.deepEqual(
-    LK_MODELS.find((model) => model.id === "tt-6-luna").compatibleProtocols,
+    LK_MODELS.find((model) => model.id === "gpt-6.1-sol").compatibleProtocols,
     ["openai", "openai_responses"],
   );
 });
@@ -77,10 +77,10 @@ for (const address of ["primary", "backup"]) {
 
 test("known incompatible models and media cannot enter a chat protocol", () => {
   assert.throws(() =>
-    resolveLkConnection("openai", "primary", { model: "fb-5-2" }),
+    resolveLkConnection("openai", "primary", { model: "claude-opus-5-5" }),
   );
   assert.throws(() =>
-    resolveLkConnection("anthropic", "primary", { model: "tt-6-luna" }),
+    resolveLkConnection("anthropic", "primary", { model: "gpt-6.1-sol" }),
   );
   for (const model of LK_MODELS.filter((entry) => entry.type !== "chat"))
     assert.throws(() =>
@@ -140,7 +140,7 @@ test("desktop applying LK clears another service credential and selects exact mo
   state.applyLkPreset();
   assert.equal(state.form.provider, "custom");
   assert.equal(state.form.custom.apiKey, "");
-  assert.equal(state.form.custom.model, "tt-6.1-sol");
+  assert.equal(state.form.custom.model, "gpt-6.1-sol");
   assert.equal(state.form.custom.baseURL, "https://api.vv666.ai/v1");
 });
 
@@ -154,7 +154,7 @@ test("desktop manual backup retains only the channel key and chosen model", () =
   assert.equal(state.form.custom.baseURL, "https://api.lk666.ai/v1");
   state.lkProtocol.value = "openai";
   state.handleLkProtocolChange();
-  assert.equal(state.lkModel.value, "tt-6.1-sol");
+  assert.equal(state.lkModel.value, "gpt-6.1-sol");
   assert.ok(
     state.lkChatModels.value.every((model) =>
       model.compatibleProtocols.includes("openai"),
@@ -162,7 +162,7 @@ test("desktop manual backup retains only the channel key and chosen model", () =
   );
   state.applyLkPreset();
   assert.equal(state.form.provider, "custom");
-  assert.equal(state.form.custom.model, "tt-6.1-sol");
+  assert.equal(state.form.custom.model, "gpt-6.1-sol");
   assert.equal(state.form.custom.baseURL, "https://api.lk666.ai/v1");
   assert.equal(state.form.custom.apiKey, "channel-key");
 });

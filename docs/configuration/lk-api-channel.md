@@ -23,9 +23,9 @@ VS Code 与 JetBrains：打开「配置大模型 / Configure LLM」，服务类�
 
 | 示例模型        | 协议                                          | CLI Base URL（主）                           | 桌面 Base URL（主）           |
 | --------------- | --------------------------------------------- | -------------------------------------------- | ----------------------------- |
-| `tt-6-luna`     | OpenAI Chat Completions；文档另支持 Responses | `https://api.vv666.ai/v1`，provider `custom` | `https://api.vv666.ai/v1`     |
-| `fb-5-2`        | Anthropic Messages                            | `https://api.vv666.ai/v1`                    | `https://api.vv666.ai`        |
-| `gem-3.8-flash` | Gemini                                        | `https://api.vv666.ai/v1beta`                | `https://api.vv666.ai/v1beta` |
+| `gpt-6.1-sol`     | OpenAI Chat Completions；文档另支持 Responses | `https://api.vv666.ai/v1`，provider `custom` | `https://api.vv666.ai/v1`     |
+| `claude-opus-5-5`        | Anthropic Messages                            | `https://api.vv666.ai/v1`                    | `https://api.vv666.ai`        |
+| `gemini-4-carbon` | Gemini                                        | `https://api.vv666.ai/v1beta`                | `https://api.vv666.ai/v1beta` |
 
 对话模型按声明的兼容协议筛选。桌面 Anthropic 客户端自行添加 `/v1/messages`，因此 Base URL 不带 `/v1`。
 OpenAI 渠道预设使用 Chat Completions；目录中的 Responses 支持记录不表示本预设启用了 Responses。
@@ -51,7 +51,7 @@ OpenAI 渠道预设使用 Chat Completions；目录中的 Responses 支持记录
 
 ```sh
 cc llm account
-cc llm account --days 7 --scope user --model tt-6-luna --json
+cc llm account --days 7 --scope user --model gpt-6.1-sol --json
 cc llm account --days 30 --limit 20 --offset 20
 ```
 
@@ -88,7 +88,7 @@ node packages/cli/scripts/sync-lk-model-catalog.mjs --input path/to/models.json
 - 8 项 Node 回归检查通过：覆盖 IDE 目录同步、全部 83 个对话模型的主备路径、协议错配拒绝、媒体模型隔离、桌面预设切换及凭证归属。
 - VS Code 全部 392 项回归通过；JetBrains 修改使用 JDK 21 编译并通过原生 Swing 表单 smoke 检查，完整宿主矩阵以官方 CI 为准。
 - 桌面设置组件的 Vue script/template 编译通过；没有执行整仓构建或完整 E2E。
-- 主地址真实最小生成请求：`tt-6-luna`（Chat Completions）、`fb-5-2`（Messages）、`gem-3.8-flash`（Gemini）均 HTTP 200 且有文本输出；三者价格查询也均 HTTP 200。
+- 主地址真实最小生成请求：`gpt-6.1-sol`（Chat Completions）、`claude-opus-5-5`（Messages）、`gemini-4-carbon`（Gemini）均 HTTP 200 且有文本输出；三者价格查询也均 HTTP 200。
 - 该 Key 的 Skills 对话目录返回 83 项，其中 3 项标记 `available_for_this_key=false`；公共模型目录不等同于账户权限。未逐个执行全部模型，也未提交媒体生成任务。
 - 密钥仅读取自用户指定文件，不进入源码、公共目录或验证记录。
 - 新增账户适配器的余额、用量汇总、账单明细和动态定价真实只读查询全部成功；验证记录只输出成功状态，不输出账户金额或密钥。

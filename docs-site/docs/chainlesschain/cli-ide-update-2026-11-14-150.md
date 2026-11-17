@@ -25,9 +25,9 @@ CLI setup、`cc ui` Web、VS Code 和 JetBrains 的模型设置新增 **LK API �
 
 | 对话协议                | CLI / Web / IDE 主 Base URL   | 示例模型        |
 | ----------------------- | ----------------------------- | --------------- |
-| OpenAI Chat Completions | `https://api.vv666.ai/v1`     | `tt-6-luna`     |
-| Anthropic Messages      | `https://api.vv666.ai/v1`     | `fb-5-2`        |
-| Gemini                  | `https://api.vv666.ai/v1beta` | `gem-3.8-flash` |
+| OpenAI Chat Completions | `https://api.vv666.ai/v1`     | `gpt-6.1-sol`     |
+| Anthropic Messages      | `https://api.vv666.ai/v1`     | `claude-opus-5-5`        |
+| Gemini                  | `https://api.vv666.ai/v1beta` | `gemini-4-carbon` |
 
 桌面 Anthropic 适配器自行追加 `/v1/messages`，因此桌面设置使用域名根地址。OpenAI 预设使用 Chat Completions；平台另有 Responses 接口，不表示此预设使用 Responses。
 

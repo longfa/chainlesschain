@@ -137,7 +137,7 @@ describe("config-manager", () => {
     };
     const lk = {
       provider: "custom",
-      model: "tt-6-luna",
+      model: "gpt-6.1-sol",
       baseUrl: "https://api.vv666.ai/v1",
     };
     mod.updateConfigAtomically((config) => {
@@ -152,13 +152,13 @@ describe("config-manager", () => {
     expect(mod.loadConfig().llm.apiKey).toBe("legacy-volc-key");
     saveLlmConnection({
       provider: "anthropic",
-      model: "fb-5-2",
+      model: "claude-opus-5-5",
       baseUrl: "https://api.lk666.ai/v1",
     });
     expect(mod.loadConfig().llm.apiKey).toBe("lk-saved-key");
     saveLlmConnection({
       provider: "gemini",
-      model: "gem-3.8-flash",
+      model: "gemini-4-carbon",
       baseUrl: "https://api.vv666.ai/v1beta",
       apiKey: "rotated-lk-key",
     });

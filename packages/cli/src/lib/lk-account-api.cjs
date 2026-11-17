@@ -5,6 +5,16 @@ const number = (value) =>
     : null;
 const text = (value) =>
   typeof value === "string" ? value.slice(0, 256) : null;
+const LK_MODEL_ALIASES = Object.freeze({
+  "tt-6.1-sol": "gpt-6.1-sol",
+  "tt-6-luna": "gpt-6.1-sol",
+  "fb-5-2": "claude-opus-5-5",
+  "gem-3.8-flash": "gemini-4-carbon",
+});
+const canonicalLkModel = (value) => {
+  const model = typeof value === "string" ? value.trim() : "";
+  return LK_MODEL_ALIASES[model] || model;
+};
 const counts = (row = {}) =>
   Object.fromEntries(
     [
@@ -159,7 +169,7 @@ async function fetchLkAccount(
     !connection.apiKey
   )
     throw new Error("An LK connection with its own API key is required");
-  const model = options.model ?? connection.model;
+  const model = canonicalLkModel(options.model ?? connection.model);
   if (
     typeof model !== "string" ||
     !model.trim() ||

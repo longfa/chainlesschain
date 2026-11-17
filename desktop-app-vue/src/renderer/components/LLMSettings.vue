@@ -526,7 +526,7 @@ import {
 
 const lkProtocol = ref("openai");
 const lkAddress = ref("primary");
-const lkModel = ref("tt-6.1-sol");
+const lkModel = ref("gpt-6.1-sol");
 const lkChatModels = computed(() =>
   LK_MODELS.filter(
     (model) =>
