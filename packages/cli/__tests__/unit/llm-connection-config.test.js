@@ -47,7 +47,7 @@ describe("LLM custom connection", () => {
       normalizeLlmConnection({
         provider: "custom",
         model: "fb-5-2",
-        baseUrl: "https://api.lk888.ai/v1",
+        baseUrl: "https://api.vv666.ai/v1",
       }),
     ).toThrow("protocol");
     expect(() =>
@@ -62,20 +62,20 @@ describe("LLM custom connection", () => {
       saveLlmConnection({
         provider: "custom",
         model: "tt-6-luna",
-        baseUrl: "https://api.lk888.ai/v1",
+        baseUrl: "https://api.vv666.ai/v1",
       }),
     ).toThrow("own API key");
     expect(state.calls).toHaveLength(0);
     saveLlmConnection({
       provider: "custom",
       model: "tt-6-luna",
-      baseUrl: "https://api.lk888.ai/v1",
+      baseUrl: "https://api.vv666.ai/v1",
       apiKey: "fixture-channel-key",
     });
     expect(state.calls).toHaveLength(1);
     expect(state.calls[0].llm).toMatchObject({
       provider: "custom",
-      baseUrl: "https://api.lk888.ai/v1",
+      baseUrl: "https://api.vv666.ai/v1",
       apiKey: "fixture-channel-key",
     });
   });

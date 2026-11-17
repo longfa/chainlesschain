@@ -17,7 +17,7 @@ const stubs = {
 };
 const account = {
   fetchedAt: "2026-11-15T00:00:00Z",
-  origin: "https://api.lk888.ai",
+  origin: "https://api.vv666.ai",
   model: "tt-6-luna",
   days: 1,
   scope: "key",

@@ -1,7 +1,7 @@
 # LK API 聚合渠道
 
 根据 [开发文档](https://chainlesschain.net/apidoc)及其公开模型目录接入。
-主地址为 `https://api.lk888.ai`，备用为 `https://api.lk666.ai`，域名使用字母 `lk`。
+主地址为 `https://api.vv666.ai`，备用为 `https://api.lk666.ai`，域名使用字母 `lk`。
 两者为同一服务，可手动切换；不会在失败后自动重发生成请求。
 
 桌面端：设置 → LLM 服务设置 → LK API，选择协议、模型和主备地址，点击「使用此渠道」，填写渠道 API Key 后保存或测试连接。
@@ -23,9 +23,9 @@ VS Code 与 JetBrains：打开「配置大模型 / Configure LLM」，服务类�
 
 | 示例模型        | 协议                                          | CLI Base URL（主）                           | 桌面 Base URL（主）           |
 | --------------- | --------------------------------------------- | -------------------------------------------- | ----------------------------- |
-| `tt-6-luna`     | OpenAI Chat Completions；文档另支持 Responses | `https://api.lk888.ai/v1`，provider `custom` | `https://api.lk888.ai/v1`     |
-| `fb-5-2`        | Anthropic Messages                            | `https://api.lk888.ai/v1`                    | `https://api.lk888.ai`        |
-| `gem-3.8-flash` | Gemini                                        | `https://api.lk888.ai/v1beta`                | `https://api.lk888.ai/v1beta` |
+| `tt-6-luna`     | OpenAI Chat Completions；文档另支持 Responses | `https://api.vv666.ai/v1`，provider `custom` | `https://api.vv666.ai/v1`     |
+| `fb-5-2`        | Anthropic Messages                            | `https://api.vv666.ai/v1`                    | `https://api.vv666.ai`        |
+| `gem-3.8-flash` | Gemini                                        | `https://api.vv666.ai/v1beta`                | `https://api.vv666.ai/v1beta` |
 
 对话模型按声明的兼容协议筛选。桌面 Anthropic 客户端自行添加 `/v1/messages`，因此 Base URL 不带 `/v1`。
 OpenAI 渠道预设使用 Chat Completions；目录中的 Responses 支持记录不表示本预设启用了 Responses。

@@ -147,7 +147,7 @@ describe("LK Web configuration", () => {
       {
         provider: "custom",
         model: "tt-6-luna",
-        baseUrl: "https://api.lk888.ai/v1",
+        baseUrl: "https://api.vv666.ai/v1",
         hasKey: true,
         channel: "lk",
       },
@@ -210,7 +210,7 @@ describe("LK Web configuration", () => {
         connection: {
           provider: "custom",
           model: "tt-6-luna",
-          baseUrl: "https://api.lk888.ai/v1",
+          baseUrl: "https://api.vv666.ai/v1",
           visionModel: "",
           apiKey: "fixture-channel-key",
           allowHttp: false,
@@ -258,7 +258,7 @@ describe("LK Web configuration", () => {
     const { form, providers } = setup({
       provider: "custom",
       model: "tt-6-luna",
-      baseUrl: "https://api.lk888.ai/v1",
+      baseUrl: "https://api.vv666.ai/v1",
     });
     await form.loadConfig();
     form.configForm.model = "team/future";

@@ -1,12 +1,12 @@
 {
-  "sourceSha256": "2ba5ca5e128348ecb26799dec4d2f2734aa76e8e7929c872f59e5587c8213dbc",
+  "sourceSha256": "6d2e6f6803d460bcaa2a1b9b51b1dc04c9f2ec16713211320d120efab89e8297",
   "channel": {
     "id": "lk",
     "name": "LK API",
     "documentationUrl": "https://chainlesschain.net/apidoc",
     "pricingUrl": "https://chainlesschain.net/api/pricing",
     "addresses": {
-      "primary": "https://api.lk888.ai",
+      "primary": "https://api.vv666.ai",
       "backup": "https://api.lk666.ai"
     },
     "protocols": {
@@ -55,1379 +55,1786 @@
       "label": "GEM 3.8 flash",
       "type": "chat",
       "protocol": "gemini",
-      "compatibleProtocols": ["gemini"]
+      "compatibleProtocols": [
+        "gemini"
+      ]
     },
     {
       "id": "gem-4-carbon",
       "label": "GEM 4 carbon",
       "type": "chat",
       "protocol": "gemini",
-      "compatibleProtocols": ["gemini"]
+      "compatibleProtocols": [
+        "gemini"
+      ]
     },
     {
       "id": "tt-6-luna",
       "label": "TT-6 luna",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai", "openai_responses"]
+      "compatibleProtocols": [
+        "openai",
+        "openai_responses"
+      ]
     },
     {
       "id": "kimi-k3",
       "label": "Kimi K3",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "tt-6.1-terra",
       "label": "TT-6.1 terra",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai", "openai_responses"]
+      "compatibleProtocols": [
+        "openai",
+        "openai_responses"
+      ]
     },
     {
       "id": "fb-5-2",
       "label": "FB-5.2",
       "type": "chat",
       "protocol": "anthropic",
-      "compatibleProtocols": ["anthropic"]
+      "compatibleProtocols": [
+        "anthropic"
+      ]
     },
     {
       "id": "hk-5-5",
       "label": "HK-5.5",
       "type": "chat",
       "protocol": "anthropic",
-      "compatibleProtocols": ["anthropic"]
+      "compatibleProtocols": [
+        "anthropic"
+      ]
     },
     {
       "id": "gem-4-argon",
       "label": "GEM 4 argon",
       "type": "chat",
       "protocol": "gemini",
-      "compatibleProtocols": ["gemini"]
+      "compatibleProtocols": [
+        "gemini"
+      ]
     },
     {
       "id": "tt-6.1-sol",
       "label": "TT-6.1 sol",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai", "openai_responses"]
+      "compatibleProtocols": [
+        "openai",
+        "openai_responses"
+      ]
     },
     {
       "id": "tt-6-astra",
       "label": "TT-6 astra",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai", "openai_responses"]
+      "compatibleProtocols": [
+        "openai",
+        "openai_responses"
+      ]
     },
     {
       "id": "gem-3.5-flash",
       "label": "GEM 3.5 flash",
       "type": "chat",
       "protocol": "gemini",
-      "compatibleProtocols": ["gemini"]
+      "compatibleProtocols": [
+        "gemini"
+      ]
     },
     {
       "id": "tt-5.6-sol",
       "label": "TT-5.6 sol",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai", "openai_responses"]
+      "compatibleProtocols": [
+        "openai",
+        "openai_responses"
+      ]
     },
     {
       "id": "gem-3.1-pro",
       "label": "GEM 3.1 Pro",
       "type": "chat",
       "protocol": "gemini",
-      "compatibleProtocols": ["gemini"]
+      "compatibleProtocols": [
+        "gemini"
+      ]
     },
     {
       "id": "op-5-5",
       "label": "OP-5.5",
       "type": "chat",
       "protocol": "anthropic",
-      "compatibleProtocols": ["anthropic"]
+      "compatibleProtocols": [
+        "anthropic"
+      ]
     },
     {
       "id": "kimi-k3.1-pro",
       "label": "Kimi K3.1 Pro",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "gem-3.7-flash",
       "label": "GEM 3.7 flash",
       "type": "chat",
       "protocol": "gemini",
-      "compatibleProtocols": ["gemini"]
+      "compatibleProtocols": [
+        "gemini"
+      ]
     },
     {
       "id": "tt-5.5",
       "label": "TT-5.5",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai", "openai_responses"]
+      "compatibleProtocols": [
+        "openai",
+        "openai_responses"
+      ]
     },
     {
       "id": "deepseek-v4.1-flash",
       "label": "DS-V4.1-Flash",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "MiniMax-M3.1-Flash",
       "label": "MiniMax-M3.1-Flash",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "fb-5",
       "label": "FB-5",
       "type": "chat",
       "protocol": "anthropic",
-      "compatibleProtocols": ["anthropic"]
+      "compatibleProtocols": [
+        "anthropic"
+      ]
     },
     {
       "id": "tt-5.6-luna",
       "label": "TT-5.6 luna",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai", "openai_responses"]
+      "compatibleProtocols": [
+        "openai",
+        "openai_responses"
+      ]
     },
     {
       "id": "tt-5.4",
       "label": "TT-5.4",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai", "openai_responses"]
+      "compatibleProtocols": [
+        "openai",
+        "openai_responses"
+      ]
     },
     {
       "id": "gem-3.6-flash",
       "label": "GEM 3.6 flash",
       "type": "chat",
       "protocol": "gemini",
-      "compatibleProtocols": ["gemini"]
+      "compatibleProtocols": [
+        "gemini"
+      ]
     },
     {
       "id": "deepseek-v4-pro",
       "label": "DS-V4-Pro",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "tt-6-sol",
       "label": "TT-6 sol",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai", "openai_responses"]
+      "compatibleProtocols": [
+        "openai",
+        "openai_responses"
+      ]
     },
     {
       "id": "doubao-seed-2-1-pro-260628",
       "label": "豆包 Seed 2.1 Pro",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "fb-5-1",
       "label": "FB-5.1",
       "type": "chat",
       "protocol": "anthropic",
-      "compatibleProtocols": ["anthropic"]
+      "compatibleProtocols": [
+        "anthropic"
+      ]
     },
     {
       "id": "op-5",
       "label": "OP-5",
       "type": "chat",
       "protocol": "anthropic",
-      "compatibleProtocols": ["anthropic"]
+      "compatibleProtocols": [
+        "anthropic"
+      ]
     },
     {
       "id": "qwen3.8-max",
       "label": "千问 3.8 Max",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "tt-5.6-terra",
       "label": "TT-5.6 terra",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai", "openai_responses"]
+      "compatibleProtocols": [
+        "openai",
+        "openai_responses"
+      ]
     },
     {
       "id": "op-4-8",
       "label": "OP-4.8",
       "type": "chat",
       "protocol": "anthropic",
-      "compatibleProtocols": ["anthropic"]
+      "compatibleProtocols": [
+        "anthropic"
+      ]
     },
     {
       "id": "glm-5.3",
       "label": "GLM-5.3",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "gem-3-pro",
       "label": "GEM 3 Pro",
       "type": "chat",
       "protocol": "gemini",
-      "compatibleProtocols": ["gemini"]
+      "compatibleProtocols": [
+        "gemini"
+      ]
     },
     {
       "id": "op-4-6",
       "label": "OP-4.6",
       "type": "chat",
       "protocol": "anthropic",
-      "compatibleProtocols": ["anthropic"]
+      "compatibleProtocols": [
+        "anthropic"
+      ]
     },
     {
       "id": "sn-5-5",
       "label": "SN-5.5",
       "type": "chat",
       "protocol": "anthropic",
-      "compatibleProtocols": ["anthropic"]
+      "compatibleProtocols": [
+        "anthropic"
+      ]
     },
     {
       "id": "doubao-seed-2-0-pro-260215",
       "label": "豆包 Seed 2.0 Pro",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "deepseek-v4-flash",
       "label": "DS-V4-Flash",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "glm-5.3-flash",
       "label": "GLM-5.3 Flash",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "gk-4.6",
       "label": "GK-4.6",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "sn-5",
       "label": "SN-5",
       "type": "chat",
       "protocol": "anthropic",
-      "compatibleProtocols": ["anthropic"]
+      "compatibleProtocols": [
+        "anthropic"
+      ]
     },
     {
       "id": "deepseek-v4-flash-vision-exp",
       "label": "DS-V4-Flash-Vision-Exp",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "qwen3.8-max-0902",
       "label": "千问 3.8 Max 0902",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "op-4-7",
       "label": "OP-4.7",
       "type": "chat",
       "protocol": "anthropic",
-      "compatibleProtocols": ["anthropic"]
+      "compatibleProtocols": [
+        "anthropic"
+      ]
     },
     {
       "id": "deepseek-v4-pro-0813",
       "label": "DS-V4-Pro-0813",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "gk-4.7",
       "label": "GK-4.7",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "tt-5.4-mini",
       "label": "TT-5.4 mini",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai", "openai_responses"]
+      "compatibleProtocols": [
+        "openai",
+        "openai_responses"
+      ]
     },
     {
       "id": "doubao-seed-2-1-turbo-260628",
       "label": "豆包 Seed 2.1 Turbo",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "qwen3.8-flash",
       "label": "千问 3.8 Flash",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "kimi-k2.6",
       "label": "Kimi K2.6",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "glm-5.3-flashx",
       "label": "GLM-5.3 FlashX",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "tt-4o",
       "label": "TT-4o",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "glm-5.2",
       "label": "GLM-5.2",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "tt-5.2",
       "label": "TT-5.2 Codex",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai", "openai_responses"]
+      "compatibleProtocols": [
+        "openai",
+        "openai_responses"
+      ]
     },
     {
       "id": "hk-4.5",
       "label": "HK-4.5",
       "type": "chat",
       "protocol": "anthropic",
-      "compatibleProtocols": ["anthropic"]
+      "compatibleProtocols": [
+        "anthropic"
+      ]
     },
     {
       "id": "sn-4-6",
       "label": "SN-4.6",
       "type": "chat",
       "protocol": "anthropic",
-      "compatibleProtocols": ["anthropic"]
+      "compatibleProtocols": [
+        "anthropic"
+      ]
     },
     {
       "id": "MiniMax-M3",
       "label": "MiniMax-M3",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "gk-4.5",
       "label": "GK-4.5",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "qwen3.7-max",
       "label": "千问 3.7 Max",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "gem-3.1-flash",
       "label": "GEM 3.1 flash",
       "type": "chat",
       "protocol": "gemini",
-      "compatibleProtocols": ["gemini"]
+      "compatibleProtocols": [
+        "gemini"
+      ]
     },
     {
       "id": "kimi/kimi-k2.7-code-highspeed",
       "label": "Kimi K2.7 Code 高速版",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "deepseek-v4-flash-0731",
       "label": "DS-V4-Flash-0731",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "op-4-5",
       "label": "OP-4.5",
       "type": "chat",
       "protocol": "anthropic",
-      "compatibleProtocols": ["anthropic"]
+      "compatibleProtocols": [
+        "anthropic"
+      ]
     },
     {
       "id": "kimi/kimi-k2.7-code",
       "label": "Kimi K2.7 Code",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "deepseek-v3.2",
       "label": "DS-V3.2",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "doubao-seed-evolving",
       "label": "豆包 Seed Evolving",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "gk-4-20",
       "label": "GK-4-20",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "stepfun/step-3.7-flash",
       "label": "Step 3.7 Flash",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "mimo-v2.5-pro",
       "label": "mimo-v2.5-pro",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "mimo-v2.6-pro",
       "label": "mimo-v2.6-pro",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "gem-3.5-flash-lite",
       "label": "GEM 3.5 flash lite",
       "type": "chat",
       "protocol": "gemini",
-      "compatibleProtocols": ["gemini"]
+      "compatibleProtocols": [
+        "gemini"
+      ]
     },
     {
       "id": "qwen3.5-plus",
       "label": "千问 3.5 Plus",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "gem-3-flash",
       "label": "GEM 3 flash",
       "type": "chat",
       "protocol": "gemini",
-      "compatibleProtocols": ["gemini"]
+      "compatibleProtocols": [
+        "gemini"
+      ]
     },
     {
       "id": "qwen3.5-flash",
       "label": "千问 3.5 Flash",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "qwen3.6-plus",
       "label": "千问 3.6 Plus",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "tt-5.4-nano",
       "label": "TT-5.4 nano",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai", "openai_responses"]
+      "compatibleProtocols": [
+        "openai",
+        "openai_responses"
+      ]
     },
     {
       "id": "qwen3.8-flash-next",
       "label": "千问 3.8 Flash Next",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "qwen3.7-plus",
       "label": "千问 3.7 Plus",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "MiniMax-M2.7",
       "label": "MiniMax-M2.7",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "doubao-seed-character-260628",
       "label": "豆包·虚拟陪伴",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "gk-4.3",
       "label": "GK-4.3",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "doubao-seed-1-8-251228",
       "label": "豆包 Seed 1.8",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "qwen3.6-flash",
       "label": "千问 3.6 Flash",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "gk-build-0.1",
       "label": "GK-build-0.1",
       "type": "chat",
       "protocol": "openai",
-      "compatibleProtocols": ["openai"]
+      "compatibleProtocols": [
+        "openai"
+      ]
     },
     {
       "id": "tt-image-2.5",
       "label": "TT Image 2.5",
       "type": "image",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "tt-image-2.5-token",
       "label": "TT Image 2.5 官转",
       "type": "image",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "tt-image-2",
       "label": "TT Image 2",
       "type": "image",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "tt-image-2.6",
       "label": "TT Image 2.6",
       "type": "image",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "tt-image-2.6-guan",
       "label": "TT Image 2.6 官转",
       "type": "image",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "minimax-h3-image",
       "label": "MiniMax H3 图像",
       "type": "image",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "doubao-seedream-5-5-261028",
       "label": "即梦 5.5",
       "type": "image",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "banana-2.1",
       "label": "纳米香蕉 2.1 按次",
       "type": "image",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "banana-2.1-token",
       "label": "纳米香蕉 2.1 官转",
       "type": "image",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "tt-image-2-token",
       "label": "TT Image 2 官转",
       "type": "image",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "banana-pro",
       "label": "纳米香蕉 Pro",
       "type": "image",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "banana-2",
       "label": "纳米香蕉 2",
       "type": "image",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "doubao-seedream-5-0-pro-260628",
       "label": "即梦 5.0 Pro",
       "type": "image",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "banana-pro-token",
       "label": "纳米香蕉 Pro Token版",
       "type": "image",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "gk-image-2.0",
       "label": "GK Image 2.0",
       "type": "image",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "banana-2-token",
       "label": "纳米香蕉 2 Token版",
       "type": "image",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "mj_imagine",
       "label": "Midjourney",
       "type": "image",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "vidu-image-2",
       "label": "VIDU Iamge 2",
       "type": "image",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "doubao-seedream-5-0-260128",
       "label": "即梦 5.0",
       "type": "image",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "wan2.7-image",
       "label": "万相 2.7 图像",
       "type": "image",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "doubao-seedream-4-5-251128",
       "label": "即梦 4.5",
       "type": "image",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "kling-v3-omni",
       "label": "可灵-V3-Omni",
       "type": "image",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "qwen-image",
       "label": "千问-image-max",
       "type": "image",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "wan2.6-image",
       "label": "万相 2.6 图像",
       "type": "image",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "kling-v3",
       "label": "可灵-V3",
       "type": "image",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "seedance-2.0-anci",
       "label": "SD 2.0 按次",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "seedance-2.5-guanfang-anmiao",
       "label": "SD 2.5 满血版 按秒",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "gk-video-3.5",
       "label": "GK-video-3.5",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "kling-v4-video",
       "label": "可灵-V4-video",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "muse-video",
       "label": "Muse Video",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "seedance-2.5-anci",
       "label": "SD 2.5 按次",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "wand-vega-video-1.5",
       "label": "Vega Video 1.5",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "omni-flash-1.2",
       "label": "omni-flash-1.2",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "wand-vega-video-1.0",
       "label": "Vega Video 1.0",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "seedance-2.5-guanfang",
       "label": "SD 2.5 满血版",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "viduq4-preview",
       "label": "Vidu Q4 Preview",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "kwvideo-v2-ref",
       "label": "SD 2.0 参考生",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "minimax-h3",
       "label": "MiniMax H3",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "seedance-2.0-guanfang",
       "label": "SD 2.0 满血版",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "seedance-2.0-guanfang-anmiao",
       "label": "SD 2.0 满血版 按秒",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "hailuo-h3-cankaosheng",
       "label": "海螺 H3 参考生",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "omni_flash-10s",
       "label": "Omni Flash 10秒",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "omni-flash",
       "label": "omni-flash",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "kling-v3-omni-cankao",
       "label": "可灵-Omni 参考生",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "wan3.0-video-quannengcankao",
       "label": "万相3.0 全能参考",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "seedance-2.5-anmiao-quannengcankao",
       "label": "SD 2.5 全能参考 按秒",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "doubao-seedance-2-5-cankaosheng",
       "label": "SD 2.5 参考生",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "gk-video-3",
       "label": "GK-video-3",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "wan3.0",
       "label": "万相 3.0",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "hailuo-h3-shouweizhen",
       "label": "海螺 H3 首尾帧",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "hailuo-h3-quannengcankao",
       "label": "海螺 H3 全能参考",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "kwvideo-v2-quannengcankao",
       "label": "SD 2.0 全能参考",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "kling-avatar-image2video",
       "label": "可灵-数字人",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "hailuo-h3",
       "label": "海螺 H3 文生视频",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "seedance-2.0-anmiao-quannengcankao",
       "label": "SD 2.0 全能参考 按秒",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "seedance-2.5-anmiao",
       "label": "SD 2.5 参考生 按秒",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "seedance-2.0-anmiao-cankaosheng",
       "label": "SD 2.0 参考生 按秒",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "happyhorse-r2v",
       "label": "快乐马-参考生",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "video-enhance",
       "label": "视频超分",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "doubao-seedance-2-5-260628",
       "label": "SD 2.5 文生",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "omni-1.1",
       "label": "Omni 1.1",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "doubao-seedance-2-5-quannengcankao",
       "label": "SD 2.5 全能参考",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "kling-v3-video",
       "label": "可灵-V3-video",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "kwvideo-v2",
       "label": "SD 2.0 首尾帧",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "viduq3",
       "label": "Vidu Q3",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "viduq3-turbo-cankaosheng",
       "label": "Vidu Q3 Turbo 参考生",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "wan3.0-video",
       "label": "万相3.0 文生视频",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "seedance-2.0-anmiao",
       "label": "SD 2.0 首尾帧 按秒",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "viduq3-drama",
       "label": "Vidu Q3 Drama",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "wan3.0-video-cankaosheng",
       "label": "万相3.0 参考生",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "kling-v3-omni-videoref",
       "label": "可灵-Omni 视频参考",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "happyhorse-video-edit",
       "label": "快乐马-视频编辑",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "hailuo-h3-max-shouweizhen",
       "label": "海螺 H3 Max 首尾帧",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "hailuo-h3-max",
       "label": "海螺 H3 Max 文生视频",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "kling-motion-control-v3",
       "label": "可灵-动作控制 V3",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "seedance-2.5-anmiao-shouweizhen",
       "label": "SD 2.5 首尾帧 按秒",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "pixverse-v6-shouweizhen",
       "label": "Pix V6 首尾帧",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "minimax-h3-max",
       "label": "MiniMax H3 Max",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "vidu-mv",
       "label": "VIDU-音乐MV",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "vo3.1",
       "label": "VO3.1",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "kling-motion-control",
       "label": "可灵-动作控制",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "doubao-seedance-2-5-shouweizhen",
       "label": "SD 2.5 首尾帧",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "kling-v3-omni-shouweizhen",
       "label": "可灵-Omni 首尾帧",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "happyhorse-1.1-r2v",
       "label": "快乐马1.1-参考生",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "happyhorse-1.1-t2v",
       "label": "快乐马1.1-文生视频",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "omni_flash-10s-fl",
       "label": "Omni Flash 首尾帧",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "wan2.2-animate-mix",
       "label": "万相-视频换人",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "wan3.0-video-shouweizhen",
       "label": "万相3.0 首尾帧",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "wan2.6-cankaosheng",
       "label": "万相 2.6 参考生",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "seedance-2.5-anmiao-wensheng",
       "label": "SD 2.5 文生 按秒",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "viduq3-turbo",
       "label": "Vidu Q3 Turbo",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "happyhorse-t2v",
       "label": "快乐马-文生视频",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "happyhorse-i2v",
       "label": "快乐马-首帧",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "wan2.7-shouweizhen",
       "label": "万相 2.7 首尾帧",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "pixverse-c1-cankaosheng",
       "label": "Pix C1 参考生",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "pixverse-c1-shouweizhen",
       "label": "Pix C1 首尾帧",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "viduq3-cankaosheng",
       "label": "Vidu Q3 参考生",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "wan2.6-shouzheng",
       "label": "万相 2.6 首帧",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "wan2.7-cankaosheng",
       "label": "万相 2.7 参考生",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "vidu-jieshuoman",
       "label": "VIDU-解说漫",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "happyhorse-1.1-i2v",
       "label": "快乐马1.1-首帧",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "pixverse-v5.6-shouweizhen",
       "label": "Pix V5.6 首尾帧",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "pixverse-v5.6-r2v",
       "label": "Pix V5.6 参考生",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "viduq2-cankaosheng",
       "label": "Vidu Q2 参考生",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "wan2.7-xuxie",
       "label": "万相 2.7 视频续写",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "hailuo-h3-zaishengcheng",
       "label": "海螺 H3 视频升2K",
       "type": "video",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "suno-v6",
       "label": "Suno 音乐生成 6",
       "type": "audio",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "speech-2.8",
       "label": "海螺 语音克隆 2.8",
       "type": "audio",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "suno-v4.5",
       "label": "Suno 音乐生成 4.5",
       "type": "audio",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "music-2.5+",
       "label": "海螺 音乐生成 2.5+",
       "type": "audio",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "doubao-tts-2.0",
       "label": "豆包 语音合成 2.0",
       "type": "audio",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "gem-3.1-tts",
       "label": "GEM-3.1-TTS",
       "type": "audio",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "music-2.5",
       "label": "海螺 音乐生成 2.5",
       "type": "audio",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     },
     {
       "id": "gem-2.5-tts",
       "label": "GEM-2.5-TTS",
       "type": "audio",
       "protocol": "media",
-      "compatibleProtocols": ["media"]
+      "compatibleProtocols": [
+        "media"
+      ]
     }
   ]
 }

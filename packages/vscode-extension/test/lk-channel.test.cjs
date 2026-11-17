@@ -70,7 +70,7 @@ test("LK preset chooses exact alias and isolates every protocol's models", () =>
   e("preset").onchange();
   assert.equal(e("model").value, "tt-6-luna");
   assert.equal(e("apiKey").value, "");
-  assert.equal(e("baseUrl").value, "https://api.lk888.ai/v1");
+  assert.equal(e("baseUrl").value, "https://api.vv666.ai/v1");
   assert.doesNotMatch(e("key-hint").textContent, /可留空/);
   for (const [protocol, model, provider] of [
     ["openai", "tt-6-luna", "custom"],
@@ -111,7 +111,7 @@ test("LK rejects incompatible media/chat protocols and foreign credential reuse"
   const draft = {
     provider: "custom",
     model: "tt-6-luna",
-    baseUrl: "https://api.lk888.ai/v1",
+    baseUrl: "https://api.vv666.ai/v1",
     apiKey: "",
     visionModel: "",
   };

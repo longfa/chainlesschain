@@ -49,7 +49,7 @@
               >
             </a-select>
             <a-select v-model:value="lkAddress" style="width: 265px">
-              <a-select-option value="primary">主 api.lk888.ai</a-select-option>
+              <a-select-option value="primary">主 api.vv666.ai</a-select-option>
               <a-select-option value="backup"
                 >备用 api.lk666.ai</a-select-option
               >

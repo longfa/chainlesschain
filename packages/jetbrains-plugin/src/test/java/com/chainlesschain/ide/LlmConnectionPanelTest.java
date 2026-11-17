@@ -14,7 +14,7 @@ class LlmConnectionPanelTest {
             ((JComboBox<?>) find(panel, "llm.provider")).setSelectedIndex(0);
             assertEquals("custom", panel.connection().provider);
             assertEquals("tt-6.1-sol", panel.connection().model);
-            assertEquals("https://api.lk888.ai/v1", panel.connection().baseUrl);
+            assertEquals("https://api.vv666.ai/v1", panel.connection().baseUrl);
             assertTrue(panel.needsNewKey());
             ((JComboBox<?>) find(panel, "llm.protocol")).setSelectedIndex(1);
             assertEquals("anthropic", panel.connection().provider);
@@ -26,9 +26,9 @@ class LlmConnectionPanelTest {
             assertEquals("team/future", panel.connection().model);
             assertFalse(panel.needsNewKey());
             assertEquals("", panel.apiKey());
-            assertNotNull(LlmConfig.validateConnection(new LlmConfig.Connection("custom", "fb-5-2", "https://api.lk888.ai/v1", "", false), false));
+            assertNotNull(LlmConfig.validateConnection(new LlmConfig.Connection("custom", "fb-5-2", "https://api.vv666.ai/v1", "", false), false));
             panel.load(new LlmConfig.Connection("custom", "local", "http://localhost:8000/v1", "", false));
-            ((JTextField) find(panel, "llm.baseUrl")).setText("https://api.lk888.ai/v1");
+            ((JTextField) find(panel, "llm.baseUrl")).setText("https://api.vv666.ai/v1");
             assertTrue(panel.needsNewKey());
         });
     }

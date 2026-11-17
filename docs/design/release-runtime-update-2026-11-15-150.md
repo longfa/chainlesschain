@@ -8,7 +8,7 @@ Microsoft Marketplace 未由本轮标签工作流发布。PC/mobile 公开安装
 
 ## LK 模型渠道
 
-CLI `cc setup`、`cc ui` 及两款 IDE 的模型配置支持 LK API 聚合渠道。主备地址为字母 `lk` 的 `api.lk888.ai` / `api.lk666.ai`，同一 LK Key 在主备地址和兼容协议之间共用。各渠道的 Key 分别保存；切回已保存渠道可恢复原 Key，包含火山渠道，不会把另一渠道凭证用于 LK。
+CLI `cc setup`、`cc ui` 及两款 IDE 的模型配置支持 LK API 聚合渠道。主备地址为字母 `lk` 的 `api.vv666.ai` / `api.lk666.ai`，同一 LK Key 在主备地址和兼容协议之间共用。各渠道的 Key 分别保存；切回已保存渠道可恢复原 Key，包含火山渠道，不会把另一渠道凭证用于 LK。
 
 公开模型目录有 **197** 项：对话 **83**、图片 **25**、视频 **81**、音频 **8**。聊天模型选择器只显示按兼容协议筛选的对话模型。媒体模型在本轮是目录与接口参考，不代表已提供媒体任务提交或轮询流程，也不代表某个账户拥有全部模型权限。目录和操作说明见 [LK 渠道配置](https://github.com/chainlesschain/chainlesschain/blob/main/docs/configuration/lk-api-channel.md)。
 

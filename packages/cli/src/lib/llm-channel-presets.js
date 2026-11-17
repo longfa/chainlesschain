@@ -9,7 +9,7 @@ export const LK_CHANNEL = {
   documentationUrl: "https://chainlesschain.net/apidoc",
   pricingUrl: "https://chainlesschain.net/api/pricing",
   addresses: {
-    primary: "https://api.lk888.ai",
+    primary: "https://api.vv666.ai",
     backup: "https://api.lk666.ai",
   },
   protocols: {

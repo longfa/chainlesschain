@@ -48,7 +48,7 @@ describe("LLM config renderer projection", () => {
     config = mergeLlmConfigWrite(
       {
         custom: {
-          baseURL: "https://api.lk888.ai/v1",
+          baseURL: "https://api.vv666.ai/v1",
           apiKey: "lk-secret",
           model: "tt-6-luna",
         },

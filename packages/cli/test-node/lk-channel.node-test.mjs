@@ -141,7 +141,7 @@ test("desktop applying LK clears another service credential and selects exact mo
   assert.equal(state.form.provider, "custom");
   assert.equal(state.form.custom.apiKey, "");
   assert.equal(state.form.custom.model, "tt-6.1-sol");
-  assert.equal(state.form.custom.baseURL, "https://api.lk888.ai/v1");
+  assert.equal(state.form.custom.baseURL, "https://api.vv666.ai/v1");
 });
 
 test("desktop manual backup retains only the channel key and chosen model", () => {

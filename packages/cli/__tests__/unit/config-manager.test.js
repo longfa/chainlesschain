@@ -138,7 +138,7 @@ describe("config-manager", () => {
     const lk = {
       provider: "custom",
       model: "tt-6-luna",
-      baseUrl: "https://api.lk888.ai/v1",
+      baseUrl: "https://api.vv666.ai/v1",
     };
     mod.updateConfigAtomically((config) => {
       config.llm = { ...volc };
@@ -159,7 +159,7 @@ describe("config-manager", () => {
     saveLlmConnection({
       provider: "gemini",
       model: "gem-3.8-flash",
-      baseUrl: "https://api.lk888.ai/v1beta",
+      baseUrl: "https://api.vv666.ai/v1beta",
       apiKey: "rotated-lk-key",
     });
     saveLlmConnection(volc);

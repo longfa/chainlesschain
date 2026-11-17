@@ -153,7 +153,7 @@ async function fetchLkAccount(
     );
   if (
     !connection ||
-    !/^https:\/\/api\.lk(?:888|666)\.ai\/(?:v1|v1beta)\/?$/.test(
+    !/^https:\/\/api\.(?:vv666|lk666)\.ai\/(?:v1|v1beta)\/?$/.test(
       connection.baseUrl || "",
     ) ||
     !connection.apiKey

@@ -26,7 +26,7 @@ public final class LlmConnectionPanel extends JPanel {
     private final JButton save = new JButton(), test = new JButton(), reload = new JButton();
     private final JButton account = new JButton("刷新价格与余额");
     private final JTextArea accountResult = new JTextArea(9, 65);
-    private final JComboBox<String> lkAddress = new JComboBox<>(new String[]{"api.lk888.ai", "api.lk666.ai"});
+    private final JComboBox<String> lkAddress = new JComboBox<>(new String[]{"api.vv666.ai", "api.lk666.ai"});
     private final JComboBox<LkChannelCatalog.Model> lkModel = new JComboBox<>();
     private final JLabel lkAddressLabel = new JLabel("LK 主备地址"), lkModelLabel = new JLabel("LK 模型目录");
     private LlmConfig.Connection current;
