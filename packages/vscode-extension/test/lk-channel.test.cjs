@@ -68,12 +68,12 @@ test("LK preset chooses exact alias and isolates every protocol's models", () =>
   e("apiKey").value = "old-key";
   e("preset").value = "lk";
   e("preset").onchange();
-  assert.equal(e("model").value, "tt-6-luna");
+  assert.equal(e("model").value, "tt-6.1-sol");
   assert.equal(e("apiKey").value, "");
   assert.equal(e("baseUrl").value, "https://api.vv666.ai/v1");
   assert.doesNotMatch(e("key-hint").textContent, /可留空/);
   for (const [protocol, model, provider] of [
-    ["openai", "tt-6-luna", "custom"],
+    ["openai", "tt-6.1-sol", "custom"],
     ["anthropic", "fb-5-2", "anthropic"],
     ["gemini", "gem-3.8-flash", "gemini"],
   ]) {
