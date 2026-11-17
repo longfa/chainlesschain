@@ -93,7 +93,7 @@ test("JetBrains host matrix gates both original controls and canonical Stop reco
     read(".github/workflows/ide-extensions.yml"),
     "jetbrains-host-matrix",
   );
-  assert.match(job, /os: \[windows-latest, ubuntu-latest, macos-latest\]/u);
+  assert.match(job, /os: \[windows-latest, ubuntu-latest, macos-15-intel\]/u);
   assert.match(job, /version: "2024\.2"/u);
   assert.match(job, /version: "2025\.2"/u);
   assert.match(
