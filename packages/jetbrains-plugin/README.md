@@ -317,7 +317,7 @@ See the [verified publication evidence](https://github.com/chainlesschain/chainl
 
 ## Release compatibility
 
-Plugin **0.4.206** is the current release candidate. It recommends `chainlesschain@0.166.155` and pairs with the CLI's bounded background-output recovery guard. The verified Marketplace release remains the prior public version until the exact tag workflow and Marketplace readback pass. [Rewind fix](https://github.com/chainlesschain/chainlesschain/pull/593).
+Plugin **0.4.207** is the current release candidate. It recommends `chainlesschain@0.166.155` for current LK model identities and authenticated account queries. The candidate requires complete host gates, upload and public Marketplace readback. [Release scope](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-155.md).
 
 Install the paired public CLI with `npm i -g chainlesschain@0.166.155 --registry https://registry.npmjs.org` after publication, restart the chat host, and run `cc --version` and `cc doctor`. Goal transfer and native Graph features require matching desktop support and explicit native authorization. Model-task improvement and automatic promotion remain unverified.
 
