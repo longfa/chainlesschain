@@ -5,8 +5,7 @@ description: longfa 仓库、chainlesschain.net 域名与 OIDC 来源固定
 
 # CLI 0.166.162 发布候选
 
-> ???????? .162 ???????????????? 2026-11-16 ?????????????????? [CLI 0.166.156 ??](./cli-ide-update-2026-11-19-156)?
-
+> Historical preparation from 2026-11-16, superseded by later releases. See the [current CLI 0.166.156 release](https://github.com/longfa/chainlesschain/blob/main/docs-site/docs/chainlesschain/cli-ide-update-2026-11-19-156.md) for current versions and installation.
 
 ## 当前状态
 

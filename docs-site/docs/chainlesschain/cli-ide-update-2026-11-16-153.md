@@ -5,6 +5,8 @@ description: longfa 仓库、OIDC 来源固定、LK 平台域名更新与发行�
 
 # CLI 0.166.153 发布源迁移候选
 
+> Historical preparation from 2026-11-16, superseded by later releases. See the [current CLI 0.166.156 release](./cli-ide-update-2026-11-19-156) for current versions and installation.
+
 ## 概述
 
 CLI **0.166.153** 尚未发布。当前已核验公开 CLI 为 **0.166.150**；新候选将从 [longfa/chainlesschain](https://github.com/longfa/chainlesschain) 发布。原 .151/.152 标签保持原有身份。
