@@ -4,7 +4,7 @@
 
 CLI **0.166.156**、Open VSX **0.37.192** 和 JetBrains **0.4.207** 均已公开核验，两款插件推荐 CLI .156。升级并重启宿主，运行 `cc --version`、`cc doctor`。
 
-通过 `cc setup`、`cc ui` 的 LLM 配置或 IDE「配置大模型 / Configure LLM」选择 LK，再选择协议、端点和模型。主地址为 `https://api.vv666.ai`，备用为 `https://api.lk666.ai`，主备手动切换；LK 三种对话协议可恢复已保存的 LK Key。OpenAI 兼容连接使用 `https://api.vv666.ai/v1` 和 `gpt-6.1-sol`，不要填写具体 `/chat/completions` 请求路径。
+通过 `cc setup --skip-download --skip-services`、`cc ui` 的 LLM 配置或 IDE「配置大模型 / Configure LLM」选择 LK，再选择协议、端点和模型。主地址为 `https://api.vv666.ai`，备用为 `https://api.lk666.ai`，主备手动切换；LK 三种对话协议可恢复已保存的 LK Key。OpenAI 兼容连接使用 `https://api.vv666.ai/v1` 和 `gpt-6.1-sol`，不要填写具体 `/chat/completions` 请求路径。
 
 当前目录 **202 项**：86 对话、26 图片、82 视频、8 音频。聊天下拉仅显示所选协议兼容的对话模型；目录条目不保证当前 Key 权限或真实生成质量，媒体任务提交与轮询不在聊天配置内。旧别名 `tt-6.1-sol`、`tt-6-luna`、`fb-5-2`、`gem-3.8-flash` 分别迁移为 `gpt-6.1-sol`、`gpt-6-luna`、`claude-fable-5-2`、`gemini-3.8-flash`，未知自定义名称保留。
 
