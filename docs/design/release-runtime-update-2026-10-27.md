@@ -11,7 +11,7 @@
 | JetBrains | 0.4.182，推荐 CLI .127  | `abc3450c13a7f5b2ba8111973bfea6e9d8090dde` | [40409875752](https://github.com/chainlesschain/chainlesschain/actions/runs/40409875752)      |
 | 移动 / PC | v5.0.3.142              | `c9881a2b710cf49f0ad3d63673e0998ecc608514` | [40418182439](https://github.com/chainlesschain/chainlesschain/actions/runs/40418182439)      |
 
-[发布回执](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release127-public/publication.json)记录各渠道与依赖顺序。CLI 精确提交通过三平台 [CLI CI](https://github.com/chainlesschain/chainlesschain/actions/runs/40385426230) 和 [Strict Sandbox](https://github.com/chainlesschain/chainlesschain/actions/runs/40385426186)。本轮十个直接子依赖固定版本不变，Session Core **0.3.24**、Kernel **0.1.10**、PDH **0.4.66**、Agent SDK **0.2.16** 各自独立发行。Microsoft VS Code Marketplace 仍未发布。
+[发布回执](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release127-public/publication.json)记录各渠道与依赖顺序。CLI 精确提交通过三平台 [CLI CI](https://github.com/chainlesschain/chainlesschain/actions/runs/40385426230) 和 [Strict Sandbox](https://github.com/chainlesschain/chainlesschain/actions/runs/40385426186)。本轮十个直接子依赖固定版本不变，Session Core **0.3.24**、Kernel **0.1.10**、PDH **0.4.66**、Agent SDK **0.2.16** 各自独立发行。Microsoft VS Code Marketplace 仍未发布。
 
 ## 可选 Evolution 入口
 

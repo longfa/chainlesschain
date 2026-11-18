@@ -502,7 +502,7 @@ Linux、Windows、macOS 的精确 SHA 门禁已覆盖多进程恢复、CAS 竞�
 
 启动恢复报告的 `reviewsSettled` / `rollbacksSettled` 是已核验并补账的效果数；`reviewPreparationsDeferred` / `rollbackPlansDeferred` 是已保存但尚无效果的计划数。对后者应先核对当前状态和有效授权，再显式恢复。签名撤销、陈旧状态或账本损坏时停止变更并保留证据。
 
-部署接口详见[Workbench 启动合同](https://github.com/chainlesschain/chainlesschain/blob/main/docs/features/evolution-workbench/EVOLUTION_WORKBENCH_STARTUP.md)。
+部署接口详见[Workbench 启动合同](https://github.com/longfa/chainlesschain/blob/main/docs/features/evolution-workbench/EVOLUTION_WORKBENCH_STARTUP.md)。
 
 ## 状态与结果
 

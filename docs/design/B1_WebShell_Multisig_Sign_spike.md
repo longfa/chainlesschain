@@ -1,6 +1,6 @@
 # B.1 web-shell private key signing — spike v0.4
 
-> **Issue**: [#21](https://github.com/chainlesschain/chainlesschain/issues/21) B.1（GA 后续 scope · P1）
+> **Issue**: [#21](https://github.com/longfa/chainlesschain/issues/21) B.1（GA 后续 scope · P1）
 > **状态**: 🟢 PR1 ✅ + PR2a ✅ + PR2b ✅ + PR3 ✅ landed (2026-05-15) — **B.1 主体闭环**
 > **作者**: 2026-05-15
 > **关联**: [Android 重新定位 §10 B.1](Android_重新定位_设计文档.md) / [MofN 多签应用扩展](MofN_多签_应用扩展_v1.md) / [三端 UI Consistency §2.4](三端_UI_Consistency_设计文档.md)

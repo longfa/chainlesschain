@@ -27,7 +27,7 @@ CLI **0.166.151** 未公开，已因正式 Ubuntu 单测中的 POSIX 错误层�
 
 本轮仅认证各原本地组件及 source/v2 镜像关系，尚未组合完整生产运行图，不构成跨组件原子快照、统一 authority epoch、独立安装认可或受保护高水位。`fullPhysicalStorageGraphVerified=false`、生产自动晋升 **HOLD** 保持；真实 producer、alias/lease 和 A/B/C 验收仍未完成。
 
-详细实现与本地验证见 [RRSI 进度第 41–46 节](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/agents/rrsi-implementation-progress-2026-10-07.md)。
+详细实现与本地验证见 [RRSI 进度第 41–46 节](https://github.com/longfa/chainlesschain/blob/main/docs/research/agents/rrsi-implementation-progress-2026-10-07.md)。
 
 ## 使用示例
 

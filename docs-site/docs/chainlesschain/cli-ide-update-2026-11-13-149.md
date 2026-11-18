@@ -9,7 +9,7 @@ description: 自进化保留历史的原始目录边界校验、版本配对和�
 
 截至 2026-11-14，CLI **0.166.149** 已通过 [Actions OIDC 发布](https://github.com/chainlesschain/chainlesschain/actions/runs/43475425890)，准确源码为 `168a3d561b5a16e9d27b060944c63b2264c99df0`。官方来源及归档回读通过，独立公开下载与正式制品逐字节一致。
 
-Open VSX **0.37.188** 已公开，推荐 CLI **0.166.149**；完整宿主门禁通过，独立回读确认版本已列出、可下载，且 VSIX 与官方制品字节一致。JetBrains **0.4.203** 推荐同一 CLI，已通过完整正式门禁并上传，待商店审核及公开下载核验；此前已核验的公开 JetBrains **0.4.202** 推荐 CLI **0.166.148**。各渠道分别记录状态，源码版本不替代发布状态。见[发布证据](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release149-public/publication.json)。
+Open VSX **0.37.188** 已公开，推荐 CLI **0.166.149**；完整宿主门禁通过，独立回读确认版本已列出、可下载，且 VSIX 与官方制品字节一致。JetBrains **0.4.203** 推荐同一 CLI，已通过完整正式门禁并上传，待商店审核及公开下载核验；此前已核验的公开 JetBrains **0.4.202** 推荐 CLI **0.166.148**。各渠道分别记录状态，源码版本不替代发布状态。见[发布证据](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release149-public/publication.json)。
 
 ## 核心特性
 
@@ -65,4 +65,4 @@ CLI .149 与 Open VSX .188 均已公开并回读通过，可下载 [0.37.188 VSI
 
 - [CLI 0.166.148 升级说明](./cli-ide-update-2026-11-13-148.md)
 - [CLI 功能入口](./cli.md)
-- [自进化设计](https://github.com/chainlesschain/chainlesschain/blob/main/docs/design/modules/112-governed-skill-evolution-design.md)
+- [自进化设计](https://github.com/longfa/chainlesschain/blob/main/docs/design/modules/112-governed-skill-evolution-design.md)

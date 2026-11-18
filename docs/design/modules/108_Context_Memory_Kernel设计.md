@@ -14,7 +14,7 @@ Kernel `.11` 承接查询取消、目录与 Windows 文件身份复查、bundle 
 
 ## 2026-10-28 CLI Memory 查询增量
 
-> 当前核对（2026-10-28）：CLI **0.166.128** / Open VSX **0.37.166** / JetBrains **0.4.183**，均已公开并完成制品回读，两个 IDE 推荐 `.128`；产品 **v5.0.3.143** 的五平台构建、22 个资产与三套桌面更新元数据已核验。CLI、IDE 与产品分别冻结在 `dfa158e361`、`6551a06c2f`、`036d2b8be2`，Git 主线核对基线为 `d9f2511b95`。以下早期实施计划与旧日期记录保留其历史范围。[公开回执](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release128-public/publication.json)。
+> 当前核对（2026-10-28）：CLI **0.166.128** / Open VSX **0.37.166** / JetBrains **0.4.183**，均已公开并完成制品回读，两个 IDE 推荐 `.128`；产品 **v5.0.3.143** 的五平台构建、22 个资产与三套桌面更新元数据已核验。CLI、IDE 与产品分别冻结在 `dfa158e361`、`6551a06c2f`、`036d2b8be2`，Git 主线核对基线为 `d9f2511b95`。以下早期实施计划与旧日期记录保留其历史范围。[公开回执](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release128-public/publication.json)。
 
 独立 Context/Memory Kernel 包保持 **0.1.10**；本轮优化发生在 CLI 的 `src/lib/context-memory-kernel/memory-query-index.js` 适配实现。`selectQueryRows` 先比较 posting 的选择性，再决定是否展开 scope/state/tag/sink 并集；不能比当前候选更短的并集不再完整构建，已累积到当前长度时提前停止。
 
@@ -646,4 +646,4 @@ reconcile(operationId): Promise<ReconciliationReport>
 - [91 Managed Agents 对标计划](./91_Managed_Agents对标计划.md)
 - [99 项目记忆与 init 对标方案](./99_项目记忆与init对标方案.md)
 - [CLI Runtime 当前实现](../cli-runtime-current.md)
-- [开源差距分析 6.4](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/agents/CODEX_OPEN_SOURCE_GAP_ANALYSIS_2026-08-24.md#64-统一上下文压缩与记忆生命周期)
+- [开源差距分析 6.4](https://github.com/longfa/chainlesschain/blob/main/docs/research/agents/CODEX_OPEN_SOURCE_GAP_ANALYSIS_2026-08-24.md#64-统一上下文压缩与记忆生命周期)

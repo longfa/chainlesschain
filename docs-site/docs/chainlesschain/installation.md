@@ -121,7 +121,7 @@ sudo apt install ./chainlesschain-desktop-vue_5.0.3-alpha.145_amd64.deb
 ## 从源码开发桌面应用
 
 ```bash
-git clone https://github.com/chainlesschain/chainlesschain.git
+git clone https://github.com/longfa/chainlesschain.git
 cd chainlesschain
 npm ci --legacy-peer-deps
 npm run dev

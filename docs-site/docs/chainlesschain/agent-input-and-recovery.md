@@ -40,7 +40,7 @@ CLI **0.166.142** 已通过 GitHub Actions OIDC 发布；Open VSX **0.37.178** �
 
 同时修复敏感赋值的词法边界：例如 `"password": trueSecretValue` 或拼接字符串，不再只脱敏第一个 token 而留下后缀，而是拒绝无法安全投影的表达式。
 
-CLI 0.166.121 已通过同一提交的三平台 CLI CI 和 CLI Strict Sandbox，并经 [GitHub Actions OIDC](https://github.com/chainlesschain/chainlesschain/actions/runs/40225573887) 发布，公共 npm 包完整性、provenance、修复源码及子依赖已验证。[发布证据](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release121-public/publication.json)。运行 `npm i -g chainlesschain@0.166.121 --registry https://registry.npmjs.org`，重启 IDE 聊天宿主，用 `cc --version` 和 `cc doctor` 确认实际路径。
+CLI 0.166.121 已通过同一提交的三平台 CLI CI 和 CLI Strict Sandbox，并经 [GitHub Actions OIDC](https://github.com/chainlesschain/chainlesschain/actions/runs/40225573887) 发布，公共 npm 包完整性、provenance、修复源码及子依赖已验证。[发布证据](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release121-public/publication.json)。运行 `npm i -g chainlesschain@0.166.121 --registry https://registry.npmjs.org`，重启 IDE 聊天宿主，用 `cc --version` 和 `cc doctor` 确认实际路径。
 
 另在独立目录从公共 npm 使用 `--ignore-scripts` 安装，验证了 CLI 包和十个直接子依赖的地址、完整性与版本，以及 `cc --version` 和静态 `cc agent --capabilities` 清单。这不是模型任务或原生产品验收。
 
@@ -95,7 +95,7 @@ cc doctor
 
 发行提交通过完整的 Linux、Windows、macOS CLI CI 与 Strict Sandbox 门禁；两个 IDE 也通过配置中的真实宿主矩阵和发布前检查。CLI 的公共安装、依赖和签名来源已核验，两个 IDE 的公开压缩包已下载并核对版本及 CLI 推荐值。
 
-本次未新增真实模型长任务验收。历史 `.117` 当时的跨版本交付统计为 **31/45**；当前累计为 **32/45**、**13** 项未完成，均不能作为本轮单轮成功率。完整回执见[发布证据](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release117-public/publication.json)。
+本次未新增真实模型长任务验收。历史 `.117` 当时的跨版本交付统计为 **31/45**；当前累计为 **32/45**、**13** 项未完成，均不能作为本轮单轮成功率。完整回执见[发布证据](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release117-public/publication.json)。
 
 ## 安全考虑
 

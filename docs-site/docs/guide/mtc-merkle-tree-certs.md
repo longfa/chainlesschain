@@ -6,7 +6,7 @@
 > libp2p / 文件系统多种传输模式的实操。
 >
 > **最后更新**: 2026-05-02（v0.5：Phase 0–4 全部落地，含 federation 多签 + libp2p gossipsub auto-discovery） · 另见：[设计文档站 — MTC 落地方案](/design/mtc-landing-plan)、
-> [`docs/design/默克尔树证书_MTC_落地方案.md`](https://github.com/chainlesschain/chainlesschain/blob/main/docs/design)
+> [`docs/design/默克尔树证书_MTC_落地方案.md`](https://github.com/longfa/chainlesschain/blob/main/docs/design)
 
 ---
 

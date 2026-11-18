@@ -464,7 +464,7 @@ chainlesschain --quiet      # 静默模式
 | `serve`             | WebSocket 服务器 (远程CLI调用/流式/认证)                                                                                                                     | [WebSocket服务器](./cli-serve) |
 | `ui`                | Web 管理界面 (浏览器端/项目&全局模式)                                                                                                                        | [Web管理界面](./cli-ui)        |
 
-> `0.166.2` 的不可变 tag `v-npm-0-166-2` 精确指向提交 [`f868e14206`](https://github.com/chainlesschain/chainlesschain/commit/f868e142068c33d203601cddd7643fd8ad9c4ffb)。同一提交已完成 Linux、Windows、macOS CLI CI、Strict Sandbox、npm Trusted Publishing 与独立 registry 回读；TypeScript/Python Agent SDK `0.2.1` 与 Agent Protocol `0.1.1` 也已公开。真实 Agent 的消息能力通过宿主私有工具暴露，不是顶层 `cc team send` 子命令。该证据不自动覆盖 `f868e14206` 之后的 SessionMessageFabric 候选、Desktop/iOS 或签名 native。
+> `0.166.2` 的不可变 tag `v-npm-0-166-2` 精确指向提交 [`f868e14206`](https://github.com/longfa/chainlesschain/commit/f868e142068c33d203601cddd7643fd8ad9c4ffb)。同一提交已完成 Linux、Windows、macOS CLI CI、Strict Sandbox、npm Trusted Publishing 与独立 registry 回读；TypeScript/Python Agent SDK `0.2.1` 与 Agent Protocol `0.1.1` 也已公开。真实 Agent 的消息能力通过宿主私有工具暴露，不是顶层 `cc team send` 子命令。该证据不自动覆盖 `f868e14206` 之后的 SessionMessageFabric 候选、Desktop/iOS 或签名 native。
 
 ---
 

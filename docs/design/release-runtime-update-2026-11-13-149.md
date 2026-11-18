@@ -10,7 +10,7 @@
 | Open VSX  | 0.37.188  | 已公开、列出、可下载，与官方 VSIX 字节一致         |
 | JetBrains | 0.4.203   | 已通过完整正式门禁并上传，待商店审核及公开下载核验 |
 
-两款新 IDE 推荐 CLI **0.166.149**。Open VSX .188 已完成正式宿主、Remote-SSH、浏览器和公开回读门禁；JetBrains .203 已通过完整正式门禁并上传，待商店审核及公开下载核验，当前已核验公开 .202 推荐 CLI .148。Microsoft Marketplace 本轮仍不发布；PC/mobile 当前公开版保持 **v5.0.3.145**。见[发布证据](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release149-public/publication.json)。
+两款新 IDE 推荐 CLI **0.166.149**。Open VSX .188 已完成正式宿主、Remote-SSH、浏览器和公开回读门禁；JetBrains .203 已通过完整正式门禁并上传，待商店审核及公开下载核验，当前已核验公开 .202 推荐 CLI .148。Microsoft Marketplace 本轮仍不发布；PC/mobile 当前公开版保持 **v5.0.3.145**。见[发布证据](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release149-public/publication.json)。
 
 ## 原组件所有权与目录重验
 

@@ -10,7 +10,7 @@
 | Open VSX 0.37.161 | 真实宿主门禁通过；公开 VSIX 原始 SHA-256 与完整 ZIP 内容摘要均匹配不可变候选                   | [发布工作流](https://github.com/chainlesschain/chainlesschain/actions/runs/40227329131)                                                                                                                                                                             |
 | JetBrains 0.4.178 | 宿主、构建及兼容性门通过；已批准并公开上市，公开 ZIP 描述符和编译后 CLI 推荐值通过验证         | [发布工作流](https://github.com/chainlesschain/chainlesschain/actions/runs/40227329241)                                                                                                                                                                             |
 
-[公开发行证据](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release121-public/publication.json)记录 CLI CI 的 71 个成功任务与一个可选 dry-run 跳过，以及 Strict Sandbox 的 6 个成功任务。独立公共 npm 安装使用 `--ignore-scripts`，检查 CLI 包、十个直接子依赖的地址、完整性和固定版本，再执行 `--version` 与静态 `agent --capabilities`。这不是安装脚本、真实模型任务或原生产品验收。
+[公开发行证据](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release121-public/publication.json)记录 CLI CI 的 71 个成功任务与一个可选 dry-run 跳过，以及 Strict Sandbox 的 6 个成功任务。独立公共 npm 安装使用 `--ignore-scripts`，检查 CLI 包、十个直接子依赖的地址、完整性和固定版本，再执行 `--version` 与静态 `agent --capabilities`。这不是安装脚本、真实模型任务或原生产品验收。
 
 JetBrains update `1202806` 的公开 ZIP 与 CI ZIP 原始字节不同。比较确认所有候选内部 JAR 条目一致，且无新增条目；不将该结论扩大为 ZIP 逐字节相同，也不推断打包差异的原因。此前审核中的观察仍保存在回读记录内。
 

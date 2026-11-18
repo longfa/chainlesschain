@@ -57,7 +57,7 @@ flowchart LR
 
 ## 来源与相关文档
 
-- [公开版本与补测核对收据](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/documentation-release-status-2026-10-18.json)
+- [公开版本与补测核对收据](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/documentation-release-status-2026-10-18.json)
 - 开发快照内的原始记录：`docs/research/agents/dots-muse-mods-implementation-progress-2026-10-07.md`，及该快照 `evidence/dmm-cli-online-drafts-2026-10-18`、`dmm-cli-draft-handoff-2026-10-18`、`dmm-cli-project-evidence-2026-10-18` 下的逐批收据；未随本次远端文档变更公开。
 - [用户升级指南](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-10-18.html)
 - [目标草稿使用指南](https://docs.chainlesschain.com/chainlesschain/goal-drafts-current.html)

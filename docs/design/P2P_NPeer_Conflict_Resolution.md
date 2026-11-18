@@ -1,7 +1,7 @@
 # P2P N-Peer 冲突解析策略（v1.1 W2.7 决策记录）
 
 > **状态**: ✅ accepted (2026-05-12, v1.1 GA)
-> **关联**: [Android 重新定位设计文档](Android_重新定位_设计文档.md) §10 v1.1 / [issue #19 §8.2](https://github.com/chainlesschain/chainlesschain/issues/19)
+> **关联**: [Android 重新定位设计文档](Android_重新定位_设计文档.md) §10 v1.1 / [issue #19 §8.2](https://github.com/longfa/chainlesschain/issues/19)
 > **作用域**: 同 DID 多端（手机 A + 手机 B + 桌面）写同一资源时的冲突解析
 
 ---

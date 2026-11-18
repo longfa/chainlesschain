@@ -28,10 +28,10 @@ const OPEN_VSX_DOWNLOADS = releaseStatus.openVsxDownloadsDisplayEn;
 const ANDROID_TAG = releaseSizes.tag || PRODUCT_VERSION;
 const DOWNLOAD_VERSION = releaseSizes.productVersion || PRODUCT_VERSION;
 const ANDROID_VERSION = DOWNLOAD_VERSION;
-const ANDROID_RELEASE_URL = `https://github.com/chainlesschain/chainlesschain/releases/tag/${ANDROID_TAG}`;
-const androidArm64 = releaseSizes.sizes['android-arm64-v8a'];
-const androidUniversal = releaseSizes.sizes['android-universal'];
-const iosIpa = releaseSizes.sizes['ios-ipa'];
+const ANDROID_RELEASE_URL = `https://github.com/longfa/chainlesschain/releases/tag/${ANDROID_TAG}`;
+const androidArm64 = releaseStatus.nativeDownloadsAvailable ? releaseSizes.sizes['android-arm64-v8a'] : null;
+const androidUniversal = releaseStatus.nativeDownloadsAvailable ? releaseSizes.sizes['android-universal'] : null;
+const iosIpa = releaseStatus.nativeDownloadsAvailable ? releaseSizes.sizes['ios-ipa'] : null;
 
 const templates = [
   { id: 'doc-convert', name: 'Document Conversion', tools: 'pandoc · LibreOffice' },
@@ -154,10 +154,10 @@ const badges = [
           <span class="block mt-1">Cumulative across versions, including retests on repaired sources; the original frozen-project 41/45 remains separate.</span>
         </p>
         <p class="animate-fade-in-delay-3 mt-5 text-sm text-muted max-w-3xl">
-          CLI {CLI_VERSION} adds LK model connections: letter-lk primary/backup hosts share one Key; 83 protocol-filtered chat models come from a 197-model catalog. Saved credentials return when switching channels, including Volcengine. Live prices, balance, Key quota and actual API bills use platform credits; bills contain no Token counts. Desktop source supports account queries, while public installers remain {releaseStatus.productVersion}. No new model-task acceptance. <a class="text-ember hover:underline" href={releaseStatus.upgradeGuide}>Upgrade guide →</a>
+          CLI {CLI_VERSION} supports LK connections: {releaseStatus.lkChannel.primary} is the primary host and {releaseStatus.lkChannel.backup} is the manual backup, sharing one LK Key. The OpenAI-compatible default is {releaseStatus.lkChannel.defaultOpenAiModel}; legacy aliases retain their model identity, so Luna stays Luna and Fable stays Fable. The {releaseStatus.lkChannel.modelCount}-model catalog contains {releaseStatus.lkChannel.chatModels} protocol-filtered chat models; listing does not grant account access. Saved credentials return when switching channels, including Volcengine. Live prices, balance, Key quota and actual API bills use platform credits; bills contain no Token counts. Desktop source supports account queries, while the last verified native release is {releaseStatus.productVersion} and its previous installer source is currently unavailable. No new model-task acceptance. <a class="text-ember hover:underline" href={releaseStatus.upgradeGuide}>Upgrade guide →</a>
         </p>
         <p class="mt-3 text-xs text-muted leading-relaxed max-w-3xl">
-          Verified public Open VSX {VSCODE_VERSION} recommends CLI {releaseStatus.openVsxRecommendedCliVersion}. Marketplace lists approved JetBrains {JETBRAINS_VERSION}, recommending CLI {releaseStatus.jetBrainsRecommendedCliVersion}; its public archive is downloadable. Public CLI archive integrity and exact-source CLI CI / Strict Sandbox were checked; independent CLI and Open VSX downloads match their official artifacts. JetBrains status follows its separate publication evidence. The separate <a class="text-ember hover:underline" href={`https://github.com/chainlesschain/chainlesschain/releases/tag/${releaseStatus.productVersion}`}>{releaseStatus.productVersion} product release</a> provides desktop installers, Android APK/AAB and a signed iOS ad-hoc IPA. Documentation was reviewed at {SOURCE_HEAD_COMMIT}; Microsoft Marketplace remains unpublished.
+          Verified public Open VSX {VSCODE_VERSION} recommends CLI {releaseStatus.openVsxRecommendedCliVersion}. Marketplace lists approved JetBrains {JETBRAINS_VERSION}, recommending CLI {releaseStatus.jetBrainsRecommendedCliVersion}; its public archive is downloadable. Public CLI archive integrity and exact-source CLI CI / Strict Sandbox were checked; independent CLI and Open VSX downloads match their official artifacts. JetBrains status follows its separate publication evidence. The separate <a class="text-ember hover:underline" href={releaseStatus.upgradeGuide}>{releaseStatus.productVersion} historical product release</a> included desktop installers, Android APK/AAB and a signed iOS ad-hoc IPA; its previous download source now returns 404. Documentation was reviewed at {SOURCE_HEAD_COMMIT}; Microsoft Marketplace remains unpublished.
         </p>
 
         <div class="animate-fade-in-delay-3 mt-14 pt-8 border-t border-line flex flex-wrap gap-x-8 gap-y-3">
@@ -626,7 +626,7 @@ const badges = [
 
       <div class="flex flex-wrap gap-3">
         <a href="https://docs.chainlesschain.com/changelog.html" rel="noopener" class="btn-ghost">Changelog ↗</a>
-        <a href="https://github.com/chainlesschain/chainlesschain/releases" target="_blank" rel="noopener" class="btn-ghost">Full Release Notes ↗</a>
+        <a href="https://docs.chainlesschain.com/changelog.html" target="_blank" rel="noopener" class="btn-ghost">Full Release Notes ↗</a>
         <a href="https://design.chainlesschain.com" rel="noopener" class="btn-ghost">Design Docs ↗</a>
       </div>
     </div>
@@ -650,7 +650,7 @@ const badges = [
             <li>· Bilingual UI</li>
             <li>· Doctors, lawyers, researchers' daily companion</li>
           </ul>
-          <a href="/en/desktop" class="btn-ember">Download desktop →</a>
+          <a href="/en/desktop" class="btn-ember">{releaseStatus.nativeDownloadsAvailable ? "Download desktop" : "Desktop and download status"} →</a>
         </div>
 
         <div class="p-10 rounded-2xl bg-ink text-cream hover:bg-[#2a2a27] transition-colors">
@@ -692,7 +692,7 @@ const badges = [
             <li>✓ Windows / macOS / Linux / Android</li>
           </ul>
           <div class="flex gap-3">
-            <a href="/en/desktop" class="btn-ember">Download desktop</a>
+            <a href="/en/desktop" class="btn-ember">{releaseStatus.nativeDownloadsAvailable ? "Download desktop" : "Desktop and download status"}</a>
             <a href="/en/cli" class="btn-ghost">npm install</a>
           </div>
         </div>
@@ -724,7 +724,8 @@ const badges = [
       <div class="max-w-3xl mb-14">
         <div class="chip mb-6">Downloads</div>
         <h2 class="text-display-md md:text-5xl leading-tight">Same source, every target · mainline {SOURCE_PRODUCT_VERSION}</h2>
-        <p class="mt-4 text-muted">Current downloadable Desktop and Android build: {DOWNLOAD_VERSION}</p>
+        <p class="mt-4 text-muted">{releaseStatus.nativeDownloadsAvailable ? "Current downloadable Desktop and Android build:" : "Last verified historical native-client release:"} {DOWNLOAD_VERSION}</p>
+        {!releaseStatus.nativeDownloadsAvailable && <p class="mt-3 text-sm text-muted">{releaseStatus.productDownloadNoteEn}</p>}
       </div>
       <div class="grid md:grid-cols-3 gap-6">
         <div class="p-8 rounded-2xl border border-line hover:border-ember transition-colors">
@@ -737,9 +738,9 @@ const badges = [
           <div class="font-mono text-xs text-muted mb-3">DESKTOP · {DOWNLOAD_VERSION}</div>
           <h3 class="font-display text-2xl mb-3">Desktop App</h3>
           <div class="flex flex-wrap gap-2 mb-4">
-            <a href={ANDROID_RELEASE_URL} target="_blank" rel="noopener" class="chip hover:bg-ember hover:text-cream transition-colors">Windows</a>
-            <a href={ANDROID_RELEASE_URL} target="_blank" rel="noopener" class="chip hover:bg-ember hover:text-cream transition-colors">macOS</a>
-            <a href={ANDROID_RELEASE_URL} target="_blank" rel="noopener" class="chip hover:bg-ember hover:text-cream transition-colors">Linux</a>
+            {releaseStatus.nativeDownloadsAvailable && (<a href={ANDROID_RELEASE_URL} target="_blank" rel="noopener" class="chip hover:bg-ember hover:text-cream transition-colors">Windows</a>)}
+            {releaseStatus.nativeDownloadsAvailable && (<a href={ANDROID_RELEASE_URL} target="_blank" rel="noopener" class="chip hover:bg-ember hover:text-cream transition-colors">macOS</a>)}
+            {releaseStatus.nativeDownloadsAvailable && (<a href={ANDROID_RELEASE_URL} target="_blank" rel="noopener" class="chip hover:bg-ember hover:text-cream transition-colors">Linux</a>)}
           </div>
           <p class="text-sm text-muted">Electron 39 · Vue 3.4 · 146 skills</p>
         </div>
@@ -749,7 +750,7 @@ const badges = [
           <div class="flex flex-wrap gap-2 mb-4">
             {androidArm64 && (
               <a
-                href={`https://github.com/chainlesschain/chainlesschain/releases/download/${ANDROID_TAG}/${androidArm64.name}`}
+                href={`https://github.com/longfa/chainlesschain/releases/download/${ANDROID_TAG}/${androidArm64.name}`}
                 target="_blank"
                 rel="noopener"
                 class="chip hover:bg-ember hover:text-cream transition-colors"
@@ -757,14 +758,14 @@ const badges = [
             )}
             {androidUniversal && (
               <a
-                href={`https://github.com/chainlesschain/chainlesschain/releases/download/${ANDROID_TAG}/${androidUniversal.name}`}
+                href={`https://github.com/longfa/chainlesschain/releases/download/${ANDROID_TAG}/${androidUniversal.name}`}
                 target="_blank"
                 rel="noopener"
                 class="chip hover:bg-ember hover:text-cream transition-colors"
               >universal · {androidUniversal.label}</a>
             )}
             {iosIpa && (
-              <a href={`https://github.com/chainlesschain/chainlesschain/releases/download/${ANDROID_TAG}/${iosIpa.name}`} target="_blank" rel="noopener" class="chip hover:bg-ember hover:text-cream transition-colors">iOS ad-hoc · {iosIpa.label}</a>
+              <a href={`https://github.com/longfa/chainlesschain/releases/download/${ANDROID_TAG}/${iosIpa.name}`} target="_blank" rel="noopener" class="chip hover:bg-ember hover:text-cream transition-colors">iOS ad-hoc · {iosIpa.label}</a>
             )}
           </div>
           <p class="text-sm text-muted mb-3">L1 DID wallet · L2 mobile capture · L3 REMOTE · 25 skills · 383+ tests</p>

@@ -4,7 +4,7 @@ layout: home
 hero:
   name: ChainlessChain
   text: 系统设计文档
-  tagline: "CLI 0.166.150 / Open VSX 0.37.189 / JetBrains 0.4.204 已公开；PC/mobile 当前公开 .145"
+  tagline: "CLI 0.166.156 / Open VSX 0.37.192 / JetBrains 0.4.207 已公开；历史客户端 .145 下载源暂不可用"
   image:
     src: /logo.png
     alt: ChainlessChain Logo
@@ -22,8 +22,8 @@ hero:
 features:
   - icon: 🛡️
     title: 主线 Runtime 与发行边界
-    details: "CLI .150 / Open VSX .189 / JetBrains .204 已通过正式门禁及公开回读；两款 IDE 均推荐 CLI .150。LK 渠道提供保存连接、动态算力价格和真实 API 账单。生产权限和自动晋升仍不具备。"
-    link: /release-runtime-update-2026-11-15-150
+    details: "CLI .156 / Open VSX .192 / JetBrains .207 已通过正式门禁及公开回读；两款 IDE 均推荐 CLI .156。LK 渠道提供保存连接、动态算力价格和真实 API 账单。生产权限和自动晋升仍不具备。"
+    link: /release-runtime-update-2026-11-19-156
   - icon: 🏢
     title: 组织目标、授权记忆与站内通知（主线）
     details: 历史产品 .140 已包含显式巡检、多级审批、独立验收、共享记忆与授权通知；当前 .145 独立发行，记忆不自动注入模型。
@@ -42,7 +42,7 @@ features:
 
   - icon: 🏗️
     title: Agent Platform .146 与验收边界
-    details: CLI .146 和两款 IDE 已公开；本轮文档不新增模型任务验收，历史各轮成绩分开保留。NOT_PAID_READY、NOT_ADMITTED、HOLD 不变。
+    details: CLI .156 和两款 IDE 已公开；本轮文档不新增模型任务验收，历史各轮成绩分开保留。NOT_PAID_READY、NOT_ADMITTED、HOLD 不变。
     link: /cli-runtime-current
   - icon: 📝
     title: IDE 任务记录与新会话交接
@@ -61,7 +61,7 @@ features:
 
   - icon: 🧠
     title: Context/Memory Kernel
-    details: 模块 108 定义统一上下文预算、压缩状态机、记忆生命周期、删除对账与跨端 authority；CLI .146 固定 Kernel 0.1.12，显式修正受 revision/CAS 与外部内容保留保护
+    details: 模块 108 定义统一上下文预算、压缩状态机、记忆生命周期、删除对账与跨端 authority；CLI .156 固定 Kernel 0.1.12，显式修正受 revision/CAS 与外部内容保留保护
     link: /modules/m108-context-memory-kernel
 
   - icon: 🔐
@@ -81,13 +81,23 @@ features:
     details: RBAC权限、SOC2合规、SCIM用户配置、DLP数据防泄漏、SIEM安全信息管理
 ---
 
-## 2026-11-15 当前发行与 LK 渠道
+## 当前公开版本与源码核对（2026-11-19）
+
+已验证公开 **CLI 0.166.156 / Open VSX 0.37.192 / JetBrains 0.4.207**，两款 IDE 推荐 CLI .156；JetBrains 已审核公开，公开安装包已与正式候选核对。安装 `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`、`cc doctor`。
+
+LK 使用 `https://api.vv666.ai` 主地址和 `https://api.lk666.ai` 手动备用地址；OpenAI 兼容连接为 `/v1`、默认 `gpt-6.1-sol`。目录为 **202 项 / 86 项对话模型**，聊天下拉按协议筛选；余额、动态分组价格与实际 API 账单通过已保存的 LK 连接读取，金额单位为算力，与本地 Token 统计分开。
+
+文档核对源码 `8c937cbe9bc4b82f87479c124375401fa2fb3a72`；不可变发行来源 `a8cae89288d3a6119b152e04b750e10d726a5c5f`。Git 标题中的“1.5.6”不代表可安装版本号，CLI 包的真实版本为 **0.166.156**。本轮不新增模型任务验收，**NOT_PAID_READY / NOT_ADMITTED / HOLD** 保留。最后已核验历史客户端为 **v5.0.3.145**，旧安装包源目前返回 404，不能视为当前可下载；本轮不发布 PC/mobile 安装包。
+
+[本轮安装与故障排查](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-19-156.html) · [设计与发行边界](https://design.chainlesschain.com/release-runtime-update-2026-11-19-156.html)。后续带日期记录保留各自历史范围。
+
+## 历史：2026-11-15 当前发行与 LK 渠道
 
 公开组合 **CLI 0.166.150 / Session Core 0.3.27 / Open VSX 0.37.189 / JetBrains 0.4.204**，两款 IDE 均推荐 CLI .150。准确发行源码 `b2af25c65d34f1ee34cdddf308b5a8e57bb4f198`；npm、Open VSX 和 JetBrains 均已公开核验。JetBrains 商店包 ZIP 整体字节因重新打包不同，但各文件内容一致。PC/mobile 公开安装包仍为 **v5.0.3.145**。
 
 CLI、cc ui 与两款 IDE 支持 LK 主备地址、共用 Key 和各渠道凭证保存/切回恢复（含火山）。公开目录 **197** 项，其中聊天选择器按协议提供 **83** 项对话模型；媒体模型仅为目录和接口参考。动态价格、余额、Key 额度和真实 API 账单以平台**算力**计，账单没有 Token 数。桌面源码支持账户查询，但尚未随新的桌面安装包公开。**NOT_PAID_READY / NOT_ADMITTED / HOLD** 与历史模型任务验收范围保持。[本轮设计与发行证据](/release-runtime-update-2026-11-15-150)。
 
-## 2026-11-10 当前发行与主线核对
+## 历史：2026-11-10 当前发行与主线核对
 
 公开组合 **CLI 0.166.146 / Protocol 0.1.13 / Kernel 0.1.12 / SDK 0.2.18 / Session Core 0.3.27 / Open VSX 0.37.185 / JetBrains 0.4.199**，两款 IDE 推荐 CLI .146。JetBrains .199 已获 Marketplace 批准并列出。CLI/JetBrains 来源 `daafda2cf` 与 VS Code 来源 `2ae832f90` 分别核验；旧 VS Code .184 标签和失败证据保留。
 
@@ -113,11 +123,11 @@ PC/mobile 当前公开 **v5.0.3.145**，**.146 尚未公开**：Android bundle �
 
 CLI **0.166.143**、Session Core **0.3.26**、Open VSX **0.37.179**、JetBrains **0.4.196** 已公开核验，两个 IDE 均推荐 CLI .143。新增本地算力配置、端点凭据隔离和受控创建请求；客户端 **v5.0.3.145** 独立公开，新增原生 v6 创建与模型草稿仍需匹配的新桌面构建。后文带日期记录保留历史范围。
 
-## 2026-11-03 当前代码与公开发行
+## 历史：2026-11-03 当前代码与公开发行
 
 2026-11-03 按 `main@d62866538c` 核对：CLI **0.166.140** / Open VSX **0.37.176** 已公开核验，修复损坏工具参数续接与可信传输摘要误判。JetBrains **0.4.193** 已上传，公开可用性未核验；商店已核验公开版 **0.4.192** 的推荐标记仍为 CLI **0.166.139**。PC / mobile **v5.0.3.144** 已独立公开。火山 .140 全量 **36+9** 最终成绩尚未核验；历史 .138 **2/4**、原冻结项目 **41/45** 和含修复项目的 Sol 跨版本 **45/45** 分别保留。后续读取恢复提示与 Web Panel bundle 修复不在 CLI .140 发行源中。**NOT_PAID_READY / NOT_ADMITTED / HOLD** 保留。
 
-[最新设计](/release-runtime-update-2026-11-03-140) · [升级指南](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-03-140.html) · [发行证据](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release140-public/README.md) · [复验记录](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/verify01-openai-138/README.md)
+[最新设计](/release-runtime-update-2026-11-03-140) · [升级指南](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-03-140.html) · [发行证据](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release140-public/README.md) · [复验记录](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/verify01-openai-138/README.md)
 
 ### 按任务查阅当前参考
 
@@ -134,11 +144,11 @@ CLI **0.166.143**、Session Core **0.3.26**、Open VSX **0.37.179**、JetBrains 
 
 2026-10-21 核对：
 
-npm CLI **0.166.108**: 已公开，精确提交发行门与公开制品回读通过; source `e77c7ba85783576ac523dd73bc760bda63d91f3b`; [Actions 1](https://github.com/chainlesschain/chainlesschain/actions/runs/39484583983); [receipt](https://github.com/chainlesschain/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json).
+npm CLI **0.166.108**: 已公开，精确提交发行门与公开制品回读通过; source `e77c7ba85783576ac523dd73bc760bda63d91f3b`; [Actions 1](https://github.com/chainlesschain/chainlesschain/actions/runs/39484583983); [receipt](https://github.com/longfa/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json).
 
-Open VSX **0.37.153**: 已公开，精确提交发行门与公开制品回读通过; source `e77c7ba85783576ac523dd73bc760bda63d91f3b`; [Actions 1](https://github.com/chainlesschain/chainlesschain/actions/runs/39486919504); [receipt](https://github.com/chainlesschain/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json).
+Open VSX **0.37.153**: 已公开，精确提交发行门与公开制品回读通过; source `e77c7ba85783576ac523dd73bc760bda63d91f3b`; [Actions 1](https://github.com/chainlesschain/chainlesschain/actions/runs/39486919504); [receipt](https://github.com/longfa/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json).
 
-JetBrains Marketplace **0.4.170**: 已公开，精确提交发行门与公开制品回读通过; source `e77c7ba85783576ac523dd73bc760bda63d91f3b`; [Actions 1](https://github.com/chainlesschain/chainlesschain/actions/runs/39486921296/attempts/2); [receipt](https://github.com/chainlesschain/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json).
+JetBrains Marketplace **0.4.170**: 已公开，精确提交发行门与公开制品回读通过; source `e77c7ba85783576ac523dd73bc760bda63d91f3b`; [Actions 1](https://github.com/chainlesschain/chainlesschain/actions/runs/39486921296/attempts/2); [receipt](https://github.com/longfa/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json).
 
 本轮没有新的模型任务补测。历史 `.105/.150/.167` 轮生成和独立验收各 **20/20**，新增通过 **6** 项；跨版本累计候选合格交付 **31/45**（普通 **26/36**、首次 **5/9**），剩余 **14** 项；这不是 .108 单轮成功率。**NOT_PAID_READY**、**NOT_ADMITTED** 与自动晋升 **HOLD** 保留。Microsoft Marketplace 未发行。原生产品 **v5.0.3.140** 独立发行；桌面互通仍需匹配构建、桌面授权和原生确认。
 

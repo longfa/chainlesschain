@@ -1,7 +1,7 @@
 # 三端 UI Consistency 设计文档 v0.1
 
 > **版本**: v0.1（2026-05-15，A.2 baseline，等 GA 反馈触发 v0.2 revise）
-> **关联 Issue**: [#21](https://github.com/chainlesschain/chainlesschain/issues/21) A.2（GA 后续 scope · P1，GA-independent baseline 部分）
+> **关联 Issue**: [#21](https://github.com/longfa/chainlesschain/issues/21) A.2（GA 后续 scope · P1，GA-independent baseline 部分）
 > **关联设计文档**: [Android 重新定位](Android_重新定位_设计文档.md) §10 A.2 / [MofN 多签应用扩展](MofN_多签_应用扩展_v1.md) §8 / [桌面 V6 P7+P8+P9 Preview Shell] memory `desktop_v6_p7_preview_shell.md`
 > **范围**: 三端 (Phone Android / Wear OS / Desktop V6) **共用语义**与**容许差异**的明确边界。本文档 baseline 仅落地"GA-独立"的硬约束；GA 反馈到位后 v0.2 复评 P1 主体边界。
 > **不涉及**: Auto (车载) — 见 Android 重新定位文档 ADR-4 / Wear 已有专文 (§5)

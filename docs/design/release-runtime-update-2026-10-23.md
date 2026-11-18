@@ -81,7 +81,7 @@ flowchart LR
 - `packages/cli/src/lib/image-token-estimate.js`
 - `packages/cli/src/lib/context-memory-kernel/message-bundle-store.js`
 - `packages/cli/src/runtime/headless-stream.js`
-- [发布回执](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release117-public/publication.json)
+- [发布回执](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release117-public/publication.json)
 - [用户输入与会话恢复指南](https://docs.chainlesschain.com/chainlesschain/agent-input-and-recovery.html)
 - [CLI / IDE .117 升级指南](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-10-23.html)
 - [10 月 20 日目标草稿和诊断边界历史](./release-runtime-update-2026-10-20.md)

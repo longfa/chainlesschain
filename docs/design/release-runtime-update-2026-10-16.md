@@ -43,4 +43,4 @@
 
 ## 验证与证据
 
-版本发布与公共可获取状态依据[准入及回读记录](https://github.com/chainlesschain/chainlesschain/blob/fe85d501ea4235d8bcd2aac2eda78dd39e269525/docs/research/cli/evidence/implementation-plan-2026-10-15/formal-paid-release-gate/README.md)。源码与公开状态分别记录；Windows 启动时间、临时目录及跨进程原子读取测试修复不构成新的性能承诺。安装、模型层级和草稿故障处理见[用户指南](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-10-16.html)，此前上下文拒绝见[10 月 15 日设计](release-runtime-update-2026-10-15.md)。
+版本发布与公共可获取状态依据[准入及回读记录](https://github.com/longfa/chainlesschain/blob/fe85d501ea4235d8bcd2aac2eda78dd39e269525/docs/research/cli/evidence/implementation-plan-2026-10-15/formal-paid-release-gate/README.md)。源码与公开状态分别记录；Windows 启动时间、临时目录及跨进程原子读取测试修复不构成新的性能承诺。安装、模型层级和草稿故障处理见[用户指南](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-10-16.html)，此前上下文拒绝见[10 月 15 日设计](release-runtime-update-2026-10-15.md)。

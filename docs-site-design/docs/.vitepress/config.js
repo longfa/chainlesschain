@@ -279,7 +279,7 @@ export default defineConfig({
         text: "相关链接",
         items: [
           { text: "用户文档站", link: "https://docs.chainlesschain.com" },
-          { text: "GitHub", link: "https://github.com/chainlesschain" },
+          { text: "GitHub", link: "https://github.com/longfa/chainlesschain" },
         ],
       },
     ],
@@ -1167,6 +1167,10 @@ export default defineConfig({
               collapsed: true,
               items: [
                 {
+                  text: "11-19 CLI .156 / LK 模型、账单与发行",
+                  link: "/release-runtime-update-2026-11-19-156",
+                },
+                {
                   text: "CLI .150 / LK 渠道与公开发行",
                   link: "/release-runtime-update-2026-11-15-150",
                 },
@@ -1295,7 +1299,7 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: "github", link: "https://github.com/chainlesschain" },
+      { icon: "github", link: "https://github.com/longfa/chainlesschain" },
     ],
 
     footer: {
@@ -1309,7 +1313,7 @@ export default defineConfig({
 
     editLink: {
       pattern:
-        "https://github.com/chainlesschain/chainlesschain/edit/main/docs/design/:path",
+        "https://github.com/longfa/chainlesschain/edit/main/docs/design/:path",
       text: "在 GitHub 上编辑此页",
     },
 

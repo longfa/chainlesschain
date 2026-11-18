@@ -62,9 +62,9 @@ CLI 使用 GitHub Actions OIDC Trusted Publishing，正式流程先核对公开�
 
 ## 关键文件
 
-- [CLI 安装说明](https://github.com/chainlesschain/chainlesschain/blob/main/packages/cli/README.md)：公开版本、安装命令及配套限制。
-- [CLI 发行回执](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release147-public/README.md)：来源证明、公开字节和原始回读文件。
-- [菜单失败与修正证据](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli-ide/evidence/jetbrains201-focus/README.md)：两次失败原始报告及新修正范围。
+- [CLI 安装说明](https://github.com/longfa/chainlesschain/blob/main/packages/cli/README.md)：公开版本、安装命令及配套限制。
+- [CLI 发行回执](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release147-public/README.md)：来源证明、公开字节和原始回读文件。
+- [菜单失败与修正证据](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli-ide/evidence/jetbrains201-focus/README.md)：两次失败原始报告及新修正范围。
 
 ## 使用示例
 
@@ -83,7 +83,7 @@ cc doctor
 ## 相关文档
 
 - [11-10 安装升级记录](./cli-ide-update-2026-11-10-146.md)：此前 .146 组合的历史范围。
-- [焦点与下载修正 PR #605](https://github.com/chainlesschain/chainlesschain/pull/605)、[宿主恢复驱动修正 PR #608](https://github.com/chainlesschain/chainlesschain/pull/608)：均已合并，各自准确源码的测试证据单独归档。
-- [CLI/IDE 完成情况表](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli-ide/plans/cli-ide-codex-claude-gap-review-2026-11-08.md)：工程完成项与未完成验收。
+- [焦点与下载修正 PR #605](https://github.com/longfa/chainlesschain/pull/605)、[宿主恢复驱动修正 PR #608](https://github.com/longfa/chainlesschain/pull/608)：均已合并，各自准确源码的测试证据单独归档。
+- [CLI/IDE 完成情况表](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli-ide/plans/cli-ide-codex-claude-gap-review-2026-11-08.md)：工程完成项与未完成验收。
 
 移动/PC 客户端、独立业务效果及真实 36+9 完成率仍需各自验证，不由本次 CLI 发布推定。

@@ -9,6 +9,8 @@ const { product, lang = 'zh' } = Astro.props;
 const en = lang === 'en';
 const content = productPages[product][lang];
 const cliVersion = releaseStatus.recommendedCliVersion;
+const nativeUnavailable = product !== 'web' && !releaseStatus.nativeDownloadsAvailable;
+const downloadNote = en ? releaseStatus.productDownloadNoteEn : releaseStatus.productDownloadNoteZh;
 const version = product === 'web' ? cliVersion : releaseSizes.productVersion;
 const prefix = en ? '/en' : '';
 const doc = `https://docs.chainlesschain.com/chainlesschain/${productPages[product].doc}.html`;
@@ -18,22 +20,23 @@ const captions = en ? { cowork: 'Cowork · templates and task input', chat: 'AI 
 const keys = product === 'desktop'
   ? [['win-setup','Windows Setup'],['win-portable','Windows Portable'],['mac-intel','macOS Intel'],['mac-arm64','macOS Apple Silicon'],['linux-appimage','Linux AppImage'],['linux-deb','Linux DEB'],['linux-rpm','Linux RPM']]
   : [['android-arm64-v8a','Android arm64-v8a'],['android-armeabi-v7a','Android armeabi-v7a'],['android-universal','Android universal'],['android-aab','Android AAB'],['ios-ipa','iOS ad-hoc IPA']];
-const downloads = keys.flatMap(([key,label]) => {
+const downloads = (releaseStatus.nativeDownloadsAvailable ? keys : []).flatMap(([key,label]) => {
   const asset = releaseSizes.sizes[key];
-  return asset ? [{...asset,label,href:`https://github.com/chainlesschain/chainlesschain/releases/download/${releaseSizes.tag}/${encodeURIComponent(asset.name)}`}]:[];
+  return asset ? [{...asset,label,href:`https://github.com/longfa/chainlesschain/releases/download/${releaseSizes.tag}/${encodeURIComponent(asset.name)}`}]:[];
 });
 const install = `npm i -g chainlesschain@${cliVersion}\ncc ui\n\n# http://localhost:18810/#/cowork`;
 ---
-<BaseLayout title={`${content.name} ${version} | ChainlessChain`} description={content.description} canonical={`https://www.chainlesschain.com${prefix}/${product}`} locale={lang}>
+<BaseLayout title={`${content.name} ${version}${nativeUnavailable ? (en ? ' · Historical release' : ' · 历史版本') : ''} | ChainlessChain`} description={nativeUnavailable ? downloadNote : content.description} canonical={`https://www.chainlesschain.com${prefix}/${product}`} locale={lang}>
   <section class="relative overflow-hidden">
     <div class="absolute inset-0 bg-grid-paper opacity-60 pointer-events-none"></div>
     <div class="container-wide relative pt-20 pb-16 md:pt-28 md:pb-20">
       <div class="max-w-4xl">
-        <div class="flex flex-wrap gap-3 mb-7"><span class="chip">{content.name} · {version}</span><span class="chip">{en ? 'Updated 2026-10-28' : '更新于 2026-10-28'}</span></div>
+        <div class="flex flex-wrap gap-3 mb-7"><span class="chip">{content.name} · {version}</span><span class="chip">{en ? 'Updated 2026-11-19' : '更新于 2026-11-19'}</span></div>
         <h1 class="font-display text-5xl md:text-7xl leading-[1.12]">{content.title}</h1>
         <p class="mt-8 text-xl text-muted leading-relaxed max-w-3xl">{content.intro}</p>
-        <div class="mt-10 flex flex-wrap gap-3"><a class="btn-ember" href={product === 'web' ? '#start' : '#download'}>{content.primary} ↓</a><a class="btn-ghost" href={doc}>{content.secondary}</a></div>
-        <p class="mt-6 text-sm text-muted">{en ? 'Public pairing' : '当前公开配对'}: CLI {cliVersion} · {releaseSizes.productVersion}</p>
+        <div class="mt-10 flex flex-wrap gap-3"><a class="btn-ember" href={product === 'web' ? '#start' : '#download'}>{nativeUnavailable ? (en ? 'View download status' : '查看下载状态') : content.primary} ↓</a><a class="btn-ghost" href={doc}>{content.secondary}</a></div>
+        <p class="mt-6 text-sm text-muted">{en ? 'Public CLI / historical client' : '公开 CLI / 历史客户端'}: CLI {cliVersion} · {releaseSizes.productVersion}</p>
+        {nativeUnavailable && <p class="mt-3 text-sm text-muted">{downloadNote}</p>}
       </div>
     </div>
   </section>
@@ -63,9 +66,10 @@ const install = `npm i -g chainlesschain@${cliVersion}\ncc ui\n\n# http://localh
 
   <section id={product === 'web' ? 'start' : 'download'} class="py-20 md:py-24 scroll-mt-24">
     <div class="container-wide">
-      <div class="max-w-3xl mb-10"><span class="chip mb-5">{en ? 'GET STARTED' : '开始使用'} · {version}</span><h2 class="font-display text-3xl md:text-5xl leading-tight mb-6">{content.start}</h2><p class="text-muted leading-relaxed">{content.startNote}</p></div>
+      <div class="max-w-3xl mb-10"><span class="chip mb-5">{nativeUnavailable ? (en ? 'HISTORICAL RELEASE' : '历史版本') : (en ? 'GET STARTED' : '开始使用')} · {version}</span><h2 class="font-display text-3xl md:text-5xl leading-tight mb-6">{nativeUnavailable ? (en ? 'Native downloads are temporarily unavailable.' : '原生安装包暂不可下载。') : content.start}</h2><p class="text-muted leading-relaxed">{nativeUnavailable ? downloadNote : content.startNote}</p></div>
+      {nativeUnavailable && <div class="mb-8 flex flex-wrap gap-3"><a class="btn-ember" href={`${prefix}/web`}>{en ? 'Start with CLI / Web' : '使用 CLI / Web'} →</a><a class="btn-ghost" href={`https://open-vsx.org/extension/chainlesschain/chainlesschain-ide/${releaseStatus.openVsxVersion}`}>Open VSX {releaseStatus.openVsxVersion} ↗</a><a class="btn-ghost" href="https://plugins.jetbrains.com/plugin/32208-chainlesschain-ide-bridge/versions">JetBrains {releaseStatus.jetBrainsMarketplaceVersion} ↗</a></div>}
       {product === 'web' ? <pre class="p-7 rounded-2xl border border-line bg-cream/50 font-mono text-sm overflow-x-auto leading-relaxed"><code>{install}</code></pre> : <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">{downloads.map(asset=>(<a class="group block rounded-2xl border border-line p-7 hover:border-ember hover:bg-ember/5 transition-colors" href={asset.href} rel="noopener"><h3 class="font-display text-2xl mb-3">{asset.label}</h3><p class="font-mono text-xs text-muted break-all mb-4">{asset.name}</p><span class="text-sm text-ember">{en ? 'Download' : '下载'} · {asset.bytes ? `${Math.round(asset.bytes/1024/1024)} MB` : ''} ↓</span></a>))}</div>}
-      <div class="mt-8 flex flex-wrap gap-x-7 gap-y-3 text-sm"><a class="text-ember hover:underline" href={`https://github.com/chainlesschain/chainlesschain/releases/tag/${releaseSizes.tag}`}>{en ? 'Release assets ↗' : '全部发行文件 ↗'}</a><a class="text-ember hover:underline" href={releaseStatus.releaseEvidence}>{en ? 'Publication verification ↗' : '发行核验记录 ↗'}</a><a class="text-ember hover:underline" href={`${prefix}/${product === 'desktop' ? 'web' : 'desktop'}`}>{en ? (product === 'desktop' ? 'Explore Web →' : 'Explore Desktop →') : (product === 'desktop' ? '了解 Web 版 →' : '了解桌面版 →')}</a></div>
+      <div class="mt-8 flex flex-wrap gap-x-7 gap-y-3 text-sm">{releaseStatus.nativeDownloadsAvailable && (<a class="text-ember hover:underline" href={`https://github.com/longfa/chainlesschain/releases/tag/${releaseSizes.tag}`}>{en ? 'Release assets ↗' : '全部发行文件 ↗'}</a>)}<a class="text-ember hover:underline" href={releaseStatus.releaseEvidence}>{en ? 'Publication verification ↗' : '发行核验记录 ↗'}</a><a class="text-ember hover:underline" href={`${prefix}/${product === 'desktop' ? 'web' : 'desktop'}`}>{en ? (product === 'desktop' ? 'Explore Web →' : 'Explore Desktop →') : (product === 'desktop' ? '了解 Web 版 →' : '了解桌面版 →')}</a></div>
     </div>
   </section>
 </BaseLayout>

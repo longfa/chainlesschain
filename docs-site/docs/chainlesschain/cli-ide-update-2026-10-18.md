@@ -2,7 +2,7 @@
 
 <!-- release108-status -->
 
-> **2026-10-21 当前升级入口：** npm CLI 0.166.108 已公开，精确提交发行门与公开制品回读通过；Open VSX 0.37.153 已公开，精确提交发行门与公开制品回读通过；JetBrains Marketplace 0.4.170 已公开，精确提交发行门与公开制品回读通过。当前已核验配对、安装命令与精确来源见[10 月 20 日当前升级指南](./cli-ide-update-2026-10-20)及[不可变发布回执](https://github.com/chainlesschain/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json)。
+> **2026-10-21 当前升级入口：** npm CLI 0.166.108 已公开，精确提交发行门与公开制品回读通过；Open VSX 0.37.153 已公开，精确提交发行门与公开制品回读通过；JetBrains Marketplace 0.4.170 已公开，精确提交发行门与公开制品回读通过。当前已核验配对、安装命令与精确来源见[10 月 20 日当前升级指南](./cli-ide-update-2026-10-20)及[不可变发布回执](https://github.com/longfa/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json)。
 > 下文的“当前”指旧文记录时点；历史版本、固定复现命令与补测证据保持原样，日常升级以上方链接为准。
 
 ## 概述
@@ -11,7 +11,7 @@
 
 ## .106 公开发行与 IDE 配对（历史记录）
 
-截至 2026-10-18 14:11 UTC，CLI .106、Open VSX .151 和 JetBrains .168 已公开，两个 IDE 均推荐 CLI .106。发行源码为 `dca47fd91a209642b6536afd5bc9e99ec74c7d06`；完整 CLI CI 71/71、CLI Strict Sandbox 5/5、IDE 18/18 和 ARM64 10/10 门禁通过，[npm OIDC 发布 39130542725](https://github.com/chainlesschain/chainlesschain/actions/runs/39130542725) 成功。早先 JetBrains .168 等待上架的状态已由公开制品回读更新：update `1197255` 已批准、已列出且未隐藏，三个公开包均完成回读。见[当时的完整门禁记录](https://github.com/chainlesschain/chainlesschain/blob/380d9926c2930045834e73b5025465f4d7414903/docs/research/cli/evidence/implementation-plan-2026-10-15/task-campaign-2026-10-18/next-release-validation/followup-106-final-gates-review.json)及[公开包核验记录](https://github.com/chainlesschain/chainlesschain/blob/380d9926c2930045834e73b5025465f4d7414903/docs/research/cli/evidence/implementation-plan-2026-10-15/task-campaign-2026-10-18/next-release-validation/followup-106-public-package-set-review.json)。这是历史发布状态；当前安装仍使用上方 .107 升级指南。
+截至 2026-10-18 14:11 UTC，CLI .106、Open VSX .151 和 JetBrains .168 已公开，两个 IDE 均推荐 CLI .106。发行源码为 `dca47fd91a209642b6536afd5bc9e99ec74c7d06`；完整 CLI CI 71/71、CLI Strict Sandbox 5/5、IDE 18/18 和 ARM64 10/10 门禁通过，[npm OIDC 发布 39130542725](https://github.com/chainlesschain/chainlesschain/actions/runs/39130542725) 成功。早先 JetBrains .168 等待上架的状态已由公开制品回读更新：update `1197255` 已批准、已列出且未隐藏，三个公开包均完成回读。见[当时的完整门禁记录](https://github.com/longfa/chainlesschain/blob/380d9926c2930045834e73b5025465f4d7414903/docs/research/cli/evidence/implementation-plan-2026-10-15/task-campaign-2026-10-18/next-release-validation/followup-106-final-gates-review.json)及[公开包核验记录](https://github.com/longfa/chainlesschain/blob/380d9926c2930045834e73b5025465f4d7414903/docs/research/cli/evidence/implementation-plan-2026-10-15/task-campaign-2026-10-18/next-release-validation/followup-106-public-package-set-review.json)。这是历史发布状态；当前安装仍使用上方 .107 升级指南。
 
 ```bash
 npm i -g chainlesschain@0.166.106 --registry https://registry.npmjs.org
@@ -89,4 +89,4 @@ CLI 的 `coding-task-guidance.js`、`file-import-diagnostics.js` 和 `transport-
 
 ## 相关文档
 
-参见 [CLI 使用指南](./cli.md)、[IDE 桥接](./ide-bridge.md)、[目标草稿指南](./goal-drafts-current)、[上一版升级记录](./cli-ide-update-2026-10-17.md)、[发布 PR #461](https://github.com/chainlesschain/chainlesschain/pull/461)和[公开版本与补测核对](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/documentation-release-status-2026-10-18.json)。
+参见 [CLI 使用指南](./cli.md)、[IDE 桥接](./ide-bridge.md)、[目标草稿指南](./goal-drafts-current)、[上一版升级记录](./cli-ide-update-2026-10-17.md)、[发布 PR #461](https://github.com/longfa/chainlesschain/pull/461)和[公开版本与补测核对](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/documentation-release-status-2026-10-18.json)。

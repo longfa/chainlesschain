@@ -6,7 +6,7 @@
 
 2026-11-07 核对实现 `7b5376091a`、报告提交
 `a2e7f17a03df38bd8e97a8a977351f37dd5319c3` 和
-[PR #539](https://github.com/chainlesschain/chainlesschain/pull/539)。该分支尚未发行。
+[PR #539](https://github.com/longfa/chainlesschain/pull/539)。该分支尚未发行。
 公开 CLI **0.166.143**、Session Core **0.3.26**、Open VSX **0.37.179**、JetBrains **0.4.196** 与客户端 **v5.0.3.145** 均不因这份源码说明获得新移交能力。
 操作要求匹配该分支的 CLI、Session Core 与桌面源码构建；当前公共安装说明仍见[发行指南](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-06-143.html)。
 
@@ -47,7 +47,7 @@ CLI 的 `goal restore-transfer` 只接受绑定原项目公钥与凭据的有效
 
 ## 当前验证范围
 
-[分支证据](https://github.com/chainlesschain/chainlesschain/blob/a2e7f17a03df38bd8e97a8a977351f37dd5319c3/docs/research/agents/evidence/dmm-goal-transfer-2026-11-06/README.md)
+[分支证据](https://github.com/longfa/chainlesschain/blob/a2e7f17a03df38bd8e97a8a977351f37dd5319c3/docs/research/agents/evidence/dmm-goal-transfer-2026-11-06/README.md)
 记录 Windows 本地 **49 个不重叠文件、790 项通过、0 失败、0 跳过**：CLI 118、桌面主进程 383、renderer 287、隔离 npm 打包 2。
 真实部分包括文件系统、严格跨进程锁、原生 SQLite、Ed25519、CLI binary、四个 SIGKILL 恢复点、双进程导入及实际 npm 打包。
 Electron 窗口/对话框/登录对象和 Vue IPC 为替身；初始 ACL 与依赖加载失败报告保留，不与最终范围累加。
@@ -58,9 +58,9 @@ Electron 窗口/对话框/登录对象和 Vue IPC 为替身；初始 ACL 与依�
 
 ## 关键源码
 
-- [移交契约与签名](https://github.com/chainlesschain/chainlesschain/blob/a2e7f17a03df38bd8e97a8a977351f37dd5319c3/packages/session-core/lib/goal-transfer-contract.js)
-- [原生事务与移交日记](https://github.com/chainlesschain/chainlesschain/blob/a2e7f17a03df38bd8e97a8a977351f37dd5319c3/packages/session-core/lib/project-goal-transfer.js)
-- [CLI 命令](https://github.com/chainlesschain/chainlesschain/blob/a2e7f17a03df38bd8e97a8a977351f37dd5319c3/packages/cli/src/commands/goal.js)
-- [桌面原生宿主](https://github.com/chainlesschain/chainlesschain/blob/a2e7f17a03df38bd8e97a8a977351f37dd5319c3/desktop-app-vue/src/main/task/project-goal-transfer-host.js)
+- [移交契约与签名](https://github.com/longfa/chainlesschain/blob/a2e7f17a03df38bd8e97a8a977351f37dd5319c3/packages/session-core/lib/goal-transfer-contract.js)
+- [原生事务与移交日记](https://github.com/longfa/chainlesschain/blob/a2e7f17a03df38bd8e97a8a977351f37dd5319c3/packages/session-core/lib/project-goal-transfer.js)
+- [CLI 命令](https://github.com/longfa/chainlesschain/blob/a2e7f17a03df38bd8e97a8a977351f37dd5319c3/packages/cli/src/commands/goal.js)
+- [桌面原生宿主](https://github.com/longfa/chainlesschain/blob/a2e7f17a03df38bd8e97a8a977351f37dd5319c3/desktop-app-vue/src/main/task/project-goal-transfer-host.js)
 
 权威源为本文件，两个文档站由同步脚本生成副本。站点部署身份与已公开运行时发行身份分别记录。

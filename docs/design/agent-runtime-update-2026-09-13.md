@@ -77,4 +77,4 @@ Agent shell 的 Docker/bubblewrap 当前不能兑现域名级 allow/deny；Docke
 
 - [受治理 Skill 自进化设计](modules/112-governed-skill-evolution-design.md)
 - [用户升级指南](https://docs.chainlesschain.com/chainlesschain/agent-platform-release.html)
-- [仓库闭环核验](https://github.com/chainlesschain/chainlesschain/blob/a1db1f98aadb120626d48da65cb4809479b88799/docs/cli/EVOLUTION_P0_4_REPOSITORY_CLOSURE_2026-09-12.md)
+- [仓库闭环核验](https://github.com/longfa/chainlesschain/blob/a1db1f98aadb120626d48da65cb4809479b88799/docs/cli/EVOLUTION_P0_4_REPOSITORY_CLOSURE_2026-09-12.md)

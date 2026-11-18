@@ -20,7 +20,7 @@ CLI **0.166.150**、Open VSX **0.37.189**、JetBrains **0.4.204** 已从准确�
 
 ## 2026-11-06 当前 .143 公开范围
 
-CLI **0.166.143** / Session Core **0.3.26** / Open VSX **0.37.179** / JetBrains **0.4.196** 已完成准确提交三平台门禁、正式发布与公开制品核验，两个 IDE 均推荐 CLI .143。新增本地算力配置、端点凭据隔离、创建请求文件、独立 v6 待审授权和 `project-delivery-assistant` 0.3.0。新原生创建与模型草稿仍需匹配的新桌面实现、当前预览与独立原生确认；公开产品 **v5.0.3.145** 来自较早独立源码。详见[本轮设计](./release-runtime-update-2026-11-06-143.md)与[发行证据](https://github.com/chainlesschain/chainlesschain/blob/d2070ce914af8d675191e3492e0ce7db650c79c3/docs/research/cli/evidence/release143-public/README.md)。后文保留历史版本范围。
+CLI **0.166.143** / Session Core **0.3.26** / Open VSX **0.37.179** / JetBrains **0.4.196** 已完成准确提交三平台门禁、正式发布与公开制品核验，两个 IDE 均推荐 CLI .143。新增本地算力配置、端点凭据隔离、创建请求文件、独立 v6 待审授权和 `project-delivery-assistant` 0.3.0。新原生创建与模型草稿仍需匹配的新桌面实现、当前预览与独立原生确认；公开产品 **v5.0.3.145** 来自较早独立源码。详见[本轮设计](./release-runtime-update-2026-11-06-143.md)与[发行证据](https://github.com/longfa/chainlesschain/blob/d2070ce914af8d675191e3492e0ce7db650c79c3/docs/research/cli/evidence/release143-public/README.md)。后文保留历史版本范围。
 
 <!-- docs-code-git-sync-2026-10-29 -->
 
@@ -552,7 +552,7 @@ npm run test:integration
 npm run test:e2e
 ```
 
-`0.166.56` 的精确正式发布提交为 [`d55de4810e35f9ef686ec108c71d311c9b3d2b10`](https://github.com/chainlesschain/chainlesschain/commit/d55de4810e35f9ef686ec108c71d311c9b3d2b10)。同一提交的 [Linux/Windows/macOS CLI CI run 34940431736](https://github.com/chainlesschain/chainlesschain/actions/runs/34940431736)、[Strict Sandbox run 34940431550](https://github.com/chainlesschain/chainlesschain/actions/runs/34940431550)与 [npm OIDC/public-install run 34940431525](https://github.com/chainlesschain/chainlesschain/actions/runs/34940431525)均成功。Agent Protocol `0.1.10`、TS/Python SDK `0.2.10/0.2.8`、Open VSX `0.37.103` 与 JetBrains Marketplace `0.4.124` 均已公开回读；同一 IDE 提交的 [VS Code run 34948682154](https://github.com/chainlesschain/chainlesschain/actions/runs/34948682154) 与 [JetBrains run 34948681939](https://github.com/chainlesschain/chainlesschain/actions/runs/34948681939) 成功。
+`0.166.56` 的精确正式发布提交为 [`d55de4810e35f9ef686ec108c71d311c9b3d2b10`](https://github.com/longfa/chainlesschain/commit/d55de4810e35f9ef686ec108c71d311c9b3d2b10)。同一提交的 [Linux/Windows/macOS CLI CI run 34940431736](https://github.com/chainlesschain/chainlesschain/actions/runs/34940431736)、[Strict Sandbox run 34940431550](https://github.com/chainlesschain/chainlesschain/actions/runs/34940431550)与 [npm OIDC/public-install run 34940431525](https://github.com/chainlesschain/chainlesschain/actions/runs/34940431525)均成功。Agent Protocol `0.1.10`、TS/Python SDK `0.2.10/0.2.8`、Open VSX `0.37.103` 与 JetBrains Marketplace `0.4.124` 均已公开回读；同一 IDE 提交的 [VS Code run 34948682154](https://github.com/chainlesschain/chainlesschain/actions/runs/34948682154) 与 [JetBrains run 34948681939](https://github.com/chainlesschain/chainlesschain/actions/runs/34948681939) 成功。
 
 后续版本仍必须在各自 final exact SHA 上重新完成权威门。当前 `main@ac0e61b3cd` 包含 `v-npm-0-166-56@d55de4810e` 与两个 IDE 公开标签；npm tarball、Open VSX VSIX、JetBrains ZIP 与 Desktop/native 仍必须分别按公共回读证据处理。
 

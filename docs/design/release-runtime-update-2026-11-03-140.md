@@ -13,7 +13,7 @@
 | Agent SDK / Protocol / Kernel | 0.2.17 / 0.1.12 / 0.1.11 | 复用已发布子包；上游归档与 CLI 依赖对齐已核验                                                       |
 | PC / Android / iOS            | v5.0.3.144               | 独立发行源 `7be0ebbcd9c9e1b52151f32e7229f6868ce320c7`；五平台构建、六项必需检查及 22 个资产校验通过 |
 
-CLI 准确发行源码的三平台 **CLI CI 76/76**、**CLI Strict Sandbox 6/6** 通过。历史失败和完整作业重试保留，不用新文档提交替代旧标签来源。详见[发行回读](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release140-public/publication-readback.json)、[准确源码门禁](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release140-public/gates.json)与[客户端发行](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release144-public/publication.json)。
+CLI 准确发行源码的三平台 **CLI CI 76/76**、**CLI Strict Sandbox 6/6** 通过。历史失败和完整作业重试保留，不用新文档提交替代旧标签来源。详见[发行回读](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release140-public/publication-readback.json)、[准确源码门禁](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release140-public/gates.json)与[客户端发行](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release144-public/publication.json)。
 
 ## 损坏工具参数的拒绝与续接
 
@@ -42,7 +42,7 @@ CLI 准确发行源码的三平台 **CLI CI 76/76**、**CLI Strict Sandbox 6/6**
 - .140 全量 **36+9** 已有调度身份，完整最终成绩尚未归档核验；内部输出限制修复后的完整复测单列，未调度或离线通过不计为完成。
 - 发行源三平台各 100 次回环共 **300 次**只验证结构封套；工程测试、发行和站点部署均不增加模型任务验收数。**NOT_PAID_READY / NOT_ADMITTED / HOLD** 保留。
 
-[.140 完整复测](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/verify01-volcengine-140-full-20261103/README.md) · [内部输出限制修复](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/verify01-volcengine-140-full-20261103/internal-output-repair/README.md) · [任务清单及不同累计口径](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/verify01-36-plus-9-task-list.md)。
+[.140 完整复测](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/verify01-volcengine-140-full-20261103/README.md) · [内部输出限制修复](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/verify01-volcengine-140-full-20261103/internal-output-repair/README.md) · [任务清单及不同累计口径](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/verify01-36-plus-9-task-list.md)。
 
 ## 用户升级与分发边界
 

@@ -4,7 +4,7 @@
 
 当前公开配对为 CLI **0.166.127**、Open VSX **0.37.165**、JetBrains **0.4.182**；两个 IDE 均推荐 CLI `.127`。移动端和 PC 安装包 **v5.0.3.142** 已公开，五平台构建、22 个公开资产与桌面更新元数据均已回读核验。Microsoft VS Code Marketplace 仍未发布，VS Code 用户可安装 Open VSX 的版本化 VSIX。
 
-本轮从“默认进入自进化”调整为可选开启，并继承 `.123` 的模型配置和 Windows 启动修复、`.125` 的代码表达式投影修复及 `.126` 的恢复摘要修复。源码、工作流与公开制品见[发布回执](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release127-public/publication.json)。
+本轮从“默认进入自进化”调整为可选开启，并继承 `.123` 的模型配置和 Windows 启动修复、`.125` 的代码表达式投影修复及 `.126` 的恢复摘要修复。源码、工作流与公开制品见[发布回执](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release127-public/publication.json)。
 
 ## 核心特性
 
@@ -94,7 +94,7 @@ Open VSX `.165` 通过浏览器、宿主和真实 Remote SSH 发布门，公开 
 - `packages/cli/src/lib/evolution/evolution-deployment-loader.js`：可选部署选择与验证。
 - `packages/cli/src/lib/retained-context-preview.js`：恢复摘要边界。
 - `packages/vscode-extension/src/chat/draft-store.js`：附件与丢弃约束。
-- [产品发布回执](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release127-public/product-publication.json)：五平台构建与制品验证。
+- [产品发布回执](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release127-public/product-publication.json)：五平台构建与制品验证。
 
 ## 相关文档
 

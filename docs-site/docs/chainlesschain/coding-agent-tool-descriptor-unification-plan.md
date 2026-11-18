@@ -492,7 +492,7 @@ grep -rn "parameters:" desktop-app-vue/src/main/ai-engine/
 
 - [Coding Agent 系统总览](./coding-agent.md) — Agent REPL、工具执行流程、sub-runtime 架构
 - [设计文档 83 — 工具描述规范统一](../design/modules/83-tool-descriptor-unification.md) — 背景分析与 P0–P3 阶段规划
-- [CLAUDE-patterns.md § Canonical Tool Descriptor 规范](https://github.com/chainlesschain/chainlesschain/blob/main/docs/claude/CLAUDE-patterns.md#canonical-tool-descriptor-规范-v5029) — 架构模式库内的规范摘要
+- [CLAUDE-patterns.md § Canonical Tool Descriptor 规范](https://github.com/longfa/chainlesschain/blob/main/docs/claude/CLAUDE-patterns.md#canonical-tool-descriptor-规范-v5029) — 架构模式库内的规范摘要
 
 ### 权限与 Plan Mode
 

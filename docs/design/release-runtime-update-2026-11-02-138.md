@@ -13,7 +13,7 @@
 | Context/Memory Kernel | 0.1.11     | 保持已发布依赖版本                                                                                                      |
 | PC / 移动客户端       | v5.0.3.143 | 独立发行源 `036d2b8be2`，不从 CLI 发布推断客户端变更                                                                    |
 
-CLI 来源固定为 `e42ea07b6da7ab2c3eb709002448b32d5fedf535`。SDK .17 修正整棵源码树与发布来源的对应关系，生成的运行时代码没有改变。Microsoft Marketplace 继续暂缓。见[发行回执](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release138-public/README.md)与[正式 OIDC 工作流](https://github.com/chainlesschain/chainlesschain/actions/runs/41313099948)。
+CLI 来源固定为 `e42ea07b6da7ab2c3eb709002448b32d5fedf535`。SDK .17 修正整棵源码树与发布来源的对应关系，生成的运行时代码没有改变。Microsoft Marketplace 继续暂缓。见[发行回执](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release138-public/README.md)与[正式 OIDC 工作流](https://github.com/chainlesschain/chainlesschain/actions/runs/41313099948)。
 
 ## 源码读取与模型交付
 
@@ -46,7 +46,7 @@ CLI 来源固定为 `e42ea07b6da7ab2c3eb709002448b32d5fedf535`。SDK .17 修正�
 
 本轮为 **2/4**，前轮 .137 为 **0/5**，历史累计记录仍为 **41/45**，图像单项复验 **0/1** 单列；不能合并为某一版本完整 45 项通过率。80/80 个物理请求的用量完整，token 估算 **$2.6309597**，实际账单未知。后续已通过项跳过；本次文档更新没有再次调用模型。
 
-[原始复验记录](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/verify01-openai-138/README.md) · [机器可读结果](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/verify01-openai-138/public-c472d664eb/results.json) · [失败诊断](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/verify01-openai-138/public-c472d664eb/failure-audit.json)。
+[原始复验记录](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/verify01-openai-138/README.md) · [机器可读结果](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/verify01-openai-138/public-c472d664eb/results.json) · [失败诊断](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/verify01-openai-138/public-c472d664eb/failure-audit.json)。
 
 ## 文档与部署边界
 

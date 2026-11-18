@@ -2,7 +2,7 @@
 
 ## 概述
 
-CLI **0.166.156** 已发布并从公共 npm 包确认。准确源码 `a8cae89288d3a6119b152e04b750e10d726a5c5f` 的 CLI CI 75/75、Strict Sandbox 6/6、Actions OIDC 发布及公开回读均成功。配套 VS Code **0.37.192** 已发布到 Open VSX，完整工作流成功且版本接口可访问；JetBrains **0.4.207** 仍在宿主门禁中，尚未确认公开。
+CLI **0.166.156** 已发布并从公共 npm 包确认。准确源码 `a8cae89288d3a6119b152e04b750e10d726a5c5f` 的 CLI CI 75/75、Strict Sandbox 6/6、Actions OIDC 发布及公开回读均成功。配套 VS Code **0.37.192** 已发布到 Open VSX，完整工作流成功且版本接口可访问；JetBrains **0.4.207** 也已通过完整宿主与兼容性门禁、上传并审核公开；下载 ZIP 的两个 JAR 与正式候选逐字节一致，插件版本和推荐 CLI .156 已核对。
 
 ## 核心特性
 

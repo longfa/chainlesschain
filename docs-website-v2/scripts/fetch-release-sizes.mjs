@@ -8,7 +8,7 @@ import { fileURLToPath } from "node:url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.resolve(__dirname, "..", "src", "data", "release-sizes.json");
 const ROOT_PKG = path.resolve(__dirname, "..", "..", "package.json");
-const REPO = "chainlesschain/chainlesschain";
+const REPO = "longfa/chainlesschain";
 // Note: was `/releases/latest` but post-2026-05-28 the "latest" tag is the
 // `internal-binaries-android-vYYYYMMDD` Release (Android prebuilt binaries
 // split out of git per `git_slim_2026_05_28_recipe`), which has zero desktop

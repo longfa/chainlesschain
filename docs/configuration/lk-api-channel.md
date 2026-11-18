@@ -3,7 +3,7 @@
 根据 [开发文档](https://chainlesschain.net/apidoc#model/gpt-6.1-sol) 和当前 Skills 模型接口接入。
 主地址 `https://api.vv666.ai`，备用 `https://api.lk666.ai`，手动切换地址；不会自动重发生成请求。
 
-CLI **0.166.156** 与 Open VSX **0.37.192** 已公开验证；JetBrains **0.4.207** 仍待宿主门禁与市场回读。完整发布顺序与限制见 [更新说明](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-156.md)。
+CLI **0.166.156**、Open VSX **0.37.192** 与 JetBrains **0.4.207** 均已公开验证；两款 IDE 推荐 CLI .156。完整发布顺序与限制见 [更新说明](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-156.md)。
 
 ## 模型配置
 

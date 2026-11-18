@@ -9,7 +9,7 @@
 | JetBrains   | `0.4.184`    | `800e9cc99711f9f02eb3bbd78eb14600406bdba5` | 正式发行门；更新 `1205524` 已批准、列出且未隐藏；全部 ZIP 成员字节匹配 |
 | PC / 移动端 | `v5.0.3.143` | `036d2b8be2048c98e56e917c93380f169e6a9d7b` | 独立既有发行，五平台构建、22 个资产及桌面更新元数据已核验              |
 
-两个 IDE 都推荐 CLI `.129`。JetBrains 的外层 ZIP 与 CI 字节不同，不能把成员一致写成整包一致。Microsoft Marketplace 暂缓，VS Code 保留版本化 VSIX 安装路径。来源见 [.129 回执](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release129-public/publication.json)及[客户端独立回执](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release128-public/product-publication.json)。
+两个 IDE 都推荐 CLI `.129`。JetBrains 的外层 ZIP 与 CI 字节不同，不能把成员一致写成整包一致。Microsoft Marketplace 暂缓，VS Code 保留版本化 VSIX 安装路径。来源见 [.129 回执](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release129-public/publication.json)及[客户端独立回执](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release128-public/product-publication.json)。
 
 ## 本版运行时增量
 
@@ -48,6 +48,6 @@ Memory 的 Linux 1K / 10K / 100K 五场景各 100 次结果已核验一致，100
 ## 相关文档
 
 - [用户升级指南](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-10-29.html)
-- [当前差距与任务表](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli-ide/plans/cli-ide-codex-claude-gap-review-2026-10-27.md)
-- [公开配对同步记录](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli-ide/releases/cli-ide-public-docs129-progress-2026-10-29.md)
+- [当前差距与任务表](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli-ide/plans/cli-ide-codex-claude-gap-review-2026-10-27.md)
+- [公开配对同步记录](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli-ide/releases/cli-ide-public-docs129-progress-2026-10-29.md)
 - [CLI .128 设计（历史）](./release-runtime-update-2026-10-28.md)

@@ -55,4 +55,4 @@ CLI 与 IDE 共用准确发行源码 `2eb0c5b1e048509362f9d980f94acee55c2ffa9f`�
 
 ## 相关文档
 
-参见[后续 CLI 0.166.135 升级说明](./cli-ide-update-2026-10-31-135)及 [CLI 发行回执](https://github.com/chainlesschain/chainlesschain/tree/main/docs/research/cli/evidence/release133-public)。
+参见[后续 CLI 0.166.135 升级说明](./cli-ide-update-2026-10-31-135)及 [CLI 发行回执](https://github.com/longfa/chainlesschain/tree/main/docs/research/cli/evidence/release133-public)。

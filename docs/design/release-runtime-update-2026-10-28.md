@@ -9,7 +9,7 @@
 | JetBrains | `0.4.183`，公开且 payload 回读通过 | `6551a06c2f694bb93d0197fa8b82becd25a83173` | [40557015160](https://github.com/chainlesschain/chainlesschain/actions/runs/40557015160)      |
 | 移动 / PC | `v5.0.3.143`，公开且资产回读通过   | `036d2b8be2048c98e56e917c93380f169e6a9d7b` | [40565272034](https://github.com/chainlesschain/chainlesschain/actions/runs/40565272034)      |
 
-客户端 `.143` 已公开；五平台构建全部通过，22 个公开资产匹配 CI manifest，三套桌面更新元数据已下载核验。最新事实与后续上架结果见[公开状态回执](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release128-public/publication.json)。Microsoft Marketplace 仍未发布。
+客户端 `.143` 已公开；五平台构建全部通过，22 个公开资产匹配 CI manifest，三套桌面更新元数据已下载核验。最新事实与后续上架结果见[公开状态回执](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release128-public/publication.json)。Microsoft Marketplace 仍未发布。
 
 ## Headless Goal 的证据边界
 
@@ -60,7 +60,7 @@ CLI CI 的 71 个必需任务和 Strict Sandbox 全部配置平台通过，发�
 - `packages/cli/src/runtime/mcp-tool-search.js`
 - `packages/cli/src/lib/context-memory-kernel/segmented-memory-port.js`
 - `packages/cli/scripts/budget-egress-reviewed-sources.json`
-- [发行回执](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release128-public/publication.json)
+- [发行回执](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release128-public/publication.json)
 
 设计权威源位于 `docs/design/`，两个 VitePress 站点通过同步脚本生成副本；三站部署须绑定同一文档提交，并保留旧站点供回滚。
 

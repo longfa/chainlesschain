@@ -256,7 +256,7 @@ chainlesschain agent deploy --bundle ./agent-bundle --target chainless-hub
 
 ### 现状问题
 
-仓库已有 [AGENTS.md](https://github.com/chainlesschain/chainlesschain/blob/main/AGENTS.md)，但它当前更像开发协作规范，而不是运行时 agent bundle 的稳定输入。
+仓库已有 [AGENTS.md](https://github.com/longfa/chainlesschain/blob/main/AGENTS.md)，但它当前更像开发协作规范，而不是运行时 agent bundle 的稳定输入。
 
 ### 落地建议
 
@@ -286,7 +286,7 @@ chainlesschain agent deploy --bundle ./agent-bundle --target chainless-hub
 
 ### 现状问题
 
-`MemoryStore` 已支持 `session/agent/global`，见 [packages/session-core/lib/memory-store.js](https://github.com/chainlesschain/chainlesschain/blob/main/packages/session-core/lib/memory-store.js)，但用户偏好目前没有被单独建模成稳定的一层。
+`MemoryStore` 已支持 `session/agent/global`，见 [packages/session-core/lib/memory-store.js](https://github.com/longfa/chainlesschain/blob/main/packages/session-core/lib/memory-store.js)，但用户偏好目前没有被单独建模成稳定的一层。
 
 这会导致两个问题：
 

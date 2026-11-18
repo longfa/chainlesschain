@@ -1,6 +1,6 @@
 # B.5 跨链桥 outbound × m-of-n 多签 — spike v0.9
 
-> **Issue**: [#21](https://github.com/chainlesschain/chainlesschain/issues/21) B.5（GA 后续 scope · P1）
+> **Issue**: [#21](https://github.com/longfa/chainlesschain/issues/21) B.5（GA 后续 scope · P1）
 > **状态**: 🟢 Layer 1 ✅ 收口 + Layer 2 ✅ 收口（PR1+2+3+4，2026-05-15）
 > **作者**: 2026-05-15
 > **关联**: [m-of-n 应用扩展 v1](MofN_多签_应用扩展_v1.md) / [MTC 跨链桥 v1](MTC_跨链桥_v1.md) / memory `mtc_landing_v0_11.md` Q-COMP-3

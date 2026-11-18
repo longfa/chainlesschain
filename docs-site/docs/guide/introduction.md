@@ -139,9 +139,9 @@ ChainlessChain 采用开源协议，欢迎社区贡献：
 
 ### 参与方式
 
-- 🐛 [报告问题](https://github.com/chainlesschain/chainlesschain/issues)
-- 💡 [提交建议](https://github.com/chainlesschain/chainlesschain/discussions)
-- 🔧 [贡献代码](https://github.com/chainlesschain/chainlesschain/pulls)
+- 🐛 [报告问题](https://github.com/longfa/chainlesschain/issues)
+- 💡 [提交建议](https://github.com/longfa/chainlesschain/discussions)
+- 🔧 [贡献代码](https://github.com/longfa/chainlesschain/pulls)
 - 📖 [改进文档](https://github.com/chainlesschain/docs)
 
 ## 下一步

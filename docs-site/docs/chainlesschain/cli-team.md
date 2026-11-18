@@ -3,7 +3,7 @@
 > 状态：P2-16 已完成并随 CLI `0.162.189` 首次公开；当前生产推荐版与 npm `latest` 均为 `0.166.21@1ff70b7856`（2026-09-04）。`0.166.9` 首次公开 durable history/retirement、quorum HumanTask、Team fairness、temporal messaging 与审批 single-winner CAS；`0.166.14` 加入 Context/Memory、Hooks v2、P0 执行安全与 Windows Docker-optional 边界，`0.166.21` 继续承接这些能力，并加入 Evolution Workbench、Skill Retrieval 与受治理知识同步。当前版本的三平台 CLI CI、Strict Sandbox 与 npm 发布门已成功；这不扩张 Desktop/IDE authority，也不代表无人值守 active promotion 已启用。以下早期实现候选
 > `7df6feced4670ac71d19548752d18ac4cc225025` 的三平台短门与各 120 分钟 soak
 > 均成功；最终发布提交
-> [`2607af0dadeb951583139942e5f2add3e95e1208`](https://github.com/chainlesschain/chainlesschain/commit/2607af0dadeb951583139942e5f2add3e95e1208)
+> [`2607af0dadeb951583139942e5f2add3e95e1208`](https://github.com/longfa/chainlesschain/commit/2607af0dadeb951583139942e5f2add3e95e1208)
 > 又通过 [CLI CI](https://github.com/chainlesschain/chainlesschain/actions/runs/30586603353)、
 > [CLI Strict Sandbox](https://github.com/chainlesschain/chainlesschain/actions/runs/30586603019)、
 > [Agent Team 长期 soak](https://github.com/chainlesschain/chainlesschain/actions/runs/30564377629)

@@ -39,7 +39,7 @@ CLI 工具会自动检测环境、下载桌面应用、配置 LLM 提供商。�
 
 ```bash
 # 克隆主仓库
-git clone https://github.com/chainlesschain/chainlesschain.git
+git clone https://github.com/longfa/chainlesschain.git
 cd chainlesschain
 ```
 
@@ -353,7 +353,7 @@ chmod 777 data/uploads
 如果遇到问题，可以通过以下方式获取帮助：
 
 - 📖 [查看完整文档](/)
-- 🐛 [报告问题](https://github.com/chainlesschain/chainlesschain/issues)
+- 🐛 [报告问题](https://github.com/longfa/chainlesschain/issues)
 - 💬 [加入社区讨论](https://community.chainlesschain.com)
 - 📧 **邮箱**: zhanglongfa@chainlesschain.com
 - 📞 **电话**: 400-1068-687

@@ -1,7 +1,7 @@
 # ResourceType Walker Extension — v1.1 状态 + v1.2 路线
 
 > **状态**: 🟡 v1.1 部分落地 (2026-05-12, commit pending)
-> **关联**: [Android v1.1 issue #19 W5](https://github.com/chainlesschain/chainlesschain/issues/19) / [Android 重新定位 §8.4](Android_重新定位_设计文档.md#84-android-resourcetype-enum-比桌面-walker-多)
+> **关联**: [Android v1.1 issue #19 W5](https://github.com/longfa/chainlesschain/issues/19) / [Android 重新定位 §8.4](Android_重新定位_设计文档.md#84-android-resourcetype-enum-比桌面-walker-多)
 > **作用域**: 把 desktop `mobile-bridge-sync.js` walker 与 Android `SyncManager.kt::ResourceType` enum 双端对齐
 
 ---
@@ -114,7 +114,7 @@ this._fetchPostLikes.bind(this),
 
 ## 4. Android 端验证
 
-Android 12 类全部在 [`SyncManager.kt::ResourceType`](https://github.com/chainlesschain/chainlesschain/blob/main/android-app/core-p2p/src/main/java/com/chainlesschain/android/core/p2p/sync/SyncManager.kt) enum 内 declared。**push 路径**通过 `core-p2p/.../sync/DefaultSyncDataApplier.kt` + `feature-knowledge/.../KnowledgeSyncApplierImpl.kt` 等模块实现。
+Android 12 类全部在 [`SyncManager.kt::ResourceType`](https://github.com/longfa/chainlesschain/blob/main/android-app/core-p2p/src/main/java/com/chainlesschain/android/core/p2p/sync/SyncManager.kt) enum 内 declared。**push 路径**通过 `core-p2p/.../sync/DefaultSyncDataApplier.kt` + `feature-knowledge/.../KnowledgeSyncApplierImpl.kt` 等模块实现。
 
 **v1.1 W5 验证项**（不在本 commit scope，留给后续 W5 验收）:
 - [ ] CONVERSATION：Android `ConversationEntity` push 路径走通（grep `ResourceType.CONVERSATION` 在 SyncManager 推送侧）

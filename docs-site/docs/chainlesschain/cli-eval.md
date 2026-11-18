@@ -21,7 +21,7 @@ cc eval --suite verify01 \
 
 ## 后续源码：宿主采集与验收包
 
-源码候选 `0.166.89@feda6d1eee` 增加任务 prepare/finish、只读导入器及双 IDE 的真实 UI/原始协议采集。操作者先固定 plan/review 摘要与准确项目/CLI SHA，在项目外保存证据；执行 setup 后从实际 IDE 完成任务，再运行 reviewed check 收尾。首次安装需另存安装、发现、认证、首条输入与首次成功回执。完整参数和两阶段操作见[宿主采集说明](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/verify01-plan-2026-10-04/HOST_CAPTURE_README.md)。这些源码工具不作为当前 npm 安装命令承诺。
+源码候选 `0.166.89@feda6d1eee` 增加任务 prepare/finish、只读导入器及双 IDE 的真实 UI/原始协议采集。操作者先固定 plan/review 摘要与准确项目/CLI SHA，在项目外保存证据；执行 setup 后从实际 IDE 完成任务，再运行 reviewed check 收尾。首次安装需另存安装、发现、认证、首条输入与首次成功回执。完整参数和两阶段操作见[宿主采集说明](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/verify01-plan-2026-10-04/HOST_CAPTURE_README.md)。这些源码工具不作为当前 npm 安装命令承诺。
 
 六个真实 IDE 宿主诊断已通过，但使用受控 peer；新增 Docker 六分片 CI 尚未取得整包成功。36+9 正式样本仍为 `NOT_RUN`，费用缺失保留 `null`，失败和 missing 不从分母删除。诊断不替代真实 provider、独立人工签核、真人听测或 8h/24h 观察。
 

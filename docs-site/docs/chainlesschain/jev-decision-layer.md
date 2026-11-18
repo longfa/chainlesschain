@@ -76,7 +76,7 @@ Laya 根目录英文权重约 421M 参数，最大序列长度 512 tokens；中�
 
 较长任务和候选摘要可能被模型截断，必须单独评测中文路由、上下文长度和候选召回。首次加载、CPU 推理可能超过默认 800 ms，可在实验时显式调整超时；调整不代表已满足正式延迟门槛。
 
-[本地联调记录](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/agents/jev-laya-local-probe-2026-09-23.md)显示，完整 CLI 请求中的英文候选元数据使一个短中文任务被上游 Router 判为英文，并载入英文权重；该 CPU 环境的完整请求热路径约 7–11 秒。只发送中文任务文本可触发多语言权重，但这不是当前 CLI 的请求格式，单题结果也不支持质量结论。服务响应的 `model` 标签不能证明实际权重。`0.166.72` 将本地决策截止记录为 `provider-timeout` 和未知用量，不会把它误当作用户取消；用户取消和账本失败仍会终止请求。
+[本地联调记录](https://github.com/longfa/chainlesschain/blob/main/docs/research/agents/jev-laya-local-probe-2026-09-23.md)显示，完整 CLI 请求中的英文候选元数据使一个短中文任务被上游 Router 判为英文，并载入英文权重；该 CPU 环境的完整请求热路径约 7–11 秒。只发送中文任务文本可触发多语言权重，但这不是当前 CLI 的请求格式，单题结果也不支持质量结论。服务响应的 `model` 标签不能证明实际权重。`0.166.72` 将本地决策截止记录为 `provider-timeout` 和未知用量，不会把它误当作用户取消；用户取消和账本失败仍会终止请求。
 
 ### 其他本地或自托管模型
 
@@ -183,6 +183,6 @@ VS Code `0.37.118` 已在 Open VSX 公开并推荐 CLI `0.166.77`。JetBrains Ma
 只有在冻结数据集上完成无匹配误建议、接受建议错误、覆盖率、任务成功率、延迟、费用和治理对抗测试后，才考虑从 `shadow` 进入受控 `suggest`。工程测试和其他项目的模型指标不能替代本项目中文任务与 Skill 目录上的真实评测。
 
 - [模块 114：可替换模型的类型化 Skill 决策层设计](/design/modules/114-jev-decision-layer-design)
-- [可行性研究与评测方案](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/agents/jev-decision-layer-feasibility-2026-09-22.md)
+- [可行性研究与评测方案](https://github.com/longfa/chainlesschain/blob/main/docs/research/agents/jev-decision-layer-feasibility-2026-09-22.md)
 - [Agent Platform 发布与升级指南](/chainlesschain/agent-platform-release)
 - [受治理的 Skill 自进化](/chainlesschain/governed-skill-evolution)

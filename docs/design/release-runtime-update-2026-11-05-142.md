@@ -83,9 +83,9 @@ CLI 区分全部实现能力与当前命令/连接的激活能力：仍检查整
 
 ## 源码、回执与部署
 
-- [CLI 目标命令](https://github.com/chainlesschain/chainlesschain/blob/b78cf0af8c8b0491189465773b148ac77c332222/packages/cli/src/commands/goal.js)
-- [插件能力表](https://github.com/chainlesschain/chainlesschain/blob/b78cf0af8c8b0491189465773b148ac77c332222/packages/cli/src/lib/plugin-runtime/cli-goal-capabilities.js)
-- [发行记录与独立回读](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release142-public/README.md)
+- [CLI 目标命令](https://github.com/longfa/chainlesschain/blob/b78cf0af8c8b0491189465773b148ac77c332222/packages/cli/src/commands/goal.js)
+- [插件能力表](https://github.com/longfa/chainlesschain/blob/b78cf0af8c8b0491189465773b148ac77c332222/packages/cli/src/lib/plugin-runtime/cli-goal-capabilities.js)
+- [发行记录与独立回读](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release142-public/README.md)
 - [用户升级指南](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-05-142.html)
 - [客户端候选发行](https://github.com/chainlesschain/chainlesschain/actions/runs/41961242898)
 

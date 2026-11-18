@@ -293,7 +293,7 @@ Phase 0-3 合入 main 时 **108 条测试全绿**（其中项目模式新增 97 
 
 **设计文档**：
 
-- [`docs/design/CC_PACK_打包指令设计文档.md`](https://github.com/chainlesschain/chainlesschain/blob/main/docs/design/CC_PACK_%E6%89%93%E5%8C%85%E6%8C%87%E4%BB%A4%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3.md) — 完整设计规范（v0.4，含 Phase 0-3 实施拆分）
+- [`docs/design/CC_PACK_打包指令设计文档.md`](https://github.com/longfa/chainlesschain/blob/main/docs/design/CC_PACK_%E6%89%93%E5%8C%85%E6%8C%87%E4%BB%A4%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3.md) — 完整设计规范（v0.4，含 Phase 0-3 实施拆分）
 
 ---
 
@@ -351,7 +351,7 @@ cc pack --project \
 ## 相关文档
 
 - **[项目打包 (pack)](./cli-pack)** — 基础打包流水线、参数全集、安全模型（本页共享底层能力）
-- **[CC_PACK 打包指令设计文档](https://github.com/chainlesschain/chainlesschain/blob/main/docs/design/CC_PACK_%E6%89%93%E5%8C%85%E6%8C%87%E4%BB%A4%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3.md)** — 完整设计规范（v0.4，含 Phase 0-3 实施拆分）
+- **[CC_PACK 打包指令设计文档](https://github.com/longfa/chainlesschain/blob/main/docs/design/CC_PACK_%E6%89%93%E5%8C%85%E6%8C%87%E4%BB%A4%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3.md)** — 完整设计规范（v0.4，含 Phase 0-3 实施拆分）
 - [CLI 分发系统](./cli-distribution) — npm 侧轻量分发（与 `cc pack` 互补）
 - [WebSocket 服务 (serve)](./cli-serve) — 产物内 WS 层完整接口
 - [配置说明](./configuration) — `.chainlesschain/config.json` 结构

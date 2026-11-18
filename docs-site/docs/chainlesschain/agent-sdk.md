@@ -285,7 +285,7 @@ asyncio.run(main())
 `SystemInitEvent.session_id` 是运行中会话的权威 id。匿名 stream 会话按 CLI 设计不持久化；
 需要稍后恢复时，请在首启传 `session_id`，之后用
 `AgentSessionOptions(resume=that_id)` 恢复。完整 CI consumer 与 GitHub Actions 模板见
-[Python SDK README](https://github.com/chainlesschain/chainlesschain/tree/main/packages/agent-sdk-python)。
+[Python SDK README](https://github.com/longfa/chainlesschain/tree/main/packages/agent-sdk-python)。
 
 ## 配置参考
 
@@ -444,5 +444,5 @@ Python 使用同一组语义，字段名改为 snake_case：
 - [语义代码智能 — LSP](./cli-code-intel.md)
 - [Cowork 多智能体协作](./cowork.md)
 - [Python SDK 0.2.8（PyPI）](https://pypi.org/project/chainlesschain-agent-sdk/)
-- [Python SDK 仓库说明](https://github.com/chainlesschain/chainlesschain/tree/main/packages/agent-sdk-python)
+- [Python SDK 仓库说明](https://github.com/longfa/chainlesschain/tree/main/packages/agent-sdk-python)
 - 设计文档：`docs/design/modules/103_Agent_SDK平台化方案.md`（设计站同步）

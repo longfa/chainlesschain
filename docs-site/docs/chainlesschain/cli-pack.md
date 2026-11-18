@@ -308,4 +308,4 @@ cc pack --targets node20-win-x64,node20-linux-x64,node20-macos-arm64 \
 - [WebSocket 服务 (serve)](./cli-serve) — 产物内 WS 层的完整接口
 - [Web 管理面板 (ui)](./cli-web-panel) — 产物内 Web UI 的能力与 `--ui-mode`
 - [配置说明](./configuration) — `.chainlesschain/config.json` 结构
-- [CC_PACK 打包指令设计文档](https://github.com/chainlesschain/chainlesschain/blob/main/docs/design/CC_PACK_打包指令设计文档.md) — 完整设计 (Phase 2+ 远程访问、RBAC、审计日志、代码签名详细规范)
+- [CC_PACK 打包指令设计文档](https://github.com/longfa/chainlesschain/blob/main/docs/design/CC_PACK_打包指令设计文档.md) — 完整设计 (Phase 2+ 远程访问、RBAC、审计日志、代码签名详细规范)

@@ -2,7 +2,7 @@
 
 ## 概述
 
-CLI **0.166.126** 已通过 [GitHub Actions OIDC](https://github.com/chainlesschain/chainlesschain/actions/runs/40332695884) 公开发布，修复自动恢复摘要将 JSON 截断后反复污染下一轮请求的问题。精确源码 `1b848f7e265737b73e6f8ac99f0aeaf9ea5dadbe` 的 Linux、Windows、macOS CLI CI 和 Strict Sandbox 全部通过；公开归档、不可变 CI 制品、签名来源及十个直接子依赖已核验。[发布证据](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release126-public/publication.json)。
+CLI **0.166.126** 已通过 [GitHub Actions OIDC](https://github.com/chainlesschain/chainlesschain/actions/runs/40332695884) 公开发布，修复自动恢复摘要将 JSON 截断后反复污染下一轮请求的问题。精确源码 `1b848f7e265737b73e6f8ac99f0aeaf9ea5dadbe` 的 Linux、Windows、macOS CLI CI 和 Strict Sandbox 全部通过；公开归档、不可变 CI 制品、签名来源及十个直接子依赖已核验。[发布证据](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release126-public/publication.json)。
 
 `.126` 覆盖文件摘要、任务进度、远端查询、旧检查点恢复和重新读取 `WORKLOG.md` 的路径。无法安全表示的派生摘要会明确省略，并保留定位信息；原始 JSONL 和权威检查点不会因此改写。真正损坏的原始工具结果仍会被拒绝。此修复不需要删除会话、关闭 Evolution 或改换模型。
 
@@ -12,11 +12,11 @@ cc --version
 cc doctor
 ```
 
-升级后重启 IDE 聊天宿主，并确认实际 CLI 路径和版本。Open VSX **0.37.163** 已公开上市，[版本 VSIX](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.163/file/chainlesschain.chainlesschain-ide-0.37.163.vsix) 与不可变 CI 制品逐字节一致；包内推荐 CLI **0.166.125**。JetBrains **0.4.179** 保持现有公开版本，推荐 CLI **0.166.123**。[IDE 发布证据](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release126-public/open-vsx.json)。Microsoft Marketplace 尚未发布，原版 VS Code 可使用上述 VSIX 安装。子包版本不变；未新增真实模型任务验收，累计 **32/45**、**13** 项未完成及 **NOT_PAID_READY / NOT_ADMITTED / HOLD** 保留。
+升级后重启 IDE 聊天宿主，并确认实际 CLI 路径和版本。Open VSX **0.37.163** 已公开上市，[版本 VSIX](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.163/file/chainlesschain.chainlesschain-ide-0.37.163.vsix) 与不可变 CI 制品逐字节一致；包内推荐 CLI **0.166.125**。JetBrains **0.4.179** 保持现有公开版本，推荐 CLI **0.166.123**。[IDE 发布证据](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release126-public/open-vsx.json)。Microsoft Marketplace 尚未发布，原版 VS Code 可使用上述 VSIX 安装。子包版本不变；未新增真实模型任务验收，累计 **32/45**、**13** 项未完成及 **NOT_PAID_READY / NOT_ADMITTED / HOLD** 保留。
 
 ## CLI .125 历史发行记录
 
-CLI **0.166.125** 已通过 [GitHub Actions OIDC](https://github.com/chainlesschain/chainlesschain/actions/runs/40274009347) 公开发布，精确源提交为 `4285a55c2f4dfb0c0eddb7cb8f63fc73f2ff1a2b`。Linux、Windows、macOS 的 CLI CI 和 Strict Sandbox 全部通过；公开归档与 CI 制品逐字节一致，签名来源、十个子包依赖及离线变更日志版本已核验。[发布证据](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release125-public/publication.json)。
+CLI **0.166.125** 已通过 [GitHub Actions OIDC](https://github.com/chainlesschain/chainlesschain/actions/runs/40274009347) 公开发布，精确源提交为 `4285a55c2f4dfb0c0eddb7cb8f63fc73f2ff1a2b`。Linux、Windows、macOS 的 CLI CI 和 Strict Sandbox 全部通过；公开归档与 CI 制品逐字节一致，签名来源、十个子包依赖及离线变更日志版本已核验。[发布证据](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release125-public/publication.json)。
 
 本次修复 Python `subprocess.run(["git", *args])` 成功后，下一轮历史投影误报 JSON 错误并退出的问题，并覆盖已知代码路径中的 JS 展开、对象解包及部分运算表达式。严格 JSON 校验、敏感信息脱敏、预算和历史证据验证继续生效；敏感名称或无法解码的模板上下文仍保守拒绝。
 
@@ -68,7 +68,7 @@ cc doctor
 
 发行源码为 `4a7e5adc5e6a241434ecfa906a272e34b5ea6d2a`。CLI 的 Linux、Windows、macOS 发布门与 Strict Sandbox 均通过，之后经 GitHub Actions OIDC 发布。独立公共 npm 安装使用 `--ignore-scripts`，检查 CLI 和十个直接子包的来源、完整性与版本，并验证版本命令和静态 capability 清单。
 
-Open VSX 公开 VSIX 与不可变 CI 候选的原始摘要和完整 ZIP 内容摘要一致。JetBrains 公开 ZIP 与候选 ZIP 的原始字节不同，但公开包内版本、编译后的 CLI 推荐值及所有候选 JAR 内部条目均已核对，且无新增条目；不声称两份 ZIP 逐字节相同。[完整发行证据](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release121-public/publication.json)保留审核中到公开的历史观察。
+Open VSX 公开 VSIX 与不可变 CI 候选的原始摘要和完整 ZIP 内容摘要一致。JetBrains 公开 ZIP 与候选 ZIP 的原始字节不同，但公开包内版本、编译后的 CLI 推荐值及所有候选 JAR 内部条目均已核对，且无新增条目；不声称两份 ZIP 逐字节相同。[完整发行证据](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release121-public/publication.json)保留审核中到公开的历史观察。
 
 跨版本累计验收保持 **32/45**、**13** 项未完成；本次没有新增真实模型任务验收。**NOT_PAID_READY / NOT_ADMITTED / HOLD** 不变。桌面和移动端产品具有独立版本、安装授权及验收流程，不能由 CLI 或 IDE 发布推断对应客户端已更新。
 
@@ -97,9 +97,9 @@ IDE 使用配置的本机 CLI 路径启动宿主；CLI 在请求模型前执行�
 
 ## 关键文件
 
-- [公开发行记录](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release121-public/publication.json)：三渠道版本、精确提交与工作流。
-- [公共 npm 安装证明](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release121-public/public-registry-install.json)：来源、依赖固定版本与静态 smoke。
-- [JetBrains 公开回读](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release121-public/jetbrains178-marketplace-readback.json)：批准、上市、下载与候选比较范围。
+- [公开发行记录](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release121-public/publication.json)：三渠道版本、精确提交与工作流。
+- [公共 npm 安装证明](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release121-public/public-registry-install.json)：来源、依赖固定版本与静态 smoke。
+- [JetBrains 公开回读](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release121-public/jetbrains178-marketplace-readback.json)：批准、上市、下载与候选比较范围。
 
 ## 相关文档
 

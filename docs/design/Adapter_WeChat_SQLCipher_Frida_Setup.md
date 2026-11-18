@@ -190,7 +190,7 @@ WCDBKeyDerive
 _ZN4WCDB8Database13setCipherKeyERKNSt6__ndk1...
 ```
 
-如果你的 WeChat 升级后命中不了，UI 会提示 `module-waiting → timeout`。提 [issue](https://github.com/chainlesschain/chainlesschain/issues) 带：
+如果你的 WeChat 升级后命中不了，UI 会提示 `module-waiting → timeout`。提 [issue](https://github.com/longfa/chainlesschain/issues) 带：
 
 - WeChat 版本号
 - `adb shell "su -c 'cat /proc/$(pidof com.tencent.mm)/maps | grep libwcdb'"` 输出

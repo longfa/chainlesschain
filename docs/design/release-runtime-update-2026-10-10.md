@@ -6,7 +6,7 @@
 
 2026-10-10 公开回读：CLI **0.166.96**、Agent SDK **0.2.14**、Open VSX **0.37.140**、JetBrains **0.4.158** 已公开，两个 IDE 均推荐 CLI `0.166.96`，准确发行提交 `da91e730d8`。Session Core **0.3.18**、Context/Memory Kernel **0.1.8**、PDH **0.4.64** 保持独立版本；产品 **v5.0.3.140** 仍来自 `f733f92cb9`。源码核对至 `main@2650447476`。本轮改善并发权限设置、JetBrains 审批卡片布局与失败诊断，补齐 Windows 私有工具链和清理取证；正式 36+9 评测保持 NOT_RUN，完整 native review 保持 NOT_ADMITTED，自动晋升 HOLD。
 
-本页按 Git 增量 `1e5477aebe..2650447476` 核对，合并记录为 [PR #425](https://github.com/chainlesschain/chainlesschain/pull/425)。已发行源码与文档核对主线分别记录；SDK 的本轮变化为测试启动诊断及签名源码身份，生成运行时输出未变。
+本页按 Git 增量 `1e5477aebe..2650447476` 核对，合并记录为 [PR #425](https://github.com/longfa/chainlesschain/pull/425)。已发行源码与文档核对主线分别记录；SDK 的本轮变化为测试启动诊断及签名源码身份，生成运行时输出未变。
 
 | 制品                               | 公开版本                | 身份与配对                                            |
 | ---------------------------------- | ----------------------- | ----------------------------------------------------- |
@@ -61,6 +61,6 @@
 - `packages/cli/src/lib/settings-loader.cjs`、`with-file-lock.js`、`model-catalog-review.js`。
 - `packages/cli/src/lib/process-execution-broker/windows-native-evaluator.js`、`windows-sandbox.cs`。
 - `packages/jetbrains-plugin/src/main/java/com/chainlesschain/ide/intellij/ChatCardsLayout.java`、`ConversationView.java`；`UiEventDiagnostics.java`。
-- [发行证据原件](https://github.com/chainlesschain/chainlesschain/tree/73f5a3550d87db724f0c539223e671fd3ea6d1e1/docs/research/cli/evidence/gap-2026-10-05/release-0.166.96/final-release)。
+- [发行证据原件](https://github.com/longfa/chainlesschain/tree/73f5a3550d87db724f0c539223e671fd3ea6d1e1/docs/research/cli/evidence/gap-2026-10-05/release-0.166.96/final-release)。
 - [本轮升级与故障排查](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-10-10.html)、[发布与升级](https://docs.chainlesschain.com/chainlesschain/agent-platform-release.html)。
 - [10 月 8 日设计快照](release-runtime-update-2026-10-08-latest.md)保留当时的版本与实验范围。

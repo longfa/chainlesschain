@@ -59,7 +59,7 @@ CLI 准确提交的 [CLI CI](https://github.com/chainlesschain/chainlesschain/ac
 
 ## 来源与相关文档
 
-- [本轮公开状态与制品摘要](https://github.com/chainlesschain/chainlesschain/blob/feature/docs-sites-20261020/docs/research/cli/evidence/documentation-release-status-2026-10-20.json)
+- [本轮公开状态与制品摘要](https://github.com/longfa/chainlesschain/blob/feature/docs-sites-20261020/docs/research/cli/evidence/documentation-release-status-2026-10-20.json)
 - [升级与故障排查](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-10-20.html)
 - [目标草稿操作指南](https://docs.chainlesschain.com/chainlesschain/goal-drafts-current.html)
 - [10 月 18 日历史架构与补测边界](./release-runtime-update-2026-10-18.md)

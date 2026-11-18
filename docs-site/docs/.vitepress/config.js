@@ -59,8 +59,8 @@ export default defineConfig({
           { text: "ChainlessChain系统", link: "/chainlesschain/overview" },
           { text: "厂家管理系统", link: "/manufacturer/overview" },
           {
-            text: "当前安装与升级（11-15）",
-            link: "/chainlesschain/cli-ide-update-2026-11-14-150",
+            text: "当前安装与升级（11-19）",
+            link: "/chainlesschain/cli-ide-update-2026-11-19-156",
           },
         ],
       },
@@ -1432,6 +1432,10 @@ export default defineConfig({
               collapsed: true,
               items: [
                 {
+                  text: "11-19 CLI .156 / LK 模型与账单修复",
+                  link: "/chainlesschain/cli-ide-update-2026-11-19-156",
+                },
+                {
                   text: "11-15 CLI .150 / LK 与账户配置",
                   link: "/chainlesschain/cli-ide-update-2026-11-14-150",
                 },
@@ -1450,6 +1454,10 @@ export default defineConfig({
                 {
                   text: "11-10 CLI .146 / IDE .185 / .199",
                   link: "/chainlesschain/cli-ide-update-2026-11-10-146",
+                },
+                {
+                  text: "11-19 LK .156 发行与设计",
+                  link: "/design/release-runtime-update-2026-11-19-156",
                 },
                 {
                   text: "11-09 CLI .145 公开组合（历史）",
@@ -2697,7 +2705,7 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: "github", link: "https://github.com/chainlesschain" },
+      { icon: "github", link: "https://github.com/longfa/chainlesschain" },
     ],
 
     footer: {
