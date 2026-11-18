@@ -1,0 +1,90 @@
+{
+  "sourceCommit": "b0b8ec60c1dbdc4622334a7c7b903df4d677e4d1",
+  "passed": true,
+  "checks": [
+    {
+      "name": "official",
+      "url": "https://www.chainlesschain.com/",
+      "width": 1440,
+      "httpStatus": 200,
+      "errors": []
+    },
+    {
+      "name": "official",
+      "url": "https://www.chainlesschain.com/",
+      "width": 390,
+      "httpStatus": 200,
+      "errors": []
+    },
+    {
+      "name": "official-en",
+      "url": "https://www.chainlesschain.com/en/",
+      "width": 1440,
+      "httpStatus": 200,
+      "errors": []
+    },
+    {
+      "name": "official-en",
+      "url": "https://www.chainlesschain.com/en/",
+      "width": 390,
+      "httpStatus": 200,
+      "errors": []
+    },
+    {
+      "name": "desktop",
+      "url": "https://www.chainlesschain.com/desktop/",
+      "width": 1440,
+      "httpStatus": 200,
+      "errors": []
+    },
+    {
+      "name": "desktop",
+      "url": "https://www.chainlesschain.com/desktop/",
+      "width": 390,
+      "httpStatus": 200,
+      "errors": []
+    },
+    {
+      "name": "docs",
+      "url": "https://docs.chainlesschain.com/",
+      "width": 1440,
+      "httpStatus": 200,
+      "errors": []
+    },
+    {
+      "name": "docs",
+      "url": "https://docs.chainlesschain.com/",
+      "width": 390,
+      "httpStatus": 200,
+      "errors": []
+    },
+    {
+      "name": "quickstart",
+      "url": "https://docs.chainlesschain.com/guide/getting-started.html",
+      "width": 1440,
+      "httpStatus": 200,
+      "errors": []
+    },
+    {
+      "name": "quickstart",
+      "url": "https://docs.chainlesschain.com/guide/getting-started.html",
+      "width": 390,
+      "httpStatus": 200,
+      "errors": []
+    },
+    {
+      "name": "design",
+      "url": "https://design.chainlesschain.com/release-runtime-update-2026-11-19-156.html",
+      "width": 1440,
+      "httpStatus": 200,
+      "errors": []
+    },
+    {
+      "name": "design",
+      "url": "https://design.chainlesschain.com/release-runtime-update-2026-11-19-156.html",
+      "width": 390,
+      "httpStatus": 200,
+      "errors": []
+    }
+  ]
+}
