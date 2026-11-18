@@ -2,9 +2,11 @@
 
 Documentation baseline (2026-11-15): updated from current Git history and verified public releases. See [LK configuration and billing](docs-site/docs/chainlesschain/cli-llm.md) and [channel architecture and credential isolation](docs/design/release-runtime-update-2026-11-15-150.md).
 
-## CLI 0.166.154 release candidate (2026-11-16)
+## Public CLI 0.166.156 / IDE update (2026-11-18)
 
-Candidate 0.166.154 fixes the bounded recovery guard so repeated large stdout/stderr from check_shell cannot bypass the six-batch no-progress backstop. The release requires exact-source CLI CI and Strict Sandbox matrices, Actions OIDC publication and public readback. VS Code 0.37.191 and JetBrains 0.4.206 will pair with CLI 0.166.154 after the CLI is public.
+CLI **0.166.156** is public from source `a8cae89288d3a6119b152e04b750e10d726a5c5f`: **75/75 CLI CI**, **6/6 Strict Sandbox**, Actions OIDC publication and public npm readback passed. The published package includes current LK model IDs, same-family legacy aliases, 86 chat models and authenticated account billing. Install `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org`, restart IDE hosts, then check `cc --version`.
+
+VS Code **0.37.192** is public on Open VSX: its complete tag workflow passed and the downloadable VSIX is byte-identical to the immutable candidate. JetBrains **0.4.207** remains gated by its macOS host tests and is not yet public. See [release scope](docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-156.md). PC/mobile installers are outside this update.
 
 ## Public CLI 0.166.150 / IDE pairing (2026-11-15)
 

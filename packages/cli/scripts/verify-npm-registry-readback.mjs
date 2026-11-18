@@ -107,6 +107,23 @@ export function verifyNpmRegistryReadback(options) {
   const packageName = NPM_RELEASE_AUTHORITY.packageName;
   const expectedVersion = options.version || manifest.version;
   const expectedCommit = options.commit || manifest.commit;
+  const repository = options.repository ?? NPM_RELEASE_AUTHORITY.repository;
+  if (
+    ![
+      NPM_RELEASE_AUTHORITY.repository,
+      "https://github.com/longfa/chainlesschain",
+    ].includes(repository)
+  ) {
+    throw new Error(
+      "Publishing repository is outside the authorized release repositories",
+    );
+  }
+  if (
+    typeof expectedCommit !== "string" ||
+    !/^[0-9a-f]{40}$/u.test(expectedCommit)
+  ) {
+    throw new Error("Expected release commit must be a full Git SHA");
+  }
 
   assertExact(manifest.schema, 2, "release manifest schema");
   assertExact(manifest.package, packageName, "release manifest package");
@@ -138,11 +155,7 @@ export function verifyNpmRegistryReadback(options) {
   assertExact(provenance.version, expectedVersion, "npm provenance version");
   assertExact(provenance.commit, expectedCommit, "npm provenance commit");
   assertExact(provenance.sha512, manifest.sha512, "npm provenance sha512");
-  assertExact(
-    provenance.repository,
-    NPM_RELEASE_AUTHORITY.repository,
-    "npm provenance repository",
-  );
+  assertExact(provenance.repository, repository, "npm provenance repository");
   assertExact(
     provenance.workflow,
     NPM_RELEASE_AUTHORITY.workflow,
@@ -158,7 +171,7 @@ export function verifyNpmRegistryReadback(options) {
   }
   assertExact(
     manifest.workflowRun,
-    `${NPM_RELEASE_AUTHORITY.repository}/actions/runs/${provenance.runId}`,
+    `${repository}/actions/runs/${provenance.runId}`,
     "attested workflow run",
   );
 
@@ -168,6 +181,7 @@ export function verifyNpmRegistryReadback(options) {
     package: packageName,
     version: expectedVersion,
     commit: expectedCommit,
+    repository,
     ref: provenance.ref,
     publishRunId: provenance.runId,
     publishAttempt: provenance.attempt,
@@ -214,6 +228,7 @@ function main() {
     provenance: readBoundedJson(provenancePath, "npm provenance"),
     version: process.env.CC_RELEASE_VERSION || null,
     commit: process.env.CC_RELEASE_COMMIT || null,
+    repository: process.env.CC_NPM_RELEASE_REPOSITORY,
   });
   const output = path.resolve(
     process.env.CC_NPM_READBACK_OUTPUT || "npm-registry-readback.json",

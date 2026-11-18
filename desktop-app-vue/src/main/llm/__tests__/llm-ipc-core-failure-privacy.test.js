@@ -115,7 +115,7 @@ describe("LLM core IPC failure privacy", () => {
     getLLMConfig.mockReturnValue({
       getAll: () => ({
         provider: "anthropic",
-        anthropic: { baseURL: "https://api.lk666.ai", model: "fb-5-2", apiKey },
+        anthropic: { baseURL: "https://api.lk666.ai", model: "claude-opus-5-5", apiKey },
       }),
     });
     const fetcher = vi.fn(

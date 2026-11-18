@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "verifiedAt": "2026-11-18T13:40:38.999Z",
+  "package": "chainlesschain",
+  "version": "0.166.156",
+  "commit": "a8cae89288d3a6119b152e04b750e10d726a5c5f",
+  "repository": "https://github.com/longfa/chainlesschain",
+  "ref": "refs/tags/v-npm-0-166-156",
+  "publishRunId": 44222103142,
+  "publishAttempt": 1,
+  "artifact": "chainlesschain-0.166.156.tgz",
+  "bytes": 9666748,
+  "sha256": "18be9e5baea37169585985c3d56ac9c051d18b43040007b247a969dfc615ea16",
+  "sha512": "5117a567b7aeb70d7c2ac4c8cc3b5c7e48b781f835d949257cf47d067b892860ecf3229ecfc5de92b82075e38cc8e8c2b429f79d44a5fca2b43fa95e2360b9be",
+  "byteIdentical": true
+}

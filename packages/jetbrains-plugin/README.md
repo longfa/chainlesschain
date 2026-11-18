@@ -1,10 +1,8 @@
 # ChainlessChain IDE Bridge (JetBrains)
 
-This release adds fresh LK model prices, balance, Key quota and actual API billing (`cc llm account`), plus saved credentials for every configured channel, including Volcengine. Saved connections restore the Key when switching back; LK hosts and protocols share one credential. Desktop source supports the same account queries and encrypted connection history; a new desktop installer is not part of this release.
+Candidate **0.4.207** pairs with CLI **0.166.156** for corrected LK model IDs, protocol-filtered selection and authenticated price/billing queries. Publication waits for the paired CLI on npm and the complete IDE host gates. Older public releases below are historical pairings.
 
-## Release candidate 0.4.206 / CLI 0.166.154
-
-This candidate pairs with CLI **0.166.154**, which bounds repeated background stdout/stderr recovery loops. Publish only after the CLI is publicly verified and the exact-source JetBrains host, build and Marketplace gates pass.
+After CLI publication, install `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org`, restart the IDE, and verify `cc --version`. See [release scope](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-156.md). No new PC/mobile installer is included.
 
 ## Current release 0.4.204 / CLI 0.166.150
 
@@ -319,9 +317,9 @@ See the [verified publication evidence](https://github.com/chainlesschain/chainl
 
 ## Release compatibility
 
-Plugin **0.4.206** is the current release candidate. It recommends `chainlesschain@0.166.154` and pairs with the CLI's bounded background-output recovery guard. The verified Marketplace release remains the prior public version until the exact tag workflow and Marketplace readback pass. [Rewind fix](https://github.com/chainlesschain/chainlesschain/pull/593).
+Plugin **0.4.207** is the current release candidate. It recommends `chainlesschain@0.166.156` for current LK model identities and authenticated account queries. The candidate requires complete host gates, upload and public Marketplace readback. [Release scope](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-156.md).
 
-Install the paired public CLI with `npm i -g chainlesschain@0.166.154 --registry https://registry.npmjs.org` after publication, restart the chat host, and run `cc --version` and `cc doctor`. Goal transfer and native Graph features require matching desktop support and explicit native authorization. Model-task improvement and automatic promotion remain unverified.
+Install the paired public CLI with `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org` after publication, restart the chat host, and run `cc --version` and `cc doctor`. Goal transfer and native Graph features require matching desktop support and explicit native authorization. Model-task improvement and automatic promotion remain unverified.
 
 ## Previous candidates and development notes
 

@@ -2,13 +2,13 @@
 
 Command-line interface for installing, configuring, and managing [ChainlessChain](https://www.chainlesschain.com), including the coding agent, governed tools, sessions, memory, and IDE integrations.
 
-## CLI 0.166.154 release candidate (2026-11-16)
+## Public CLI 0.166.156 (2026-11-18)
 
-CLI **0.166.154** fixes the bounded recovery guard so repeated large `stdout` and `stderr` from `check_shell` cannot bypass the six-batch no-progress backstop. Publication requires the new exact release commit's complete CLI CI and Strict Sandbox matrices, Actions OIDC publishing, and public package/provenance verification. Until those finish, the verified public version and installation command remain **0.166.150** below.
+CLI **0.166.156** is public on npm. Exact source `a8cae89288d3a6119b152e04b750e10d726a5c5f` passed all 75 CLI CI jobs and all 6 Strict Sandbox jobs before Actions OIDC publication and registry readback. See [CLI CI](https://github.com/longfa/chainlesschain/actions/runs/44222103058), [Strict Sandbox](https://github.com/longfa/chainlesschain/actions/runs/44222103031), and [Actions OIDC publication](https://github.com/longfa/chainlesschain/actions/runs/44222103142). The package contains the current 202-entry LK catalog, including 86 chat models, with `gpt-6.1-sol` at `https://api.vv666.ai/v1` and backup `https://api.lk666.ai`.
 
-This CLI release leaves child npm versions unchanged. VS Code **0.37.191** and JetBrains **0.4.206** will recommend CLI **0.166.154** after the CLI is public; native clients remain **v5.0.3.145**. [Release scope and status](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-16-154.md).
+Child npm versions remain unchanged. The new pairing is public Open VSX **0.37.192**, verified byte-for-byte against its immutable candidate; JetBrains **0.4.207** still awaits its complete host gates and public Marketplace readback. Install `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org` then restart IDE hosts, then run `cc --version`. Native installers and media task execution are outside this release. [Release scope](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-156.md).
 
-## Public CLI 0.166.150 / IDE pairing (2026-11-15)
+## Historical CLI 0.166.150 / IDE pairing (2026-11-15)
 
 CLI **0.166.150** is public through [GitHub Actions OIDC](https://github.com/chainlesschain/chainlesschain/actions/runs/43642085522). Exact source `b2af25c65d34f1ee34cdddf308b5a8e57bb4f198` passed all configured CLI CI and Strict Sandbox jobs on Linux, Windows and macOS. Public archive byte identity, signed provenance and registry-only child dependencies are verified.
 

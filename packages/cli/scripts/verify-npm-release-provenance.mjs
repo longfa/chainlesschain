@@ -325,7 +325,18 @@ async function main() {
       );
     }
     auditPath = pathValue;
-    expected = { packageName, version, commit, ref, sha512 };
+    const repository =
+      process.env.CC_NPM_RELEASE_REPOSITORY || NPM_RELEASE_AUTHORITY.repository;
+    if (
+      ![
+        NPM_RELEASE_AUTHORITY.repository,
+        "https://github.com/longfa/chainlesschain",
+      ].includes(repository)
+    )
+      throw new Error(
+        "Publishing repository is outside the authorized release repositories",
+      );
+    expected = { packageName, version, commit, ref, sha512, repository };
   }
   const result = verifyNpmReleaseProvenance(readAudit(auditPath), expected);
   const output = path.resolve(

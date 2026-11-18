@@ -224,7 +224,7 @@ function openLlmConfigPanel(
       )
       .replace(
         '<div class="field" id="protocol-field">',
-        '<div class="field" id="lk-address-field" hidden><label for="lk-address">LK 主备地址</label><select id="lk-address"><option value="primary">主 api.lk888.ai</option><option value="backup">备用 api.lk666.ai</option></select></div>' +
+        '<div class="field" id="lk-address-field" hidden><label for="lk-address">LK 主备地址</label><select id="lk-address"><option value="primary">主 api.vv666.ai</option><option value="backup">备用 api.lk666.ai</option></select></div>' +
           '<div class="field" id="lk-model-field" hidden><label for="lk-model">LK 模型目录</label><select id="lk-model"></select><span class="hint">按协议筛选对话模型；下方仍可填写新模型 ID。媒体模型通过文档查看。</span><a href="https://chainlesschain.net/apidoc">开发文档</a> · <a href="https://chainlesschain.net/api/pricing">模型定价</a></div>' +
           '<div class="field" id="protocol-field">',
       ),

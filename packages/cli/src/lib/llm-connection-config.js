@@ -1,7 +1,11 @@
 import { BUILT_IN_PROVIDERS } from "./llm-providers.js";
 import { createHash } from "node:crypto";
 import { normalizeOllamaBaseUrl } from "./ollama-base-url.js";
-import { isLkEndpoint, resolveLkConnection } from "./llm-channel-presets.js";
+import {
+  canonicalLkModel,
+  isLkEndpoint,
+  resolveLkConnection,
+} from "./llm-channel-presets.js";
 import {
   setSecretConfigValue,
   updateConfigAtomically,
@@ -73,6 +77,7 @@ export function normalizeLlmConnection(input) {
     );
   value.baseUrl = url.href.replace(/\/+$/, "");
   if (isLkEndpoint(value.baseUrl)) {
+    value.model = canonicalLkModel(value.model);
     const expected = resolveLkConnection(
       ["custom", "openai"].includes(value.provider) ? "openai" : value.provider,
       "primary",

@@ -8,6 +8,7 @@ const TREE = "ab".repeat(20);
 function evidence(overrides = {}) {
   return {
     anchorMode: "trusted-reuse",
+    repository: "https://github.com/chainlesschain/chainlesschain",
     commit: ANCHOR_COMMIT,
     ref: "refs/tags/v-npm-1-2-2",
     ...overrides,
@@ -51,7 +52,7 @@ describe("reused npm package source tree", () => {
       "--force",
       "--no-tags",
       "--depth=1",
-      "origin",
+      "https://github.com/chainlesschain/chainlesschain",
       "refs/tags/v-npm-1-2-2",
     ]);
   });
@@ -69,6 +70,67 @@ describe("reused npm package source tree", () => {
         git,
       ),
     ).toThrow(/does not match/);
+  });
+
+  it("fetches only the signed commit from the authorized migration mirror", () => {
+    const git = gitWithTrees();
+    const mirrorRepository = "https://github.com/longfa/chainlesschain";
+    const result = verifyNpmReusedPackageTree(
+      evidence(),
+      CURRENT_COMMIT,
+      "packages/agent-sdk",
+      git,
+      { mirrorRepository },
+    );
+    expect(git).toHaveBeenCalledWith([
+      "fetch",
+      "--force",
+      "--no-tags",
+      "--depth=1",
+      mirrorRepository,
+      ANCHOR_COMMIT,
+    ]);
+    expect(result.repository).toBe(evidence().repository);
+    expect(result.reuse).toMatchObject({
+      mirrorRepository,
+      mirrorCommit: ANCHOR_COMMIT,
+      anchorTree: TREE,
+      currentTree: TREE,
+    });
+    const wrongCommit = gitWithTrees()
+      .mockImplementationOnce(() => "")
+      .mockImplementationOnce(() => "f".repeat(40));
+    expect(() =>
+      verifyNpmReusedPackageTree(
+        evidence(),
+        CURRENT_COMMIT,
+        "packages/agent-sdk",
+        wrongCommit,
+        { mirrorRepository },
+      ),
+    ).toThrow(/does not match/);
+    expect(() =>
+      verifyNpmReusedPackageTree(
+        evidence(),
+        CURRENT_COMMIT,
+        "packages/agent-sdk",
+        gitWithTrees(),
+        { mirrorRepository: "https://github.com/untrusted/repo" },
+      ),
+    ).toThrow(/authorized repository mapping/);
+  });
+
+  it("rejects an unrelated source repository before fetching", () => {
+    const git = gitWithTrees();
+    expect(() =>
+      verifyNpmReusedPackageTree(
+        evidence({ repository: "https://github.com/untrusted/chainlesschain" }),
+        CURRENT_COMMIT,
+        "packages/agent-sdk",
+        git,
+      ),
+    ).toThrow(/authorized release repositories/);
+    expect(git).not.toHaveBeenCalled();
   });
 
   it("rejects package source changes without a version bump", () => {

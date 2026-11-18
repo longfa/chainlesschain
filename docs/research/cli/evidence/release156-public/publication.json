@@ -1,0 +1,57 @@
+{
+  "schema": "chainlesschain.release-public-readback/v1",
+  "verifiedAt": "2026-11-18T13:25:49.205661+00:00",
+  "repository": "longfa/chainlesschain",
+  "sourceCommit": "a8cae89288d3a6119b152e04b750e10d726a5c5f",
+  "cli": {
+    "version": "0.166.156",
+    "status": "published",
+    "registry": "https://registry.npmjs.org/chainlesschain/0.166.156",
+    "modelCount": 202,
+    "chatModels": 86,
+    "defaultModel": "gpt-6.1-sol",
+    "publicArchiveInspected": true,
+    "accountAdapterMatchesSource": true
+  },
+  "gates": {
+    "cliCi": {
+      "runId": 44222103058,
+      "jobsPassed": 75
+    },
+    "strictSandbox": {
+      "runId": 44222103031,
+      "jobsPassed": 6
+    },
+    "npmPublish": {
+      "runId": 44222103142,
+      "conclusion": "success"
+    }
+  },
+  "ide": {
+    "vscode": {
+      "candidate": "0.37.192",
+      "runId": 44308435592,
+      "status": "published",
+      "version": "0.37.192",
+      "channel": "open-vsx",
+      "workflowConclusion": "success",
+      "downloadable": true,
+      "listed": true,
+      "archiveSha256": "6f7c5bde8a2a3b23dce08bf3b9c9c41b705f46207125882b3772d84c23956de3",
+      "immutableCandidateBytesMatch": true,
+      "download": "https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.192/file/chainlesschain.chainlesschain-ide-0.37.192.vsix"
+    },
+    "jetbrains": {
+      "candidate": "0.4.207",
+      "runId": 44308436365,
+      "status": "host_gate_pending",
+      "failedJob": 134816367667,
+      "failureReason": "macOS 2024.2 needs_input visibility P95 2000ms; strict SLA requires less than 2000ms"
+    }
+  },
+  "limits": [
+    "No new PC or mobile installers",
+    "All model generation paths have not been live-tested",
+    "IDE publication requires separate marketplace readback"
+  ]
+}

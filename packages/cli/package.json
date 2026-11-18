@@ -1,6 +1,6 @@
 {
   "name": "chainlesschain",
-  "version": "0.166.154",
+  "version": "0.166.156",
   "description": "CLI for ChainlessChain - install, configure, and manage your personal AI management system",
   "type": "module",
   "bin": {
@@ -94,7 +94,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/chainlesschain/chainlesschain.git",
+    "url": "git+https://github.com/longfa/chainlesschain.git",
     "directory": "packages/cli"
   },
   "homepage": "https://www.chainlesschain.com",

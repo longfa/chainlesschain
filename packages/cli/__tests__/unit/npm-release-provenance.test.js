@@ -87,6 +87,25 @@ function verify(value) {
 }
 
 describe("verified npm release provenance", () => {
+  it("binds the fork release to its own signed repository without changing legacy authority", () => {
+    const repository = "https://github.com/longfa/chainlesschain";
+    const payload = statement();
+    payload.predicate.buildDefinition.externalParameters.workflow.repository =
+      repository;
+    payload.predicate.buildDefinition.resolvedDependencies[0].uri = `git+${repository}@${REF}`;
+    payload.predicate.runDetails.metadata.invocationId = `${repository}/actions/runs/123456/attempts/2`;
+    expect(() => verify(audit(payload))).toThrow(/repository mismatch/);
+    expect(
+      verifyNpmReleaseProvenance(audit(payload), {
+        version: VERSION,
+        commit: COMMIT,
+        ref: REF,
+        sha512: SHA512,
+        repository,
+      }),
+    ).toMatchObject({ repository, anchorMode: "exact-release" });
+    expect(verify(audit()).repository).toBe(NPM_RELEASE_AUTHORITY.repository);
+  });
   it("binds npm's verified SLSA bundle to the exact release authority", () => {
     expect(verify(audit())).toMatchObject({
       package: "chainlesschain",

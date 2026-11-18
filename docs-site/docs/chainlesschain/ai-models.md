@@ -4,7 +4,7 @@
 
 已公开 CLI **0.166.150**、Open VSX **0.37.189** 和 JetBrains **0.4.204**，两款插件配套 CLI .150。更新后重启宿主，运行 `cc --version` 和 `cc doctor`。
 
-通过 `cc setup`、`cc ui` 的 LLM 配置或 IDE 的「配置大模型 / Configure LLM」选择 LK API，再选择协议、主备地址及模型。主地址为 `https://api.lk888.ai`，备用为 `https://api.lk666.ai`，域名使用字母 `lk`。主备手动切换，三种对话协议共用已保存的 LK Key。
+通过 `cc setup`、`cc ui` 的 LLM 配置或 IDE 的「配置大模型 / Configure LLM」选择 LK API，再选择协议、主备地址及模型。主地址为 `https://api.vv666.ai`，备用为 `https://api.lk666.ai`，域名使用字母 `lk`。主备手动切换，三种对话协议共用已保存的 LK Key。
 
 发布目录含 197 项模型，其中 83 项为按 OpenAI、Anthropic、Gemini 协议筛选的对话模型；图片、视频、音频条目为目录参考，聊天配置尚不提供媒体任务提交和轮询。可用模型和分组权限以当前 Key 为准。
 

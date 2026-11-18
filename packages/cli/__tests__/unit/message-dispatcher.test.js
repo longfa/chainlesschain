@@ -62,8 +62,8 @@ describe("ws message dispatcher", () => {
     const server = createServerStub();
     server._saveLlmConnection = vi.fn().mockReturnValue({
       provider: "custom",
-      model: "tt-6-luna",
-      baseUrl: "https://api.lk888.ai/v1",
+      model: "gpt-6.1-sol",
+      baseUrl: "https://api.vv666.ai/v1",
       apiKey: "fixture-secret",
     });
     server._readLlmConnection = vi.fn().mockReturnValue({
