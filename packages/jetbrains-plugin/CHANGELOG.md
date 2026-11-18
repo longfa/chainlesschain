@@ -2,7 +2,7 @@
 
 ## [0.4.207] - Current LK API models and billing (candidate, 2026-11-18)
 
-- Pair with CLI `0.166.155` after its verified public npm release.
+- Pair with CLI `0.166.156` after its verified public npm release.
 - Refresh the LK dropdown from the documented Skills API; use `gpt-6.1-sol` and current protocol-specific model IDs. Retired aliases retain their corresponding model family.
 - Correct relay provider identity, local protocol and saved credential state. Require complete host gates before upload and public Marketplace readback after approval.
 

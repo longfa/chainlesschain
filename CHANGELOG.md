@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed - cc CLI 0.166.156: LK release delivery from longfa (candidate, 2026-11-18)
+
+- Carry the corrected LK model catalog, same-family alias migration and live account query fixes from candidate 0.166.155. Candidate 0.166.155 was stopped before npm publication.
+- Use CPU ONNX installation across all release jobs. Bind the CLI package and new exact-source provenance to `longfa/chainlesschain`; retain original signed repositories and exact package-tree checks for reused child releases.
+- Pair VS Code 0.37.192 / JetBrains 0.4.207 with CLI 0.166.156 after complete exact-source CLI CI and Strict Sandbox matrices, Actions OIDC publication and public registry readback. IDE host and public channel verification follow the CLI.
+
 ### Fixed - cc CLI 0.166.155: current LK model IDs and account queries (candidate, 2026-11-18)
 
 - Synchronize 202 model identities from the documented Skills API, including 86 protocol-filtered chat models. Default OpenAI-compatible setup to `gpt-6.1-sol` on `api.vv666.ai`; retain `api.lk666.ai` as the backup.

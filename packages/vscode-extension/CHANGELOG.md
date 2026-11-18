@@ -2,7 +2,7 @@
 
 ## [0.37.192] - Current LK API models and billing (candidate, 2026-11-18)
 
-- Pair with CLI `0.166.155` after its verified public npm release.
+- Pair with CLI `0.166.156` after its verified public npm release.
 - Refresh LK model choices from the documented Skills API. Use `gpt-6.1-sol` and current protocol-specific IDs, keeping retired aliases in the same model family.
 - Validate saved LK pricing, balance, usage and billing through the paired CLI. Require complete host and browser gates before Open VSX publication.
 

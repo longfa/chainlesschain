@@ -2,11 +2,11 @@
 
 Command-line interface for installing, configuring, and managing [ChainlessChain](https://www.chainlesschain.com), including the coding agent, governed tools, sessions, memory, and IDE integrations.
 
-## CLI 0.166.155 release candidate (2026-11-18)
+## CLI 0.166.156 release candidate (2026-11-18)
 
-CLI **0.166.155** fixes LK model selection and account queries using the current API catalog: 202 models, including 86 chat models. The OpenAI-compatible default is `gpt-6.1-sol`; primary `https://api.vv666.ai`, backup `https://api.lk666.ai`. Retired aliases migrate to the same model family. Publication requires complete exact-source CLI CI and Strict Sandbox matrices, Actions OIDC and public registry readback. Until verified, the public CLI remains **0.166.150**.
+CLI **0.166.156** fixes LK model selection and account queries using the current API catalog: 202 models, including 86 chat models. The OpenAI-compatible default is `gpt-6.1-sol`; primary `https://api.vv666.ai`, backup `https://api.lk666.ai`. Retired aliases migrate to the same model family. Publication requires complete exact-source CLI CI and Strict Sandbox matrices, Actions OIDC and public registry readback. Until verified, the public CLI remains **0.166.150**.
 
-Child npm versions remain unchanged. The new pairing is VS Code **0.37.192** / JetBrains **0.4.207**, after CLI publication. Install `npm i -g chainlesschain@0.166.155 --registry https://registry.npmjs.org` after registry verification, restart IDE hosts, then run `cc --version`. Native installers and media task execution are outside this release. [Release scope](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-155.md).
+Child npm versions remain unchanged. The new pairing is VS Code **0.37.192** / JetBrains **0.4.207**, after CLI publication. Install `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org` after registry verification, restart IDE hosts, then run `cc --version`. Native installers and media task execution are outside this release. [Release scope](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-156.md).
 
 ## Public CLI 0.166.150 / IDE pairing (2026-11-15)
 

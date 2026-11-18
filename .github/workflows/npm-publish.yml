@@ -12,6 +12,15 @@ on:
 permissions:
   contents: read
 
+env:
+  # All hosted install paths, including package-cli and publish, use CPU ONNX.
+  ONNXRUNTIME_NODE_INSTALL_CUDA: skip
+  npm_config_onnxruntime_node_install_cuda: skip
+  # Bind new provenance to the actual publishing repository. Reused packages
+  # retain their original signed release anchors.
+  CC_NPM_RELEASE_REPOSITORY: https://github.com/${{ github.repository }}
+  CC_NPM_REUSE_MIRROR: https://github.com/longfa/chainlesschain
+
 jobs:
   # Manual dry runs retain an isolated full-suite check. Production tags reuse
   # the exact-SHA CLI CI and CLI Strict Sandbox matrices verified below.
