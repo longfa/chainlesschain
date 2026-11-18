@@ -505,7 +505,10 @@
     "usageCompleteRequests": "80/80",
     "knownTokenOnlyEstimateUsd": 2.6309597,
     "actualBilledCostUsd": null,
-    "authorFailures": ["verify-08", "verify-36"],
+    "authorFailures": [
+      "verify-08",
+      "verify-36"
+    ],
     "failureTerminal": "error_max_turns (20/20); independent review not reached",
     "microsoftMarketplace": "deferred-unpublished",
     "historicalAcceptanceInventory": "41/45 retained cross-version historical acceptance. Public .138 accepted 2/4 selected samples; do not add this result to the historical inventory or present it as a full 45-task cohort. Engineering, release and documentation checks add no model acceptance."
@@ -564,7 +567,7 @@
     "originalFrozenProjectAccepted": 41,
     "manuallyAssistedRepairsIncluded": false,
     "evidenceSha256": "bdef63a1002820fcb94ad6ec01726d66c28073319f4cb266c17870eacb57e060",
-    "evidenceUrl": "https://github.com/chainlesschain/chainlesschain/blob/d62866538c1988258b93998f9705c2cdd76ee105/docs/research/cli/verify01-volcengine-139-20261103/sol-comparison/cumulative-coverage.json"
+    "evidenceUrl": "https://github.com/longfa/chainlesschain/blob/d62866538c1988258b93998f9705c2cdd76ee105/docs/research/cli/verify01-volcengine-139-20261103/sol-comparison/cumulative-coverage.json"
   },
   "historicalDocumentationReview20261103": {
     "reviewedSourceCommit": "d62866538c1988258b93998f9705c2cdd76ee105",
@@ -577,7 +580,9 @@
   "taskRetestRelease": "0.166.140",
   "taskRetestProvider": "volcengine",
   "taskRetestRunId": 41638188839,
-  "taskRetestNewAcceptedSampleIds": ["verify-04"],
+  "taskRetestNewAcceptedSampleIds": [
+    "verify-04"
+  ],
   "taskRetestNewAcceptedScope": "New to historical union35->36, not this round total or new .141 acceptance",
   "taskInventoryProvider": "openai",
   "taskInventoryScope": "original-frozen-project-historical-acceptance",
@@ -603,7 +608,9 @@
       "generationPassed": 39,
       "strictAccepted": 24,
       "total": 45,
-      "newToHistoricalUnion": ["verify-04"]
+      "newToHistoricalUnion": [
+        "verify-04"
+      ]
     }
   },
   "release141Channels": {
