@@ -1,12 +1,14 @@
 # ChainlessChain 安装部署
 
-> 核对日期：**2026-11-09**。公开 CLI **0.166.145**、Open VSX **0.37.181**、JetBrains **0.4.198**；两款 IDE 推荐 CLI .145。PC / mobile 仍为独立公开产品 **v5.0.3.145**。源码产品 .146 和 VS Code .182 不作为本页已核对的公开安装推荐。
+> **2026-11-19 当前安装入口**：公开 CLI **0.166.156**、Open VSX **0.37.192**、JetBrains **0.4.207**；两款 IDE 推荐 CLI **0.166.156**。最后已核验的历史客户端为 **v5.0.3.145**，旧安装包下载源当前返回 **404**，暂不可下载。CLI、Web 与 IDE 可使用；本次不发行新客户端，**NOT_PAID_READY / NOT_ADMITTED / HOLD** 保留。[当前升级指南](./cli-ide-update-2026-11-19-156) · [当前源码仓库](https://github.com/longfa/chainlesschain)。
+
+> **2026-11-09 历史核对**：当时公开组合为 CLI **0.166.145**、Open VSX **0.37.181**、JetBrains **0.4.198**，两款 IDE 推荐 CLI .145；产品 **v5.0.3.145** 独立发行。以下 .145 文件名、系统要求与旧门禁记录保留历史范围，不证明当前旧下载源仍可用。
 
 ## 概述
 
-先选择需要的入口：终端 Agent 安装 npm CLI；浏览器工作台由 `cc ui` 启动；桌面与移动客户端使用各自的产品安装包；IDE 插件另外安装并连接 CLI。仅使用 CLI 和云端模型时，不需要先部署整套 Docker 后端。
+先选择需要的入口：终端 Agent 安装 npm CLI；浏览器工作台由 `cc ui` 启动；IDE 插件另外安装并连接 CLI。桌面与移动客户端需要独立安装包，当前旧下载源不可用，可使用已有且已核验的本地资产或按源码开发说明构建。仅使用 CLI 和云端模型时，不需要先部署整套 Docker 后端。
 
-[系统概述](./overview) · [本轮升级指南](./cli-ide-update-2026-11-09-145) · [配置说明](./configuration)
+[系统概述](./overview) · [本轮升级指南](./cli-ide-update-2026-11-19-156) · [配置说明](./configuration)
 
 ## 核心特性
 
@@ -32,13 +34,13 @@ Docker Compose → 按需启动本地模型、向量库和项目后端
 | 用途               | 要求                                                                                   |
 | ------------------ | -------------------------------------------------------------------------------------- |
 | npm CLI / 源码开发 | Node.js **22.12.0+**、npm **10+**；源码开发还需要 Git                                  |
-| 桌面客户端         | 按 Release 中操作系统与架构选择安装包；安装打包客户端不等于需要系统 Node.js            |
+| 桌面客户端         | 历史资产按操作系统与架构匹配；当前旧下载源不可用                                       |
 | Android .145       | **Android 9 / API 28+**；按设备选择 APK 架构                                           |
-| iOS .145           | **iOS 16.0+**；公开 IPA 按 ad-hoc 签名设备范围安装                                     |
+| iOS .145           | **iOS 16.0+**；历史 IPA 按 ad-hoc 签名设备范围安装                                     |
 | Docker 后端        | 已运行的 Docker Engine / Docker Desktop 与 Docker Compose；仅在使用相关服务时需要      |
 | 本地模型           | 内存、显存和磁盘按选用模型及上下文规模准备，不把固定的历史资源数字当作所有模型最低要求 |
 
-Android / iOS 要求按公开产品 .145 的发行源码核对，不能从源码包版本 .146 推断已经发布了新安装包。
+Android / iOS 要求按历史产品 .145 的发行源码核对，不能从源码包版本 .146 推断已经发布了新安装包。
 
 ## 安装 CLI 与 Web 面板
 
@@ -47,11 +49,11 @@ Android / iOS 要求按公开产品 .145 的发行源码核对，不能从源码
 ```bash
 node --version
 npm --version
-npm i -g chainlesschain@0.166.145 --registry https://registry.npmjs.org
+npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org
 cc --version
 ```
 
-安装后应显示 `0.166.145`。若 `cc` 指向系统 C 编译器或另一个工具，使用完整命令 `chainlesschain --version`，并核对 npm 全局可执行目录是否在当前终端的 PATH 中。
+安装后应显示 `0.166.156`。若 `cc` 指向系统 C 编译器或另一个工具，使用完整命令 `chainlesschain --version`，并核对 npm 全局可执行目录是否在当前终端的 PATH 中。
 
 ### 2. 初始化 CLI
 
@@ -61,7 +63,7 @@ cc doctor
 cc config validate
 ```
 
-按向导选择实际可访问的模型服务、API 模型 ID 和该服务的凭据。向导的 `--skip-download` 跳过桌面二进制下载，`--skip-services` 跳过 Docker 配置；没有这些选项时按向导确认相应步骤。配置修改与密钥输入详见[配置说明](./configuration)。
+按向导选择实际可访问的模型服务、API 模型 ID 和该服务的凭据。向导的 `--skip-download` 跳过桌面二进制下载，`--skip-services` 跳过 Docker 配置。当前旧客户端源不可用，请保留这两个选项；若直接运行 `cc setup`，应拒绝桌面下载提示。配置修改与密钥输入详见[配置说明](./configuration)。
 
 ### 3. 打开需要的工作入口
 
@@ -77,7 +79,9 @@ cc ui
 
 ## PC 端安装
 
-从 [v5.0.3.145 正式发行页](https://github.com/chainlesschain/chainlesschain/releases/tag/v5.0.3.145) 或[官网桌面下载页](https://www.chainlesschain.com/desktop)选择资产。
+**当前不可下载**：最后已核验的历史客户端为 `v5.0.3.145`，旧 Release 与安装包源返回 404；更换 GitHub 仓库地址不代表镜像安装包存在。本页不提供不可用资产链接。[官网桌面状态页](https://www.chainlesschain.com/desktop)显示当前状态，CLI / Web 用户可继续使用上方流程。
+
+下表保留历史资产名称，供已经持有并核验该版本安装包的用户识别，不是当前下载列表。
 
 | 平台                | 该版本资产示例                                          | 安装方式                           |
 | ------------------- | ------------------------------------------------------- | ---------------------------------- |
@@ -89,9 +93,9 @@ cc ui
 | Debian / Ubuntu     | `chainlesschain-desktop-vue_5.0.3-alpha.145_amd64.deb`  | 用系统包管理器安装本地 DEB         |
 | RPM 系统            | `chainlesschain-desktop-vue-5.0.3-alpha.145.x86_64.rpm` | 用对应系统包管理器安装本地 RPM     |
 
-产品标签使用 `v5.0.3.145`，桌面资产包含 `5.0.3-alpha.145`，两者是该发行的不同命名形式。下载大小以资产页面为准；本页不再使用旧的 1.0.0 文件名或未经核验的 APT 软件源。
+历史产品标签使用 `v5.0.3.145`，桌面资产包含 `5.0.3-alpha.145`，两者是该发行的不同命名形式。当前没有可用下载资产供核对大小；本页不提供未经核验的镜像或 APT 软件源。
 
-Linux 本地文件安装示例，在保存资产的目录执行：
+仅对已持有并核验的历史 Linux 本地文件，在保存资产的目录执行：
 
 ```bash
 chmod +x ChainlessChain-5.0.3-alpha.145.AppImage
@@ -101,21 +105,22 @@ chmod +x ChainlessChain-5.0.3-alpha.145.AppImage
 sudo apt install ./chainlesschain-desktop-vue_5.0.3-alpha.145_amd64.deb
 ```
 
-首次启动按应用界面完成身份、存储和模型配置。原生创建、目标移交及模型草稿等新入口仍要求匹配的桌面实现，不能只凭 CLI .145 安装成功认定现有客户端具备这些能力。
+首次启动按应用界面完成身份、存储和模型配置。原生创建、目标移交及模型草稿等新入口仍要求匹配的桌面实现，不能只凭 CLI .156 安装成功认定现有客户端具备这些能力。
 
 ## IDE 插件安装
 
 | IDE                | 当前公开插件          | 安装与配对                                                                                                                                                                                                                          |
 | ------------------ | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| VS Code 兼容编辑器 | Open VSX **0.37.181** | [商店页面](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide)，或[下载 VSIX](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.181/file/chainlesschain.chainlesschain-ide-0.37.181.vsix)后从 VSIX 安装 |
-| JetBrains          | **0.4.198**           | [Marketplace](https://plugins.jetbrains.com/plugin/32208-chainlesschain-ide-bridge)，按 IDE 兼容范围安装                                                                                                                            |
+| VS Code 兼容编辑器 | Open VSX **0.37.192** | [商店页面](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide)，或[下载 VSIX](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.192/file/chainlesschain.chainlesschain-ide-0.37.192.vsix)后从 VSIX 安装 |
+| JetBrains          | **0.4.207**           | [Marketplace](https://plugins.jetbrains.com/plugin/32208-chainlesschain-ide-bridge)，按 IDE 兼容范围安装                                                                                                                            |
 
-两款插件均推荐 CLI **0.166.145**。安装/升级后重启旧聊天宿主，通过 Doctor 核对实际 CLI 路径。Microsoft Marketplace 尚未发行；VS Code 用户可使用公开 VSIX。详细操作见 [IDE 指南](./ide-plugin)。
+两款插件均推荐 CLI **0.166.156**。安装/升级后重启旧聊天宿主，通过 Doctor 核对实际 CLI 路径。Microsoft Marketplace 尚未发行；VS Code 用户可使用公开 VSIX。详细操作见 [IDE 指南](./ide-plugin)。
 
 ## 移动端安装
 
-- **Android**：从产品 .145 发行页下载 `app-arm64-v8a-release.apk`、`app-armeabi-v7a-release.apk` 或 `app-universal-release.apk`；按设备架构选择并在系统界面确认安装。`app-release.aab` 是分发构建，不是直接点击安装的 APK。
-- **iOS**：该发行提供 `ChainlessChain.ipa`；按发行说明和 ad-hoc 签名设备范围安装。源码构建需要 macOS、Xcode 及匹配的签名配置，本页不承诺 App Store / TestFlight 全设备可用。
+- **当前状态**：历史产品 .145 的旧下载源返回 404，暂不提供 APK、AAB 或 IPA 下载链接。本次只更新网站与文档，没有发布新移动端安装包。
+- **Android 历史资产**：已持有并核验的 `app-arm64-v8a-release.apk`、`app-armeabi-v7a-release.apk` 或 `app-universal-release.apk` 按设备架构安装。`app-release.aab` 是分发构建，不是直接点击安装的 APK。
+- **iOS 历史资产**：已持有并核验的 `ChainlessChain.ipa` 仍受 ad-hoc 签名设备范围限制。源码构建需要 macOS、Xcode 及匹配的签名配置，本页不承诺 App Store / TestFlight 全设备可用。
 - **跨设备功能**：安装后仍需显式配对、身份确认和相应数据授权。详见 [Android 指南](/guide/mobile-android-usage) 与 [iOS 指南](/guide/mobile-ios-usage)。
 
 ## 从源码开发桌面应用
@@ -171,12 +176,12 @@ CLI 默认配置在 `~/.chainlesschain/config.json`；桌面端还存在 Electro
 ### 更新到本页核对的公开组合
 
 ```bash
-npm i -g chainlesschain@0.166.145 --registry https://registry.npmjs.org
+npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org
 chainlesschain --version
 chainlesschain doctor
 ```
 
-随后升级到 Open VSX .181 / JetBrains .198 并重启聊天宿主。桌面与移动客户端按产品发行页独立升级，不因 CLI 更新而自动更换。
+随后升级到 Open VSX .192 / JetBrains .207 并重启聊天宿主。桌面与移动客户端独立发行；当前旧下载源不可用，不因 CLI 更新而自动更换。
 
 ### 安装后检查模型配置
 
@@ -196,7 +201,7 @@ cc llm providers --json
 
 本页根据命令注册、包版本、实际资产、平台构建配置和对应测试文件更新。相关回归包括 `packages/cli/__tests__/integration/setup-flow.test.js`、`__tests__/unit/downloader.test.js`、`__tests__/unit/service-manager.test.js`、`__tests__/unit/config-security.test.js` 与 `__tests__/unit/paths.test.js`。
 
-公开 .145 的准确发行源已核对 CLI CI **75 成功、1 跳过** / Strict Sandbox **6 成功**。这是该发行的记录，不替代本次文档提交的构建，也不代表所有客户端安装、IDE GUI 或真实模型任务已重新验收。**NOT_PAID_READY / NOT_ADMITTED / HOLD** 保留。
+历史公开 .145 的准确发行源已核对 CLI CI **75 成功、1 跳过** / Strict Sandbox **6 成功**。这是该发行的记录，不替代本次文档提交的构建，也不代表所有客户端安装、IDE GUI 或真实模型任务已重新验收。**NOT_PAID_READY / NOT_ADMITTED / HOLD** 保留。
 
 ## 安全考虑
 
@@ -213,7 +218,7 @@ cc llm providers --json
 | npm 安装 E404 或旧版本         | 核对 `--registry https://registry.npmjs.org`、固定版本与网络，再重新打开终端检查完整命令     |
 | `cc` 不是 ChainlessChain       | 使用 `chainlesschain --version`，检查 PATH 中实际命令来源                                    |
 | Electron / native 模块安装失败 | 核对 Node 版本、平台工具链和原始安装日志；不要把镜像或编译失败当作安装完成                   |
-| `cc start` 提示未 setup        | 先运行向导；只使用 CLI 时可跳过桌面下载，另行安装客户端                                      |
+| `cc start` 提示未 setup        | CLI / Web 用户运行跳过下载的向导，再用 `cc ui`；当前旧安装包源不可用                         |
 | Docker 提示找不到编排          | 切换到目标目录或直接运行显式 `docker compose -f ...` 命令                                    |
 | 模型返回 401 / 不存在的模型    | 在配置入口核对同一个 provider、Base URL、API 模型 ID 与该端点的凭据                          |
 | 配置权限校验失败               | 先读 `cc config validate --json`；确认目标是自己的配置目录后再用 `--fix` 做安全迁移/权限修复 |

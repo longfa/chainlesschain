@@ -1,22 +1,24 @@
 # 快速开始
 
-> 2026-10-16 当前公开版本：CLI **0.166.103**、Open VSX **0.37.148**、JetBrains **0.4.165**；两个 IDE 均推荐 CLI `.103`。Session Core **0.3.19**、Kernel **0.1.10**、PDH **0.4.65**，原生产品 **v5.0.3.140** 独立发行。正式预算 **NOT_PAID_READY**，36+9 **NOT_RUN（0/36、0/9）**。 见[升级与故障排查](../chainlesschain/cli-ide-update-2026-10-16)。以下带日期的早期记录保留历史范围。
+> **2026-11-19 当前入口**：公开 CLI **0.166.156**、Open VSX **0.37.192**、JetBrains **0.4.207**，两款 IDE 推荐 CLI **0.166.156**。最后已核验的历史客户端为 **v5.0.3.145**，旧安装包下载源当前返回 **404**，暂不可下载；CLI、Web 和 IDE 可使用。本次不发布新客户端，也不新增模型任务验收，**NOT_PAID_READY / NOT_ADMITTED / HOLD** 保留。[当前升级指南](../chainlesschain/cli-ide-update-2026-11-19-156) · [当前源码仓库](https://github.com/longfa/chainlesschain)。
 
-> 2026-10-13：CLI **0.166.100** 与 Open VSX **0.37.144** 已公开，发行源码 `6a8db627c8`，文档核对主线 `283634169a`。JetBrains **0.4.162** 已上传，公开上架与下载待核验；已核验公开 **0.4.161** 推荐 CLI `.99`。Session Core **0.3.19**、Kernel **0.1.9**、SDK **0.2.14**、PDH **0.4.64** 与产品 **v5.0.3.140** 保持独立版本。 参见[升级与诊断](../chainlesschain/cli-ide-update-2026-10-13)。正式 36+9 保持 **NOT_RUN**，完整 native review 为 **NOT_ADMITTED**，自动晋升 **HOLD**；预算 PR #436 未进入本次发行，仍为 **NOT_PAID_READY**。
+> 2026-10-16 历史公开版本：CLI **0.166.103**、Open VSX **0.37.148**、JetBrains **0.4.165**；两个 IDE 均推荐 CLI `.103`。Session Core **0.3.19**、Kernel **0.1.10**、PDH **0.4.65**，原生产品 **v5.0.3.140** 独立发行。正式预算 **NOT_PAID_READY**，36+9 **NOT_RUN（0/36、0/9）**。 见[升级与故障排查](../chainlesschain/cli-ide-update-2026-10-16)。以下带日期的早期记录保留历史范围。
 
-本指南将帮助您在5分钟内快速部署和运行ChainlessChain系统。
+> 2026-10-13 历史核对：CLI **0.166.100** 与 Open VSX **0.37.144** 已公开，发行源码 `6a8db627c8`，文档核对主线 `283634169a`。JetBrains **0.4.162** 已上传，公开上架与下载待核验；已核验公开 **0.4.161** 推荐 CLI `.99`。Session Core **0.3.19**、Kernel **0.1.9**、SDK **0.2.14**、PDH **0.4.64** 与产品 **v5.0.3.140** 保持独立版本。 参见[升级与诊断](../chainlesschain/cli-ide-update-2026-10-13)。正式 36+9 保持 **NOT_RUN**，完整 native review 为 **NOT_ADMITTED**，自动晋升 **HOLD**；预算 PR #436 未进入本次发行，仍为 **NOT_PAID_READY**。
 
-## 一键安装（推荐）
+建议先运行 CLI 与本机浏览器工作台；需要开发桌面或移动端时，再使用下方源码流程。
 
-使用 CLI 命令行工具，一条命令即可完成安装和配置：
+## 安装 CLI 与 Web 面板（推荐）
+
+安装固定公开版本，配置自己的模型连接，然后启动本机 Web 面板：
 
 ```bash
-npm install -g chainlesschain
-chainlesschain setup
-chainlesschain start
+npm install -g chainlesschain@0.166.156 --registry https://registry.npmjs.org
+cc setup --skip-download --skip-services
+cc ui
 ```
 
-CLI 工具会自动检测环境、下载桌面应用、配置 LLM 提供商。详细用法请参考 [CLI 命令行工具](/chainlesschain/cli)。
+这里使用 `cc setup` 的显式跳过选项，不依赖桌面下载或 Docker 后端。按向导填写实际可访问的模型、端点和凭证，`cc ui` 地址以终端输出为准；可运行 `cc --version` 和 `cc doctor` 核对版本与环境。CLI 不等于桌面安装包，当前也不能依赖向导下载旧客户端。详见 [安装与诊断](/chainlesschain/installation) 和 [CLI 命令行工具](/chainlesschain/cli)。
 
 ## 前置要求
 
@@ -33,7 +35,9 @@ CLI 工具会自动检测环境、下载桌面应用、配置 LLM 提供商。�
 - **Docker Desktop**: Windows/Mac用户
 - **Docker + Docker Compose**: Linux用户
 
-## 安装 ChainlessChain 个人AI系统
+## 从源码开发 ChainlessChain 个人AI系统
+
+以下流程面向当前仓库开发构建，不是公开客户端安装包，也不要求 CLI / Web 用户执行。源码与发行版本的边界见[当前升级指南](../chainlesschain/cli-ide-update-2026-11-19-156)。
 
 ### 1. 克隆项目
 
@@ -47,28 +51,24 @@ cd chainlesschain
 
 ```bash
 # 安装所有依赖
-npm install
+npm ci --legacy-peer-deps
 ```
 
 ### 3. 启动后端服务
 
-使用Docker Compose启动所有后端服务（MySQL、Redis、Ollama等）：
+仅在需要相关服务时，从仓库根目录启动 PostgreSQL、Redis、Ollama 和 Qdrant：
 
 ```bash
-cd backend/docker
-docker-compose up -d
+docker compose -f docker-compose.yml up -d postgres redis ollama qdrant
 ```
 
-等待所有服务启动完成（约30秒）。
+用 `docker compose -f docker-compose.yml ps` 检查实际就绪状态，启动时间取决于本地环境。
 
 ### 4. 启动PC端应用
 
 ```bash
-# 回到项目根目录
-cd ../..
-
-# 启动桌面应用
-npm run dev:desktop
+# 在项目根目录启动 desktop-app-vue 开发应用
+npm run dev
 ```
 
 应用会自动打开。首次启动时会进行初始化配置。
@@ -77,30 +77,11 @@ npm run dev:desktop
 
 #### Android
 
-```bash
-# 启动Android开发服务器
-npm run dev:android
-
-# 在Android Studio中打开项目
-# File -> Open -> chainlesschain/android
-# 点击Run按钮运行到设备或模拟器
-```
+在 Android Studio 中打开 `android-app/`，按项目要求配置 SDK、Gradle 与设备后运行。详见 [Android 指南](/guide/mobile-android-usage)；这不会下载或恢复当前不可用的历史 APK。
 
 #### iOS
 
-```bash
-# 安装CocoaPods依赖
-cd ios
-pod install
-cd ..
-
-# 启动iOS开发服务器
-npm run dev:ios
-
-# 在Xcode中打开项目
-# File -> Open -> chainlesschain/ios/ChainlessChain.xcworkspace
-# 点击Run按钮运行到设备或模拟器
-```
+在 macOS / Xcode 中打开 `ios-app/ChainlessChain.xcodeproj`，按项目要求设置签名及目标设备。详见 [iOS 指南](/guide/mobile-ios-usage)；源码构建不代表已有 App Store、TestFlight 或全设备可安装的公开 IPA。
 
 ### 6. 初始配置
 
@@ -171,11 +152,11 @@ docker-compose logs -f
 1. **检查后端服务**
 
 ```bash
-# 检查MySQL
-docker-compose exec mysql mysql -u root -p -e "SELECT 1"
+# 从仓库根目录检查 PostgreSQL
+docker compose -f docker-compose.yml exec postgres pg_isready
 
 # 检查Redis
-docker-compose exec redis redis-cli ping
+docker compose -f docker-compose.yml exec redis redis-cli ping
 
 # 检查Ollama
 curl http://localhost:11434/api/tags
@@ -362,7 +343,9 @@ chmod 777 data/uploads
 
 **祝您使用愉快！**
 
-## 附录：规范章节补全（v5.0.2.34）
+## 历史附录：规范章节补全（v5.0.2.34）
+
+以下保留旧版本命令、性能与架构记录，不能作为当前安装推荐或本轮验收成绩；请以本页顶部 CLI / Web 流程和当前安装指南为准。
 
 > 为对齐项目用户文档标准结构，下列章节补齐若干未在正文中单独列出的视角。已在正文覆盖的章节在此段仅作简述并标注 `见上文` 指引。
 

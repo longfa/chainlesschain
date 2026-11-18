@@ -50,7 +50,7 @@ Key 不写入命令行参数、共享模型清单或文档；各服务端点的�
 npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org
 cc --version
 cc doctor
-cc setup
+cc setup --skip-download --skip-services
 cc llm account --days 7 --scope user --limit 20 --offset 0 --json
 cc ui
 ```
