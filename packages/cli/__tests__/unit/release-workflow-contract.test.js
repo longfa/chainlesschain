@@ -825,11 +825,13 @@ describe("CLI release workflow contracts", () => {
       workflow("cli-npm-release-readback.yml"),
       "public-readback",
     );
-    const provenance = readback.split(
-      "      - name: Verify public registry bytes and signed provenance",
-    )[1]?.split("      - name:")[0];
+    const provenance = readback
+      .split(
+        "      - name: Verify public registry bytes and signed provenance",
+      )[1]
+      ?.split("      - name:")[0];
     expect(provenance).toBeTypeOf("string");
-    const environment = provenance.match(/^ {8}env:\n((?: {10}.*\n)+)/mu)?.[1];
+    const environment = readback.match(/^ {4}env:\n((?: {6}.*\n)+)/mu)?.[1];
     expect(environment).toContain(
       "CC_NPM_RELEASE_REPOSITORY: https://github.com/${{ github.repository }}",
     );
@@ -842,7 +844,20 @@ describe("CLI release workflow contracts", () => {
     expect(provenance).not.toContain("--trusted-anchor");
     expect(readback).toContain('TAG_SHA=$(git rev-parse "${TAG}^{commit}")');
     expect(readback).toContain("repository: ${{ github.repository }}");
-    expect(readback).toContain("run-id: ${{ steps.provenance.outputs.run_id }}");
+    expect(readback).toContain(
+      "run-id: ${{ steps.provenance.outputs.run_id }}",
+    );
+    expect(readback.match(/CC_NPM_RELEASE_REPOSITORY:/gu)).toHaveLength(1);
+    const byteReadback = readback
+      .split(
+        "      - name: Prove registry tarball is the immutable workflow artifact",
+      )[1]
+      ?.split("      - name:")[0];
+    expect(byteReadback).toContain('CC_RELEASE_COMMIT="$TAG_SHA"');
+    expect(byteReadback).toContain("verify-npm-registry-readback.mjs");
+    expect(byteReadback).toContain(
+      "readback/chainlesschain-npm-provenance.json",
+    );
   });
 
   it("keeps local generic publish scripts outside the CLI authority", () => {

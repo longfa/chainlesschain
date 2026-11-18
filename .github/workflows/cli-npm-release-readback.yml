@@ -33,6 +33,10 @@ jobs:
     name: immutable artifact, registry bytes, and signed provenance
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      # Both signature validation and final byte readback must bind to the
+      # publishing repository. Each verifier retains its explicit allowlist.
+      CC_NPM_RELEASE_REPOSITORY: https://github.com/${{ github.repository }}
     steps:
       - name: Checkout verification implementation and tags
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
@@ -81,9 +85,6 @@ jobs:
         id: provenance
         shell: bash
         env:
-          # Match the attested publishing repository; the verifier retains its
-          # explicit repository allowlist and exact tag/SHA/signature checks.
-          CC_NPM_RELEASE_REPOSITORY: https://github.com/${{ github.repository }}
           VERSION: ${{ steps.identity.outputs.version }}
           TAG: ${{ steps.identity.outputs.tag }}
           TAG_SHA: ${{ steps.identity.outputs.tag_sha }}
