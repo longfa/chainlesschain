@@ -1,6 +1,6 @@
 {
   "schema": "chainlesschain.release-public-readback/v1",
-  "verifiedAt": "2026-11-18T12:58:11.768720+00:00",
+  "verifiedAt": "2026-11-18T13:25:49.205661+00:00",
   "repository": "longfa/chainlesschain",
   "sourceCommit": "a8cae89288d3a6119b152e04b750e10d726a5c5f",
   "cli": {
@@ -31,12 +31,22 @@
     "vscode": {
       "candidate": "0.37.192",
       "runId": 44308435592,
-      "status": "in_progress"
+      "status": "published",
+      "version": "0.37.192",
+      "channel": "open-vsx",
+      "workflowConclusion": "success",
+      "downloadable": true,
+      "listed": true,
+      "archiveSha256": "6f7c5bde8a2a3b23dce08bf3b9c9c41b705f46207125882b3772d84c23956de3",
+      "immutableCandidateBytesMatch": true,
+      "download": "https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.192/file/chainlesschain.chainlesschain-ide-0.37.192.vsix"
     },
     "jetbrains": {
       "candidate": "0.4.207",
       "runId": 44308436365,
-      "status": "in_progress"
+      "status": "host_gate_pending",
+      "failedJob": 134816367667,
+      "failureReason": "macOS 2024.2 needs_input visibility P95 2000ms; strict SLA requires less than 2000ms"
     }
   },
   "limits": [

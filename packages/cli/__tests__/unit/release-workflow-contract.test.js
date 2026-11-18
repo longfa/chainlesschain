@@ -820,6 +820,31 @@ describe("CLI release workflow contracts", () => {
     expect(readback).not.toContain("NPM_TOKEN");
   });
 
+  it("binds independent npm readback to the publishing repository and signed tag commit", () => {
+    const readback = workflowJob(
+      workflow("cli-npm-release-readback.yml"),
+      "public-readback",
+    );
+    const provenance = readback.split(
+      "      - name: Verify public registry bytes and signed provenance",
+    )[1]?.split("      - name:")[0];
+    expect(provenance).toBeTypeOf("string");
+    const environment = provenance.match(/^ {8}env:\n((?: {10}.*\n)+)/mu)?.[1];
+    expect(environment).toContain(
+      "CC_NPM_RELEASE_REPOSITORY: https://github.com/${{ github.repository }}",
+    );
+    expect(provenance).toContain(
+      "npm audit signatures --include-attestations --json",
+    );
+    expect(provenance).toContain(
+      '"$AUDIT_ROOT/npm-signatures.json" "$VERSION" "$TAG_SHA" "refs/tags/$TAG" "$REGISTRY_SHA512"',
+    );
+    expect(provenance).not.toContain("--trusted-anchor");
+    expect(readback).toContain('TAG_SHA=$(git rev-parse "${TAG}^{commit}")');
+    expect(readback).toContain("repository: ${{ github.repository }}");
+    expect(readback).toContain("run-id: ${{ steps.provenance.outputs.run_id }}");
+  });
+
   it("keeps local generic publish scripts outside the CLI authority", () => {
     for (const name of ["npm-publish.js", "npm-publish.mjs"]) {
       const source = fs.readFileSync(

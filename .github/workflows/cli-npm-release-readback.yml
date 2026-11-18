@@ -81,6 +81,9 @@ jobs:
         id: provenance
         shell: bash
         env:
+          # Match the attested publishing repository; the verifier retains its
+          # explicit repository allowlist and exact tag/SHA/signature checks.
+          CC_NPM_RELEASE_REPOSITORY: https://github.com/${{ github.repository }}
           VERSION: ${{ steps.identity.outputs.version }}
           TAG: ${{ steps.identity.outputs.tag }}
           TAG_SHA: ${{ steps.identity.outputs.tag_sha }}
