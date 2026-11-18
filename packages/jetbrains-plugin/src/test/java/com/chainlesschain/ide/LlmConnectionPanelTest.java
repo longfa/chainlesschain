@@ -19,7 +19,9 @@ class LlmConnectionPanelTest {
             ((JComboBox<?>) find(panel, "llm.protocol")).setSelectedIndex(1);
             assertEquals("anthropic", panel.connection().provider);
             assertEquals("claude-opus-5-5", panel.connection().model);
-            assertEquals(14, ((JComboBox<?>) find(panel, "llm.lkModel")).getItemCount());
+            long expected = java.util.Arrays.stream(LkChannelCatalog.MODELS)
+                    .filter(entry -> "chat".equals(entry.type) && "anthropic".equals(entry.protocol)).count();
+            assertEquals(expected, ((JComboBox<?>) find(panel, "llm.lkModel")).getItemCount());
             ((JComboBox<?>) find(panel, "llm.lkAddress")).setSelectedIndex(1);
             assertEquals("https://api.lk666.ai/v1", panel.connection().baseUrl);
             panel.load(new LlmConfig.Connection("custom", "team/future", "https://api.lk666.ai/v1", "", true));

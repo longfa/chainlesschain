@@ -4,11 +4,11 @@ ChainlessChain agent workspace for VS Code-compatible editors with streaming cha
 
 ## Release pairing
 
-Version **0.37.191** recommends CLI **`0.166.154`** and pairs with JetBrains **0.4.206**.
+Version **0.37.192** recommends CLI **`0.166.155`** and pairs with JetBrains **0.4.207**.
 
-This is an unpublished IDE candidate paired with CLI 0.166.154. The verified public pairing below remains VS Code 0.37.189 with CLI 0.166.150 until the exact tag workflow and Open VSX readback complete.
+Candidate **0.37.192** pairs with CLI **0.166.155** for corrected LK model IDs, protocol-filtered selection and authenticated price/billing queries. Publication waits for the paired CLI on npm and the complete IDE host gates. Older public releases below are historical pairings.
 
-This release adds fresh LK model prices, balance, Key quota and actual API billing (`cc llm account`), plus saved credentials for every configured channel, including Volcengine. Saved connections restore the Key when switching back; LK hosts and protocols share one credential. Desktop source supports the same account queries and encrypted connection history; a new desktop installer is not part of this release.
+After CLI publication, install `npm i -g chainlesschain@0.166.155 --registry https://registry.npmjs.org`, restart the IDE, and verify `cc --version`. See [release scope](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-155.md). No new PC/mobile installer is included.
 
 ## Current release
 

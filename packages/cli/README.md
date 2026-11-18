@@ -2,11 +2,11 @@
 
 Command-line interface for installing, configuring, and managing [ChainlessChain](https://www.chainlesschain.com), including the coding agent, governed tools, sessions, memory, and IDE integrations.
 
-## CLI 0.166.154 release candidate (2026-11-16)
+## CLI 0.166.155 release candidate (2026-11-18)
 
-CLI **0.166.154** fixes the bounded recovery guard so repeated large `stdout` and `stderr` from `check_shell` cannot bypass the six-batch no-progress backstop. Publication requires the new exact release commit's complete CLI CI and Strict Sandbox matrices, Actions OIDC publishing, and public package/provenance verification. Until those finish, the verified public version and installation command remain **0.166.150** below.
+CLI **0.166.155** fixes LK model selection and account queries using the current API catalog: 202 models, including 86 chat models. The OpenAI-compatible default is `gpt-6.1-sol`; primary `https://api.vv666.ai`, backup `https://api.lk666.ai`. Retired aliases migrate to the same model family. Publication requires complete exact-source CLI CI and Strict Sandbox matrices, Actions OIDC and public registry readback. Until verified, the public CLI remains **0.166.150**.
 
-This CLI release leaves child npm versions unchanged. VS Code **0.37.191** and JetBrains **0.4.206** will recommend CLI **0.166.154** after the CLI is public; native clients remain **v5.0.3.145**. [Release scope and status](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-16-154.md).
+Child npm versions remain unchanged. The new pairing is VS Code **0.37.192** / JetBrains **0.4.207**, after CLI publication. Install `npm i -g chainlesschain@0.166.155 --registry https://registry.npmjs.org` after registry verification, restart IDE hosts, then run `cc --version`. Native installers and media task execution are outside this release. [Release scope](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-155.md).
 
 ## Public CLI 0.166.150 / IDE pairing (2026-11-15)
 

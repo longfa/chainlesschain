@@ -2,9 +2,11 @@
 
 文档基线（2026-11-15）：依据最新 Git 提交与已核验发行版本更新。查看 [LK 用户配置与账单](docs-site/docs/chainlesschain/cli-llm.md) 和 [渠道架构、凭证隔离与发布设计](docs/design/release-runtime-update-2026-11-15-150.md)。
 
-## CLI 0.166.154 release candidate (2026-11-16)
+## LK fix release candidate: CLI 0.166.155 (2026-11-18)
 
-Candidate 0.166.154 fixes the bounded recovery guard so repeated large stdout/stderr from check_shell cannot bypass the six-batch no-progress backstop. The release requires exact-source CLI CI and Strict Sandbox matrices, Actions OIDC publication and public readback. VS Code 0.37.191 and JetBrains 0.4.206 will pair with CLI 0.166.154 after the CLI is public.
+Current LK API model IDs and billing are being released as CLI 0.166.155, VS Code 0.37.192 and JetBrains 0.4.207. The shared catalog has 202 models, including 86 chat models. Use gpt-6.1-sol at https://api.vv666.ai/v1; https://api.lk666.ai is the backup. Existing renamed aliases retain their model family.
+
+The CLI must pass complete exact-source CI and Strict Sandbox matrices, Actions OIDC publication and public npm readback before IDE publication. Until verified, this is a candidate. See [release scope](docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-155.md). PC/mobile installers are outside this update.
 
 ## 2026-11-15 CLI / IDE 发布状态
 

@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import {
   LK_CHANNEL,
   LK_MODELS,
+  canonicalLkModel,
   resolveLkConnection,
 } from "../src/lib/llm-channel-presets.js";
 import { geminiGenerateContentUrl } from "../src/lib/provider-protocol.js";
@@ -96,6 +97,20 @@ test("unknown future aliases remain explicit without replacing them", () => {
   assert.equal(result.baseUrl, "https://api.lk666.ai/v1");
   assert.throws(() => resolveLkConnection("__proto__"));
   assert.throws(() => resolveLkConnection("anthropic", "constructor"));
+});
+
+test("renamed LK aliases preserve the selected model family", () => {
+  for (const [oldId, newId] of [
+    ["tt-6.1-sol", "gpt-6.1-sol"],
+    ["tt-6-luna", "gpt-6-luna"],
+    ["fb-5-2", "claude-fable-5-2"],
+    ["gem-3.8-flash", "gemini-3.8-flash"],
+  ]) {
+    assert.ok(LK_MODELS.some((model) => model.id === newId));
+    assert.equal(canonicalLkModel(oldId), newId);
+  }
+  for (const id of ["constructor", "__proto__", "team/custom-model"])
+    assert.equal(canonicalLkModel(id), id);
 });
 
 function desktopSettings() {

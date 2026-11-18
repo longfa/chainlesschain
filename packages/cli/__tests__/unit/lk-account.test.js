@@ -73,6 +73,28 @@ const fetchFixture = (url) => {
 };
 
 describe("fresh LK account data", () => {
+  it("queries pricing using the corresponding renamed model without changing its family", async () => {
+    for (const [model, canonical] of [
+      ["tt-6-luna", "gpt-6-luna"],
+      ["fb-5-2", "claude-fable-5-2"],
+      ["gem-3.8-flash", "gemini-3.8-flash"],
+    ]) {
+      const fetcher = vi.fn(fetchFixture);
+      const result = await queryLkAccount(
+        {},
+        {
+          config: { llm: { ...config.llm, model } },
+          fetcher,
+        },
+      );
+      expect(result.model).toBe(canonical);
+      expect(
+        fetcher.mock.calls.some(([url]) =>
+          url.endsWith(`/models/${canonical}/pricing`),
+        ),
+      ).toBe(true);
+    }
+  });
   it("uses only the saved LK credential and returns explicit schemas, not secrets or inferred token joins", async () => {
     vi.stubEnv("OPENAI_API_KEY", "foreign-key");
     vi.stubEnv("CC_API_KEY", "foreign-key");

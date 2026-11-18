@@ -7,13 +7,15 @@ const text = (value) =>
   typeof value === "string" ? value.slice(0, 256) : null;
 const LK_MODEL_ALIASES = Object.freeze({
   "tt-6.1-sol": "gpt-6.1-sol",
-  "tt-6-luna": "gpt-6.1-sol",
-  "fb-5-2": "claude-opus-5-5",
-  "gem-3.8-flash": "gemini-4-carbon",
+  "tt-6-luna": "gpt-6-luna",
+  "fb-5-2": "claude-fable-5-2",
+  "gem-3.8-flash": "gemini-3.8-flash",
 });
 const canonicalLkModel = (value) => {
   const model = typeof value === "string" ? value.trim() : "";
-  return LK_MODEL_ALIASES[model] || model;
+  return Object.hasOwn(LK_MODEL_ALIASES, model)
+    ? LK_MODEL_ALIASES[model]
+    : model;
 };
 const counts = (row = {}) =>
   Object.fromEntries(

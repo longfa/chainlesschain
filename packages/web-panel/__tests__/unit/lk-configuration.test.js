@@ -76,11 +76,13 @@ describe("LK Web configuration", () => {
         const result = lkConnection(model.protocol, address, model.id);
         expect(result.model).toBe(model.id);
         expect(result.baseUrl).toBe(
-          `https://api.lk${address === "primary" ? "888" : "666"}.ai/${model.protocol === "gemini" ? "v1beta" : "v1"}`,
+          `https://api.${address === "primary" ? "vv666" : "lk666"}.ai/${model.protocol === "gemini" ? "v1beta" : "v1"}`,
         );
       }
     }
-    expect(() => lkConnection("openai", "primary", "claude-opus-5-5")).toThrow("协议");
+    expect(() => lkConnection("openai", "primary", "claude-opus-5-5")).toThrow(
+      "协议",
+    );
     expect(() =>
       lkConnection(
         "openai",
@@ -122,7 +124,11 @@ describe("LK Web configuration", () => {
     });
     form.lkProtocol.value = "anthropic";
     form.applyLk();
-    expect(form.lkModelOptions.value).toHaveLength(14);
+    expect(form.lkModelOptions.value).toHaveLength(
+      lkModels.filter(
+        (entry) => entry.type === "chat" && entry.protocol === "anthropic",
+      ).length,
+    );
     form.configForm.model = "team/alias";
     form.configForm.apiKey = "typed-channel-key";
     form.lkAddress.value = "backup";
