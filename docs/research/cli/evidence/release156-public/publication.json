@@ -1,0 +1,47 @@
+{
+  "schema": "chainlesschain.release-public-readback/v1",
+  "verifiedAt": "2026-11-18T12:58:11.768720+00:00",
+  "repository": "longfa/chainlesschain",
+  "sourceCommit": "a8cae89288d3a6119b152e04b750e10d726a5c5f",
+  "cli": {
+    "version": "0.166.156",
+    "status": "published",
+    "registry": "https://registry.npmjs.org/chainlesschain/0.166.156",
+    "modelCount": 202,
+    "chatModels": 86,
+    "defaultModel": "gpt-6.1-sol",
+    "publicArchiveInspected": true,
+    "accountAdapterMatchesSource": true
+  },
+  "gates": {
+    "cliCi": {
+      "runId": 44222103058,
+      "jobsPassed": 75
+    },
+    "strictSandbox": {
+      "runId": 44222103031,
+      "jobsPassed": 6
+    },
+    "npmPublish": {
+      "runId": 44222103142,
+      "conclusion": "success"
+    }
+  },
+  "ide": {
+    "vscode": {
+      "candidate": "0.37.192",
+      "runId": 44308435592,
+      "status": "in_progress"
+    },
+    "jetbrains": {
+      "candidate": "0.4.207",
+      "runId": 44308436365,
+      "status": "in_progress"
+    }
+  },
+  "limits": [
+    "No new PC or mobile installers",
+    "All model generation paths have not been live-tested",
+    "IDE publication requires separate marketplace readback"
+  ]
+}

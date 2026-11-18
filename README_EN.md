@@ -2,11 +2,11 @@
 
 Documentation baseline (2026-11-15): updated from current Git history and verified public releases. See [LK configuration and billing](docs-site/docs/chainlesschain/cli-llm.md) and [channel architecture and credential isolation](docs/design/release-runtime-update-2026-11-15-150.md).
 
-## LK fix release candidate: CLI 0.166.156 (2026-11-18)
+## Public CLI 0.166.156 / IDE update (2026-11-18)
 
-Current LK API model IDs and billing are being released as CLI 0.166.156, VS Code 0.37.192 and JetBrains 0.4.207. The shared catalog has 202 models, including 86 chat models. Use gpt-6.1-sol at https://api.vv666.ai/v1; https://api.lk666.ai is the backup. Existing renamed aliases retain their model family.
+CLI **0.166.156** is public from source `a8cae89288d3a6119b152e04b750e10d726a5c5f`: **75/75 CLI CI**, **6/6 Strict Sandbox**, Actions OIDC publication and public npm readback passed. The published package includes current LK model IDs, same-family legacy aliases, 86 chat models and authenticated account billing. Install `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org`, restart IDE hosts, then check `cc --version`.
 
-The CLI must pass complete exact-source CI and Strict Sandbox matrices, Actions OIDC publication and public npm readback before IDE publication. Until verified, this is a candidate. See [release scope](docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-156.md). PC/mobile installers are outside this update.
+VS Code **0.37.192** and JetBrains **0.4.207** are still undergoing their dedicated IDE release workflows. Public market readback is required before marking these IDE updates available. See [release scope](docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-156.md). PC/mobile installers are outside this update.
 
 ## Public CLI 0.166.150 / IDE pairing (2026-11-15)
 
