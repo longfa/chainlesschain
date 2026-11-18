@@ -3,7 +3,7 @@
 根据 [开发文档](https://chainlesschain.net/apidoc#model/gpt-6.1-sol) 和当前 Skills 模型接口接入。
 主地址 `https://api.vv666.ai`，备用 `https://api.lk666.ai`，手动切换地址；不会自动重发生成请求。
 
-CLI **0.166.156** 与 Open VSX **0.37.192** 已公开验证；JetBrains **0.4.207** 仍待宿主门禁与市场回读。完整发布顺序与限制见 [更新说明](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-156.md)。
+CLI **0.166.156**、Open VSX **0.37.192** 与 JetBrains **0.4.207** 均已公开验证；两款 IDE 推荐 CLI .156。完整发布顺序与限制见 [更新说明](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-156.md)。
 
 ## 模型配置
 
@@ -11,11 +11,11 @@ CLI 执行 `cc setup`；Web 执行 `cc ui` 后进入 LLM 配置；IDE 打开 Con
 
 当前目录由 `/v1/skills/models` 同步，共 202 项：86 对话、26 图片、82 视频、8 音频。下拉框只提供所选协议兼容的对话模型；目录不等同于每个 Key 的模型权限，不代表全部模型已实测。
 
-| 协议 | 当前模型示例 | CLI / IDE Base URL | 桌面 Base URL |
-| --- | --- | --- | --- |
-| OpenAI Chat Completions | `gpt-6.1-sol` | `https://api.vv666.ai/v1`，provider `custom` | `https://api.vv666.ai/v1` |
-| Anthropic Messages | `claude-opus-5-5` | `https://api.vv666.ai/v1` | `https://api.vv666.ai` |
-| Gemini | `gemini-4-carbon` | `https://api.vv666.ai/v1beta` | `https://api.vv666.ai/v1beta` |
+| 协议                    | 当前模型示例      | CLI / IDE Base URL                           | 桌面 Base URL                 |
+| ----------------------- | ----------------- | -------------------------------------------- | ----------------------------- |
+| OpenAI Chat Completions | `gpt-6.1-sol`     | `https://api.vv666.ai/v1`，provider `custom` | `https://api.vv666.ai/v1`     |
+| Anthropic Messages      | `claude-opus-5-5` | `https://api.vv666.ai/v1`                    | `https://api.vv666.ai`        |
+| Gemini                  | `gemini-4-carbon` | `https://api.vv666.ai/v1beta`                | `https://api.vv666.ai/v1beta` |
 
 保存的旧别名按相同模型系列迁移：`tt-6.1-sol` → `gpt-6.1-sol`，`tt-6-luna` → `gpt-6-luna`，`fb-5-2` → `claude-fable-5-2`，`gem-3.8-flash` → `gemini-3.8-flash`。未知自定义别名保留，不切换到其他系列。
 

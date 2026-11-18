@@ -1,6 +1,6 @@
 {
   "schema": "chainlesschain.release-public-readback/v1",
-  "verifiedAt": "2026-11-18T13:25:49.205661+00:00",
+  "verifiedAt": "2026-11-18T14:40:06.354865+00:00",
   "repository": "longfa/chainlesschain",
   "sourceCommit": "a8cae89288d3a6119b152e04b750e10d726a5c5f",
   "cli": {
@@ -11,7 +11,11 @@
     "chatModels": 86,
     "defaultModel": "gpt-6.1-sol",
     "publicArchiveInspected": true,
-    "accountAdapterMatchesSource": true
+    "accountAdapterMatchesSource": true,
+    "bytes": 9666748,
+    "archiveSha256": "18be9e5baea37169585985c3d56ac9c051d18b43040007b247a969dfc615ea16",
+    "immutableCandidateBytesMatch": true,
+    "signedProvenanceVerified": true
   },
   "gates": {
     "cliCi": {
@@ -44,14 +48,45 @@
     "jetbrains": {
       "candidate": "0.4.207",
       "runId": 44308436365,
-      "status": "host_gate_pending",
-      "failedJob": 134816367667,
-      "failureReason": "macOS 2024.2 needs_input visibility P95 2000ms; strict SLA requires less than 2000ms"
+      "status": "published",
+      "version": "0.4.207",
+      "channel": "jetbrains-marketplace",
+      "runAttempt": 2,
+      "workflowConclusion": "success",
+      "updateId": 1223726,
+      "approve": true,
+      "listed": true,
+      "hidden": false,
+      "publicArchiveVerified": true,
+      "recommendedCliVersion": "0.166.156",
+      "payloadEntriesMatch": true,
+      "publicArchiveSha256": "1a4d04397b2dfa80205b8272bd95d81daf1e856ed707b71bcd600fba42e1cddf",
+      "candidateArchiveSha256": "5daa5ddc63b374908aa2a7ac6f90f5f5f96dc50ba7d3ee8912dcba548cff1a9a",
+      "download": "https://plugins.jetbrains.com/files/32208/1223726/chainlesschain-ide-bridge-0.4.207.zip",
+      "performanceEvidence": [
+        "jetbrains-macos-attempt1.json",
+        "jetbrains-macos-attempt2.json"
+      ],
+      "failedAttemptPreserved": true
     }
   },
   "limits": [
     "No new PC or mobile installers",
     "All model generation paths have not been live-tested",
-    "IDE publication requires separate marketplace readback"
-  ]
+    "Microsoft VS Code Marketplace is outside this tag release; VS Code-compatible editors can install the verified Open VSX VSIX"
+  ],
+  "followUpChecks": {
+    "verificationCommit": "5fb8d0de8c6ea667d772061dc32e0a3cfe572b70",
+    "independentNpmReadback": {
+      "runId": 44315523776,
+      "conclusion": "success",
+      "releaseSourceCommit": "a8cae89288d3a6119b152e04b750e10d726a5c5f",
+      "byteIdentical": true,
+      "signedProvenanceVerified": true
+    },
+    "docsSiteBuild": {
+      "runId": 44315523424,
+      "conclusion": "success"
+    }
+  }
 }

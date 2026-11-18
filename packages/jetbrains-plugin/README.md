@@ -1,10 +1,16 @@
 # ChainlessChain IDE Bridge (JetBrains)
 
-Candidate **0.4.207** pairs with CLI **0.166.156** for corrected LK model IDs, protocol-filtered selection and authenticated price/billing queries. Publication waits for the paired CLI on npm and the complete IDE host gates. Older public releases below are historical pairings.
+Public JetBrains **0.4.207** pairs with CLI **0.166.156** for corrected LK model IDs, protocol-filtered selection and authenticated price/billing queries. All host and compatibility gates passed; Marketplace approval, listing and the downloaded ZIP payload are verified. Older releases below retain their historical scope.
 
-After CLI publication, install `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org`, restart the IDE, and verify `cc --version`. See [release scope](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-156.md). No new PC/mobile installer is included.
+Install `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org`, restart the IDE, and verify `cc --version`. See [release scope](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-156.md). No new PC/mobile installer is included.
 
-## Current release 0.4.204 / CLI 0.166.150
+## Current release 0.4.207 / CLI 0.166.156
+
+The [immutable tag workflow](https://github.com/longfa/chainlesschain/actions/runs/44308436365) passed complete Linux, Windows and macOS host, browser, unit, build and compatibility gates for source `a8cae89288d3a6119b152e04b750e10d726a5c5f`. Marketplace update **1223726** is approved, listed and publicly downloadable. The [public plugin ZIP](https://plugins.jetbrains.com/files/32208/1223726/chainlesschain-ide-bridge-0.4.207.zip) preserves both original candidate JAR payloads. Plugin **0.4.207** and compiled CLI recommendation **0.166.156** are verified.
+
+Install `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org`, restart the host, then run `cc --version` and `cc doctor`. Open **Configure LLM** to select the updated LK directory and query saved account pricing and bills. [Publication evidence](../../docs/research/cli/evidence/release156-public/jetbrains-public.json).
+
+## Previous release 0.4.204 / CLI 0.166.150
 
 The [official tag workflow](https://github.com/chainlesschain/chainlesschain/actions/runs/43646453588) passed the complete host, browser, build and compatibility gates. JetBrains **0.4.204** is publicly verified. It recommends public CLI **0.166.150**. Install `npm i -g chainlesschain@0.166.150 --registry https://registry.npmjs.org`, restart the host, then run `cc --version` and `cc doctor`.
 
@@ -317,9 +323,9 @@ See the [verified publication evidence](https://github.com/chainlesschain/chainl
 
 ## Release compatibility
 
-Plugin **0.4.207** is the current release candidate. It recommends `chainlesschain@0.166.156` for current LK model identities and authenticated account queries. The candidate requires complete host gates, upload and public Marketplace readback. [Release scope](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-156.md).
+Plugin **0.4.207** is the current public release, approved and listed. It recommends `chainlesschain@0.166.156` for current LK model identities and authenticated account queries. Complete host gates, upload and public ZIP verification passed. [Release scope](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-156.md).
 
-Install the paired public CLI with `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org` after publication, restart the chat host, and run `cc --version` and `cc doctor`. Goal transfer and native Graph features require matching desktop support and explicit native authorization. Model-task improvement and automatic promotion remain unverified.
+Install the paired public CLI with `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org`, restart the chat host, and run `cc --version` and `cc doctor`. Goal transfer and native Graph features require matching desktop support and explicit native authorization. Model-task improvement and automatic promotion remain unverified.
 
 ## Previous candidates and development notes
 

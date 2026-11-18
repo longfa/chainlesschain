@@ -6,7 +6,7 @@
 
 CLI **0.166.156** is public from source `a8cae89288d3a6119b152e04b750e10d726a5c5f`: **75/75 CLI CI**, **6/6 Strict Sandbox**, Actions OIDC publication and public npm readback passed. The published package includes current LK model IDs, same-family legacy aliases, 86 chat models and authenticated account billing. Install `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org`, restart IDE hosts, then check `cc --version`.
 
-VS Code **0.37.192** is public on Open VSX: its complete tag workflow passed and the downloadable VSIX is byte-identical to the immutable candidate. JetBrains **0.4.207** remains gated by its macOS host tests and is not yet public. See [release scope](docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-156.md). PC/mobile installers are outside this update.
+VS Code **0.37.192** is public on Open VSX: its complete tag workflow passed and the downloadable VSIX is byte-identical to the immutable candidate. JetBrains **0.4.207** is approved, listed and publicly downloadable; both candidate JAR payloads match the public ZIP. Both IDEs recommend CLI **0.166.156**. [Public package verification](docs/research/cli/evidence/release156-public/publication.json). See [release scope](docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-156.md). PC/mobile installers are outside this update.
 
 ## 2026-11-15 CLI / IDE 发布状态
 
