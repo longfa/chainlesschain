@@ -458,7 +458,7 @@ alias | grep cc
 
 ### 首次使用
 
-1. **安装 APK**：从 [GitHub Releases](https://github.com/chainlesschain/chainlesschain/releases) 下载 arm64-v8a Lite 包安装（v5.0.3.65+）
+1. **安装 APK**：从 [GitHub Releases](https://github.com/longfa/chainlesschain/releases) 下载 arm64-v8a Lite 包安装（v5.0.3.65+）
 2. **打开 app**：登录任意 DID（无需配对桌面）
 3. **进 RemoteOperate**：底部 Tab 切到"远程操控"
 4. **切"本地" tab**：在 5-tab segmented control 右侧的第 6 个 tab

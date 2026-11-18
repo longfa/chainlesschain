@@ -4,7 +4,7 @@
 const { createHash } = require("node:crypto");
 function connectionId(provider, baseURL) {
   const endpoint = stringValue(baseURL).trim().replace(/\/+$/, "");
-  const lk = /^https:\/\/api\.lk(?:888|666)\.ai(?:\/v1|\/v1beta)?$/.test(
+  const lk = /^https:\/\/api\.(?:vv666|lk666)\.ai(?:\/v1|\/v1beta)?$/.test(
     endpoint,
   );
   return createHash("sha256")
@@ -116,7 +116,7 @@ function projectLlmConfigForRenderer(config) {
       model: stringValue(row.model),
       name: stringValue(row.name),
       hasKey: Boolean(row.apiKey),
-      channel: /^https:\/\/api\.lk(?:888|666)\.ai(?:\/|$)/.test(
+      channel: /^https:\/\/api\.(?:vv666|lk666)\.ai(?:\/|$)/.test(
         row.baseURL || "",
       )
         ? "lk"

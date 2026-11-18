@@ -315,9 +315,9 @@ describe("LLM Providers", () => {
       expect(Object.keys(LLM_PROVIDERS)).toHaveLength(14);
     });
 
-    it("should have volcengine as first provider", () => {
+    it("should have custom as first provider", () => {
       const keys = Object.keys(LLM_PROVIDERS);
-      expect(keys[0]).toBe("volcengine");
+      expect(keys[0]).toBe("custom");
     });
 
     it("should have proxy entries with isProxy flag", () => {

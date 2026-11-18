@@ -60,7 +60,7 @@ CLI 发行提交的 [CLI CI](https://github.com/chainlesschain/chainlesschain/ac
 - 桌面事务：`desktop-app-vue/src/main/database.js`；Kernel writer 清单：`packages/context-memory-kernel/inventory/writers.v1.json`。
 - 发布控制：`.github/workflows/release.yml`、`workspace-npm-publish.yml`、`android-cli-bundle-refresh.yml` 和 `.github/scripts/refresh-android-cli-bundle.mjs`。
 - 胶囊：`packages/cli/scripts/verify01-native-toolchain-prepare.mjs`、`verify01-native-runtime-capsule.mjs`、`windows-node-runtime-diagnostic.mjs`。
-- [实验回读（固定源码）](https://github.com/chainlesschain/chainlesschain/blob/1e5477aebe1a69eba0932af915ea24ea545f66d7/docs/research/cli/evidence/gap-2026-10-05/windows-runtime-adapter-2026-10-08/README.md)。
+- [实验回读（固定源码）](https://github.com/longfa/chainlesschain/blob/1e5477aebe1a69eba0932af915ea24ea545f66d7/docs/research/cli/evidence/gap-2026-10-05/windows-runtime-adapter-2026-10-08/README.md)。
 - [个人目标操作](https://docs.chainlesschain.com/chainlesschain/project-goals-current.html)、[组织协作](https://docs.chainlesschain.com/chainlesschain/organization-project-current.html)、[发布升级](https://docs.chainlesschain.com/chainlesschain/agent-platform-release.html)。
 - [前次组织 / 记忆 / RRSI 合同](governance-runtime-update-2026-10-08.md)保留旧发行范围作为历史快照。
 

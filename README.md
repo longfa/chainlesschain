@@ -1,10 +1,18 @@
 # ChainlessChain - 基于U盾和SIMKey的个人移动AI管理系统
 
+## 2026-11-19 文档与网站同步
+
+按最新源码 `8c937cbe9bc4b82f87479c124375401fa2fb3a72` 与 Git 记录核对。CLI **0.166.156**、Open VSX **0.37.192**、JetBrains **0.4.207** 均已公开验证，两款 IDE 推荐 CLI .156；发行来源为 `a8cae89288d3a6119b152e04b750e10d726a5c5f`，与网站部署提交分别记录。LK 主备为 `api.vv666.ai` / `api.lk666.ai`，默认 OpenAI 兼容模型 `gpt-6.1-sol`，目录为 **202 项 / 86 项对话模型**，支持动态算力价格与实际 API 账单。
+
+安装 `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org`，重启宿主并核对 `cc --version`。历史客户端最后核验为 **v5.0.3.145**，当前旧下载源返回 404，本轮不发新 PC/mobile 安装包。**NOT_PAID_READY / NOT_ADMITTED / HOLD** 与历史模型任务成绩范围保留。[用户指南](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-19-156.html) · [设计说明](https://design.chainlesschain.com/release-runtime-update-2026-11-19-156.html)。下列带日期记录保留历史范围。
+
 文档基线（2026-11-15）：依据最新 Git 提交与已核验发行版本更新。查看 [LK 用户配置与账单](docs-site/docs/chainlesschain/cli-llm.md) 和 [渠道架构、凭证隔离与发布设计](docs/design/release-runtime-update-2026-11-15-150.md)。
 
-## CLI 0.166.154 release candidate (2026-11-16)
+## Public CLI 0.166.156 / IDE update (2026-11-18)
 
-Candidate 0.166.154 fixes the bounded recovery guard so repeated large stdout/stderr from check_shell cannot bypass the six-batch no-progress backstop. The release requires exact-source CLI CI and Strict Sandbox matrices, Actions OIDC publication and public readback. VS Code 0.37.191 and JetBrains 0.4.206 will pair with CLI 0.166.154 after the CLI is public.
+CLI **0.166.156** is public from source `a8cae89288d3a6119b152e04b750e10d726a5c5f`: **75/75 CLI CI**, **6/6 Strict Sandbox**, Actions OIDC publication and public npm readback passed. The published package includes current LK model IDs, same-family legacy aliases, 86 chat models and authenticated account billing. Install `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org`, restart IDE hosts, then check `cc --version`.
+
+VS Code **0.37.192** is public on Open VSX: its complete tag workflow passed and the downloadable VSIX is byte-identical to the immutable candidate. JetBrains **0.4.207** is approved, listed and publicly downloadable; both candidate JAR payloads match the public ZIP. Both IDEs recommend CLI **0.166.156**. [Public package verification](docs/research/cli/evidence/release156-public/publication.json). See [release scope](docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-156.md). PC/mobile installers are outside this update.
 
 ## 2026-11-15 CLI / IDE 发布状态
 
@@ -236,7 +244,7 @@ CLI **0.166.121** 已经 GitHub Actions OIDC 公开发布，精确源提交通�
 
 ## 历史发布（2026-10-23）
 
-CLI **0.166.117** 已通过 [GitHub Actions OIDC](https://github.com/chainlesschain/chainlesschain/actions/runs/39845469661) 发布到 npm，并完成公共制品、签名来源和独立安装回读。修复 Python/JavaScript 代码字面量被 Evolution ingress 误判为损坏 JSON、异常退出时遗漏已完成工具轮次结算，以及图片与文本预算混算和长工具输出截断的问题。Session Core **0.3.22** 与 Personal Data Hub **0.4.66** 已先于 CLI 发布。安装命令：`npm i -g chainlesschain@0.166.117 --registry https://registry.npmjs.org`。Open VSX **0.37.159** 已公开并验证下载；JetBrains **0.4.176** 已批准并验证公开下载。两者推荐 CLI **0.166.117**。[发布证据](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release117-public/publication.json)。本次未新增真实模型任务验收；下方历史发行记录与限制继续保留。
+CLI **0.166.117** 已通过 [GitHub Actions OIDC](https://github.com/chainlesschain/chainlesschain/actions/runs/39845469661) 发布到 npm，并完成公共制品、签名来源和独立安装回读。修复 Python/JavaScript 代码字面量被 Evolution ingress 误判为损坏 JSON、异常退出时遗漏已完成工具轮次结算，以及图片与文本预算混算和长工具输出截断的问题。Session Core **0.3.22** 与 Personal Data Hub **0.4.66** 已先于 CLI 发布。安装命令：`npm i -g chainlesschain@0.166.117 --registry https://registry.npmjs.org`。Open VSX **0.37.159** 已公开并验证下载；JetBrains **0.4.176** 已批准并验证公开下载。两者推荐 CLI **0.166.117**。[发布证据](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release117-public/publication.json)。本次未新增真实模型任务验收；下方历史发行记录与限制继续保留。
 
 [升级与故障排查](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-10-26.html) · [图片预算与会话恢复](https://docs.chainlesschain.com/chainlesschain/agent-input-and-recovery.html) · [最新运行时设计](https://design.chainlesschain.com/release-runtime-update-2026-10-26.html)
 
@@ -248,7 +256,7 @@ CLI **0.166.117** 已通过 [GitHub Actions OIDC](https://github.com/chainlessch
 
 CLI 发行源码为 `35a2508d156152a61d74fbf8135fcfa1225fe235`，该精确提交的 CLI CI **71** 个 job 与 Strict Sandbox **5** 个 job 全部通过，并通过 [GitHub Actions OIDC](https://github.com/chainlesschain/chainlesschain/actions/runs/39661868416) 发布。公开 tarball 完整性及 npm provenance 的源码与 run 绑定已回读核验；Session Core **0.3.21** 先于 CLI 发布。
 
-两个 IDE 标签 `ide-vscode-v0.37.155`、`ide-jetbrains-v0.4.172` 均指向 `ae27ef6dfc8cf1e45bf084030816b02c77dc2a34`。[Open VSX 发布](https://github.com/chainlesschain/chainlesschain/actions/runs/39673804362)通过；[JetBrains 发布 attempt 2](https://github.com/chainlesschain/chainlesschain/actions/runs/39676899944/attempts/2) 在一次有界的 macOS 2024.2 重跑后通过，原始性能失败记录保留。JetBrains 当前为 `approve=true`、`listed=true`、`hidden=false`。两个 IDE 的公开归档均已下载，并核对内嵌版本与 CLI 配对。详见[公开回读证据](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release112-public/publication.json)。
+两个 IDE 标签 `ide-vscode-v0.37.155`、`ide-jetbrains-v0.4.172` 均指向 `ae27ef6dfc8cf1e45bf084030816b02c77dc2a34`。[Open VSX 发布](https://github.com/chainlesschain/chainlesschain/actions/runs/39673804362)通过；[JetBrains 发布 attempt 2](https://github.com/chainlesschain/chainlesschain/actions/runs/39676899944/attempts/2) 在一次有界的 macOS 2024.2 重跑后通过，原始性能失败记录保留。JetBrains 当前为 `approve=true`、`listed=true`、`hidden=false`。两个 IDE 的公开归档均已下载，并核对内嵌版本与 CLI 配对。详见[公开回读证据](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release112-public/publication.json)。
 
 ```bash
 npm i -g chainlesschain@0.166.112 --registry https://registry.npmjs.org
@@ -266,11 +274,11 @@ See the [current release and upgrade guide](docs-site/docs/chainlesschain/agent-
 
 2026-10-21 核对：
 
-npm CLI **0.166.108**: 已公开，精确提交发行门与公开制品回读通过; source `e77c7ba85783576ac523dd73bc760bda63d91f3b`; [Actions 1](https://github.com/chainlesschain/chainlesschain/actions/runs/39484583983); [receipt](https://github.com/chainlesschain/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json).
+npm CLI **0.166.108**: 已公开，精确提交发行门与公开制品回读通过; source `e77c7ba85783576ac523dd73bc760bda63d91f3b`; [Actions 1](https://github.com/chainlesschain/chainlesschain/actions/runs/39484583983); [receipt](https://github.com/longfa/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json).
 
-Open VSX **0.37.153**: 已公开，精确提交发行门与公开制品回读通过; source `e77c7ba85783576ac523dd73bc760bda63d91f3b`; [Actions 1](https://github.com/chainlesschain/chainlesschain/actions/runs/39486919504); [receipt](https://github.com/chainlesschain/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json).
+Open VSX **0.37.153**: 已公开，精确提交发行门与公开制品回读通过; source `e77c7ba85783576ac523dd73bc760bda63d91f3b`; [Actions 1](https://github.com/chainlesschain/chainlesschain/actions/runs/39486919504); [receipt](https://github.com/longfa/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json).
 
-JetBrains Marketplace **0.4.170**: 已公开，精确提交发行门与公开制品回读通过; source `e77c7ba85783576ac523dd73bc760bda63d91f3b`; [Actions 1](https://github.com/chainlesschain/chainlesschain/actions/runs/39486921296/attempts/2); [receipt](https://github.com/chainlesschain/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json).
+JetBrains Marketplace **0.4.170**: 已公开，精确提交发行门与公开制品回读通过; source `e77c7ba85783576ac523dd73bc760bda63d91f3b`; [Actions 1](https://github.com/chainlesschain/chainlesschain/actions/runs/39486921296/attempts/2); [receipt](https://github.com/longfa/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json).
 
 本轮没有新的模型任务补测。历史 `.105/.150/.167` 轮生成和独立验收各 **20/20**，新增通过 **6** 项；跨版本累计候选合格交付 **31/45**（普通 **26/36**、首次 **5/9**），剩余 **14** 项；这不是 .108 单轮成功率。**NOT_PAID_READY**、**NOT_ADMITTED** 与自动晋升 **HOLD** 保留。Microsoft Marketplace 未发行。原生产品 **v5.0.3.140** 独立发行；桌面互通仍需匹配构建、桌面授权和原生确认。
 
@@ -298,7 +306,7 @@ cc --version
 cc doctor
 ```
 
-详见[本轮设计](docs/design/release-runtime-update-2026-10-20.md)、[目标草稿使用指南](docs-site/docs/chainlesschain/goal-drafts-current.md)、[当前升级指南](docs-site/docs/chainlesschain/cli-ide-update-2026-10-20.md)、[发行与公开安装回读](https://github.com/chainlesschain/chainlesschain/blob/feature/docs-sites-20261020/docs/research/cli/evidence/documentation-release-status-2026-10-20.json)和[OIDC 发布记录](https://github.com/chainlesschain/chainlesschain/actions/runs/39315709208)。
+详见[本轮设计](docs/design/release-runtime-update-2026-10-20.md)、[目标草稿使用指南](docs-site/docs/chainlesschain/goal-drafts-current.md)、[当前升级指南](docs-site/docs/chainlesschain/cli-ide-update-2026-10-20.md)、[发行与公开安装回读](https://github.com/longfa/chainlesschain/blob/feature/docs-sites-20261020/docs/research/cli/evidence/documentation-release-status-2026-10-20.json)和[OIDC 发布记录](https://github.com/chainlesschain/chainlesschain/actions/runs/39315709208)。
 
 ## 2026-10-17 发布与升级（历史快照）
 
@@ -513,7 +521,7 @@ CLI 制品源码边界为 `815fdbc0c4`；VS Code 与 JetBrains 制品源码边�
 
 ## 2026-09-11 历史发布 — **v5.0.3.137 / CLI 0.166.44：DeepSeek V4 Flash GA 默认模型**
 
-> npm `latest` 为 `0.166.44`，对应不可变标签 [`v-npm-0-166-44`](https://github.com/chainlesschain/chainlesschain/releases/tag/v-npm-0-166-44) 与精确提交 [`0651cbcb7d`](https://github.com/chainlesschain/chainlesschain/commit/0651cbcb7de4fd00769f606b4a247e14973480b6)。产品版本 `v5.0.3.137` 已同步 CLI、Desktop、Android、iOS 与 IDE 的版本元数据；安装 CLI 请使用 `npm i -g chainlesschain@0.166.44`。
+> npm `latest` 为 `0.166.44`，对应不可变标签 [`v-npm-0-166-44`](https://github.com/chainlesschain/chainlesschain/releases/tag/v-npm-0-166-44) 与精确提交 [`0651cbcb7d`](https://github.com/longfa/chainlesschain/commit/0651cbcb7de4fd00769f606b4a247e14973480b6)。产品版本 `v5.0.3.137` 已同步 CLI、Desktop、Android、iOS 与 IDE 的版本元数据；安装 CLI 请使用 `npm i -g chainlesschain@0.166.44`。
 
 > 新建的 Volcengine 文本模型配置现在默认选择 `deepseek-v4-flash-ga-260731`。已有配置不会被迁移或覆盖，仍可显式使用 `deepseek-v4-flash-260425` 或其他已配置模型。模型选择仍受既有 provider、凭据、预算和受治理入口校验约束。
 
@@ -523,7 +531,7 @@ CLI 制品源码边界为 `815fdbc0c4`；VS Code 与 JetBrains 制品源码边�
 
 ## 2026-09-10 历史发布 — **CLI 0.166.43 / VS Code 0.37.93 / JetBrains 0.4.120：受治理的 Skill 演进部署配置**
 
-> npm `latest` `0.166.43` 对应不可变 tag `v-npm-0-166-43` 与精确提交 [`7528bfb81d`](https://github.com/chainlesschain/chainlesschain/commit/7528bfb81ddb45427b5eb5d1281498cf65e8ab0c)。该提交的 [CLI CI](https://github.com/chainlesschain/chainlesschain/actions/runs/34476406749)、[CLI Strict Sandbox](https://github.com/chainlesschain/chainlesschain/actions/runs/34476405180)、[IDE Extensions](https://github.com/chainlesschain/chainlesschain/actions/runs/34476405124) 三平台门禁及 [npm Trusted Publishing 与公共回读](https://github.com/chainlesschain/chainlesschain/actions/runs/34479754264) 均成功。
+> npm `latest` `0.166.43` 对应不可变 tag `v-npm-0-166-43` 与精确提交 [`7528bfb81d`](https://github.com/longfa/chainlesschain/commit/7528bfb81ddb45427b5eb5d1281498cf65e8ab0c)。该提交的 [CLI CI](https://github.com/chainlesschain/chainlesschain/actions/runs/34476406749)、[CLI Strict Sandbox](https://github.com/chainlesschain/chainlesschain/actions/runs/34476405180)、[IDE Extensions](https://github.com/chainlesschain/chainlesschain/actions/runs/34476405124) 三平台门禁及 [npm Trusted Publishing 与公共回读](https://github.com/chainlesschain/chainlesschain/actions/runs/34479754264) 均成功。
 >
 > 管理员可用 `cc evolution deployment status/configure/enable/disable` 验签、保存和切换受治理演进部署。配置先校验 Ed25519 descriptor、trust-root 与模块摘要，再原子写入 owner-only profile；总开关允许开启后，环境部署选择优先于保存的 profile，显式 `evolution.enabled: false` 会关闭自进化并覆盖继承的环境变量。配置只装载部署方 authority，automatic active promotion 保持 `HOLD`，不会因打开开关而自动改写 active Skill。
 >
@@ -545,7 +553,7 @@ CLI 制品源码边界为 `815fdbc0c4`；VS Code 与 JetBrains 制品源码边�
 >
 > **IDE 发布**：Open VSX `0.37.77` 与 JetBrains Marketplace `0.4.107` 已公开回读并推荐 CLI `0.166.15`。两者与 CLI 共用精确发布提交 `22db04f559`，对应 [VS Code 发布门](https://github.com/chainlesschain/chainlesschain/actions/runs/33393387965)与 [JetBrains 发布门](https://github.com/chainlesschain/chainlesschain/actions/runs/33393394812)均成功；微软 VS Code Marketplace 仍未公开该扩展。
 >
-> **发布与源码边界**：当前 GitHub `main` 为 [`458b342f5f`](https://github.com/chainlesschain/chainlesschain/commit/458b342f5f11f2ee82c0e6a91ee485d4309485fb)，晚于 `0.166.15` 发布 SHA。发布后的主线增加审计 blob 瞬态重试、Windows 正式评测 Agent 的 HOME/config/cache 隔离、CI 清理稳定性，并将 Windows 时延比上限最终冻结为 `1.65`，Linux、macOS 与 aggregate 保持 `1.5`。绑定 `db53dc2da4` 的[正式 run 33411796790](https://github.com/chainlesschain/chainlesschain/actions/runs/33411796790)中，Linux、macOS 与三平台功能/安全指标通过，Windows 实测 `1.6379980224` 超过当时的 `1.6` 上限，故该 run、workflow aggregate 与 OIDC attestation 均未成功；三平台产物离线加权 aggregate 为 `0.6008293973 < 1.5`。最终阈值提交 `917d18b055` 后，发布负责人显式接受“不再重跑、缺少 final-SHA aggregate/OIDC”的剩余证据风险并关闭 P2-3；该决定不把失败 run 改写为成功，不属于 `0.166.15` 制品，也不构成发布门通用先例。
+> **发布与源码边界**：当前 GitHub `main` 为 [`458b342f5f`](https://github.com/longfa/chainlesschain/commit/458b342f5f11f2ee82c0e6a91ee485d4309485fb)，晚于 `0.166.15` 发布 SHA。发布后的主线增加审计 blob 瞬态重试、Windows 正式评测 Agent 的 HOME/config/cache 隔离、CI 清理稳定性，并将 Windows 时延比上限最终冻结为 `1.65`，Linux、macOS 与 aggregate 保持 `1.5`。绑定 `db53dc2da4` 的[正式 run 33411796790](https://github.com/chainlesschain/chainlesschain/actions/runs/33411796790)中，Linux、macOS 与三平台功能/安全指标通过，Windows 实测 `1.6379980224` 超过当时的 `1.6` 上限，故该 run、workflow aggregate 与 OIDC attestation 均未成功；三平台产物离线加权 aggregate 为 `0.6008293973 < 1.5`。最终阈值提交 `917d18b055` 后，发布负责人显式接受“不再重跑、缺少 final-SHA aggregate/OIDC”的剩余证据风险并关闭 P2-3；该决定不把失败 run 改写为成功，不属于 `0.166.15` 制品，也不构成发布门通用先例。
 >
 > **本轮冻结的本地 source-only 快照**：锚点为 `233e1bdc`；`b8490faa` 是 evidence projector 的具体提交，`d073bdf3` 是 tamper-evident `EvolutionLedger` 的具体提交（签名 append-only、独立 witness、receipt/verify，证据缺失或不一致时 fail closed），`233e1bdc` 再增加 mutation transition subjects binding。原六个治理测试文件在该工作树重跑为 6/6 files、126/126 tests pass（28.84 秒），但这不提供 production import、实例化或统一 wiring；Ledger 独立套件仍为 35 项中 34 pass / 1 timeout。整个快照未进入 GitHub `main@458b342f5f`、`0.166.15` 或正式 qualification，不得据此宣称系统会自动改写或升级 active Skill。
 >
@@ -724,7 +732,7 @@ CLI 制品源码边界为 `815fdbc0c4`；VS Code 与 JetBrains 制品源码边�
 
 > 桌面 / Android / iOS 全 surface 对齐 .113（check-version-sync 绿）；Android cc bundle 滚到 `v20260615c`（携 cli 0.162.70 + pdh 0.4.24，`USR_VERSION` → 44）。
 
-- **修复中国大陆镜像 `npm install` E404**（[#33](https://github.com/chainlesschain/chainlesschain/issues/33)）：`@chainlesschain/core-infra@0.1.0` 在 `registry.npmmirror.com` 仅有元数据、tarball 未缓存 → 默认走淘宝镜像的用户装机硬失败。已手动触发镜像 sync API 修复线上（tarball 404→200）；`npm-publish.yml` 新增「发版后自动 PUT 镜像 sync API」步（best-effort，不阻断发版），后续发版自动补齐；README 中英补「改用官方源 `npm i -g chainlesschain --registry https://registry.npmjs.org`」说明。
+- **修复中国大陆镜像 `npm install` E404**（[#33](https://github.com/longfa/chainlesschain/issues/33)）：`@chainlesschain/core-infra@0.1.0` 在 `registry.npmmirror.com` 仅有元数据、tarball 未缓存 → 默认走淘宝镜像的用户装机硬失败。已手动触发镜像 sync API 修复线上（tarball 404→200）；`npm-publish.yml` 新增「发版后自动 PUT 镜像 sync API」步（best-effort，不阻断发版），后续发版自动补齐；README 中英补「改用官方源 `npm i -g chainlesschain --registry https://registry.npmjs.org`」说明。
 - **`npm-deprecate.yml`**：参数化 workflow，用 CI 的 `NPM_TOKEN` secret 弃用/取消弃用已发布版本（本地 token 已过期）。已弃用误从陈旧 tag 发布、漏 8 个 PDH adapter wiring（douban/ximalaya/keep/didi/mercedes/eleme/xianyu/vipshop）的 `chainlesschain@0.162.68`；`0.162.69` 为完整修复版，`0.162.70` 为当前 npm `latest`。
 - **VS Code 扩展 0.28.0 / 0.29.0（已发 Open VSX）**：后台 tab 完成信号；聊天面板 `/` slash 命令 + `@` 补全 + `/rewind` 回到 agent checkpoint。
 
@@ -1093,7 +1101,7 @@ memory 新增 `pdh_a8_social_adapters_landing.md`：7 forward-looking traps (WBI
 - **C.1 watch face → VoiceMode shortcut**（33 单测）— phone-side `VoiceLaunchActions` + `VoiceTriggerSource` 4 enum + NavGraph 路由 + `CcPhoneVoiceListener` Data Layer service（`/cc/voice/start` MessageClient path）+ wear `VoiceSender` + `VoiceShortcutTileService` standalone tile + `VoiceComplicationService` + `VoiceForwardActivity`（intent + 50ms vibration + 3s timeout）。**安全约束**：`trigger_source` 字段 wear 侧仅信息用途，phone 侧锁 `WEAR_FORWARD` 防伪 — 防 wear 端伪造 trigger_source 提权到 `AUTO_BUTTON`/`PHONE_SHORTCUT`。
 - **最终 sweep bug 修**（commit `f1d283833`）— C.1 PR1 `VoiceLaunchActionsTest` + PR2 `CcPhoneVoiceListenerTest` 漏标 `@Config(sdk=[33])`，Robolectric `DefaultSdkPicker` 拒收 compileSdk=35（maxSdkVersion=34）— 统一与 `:app` 其它 Robolectric 测试一致。
 
-详见 [issue #21](https://github.com/chainlesschain/chainlesschain/issues/21) + [Android 重新定位 §10 GA 后续 scope](docs/design/Android_重新定位_设计文档.md)。
+详见 [issue #21](https://github.com/longfa/chainlesschain/issues/21) + [Android 重新定位 §10 GA 后续 scope](docs/design/Android_重新定位_设计文档.md)。
 
 ## 2026-05-18 收口 — **iOS Phase 5 AI Chat 静态审计 4 真实 bug 修复 + 4 集成测试**
 
@@ -1172,7 +1180,7 @@ memory 新增 `pdh_a8_social_adapters_landing.md`：7 forward-looking traps (WBI
 
 **测试**：39 新单测全绿——6 个 `RealtimeEventManagerProfileQueryTest`（race-fix：`runTest` 跑挂改 `runBlocking`，因 manager 内部 scope 用 `Dispatchers.IO` 与 virtual-time TestDispatcher 不在同一调度图）+ 4×3 feature-p2p（Post/Friend repo + FriendViewModel）+ 2 `DefaultSelfProfileProvider` + 8 `PostReportDaoTest` 真 Room in-memory + 11 路由 + tab 结构性回归（不需要模拟器）。设计文档 [Android_Social_Wiring_2026-05.md](docs/design/Android_Social_Wiring_2026-05.md)，三大文档站本次同步刷新。
 
-## 2026-05-13 中期推进 — **[#21](https://github.com/chainlesschain/chainlesschain/issues/21) v1.2 GA 反馈整合：项目工作流 P1+P2+P3A + #2 删除 fix + #3 日常模板**
+## 2026-05-13 中期推进 — **[#21](https://github.com/longfa/chainlesschain/issues/21) v1.2 GA 反馈整合：项目工作流 P1+P2+P3A + #2 删除 fix + #3 日常模板**
 
 v1.2 GA 反馈 5+3 项整合（#2/#3/#4/#5/#7/#8）。北极星："手机端做 AI 项目交互要像电脑端那样丝滑"。
 
@@ -1184,7 +1192,7 @@ v1.2 GA 反馈 5+3 项整合（#2/#3/#4/#5/#7/#8）。北极星："手机端做 
 
 **测试**：阶段 1 P0 全过 + 阶段 2 project workflow：Android `:app` 80/80 + Desktop combined 51/51。**P3 Part B 待办**：Android `ProjectCommands.kt`（让手机用 REMOTE 调 project.\* 看/操作桌面项目），等用户验证 P1+P2+P3A 后再做。
 
-## 2026-05-13 前期推进 — **[#21](https://github.com/chainlesschain/chainlesschain/issues/21) Android v1.3+ P0 前置三项 GA-independent + AI-3 forward-compat + 2 bug fix**
+## 2026-05-13 前期推进 — **[#21](https://github.com/longfa/chainlesschain/issues/21) Android v1.3+ P0 前置三项 GA-independent + AI-3 forward-compat + 2 bug fix**
 
 v1.2 GA 上架前的 P0 前置批次（**未 bump version**，与 P1 主体一起 release）：
 
@@ -3352,7 +3360,7 @@ signals, reason, recommendedConcurrency, suggestedRoles }`。支持 monorepo 边
 
 ### 最新更新 - B4 post-pack ASAR surgery (v5.0.3.39, 2026-05-07, issue #8)
 
-Windows 安装显著加速。**dev-box (NVMe SSD + Defender OFF) 实测 190.9s vs 1201s 旧 baseline (issue #6) = 6.3× 提速；HDD + Defender ON 默认环境严格 parity 数据未测**（[issue #8 close comment](https://github.com/chainlesschain/chainlesschain/issues/8#issuecomment-4393734608) 详述 methodology caveats）。v5.0.3.4-13 因 electron-builder 的 prod-dep walker 漏掉 `call-bind-apply-helpers` / `side-channel-{list,map,weakmap}` 4 个 transitive deps 改成 `asar: false` 兜底，代价是 NSIS 内 ~110k loose files × ~10ms = 旧 baseline 上 ~20 分钟安装地板。本版本（B4 plan，commit `e11b46913`）走第三条路：
+Windows 安装显著加速。**dev-box (NVMe SSD + Defender OFF) 实测 190.9s vs 1201s 旧 baseline (issue #6) = 6.3× 提速；HDD + Defender ON 默认环境严格 parity 数据未测**（[issue #8 close comment](https://github.com/longfa/chainlesschain/issues/8#issuecomment-4393734608) 详述 methodology caveats）。v5.0.3.4-13 因 electron-builder 的 prod-dep walker 漏掉 `call-bind-apply-helpers` / `side-channel-{list,map,weakmap}` 4 个 transitive deps 改成 `asar: false` 兜底，代价是 NSIS 内 ~110k loose files × ~10ms = 旧 baseline 上 ~20 分钟安装地板。本版本（B4 plan，commit `e11b46913`）走第三条路：
 
 - **`scripts/asar-surgery.js`**：在 electron-builder afterPack 钩子里 extract → inject 4 个 walker-dropped 包到 staging top-level → `@electron/asar.createPackageWithOptions` 重打包，并保留 electron-builder 原始 unpackDir 决策。Build-time verification gate 检查 4 个包确实落在 top-level，缺一抛错。
 - **`scripts/build-win-with-deref.js`**：Win 包装 `electron-builder --win`，临时把 `@chainlesschain/{core-mtc,session-core}` workspace symlinks 替换成 verbatim 拷贝（asar packer 拒绝跨 app-root 符号链接），finally 用 `'junction'` 还原（Win 非 admin 不能创建 `'dir'` symlink）。
@@ -5203,7 +5211,7 @@ CLI 提供交互式设置向导，自动下载二进制文件并配置 LLM 提�
 #### 1. 克隆项目
 
 ```bash
-git clone https://github.com/chainlesschain/chainlesschain.git
+git clone https://github.com/longfa/chainlesschain.git
 cd chainlesschain
 ```
 
@@ -5239,7 +5247,7 @@ docker exec chainlesschain-ollama ollama pull qwen2:7b
 
 ### 下载地址
 
-- **GitHub Releases**: [最新版本](https://github.com/chainlesschain/chainlesschain/releases/latest)
+- **GitHub Releases**: [最新版本](https://github.com/longfa/chainlesschain/releases/latest)
 - **Gitee Releases** (国内加速): [Gitee发布页](https://gitee.com/chainlesschaincn/chainlesschain/releases)
 
 ### 支持平台

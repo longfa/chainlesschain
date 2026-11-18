@@ -1,5 +1,17 @@
 # 简介
 
+> **2026-11-19 当前入口**：公开 CLI **0.166.156**、Open VSX **0.37.192**、JetBrains **0.4.207**，两款 IDE 推荐 CLI **0.166.156**。最后已核验的历史客户端为 **v5.0.3.145**，旧安装包下载源当前返回 **404**，暂不可下载。可先使用 CLI、`cc ui` 浏览器工作台及 IDE；本次不发布新客户端，不新增模型任务验收，**NOT_PAID_READY / NOT_ADMITTED / HOLD** 保留。[当前升级指南](../chainlesschain/cli-ide-update-2026-11-19-156) · [当前源码仓库](https://github.com/longfa/chainlesschain)。
+
+当前推荐安装入口：
+
+```bash
+npm install -g chainlesschain@0.166.156 --registry https://registry.npmjs.org
+cc setup --skip-download --skip-services
+cc ui
+```
+
+以上流程配置 CLI 并打开本机 Web 面板，不下载桌面安装包。模型连接可使用 LK、本地 OpenAI 兼容平台、Ollama 或其他服务商；请求与费用取决于所选模型和账户。详细步骤见[快速开始](./getting-started)与[安装部署](../chainlesschain/installation)。
+
 ## ChainlessChain 是什么?
 
 ChainlessChain 是一个去中心化的个人AI管理平台，整合了知识库管理、去中心化社交和交易辅助三大核心功能。通过U盾/SIMKey硬件加密和完全去中心化的架构，为用户提供军事级的隐私保护和数据安全。
@@ -21,7 +33,7 @@ ChainlessChain 是一个去中心化的个人AI管理平台，整合了知识库
 ### 🧠 AI原生
 
 - **本地AI模型**: 支持Ollama、LLaMA、Qwen等本地模型
-- **隐私保护**: AI处理完全在本地进行
+- **模型选择**: 本地模型在配置的本地服务运行；使用 LK 等云端渠道时，请求会发送至所选服务商
 - **智能增强**: AI增强的搜索、问答和内容生成
 
 ## 主要产品
@@ -139,9 +151,9 @@ ChainlessChain 采用开源协议，欢迎社区贡献：
 
 ### 参与方式
 
-- 🐛 [报告问题](https://github.com/chainlesschain/chainlesschain/issues)
-- 💡 [提交建议](https://github.com/chainlesschain/chainlesschain/discussions)
-- 🔧 [贡献代码](https://github.com/chainlesschain/chainlesschain/pulls)
+- 🐛 [报告问题](https://github.com/longfa/chainlesschain/issues)
+- 💡 [提交建议](https://github.com/longfa/chainlesschain/discussions)
+- 🔧 [贡献代码](https://github.com/longfa/chainlesschain/pulls)
 - 📖 [改进文档](https://github.com/chainlesschain/docs)
 
 ## 下一步
@@ -155,7 +167,9 @@ ChainlessChain 采用开源协议，欢迎社区贡献：
 
 **用技术捍卫隐私，用AI赋能个人**
 
-## 附录：规范章节补全（v5.0.2.34）
+## 历史附录：规范章节补全（v5.0.2.34）
+
+以下保留旧版本架构、命令、性能和测试记录，不代表当前下载可用性或本轮模型成绩；当前安装按本页顶部 CLI / Web 流程执行。
 
 > 为对齐项目用户文档标准结构，下列章节补齐若干未在正文中单独列出的视角。已在正文覆盖的章节在此段仅作简述并标注 `见上文` 指引。
 

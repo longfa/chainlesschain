@@ -3,7 +3,7 @@
 ## 概述
 
 Session Core **0.3.26** 和 CLI **0.166.143** 已公开，准确提交的 CLI CI **76/76**、Strict Sandbox **6/6** 三平台门禁及 Actions OIDC 发布、独立字节/签名来源回读均通过。
-Open VSX **0.37.179** 已公开，下载的 VSIX 与官方制品一致；JetBrains **0.4.196** 已获批且可下载，627 个原始 payload 文件与官方构建一致。两端均推荐 CLI **0.166.143**；公开状态以[发布记录](https://github.com/chainlesschain/chainlesschain/blob/d2070ce914af8d675191e3492e0ce7db650c79c3/docs/research/cli/evidence/release143-public/README.md)为准。
+Open VSX **0.37.179** 已公开，下载的 VSIX 与官方制品一致；JetBrains **0.4.196** 已获批且可下载，627 个原始 payload 文件与官方构建一致。两端均推荐 CLI **0.166.143**；公开状态以[发布记录](https://github.com/longfa/chainlesschain/blob/d2070ce914af8d675191e3492e0ce7db650c79c3/docs/research/cli/evidence/release143-public/README.md)为准。
 本次不重发桌面、Android 或 iOS 客户端。当前公开产品 **v5.0.3.145** 来自较早独立源码，不能据此覆盖本批新增原生 v6 创建与模型起草；需要匹配的新桌面构建和独立原生确认。
 
 ## 核心特性
@@ -90,14 +90,14 @@ HTTP 确认不表示访问已加密。目标创建与模型草稿仍需独立授
 - `packages/vscode-extension/src/ui/llm-config-panel.js`：VS Code 配置。
 - `packages/jetbrains-plugin/src/main/java/com/chainlesschain/ide/LlmConnectionPanel.java`：JetBrains 原生表单。
 - `packages/cli/src/lib/llm-connection-config.js`：原子保存与凭据隔离。
-- [工程完成表](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/agents/chainlesschain-dots-muse-mods-analysis-2026-10-06.md)。
+- [工程完成表](https://github.com/longfa/chainlesschain/blob/main/docs/research/agents/chainlesschain-dots-muse-mods-analysis-2026-10-06.md)。
 
 ## 相关文档
 
 - [CLI 指南](./cli.md)
 - [IDE 桥接指南](./ide-bridge.md)
 - [上一版升级说明](./cli-ide-update-2026-11-05-142.md)
-- [本次发布状态](https://github.com/chainlesschain/chainlesschain/blob/d2070ce914af8d675191e3492e0ce7db650c79c3/docs/research/cli/evidence/release143-public/README.md)
+- [本次发布状态](https://github.com/longfa/chainlesschain/blob/d2070ce914af8d675191e3492e0ce7db650c79c3/docs/research/cli/evidence/release143-public/README.md)
 
 ## 未发行源码进展：CLI 目标移交
 

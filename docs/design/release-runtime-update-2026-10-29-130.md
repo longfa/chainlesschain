@@ -10,7 +10,7 @@
 | Kernel      | `0.1.10`     | 已公开 CLI `.130` 的依赖；主线 `0.1.11` 仍未发行。                                                     |
 | PC / mobile | `v5.0.3.143` | 保留独立既有产品发行，不因 CLI / IDE 更新而增加客户端功能验收。                                        |
 
-[原发布回执](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release130-public/publication.json)与[新回读](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release130-reconcile-2026-10-29/review.json)分别保留 OIDC / provenance 与公开元数据、字节摘要、准确 workflow 结果。Microsoft Marketplace 继续暂缓；原 [.129 设计](./release-runtime-update-2026-10-29.md)保留历史范围。
+[原发布回执](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release130-public/publication.json)与[新回读](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release130-reconcile-2026-10-29/review.json)分别保留 OIDC / provenance 与公开元数据、字节摘要、准确 workflow 结果。Microsoft Marketplace 继续暂缓；原 [.129 设计](./release-runtime-update-2026-10-29.md)保留历史范围。
 
 ## 本版 Goal 运行时
 
@@ -43,4 +43,4 @@ Git 范围不包含被忽略依赖 / 构建目录和外部环境；具体产物�
 `docs/design/` 为设计权威源，两个 VitePress 站点使用同步副本。官网的数据只更新已核实的当前公开渠道，旧发行对象和客户端归档继续保留历史时间。源码同步、准确提交构建、线上部署 / 公网回读分别记账。
 
 - [当前用户升级指南](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-10-29-130.html)
-- [任务完成情况表](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli-ide/plans/cli-ide-codex-claude-gap-review-2026-10-27.md)
+- [任务完成情况表](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli-ide/plans/cli-ide-codex-claude-gap-review-2026-10-27.md)

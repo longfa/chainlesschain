@@ -1,0 +1,43 @@
+{
+  "observedAt": "2026-11-18T14:39:09.902672+00:00",
+  "status": "public_verified",
+  "version": "0.4.207",
+  "recommendedCliVersion": "0.166.156",
+  "sourceSHA": "a8cae89288d3a6119b152e04b750e10d726a5c5f",
+  "runId": 44308436365,
+  "runAttempt": 2,
+  "approve": true,
+  "listed": true,
+  "hidden": false,
+  "payloadEntriesMatch": true,
+  "candidateArchiveSha256": "5daa5ddc63b374908aa2a7ac6f90f5f5f96dc50ba7d3ee8912dcba548cff1a9a",
+  "updateId": 1223726,
+  "downloadURL": "https://plugins.jetbrains.com/files/32208/1223726/chainlesschain-ide-bridge-0.4.207.zip",
+  "payloadEntries": [
+    {
+      "name": "chainlesschain-ide-bridge/lib/chainlesschain-ide-bridge-0.4.207-searchableOptions.jar",
+      "bytes": 1278,
+      "candidateSha256": "65f81f835df18f351ff56a718f10b225a701b3f306c5226c5595b41324c80a8f",
+      "publicSha256": "65f81f835df18f351ff56a718f10b225a701b3f306c5226c5595b41324c80a8f",
+      "byteIdentical": true
+    },
+    {
+      "name": "chainlesschain-ide-bridge/lib/chainlesschain-ide-bridge-0.4.207.jar",
+      "bytes": 1718651,
+      "candidateSha256": "6493b5c71ae872e93d64c86aef8993ad880c861372bca58dd9ba9177f6f3f03b",
+      "publicSha256": "6493b5c71ae872e93d64c86aef8993ad880c861372bca58dd9ba9177f6f3f03b",
+      "byteIdentical": true
+    }
+  ],
+  "publicArchiveSha256": "1a4d04397b2dfa80205b8272bd95d81daf1e856ed707b71bcd600fba42e1cddf",
+  "archiveBytesIdentical": false,
+  "descriptorPluginId": "com.chainlesschain.ide",
+  "pluginId": 32208,
+  "apiURL": "https://plugins.jetbrains.com/api/plugins/32208/updates?size=100",
+  "marketplaceURL": "https://plugins.jetbrains.com/plugin/32208-chainlesschain-ide-bridge/versions/stable/1223726",
+  "officialCdnURL": "https://downloads.marketplace.jetbrains.com/files/32208/1223726/chainlesschain-ide-bridge-0.4.207.zip",
+  "candidateArchiveBytes": 1621296,
+  "publicArchiveBytes": 1626956,
+  "comparison": "Exact set equality and byte-for-byte equality of all non-directory archive payload entries; no additional entries allowed.",
+  "versionValidation": "META-INF/plugin.xml ID and version parsed; CliVersionCheck.class RECOMMENDED_CLI_VERSION ConstantValue parsed."
+}

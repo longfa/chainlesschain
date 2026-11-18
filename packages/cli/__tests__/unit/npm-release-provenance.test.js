@@ -1,4 +1,9 @@
 import { describe, expect, it } from "vitest";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import {
   NPM_RELEASE_AUTHORITY,
   verifyNpmReleaseProvenance,
@@ -86,7 +91,116 @@ function verify(value) {
   });
 }
 
+function invokeVerifier(payload, repository, { trustedAnchor = false } = {}) {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "cc-npm-authority-"));
+  try {
+    const input = path.join(root, "audit.json");
+    const output = path.join(root, "verified.json");
+    fs.writeFileSync(input, JSON.stringify(audit(payload)));
+    const environment = { ...process.env, CC_NPM_PROVENANCE_OUTPUT: output };
+    delete environment.CC_NPM_RELEASE_REPOSITORY;
+    if (repository) environment.CC_NPM_RELEASE_REPOSITORY = repository;
+    const args = trustedAnchor
+      ? ["--trusted-anchor", input, VERSION, SHA512, "chainlesschain"]
+      : [input, VERSION, COMMIT, REF, SHA512];
+    const result = spawnSync(
+      process.execPath,
+      [
+        fileURLToPath(
+          new URL(
+            "../../scripts/verify-npm-release-provenance.mjs",
+            import.meta.url,
+          ),
+        ),
+        ...args,
+      ],
+      { env: environment, encoding: "utf8", windowsHide: true, timeout: 10000 },
+    );
+    return {
+      ...result,
+      verification: fs.existsSync(output)
+        ? JSON.parse(fs.readFileSync(output, "utf8"))
+        : null,
+    };
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+}
+
+describe("CLI repository migration authority", () => {
+  const replacement = "https://github.com/longfa/chainlesschain";
+  const migratedStatement = () =>
+    JSON.parse(
+      JSON.stringify(statement()).replaceAll(
+        NPM_RELEASE_AUTHORITY.repository,
+        replacement,
+      ),
+    );
+
+  it("accepts the replacement publisher only when explicitly pinned by the workflow", () => {
+    const result = invokeVerifier(migratedStatement(), replacement);
+    expect(result.status, result.stderr).toBe(0);
+    expect(result.verification).toMatchObject({
+      repository: replacement,
+      commit: COMMIT,
+      ref: REF,
+    });
+    const unpinned = invokeVerifier(migratedStatement());
+    expect(unpinned.status).not.toBe(0);
+    expect(unpinned.verification).toBeNull();
+  });
+
+  it("rejects legacy provenance when the new release expects the replacement repository", () => {
+    const result = invokeVerifier(statement(), replacement);
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toMatch(/workflow repository mismatch/);
+    expect(result.verification).toBeNull();
+  });
+
+  it("rejects an unrecognized repository override before emitting a receipt", () => {
+    const result = invokeVerifier(
+      statement(),
+      "https://github.com/attacker/repo",
+    );
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toMatch(
+      /Publishing repository is outside the authorized release repositories/,
+    );
+    expect(result.verification).toBeNull();
+  });
+
+  it("retains the legacy authority for reused immutable packages under a migrated environment", () => {
+    const result = invokeVerifier(statement(), replacement, {
+      trustedAnchor: true,
+    });
+    expect(result.status, result.stderr).toBe(0);
+    expect(result.verification).toMatchObject({
+      repository: NPM_RELEASE_AUTHORITY.repository,
+      anchorMode: "trusted-reuse",
+    });
+  });
+});
+
 describe("verified npm release provenance", () => {
+  it("binds the fork release to its own signed repository without changing legacy authority", () => {
+    const repository = "https://github.com/longfa/chainlesschain";
+    const payload = statement();
+    payload.predicate.buildDefinition.externalParameters.workflow.repository =
+      repository;
+    payload.predicate.buildDefinition.resolvedDependencies[0].uri = `git+${repository}@${REF}`;
+    payload.predicate.runDetails.metadata.invocationId = `${repository}/actions/runs/123456/attempts/2`;
+    expect(() => verify(audit(payload))).toThrow(/repository mismatch/);
+    expect(
+      verifyNpmReleaseProvenance(audit(payload), {
+        version: VERSION,
+        commit: COMMIT,
+        ref: REF,
+        sha512: SHA512,
+        repository,
+      }),
+    ).toMatchObject({ repository, anchorMode: "exact-release" });
+    expect(verify(audit()).repository).toBe(NPM_RELEASE_AUTHORITY.repository);
+  });
   it("binds npm's verified SLSA bundle to the exact release authority", () => {
     expect(verify(audit())).toMatchObject({
       package: "chainlesschain",

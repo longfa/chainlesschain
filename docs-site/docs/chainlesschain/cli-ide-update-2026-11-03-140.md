@@ -8,7 +8,7 @@
 
 Open VSX **0.37.176** 已公开列出且可下载，VSIX 与正式构建逐字节一致。JetBrains **0.4.193** 已上传，等待商店审核或公开索引；公开可用性未核验。上一已核验公开版仍为 **0.4.192**，其推荐标记为 CLI **0.166.139**。 两个新 IDE 版本均推荐 CLI **0.166.140**。
 
-[发行与各渠道回执](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release140-public/publication-readback.json) · [准确源码门禁](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release140-public/gates.json) · [CLI 公开回读](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release140-public/cli.json) · [Open VSX 回读](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release140-public/open-vsx.json) · [JetBrains 状态](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release140-public/jetbrains.json)
+[发行与各渠道回执](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release140-public/publication-readback.json) · [准确源码门禁](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release140-public/gates.json) · [CLI 公开回读](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release140-public/cli.json) · [Open VSX 回读](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release140-public/open-vsx.json) · [JetBrains 状态](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release140-public/jetbrains.json)
 
 <!-- release140-guide-status:end -->
 
@@ -54,7 +54,7 @@ Agent SDK **0.2.17**、Protocol **0.1.12**、Kernel **0.1.11** 和其他子包�
 
 ## 测试覆盖
 
-内部摘要修复的完整相关测试 **393/393 通过**；新增确定性真实 PNG / 推理摘要回归，覆盖手机号、伪造标记、绑定篡改、验签失败和旧规则读取。v10 发行源码再次通过两条真实火山恢复路径，共 **5 次请求 / 6,501 tokens**，源码哈希与当前运行时一致。见[追加实测证据](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/tool-argument-recovery-20261103/live-volcengine-v10.json)。
+内部摘要修复的完整相关测试 **393/393 通过**；新增确定性真实 PNG / 推理摘要回归，覆盖手机号、伪造标记、绑定篡改、验签失败和旧规则读取。v10 发行源码再次通过两条真实火山恢复路径，共 **5 次请求 / 6,501 tokens**，源码哈希与当前运行时一致。见[追加实测证据](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/tool-argument-recovery-20261103/live-volcengine-v10.json)。
 
 Windows 相关回归检查 **129 项通过**。两条真实火山模型恢复路径分别验证新调用被拒绝后继续，以及旧版失败历史续接；新调用场景明确向一次真实响应注入了日志中的损坏参数。两条路径均验证未执行/未重放失败调用、原历史不变、成功读取未知文件内容和自进化运行正常结束。
 
@@ -62,7 +62,7 @@ Windows 相关回归检查 **129 项通过**。两条真实火山模型恢复路
 
 同一发行源码三平台各 100 次回环通过，共 300 次仅覆盖结构封套，不是付费模型任务验收，也不替代 CLI CI / Strict Sandbox。本地 composition 在 v10 源码与较早基线上均出现超时，未计为通过。
 
-火山 .140 全量 **36+9** 已启动，但完整最终成绩尚未归档核验；内部摘要显式输出限制的适配器修复与原轮分别记录，不将调度或离线测试计为任务通过。原冻结项目历史 **41/45**、.138 **2/4** 和含修复任务的 Sol 跨版本 **45/45** 不混算。见[全量复测记录](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/verify01-volcengine-140-full-20261103/README.md)。
+火山 .140 全量 **36+9** 已启动，但完整最终成绩尚未归档核验；内部摘要显式输出限制的适配器修复与原轮分别记录，不将调度或离线测试计为任务通过。原冻结项目历史 **41/45**、.138 **2/4** 和含修复任务的 Sol 跨版本 **45/45** 不混算。见[全量复测记录](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/verify01-volcengine-140-full-20261103/README.md)。
 
 ## 安全考虑
 
@@ -72,7 +72,7 @@ Windows 相关回归检查 **129 项通过**。两条真实火山模型恢复路
 
 ## 故障排查
 
-旧候选 `eb0fe7a8a1` 曾在 Windows 证据索引完整性组合校验处中止，随后原规则的三平台各 100 次完整回环复测通过。具体拒绝子条件仍未定位，完整性校验继续生效；[首次失败](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/tool-argument-recovery-20261103/windows-eb-trajectory-attempt1-failure.json)和[完整复测](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/tool-argument-recovery-20261103/windows-eb-trajectory-attempt2-aggregate.json)保留各自的历史源码范围。
+旧候选 `eb0fe7a8a1` 曾在 Windows 证据索引完整性组合校验处中止，随后原规则的三平台各 100 次完整回环复测通过。具体拒绝子条件仍未定位，完整性校验继续生效；[首次失败](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/tool-argument-recovery-20261103/windows-eb-trajectory-attempt1-failure.json)和[完整复测](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/tool-argument-recovery-20261103/windows-eb-trajectory-attempt2-aggregate.json)保留各自的历史源码范围。
 
 升级后仍报错时，先运行 cc --version 和 cc doctor，核对 IDE 实际使用的 CLI 路径，再重启现有 Agent。旧进程可能仍持有升级前的模块。
 
@@ -80,9 +80,9 @@ Windows 相关回归检查 **129 项通过**。两条真实火山模型恢复路
 
 ## 关键文件
 
-- [工具参数校验与历史恢复](https://github.com/chainlesschain/chainlesschain/blob/main/packages/cli/src/runtime/tool-argument-recovery.js)
-- [CLI Agent 执行入口](https://github.com/chainlesschain/chainlesschain/blob/main/packages/cli/src/runtime/agent-core.js)
-- [脱敏的真实恢复实测](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/tool-argument-recovery-20261103/live-volcengine.json)
+- [工具参数校验与历史恢复](https://github.com/longfa/chainlesschain/blob/main/packages/cli/src/runtime/tool-argument-recovery.js)
+- [CLI Agent 执行入口](https://github.com/longfa/chainlesschain/blob/main/packages/cli/src/runtime/agent-core.js)
+- [脱敏的真实恢复实测](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/tool-argument-recovery-20261103/live-volcengine.json)
 
 ## 使用示例
 

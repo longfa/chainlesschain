@@ -3,13 +3,29 @@ import catalog from "./lk-model-catalog.json" with { type: "json" };
 
 export const LK_MODELS = catalog.models;
 
+// Keep existing saved connections usable when the provider renames a public
+// alias. New UI selections always use the current catalog IDs.
+export const LK_MODEL_ALIASES = Object.freeze({
+  "tt-6.1-sol": "gpt-6.1-sol",
+  "tt-6-luna": "gpt-6-luna",
+  "fb-5-2": "claude-fable-5-2",
+  "gem-3.8-flash": "gemini-3.8-flash",
+});
+
+export function canonicalLkModel(model) {
+  const value = typeof model === "string" ? model.trim() : "";
+  return Object.hasOwn(LK_MODEL_ALIASES, value)
+    ? LK_MODEL_ALIASES[value]
+    : value;
+}
+
 export const LK_CHANNEL = {
   id: "lk",
   name: "LK API",
   documentationUrl: "https://chainlesschain.net/apidoc",
   pricingUrl: "https://chainlesschain.net/api/pricing",
   addresses: {
-    primary: "https://api.lk888.ai",
+    primary: "https://api.vv666.ai",
     backup: "https://api.lk666.ai",
   },
   protocols: {
@@ -17,19 +33,19 @@ export const LK_CHANNEL = {
       label: "OpenAI 兼容",
       provider: "custom",
       basePath: "/v1",
-      defaultModel: "tt-6.1-sol",
+      defaultModel: "gpt-6.1-sol",
     },
     anthropic: {
       label: "Anthropic 兼容 (FB-5.2)",
       provider: "anthropic",
       basePath: "/v1",
-      defaultModel: "fb-5-2",
+      defaultModel: "claude-opus-5-5",
     },
     gemini: {
       label: "Gemini 兼容",
       provider: "gemini",
       basePath: "/v1beta",
-      defaultModel: "gem-3.8-flash",
+      defaultModel: "gemini-4-carbon",
     },
   },
   endpoints: {
@@ -74,7 +90,10 @@ export function resolveLkConnection(
     ? LK_CHANNEL.addresses[address]
     : null;
   if (!definition || !origin) throw new Error("Unknown LK protocol or address");
-  const knownModel = LK_MODELS.find((entry) => entry.id === model);
+  const selectedModel = canonicalLkModel(
+    model || definition.defaultModel || "",
+  );
+  const knownModel = LK_MODELS.find((entry) => entry.id === selectedModel);
   if (
     knownModel &&
     (knownModel.type !== "chat" ||
@@ -87,6 +106,6 @@ export function resolveLkConnection(
   return {
     provider: definition.provider,
     baseUrl: origin + basePath,
-    model: model || definition.defaultModel || "",
+    model: selectedModel,
   };
 }

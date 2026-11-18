@@ -21,13 +21,13 @@ CLI setup、`cc ui` Web、VS Code 和 JetBrains 的模型设置新增 **LK API �
 
 ## 配置参考
 
-主地址 `https://api.lk888.ai`，备用地址 `https://api.lk666.ai`，域名使用字母 `lk`。两个地址为同一服务。
+主地址 `https://api.vv666.ai`，备用地址 `https://api.lk666.ai`，域名使用字母 `lk`。两个地址为同一服务。
 
-| 对话协议                | CLI / Web / IDE 主 Base URL   | 示例模型        |
-| ----------------------- | ----------------------------- | --------------- |
-| OpenAI Chat Completions | `https://api.lk888.ai/v1`     | `tt-6-luna`     |
-| Anthropic Messages      | `https://api.lk888.ai/v1`     | `fb-5-2`        |
-| Gemini                  | `https://api.lk888.ai/v1beta` | `gem-3.8-flash` |
+| 对话协议                | CLI / Web / IDE 主 Base URL   | 示例模型          |
+| ----------------------- | ----------------------------- | ----------------- |
+| OpenAI Chat Completions | `https://api.vv666.ai/v1`     | `gpt-6.1-sol`     |
+| Anthropic Messages      | `https://api.vv666.ai/v1`     | `claude-opus-5-5` |
+| Gemini                  | `https://api.vv666.ai/v1beta` | `gemini-4-carbon` |
 
 桌面 Anthropic 适配器自行追加 `/v1/messages`，因此桌面设置使用域名根地址。OpenAI 预设使用 Chat Completions；平台另有 Responses 接口，不表示此预设使用 Responses。
 
@@ -88,7 +88,7 @@ IDE：打开「配置大模型 / Configure LLM」，选择 LK API 聚合平台�
 
 - [平台开发文档](https://chainlesschain.net/apidoc)
 - [平台定价](https://chainlesschain.net/api/pricing)
-- [完整接入说明](https://github.com/chainlesschain/chainlesschain/blob/main/docs/configuration/lk-api-channel.md)
-- [发布证据](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release150-public/publication.json)
+- [完整接入说明](https://github.com/longfa/chainlesschain/blob/main/docs/configuration/lk-api-channel.md)
+- [发布证据](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release150-public/publication.json)
 
 本次渠道功能和版本发布不改变既有模型任务验收状态：`NOT_PAID_READY`、`NOT_ADMITTED` 和自动晋升 `HOLD` 保持原有适用范围。

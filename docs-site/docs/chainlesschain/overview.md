@@ -44,7 +44,7 @@ Session Core **0.3.27**、Agent Protocol **0.1.13**、Agent SDK **0.2.18**、Con
 >
 > **v5.0.3.124 个人数据中台 gov-ixiamen 端点真机静态校验（2026-06-15）**：用已 root 真机对 PDH「端点抓包」runbook 跑**静态分析层**（只读 APK 二进制，无任何登录态/账号介入）。修正 `gov-ixiamen` 采集器的虚构占位主机——旧 `app.ixm.gov.cn` 实为不存在域名；真机 dex 静态分析确认 i 厦门真实后端为 `*.ixiamen.org.cn`（业务网关 `https://buss.ixiamen.org.cn/pbc/`），已改为真实网关（`opts.listUrl` 可覆盖），子路径 + 请求体仍 `unverified`（body 经 `libzxprotect` 加密静态不可见）。中行（SecNeo 壳）/工行（请求体加密+签名）维持 snapshot，不因拿到域名就标 verified；12123 域名早已正确。`@chainlesschain/personal-data-hub` 0.4.24→0.4.25 + CLI 0.162.70→0.162.71 已发 npm；Android cc bundle 滚到 `internal-binaries-android-v20260615d`、USR_VERSION → 45。
 >
-> **v5.0.3.123 npm 发布/安装链路加固（2026-06-15）**：修复中国大陆镜像装机失败——`@chainlesschain/core-infra@0.1.0` 在 `registry.npmmirror.com` 仅有元数据、tarball 未缓存致 `npm install` E404（[#33](https://github.com/chainlesschain/chainlesschain/issues/33)）；手动触发镜像 sync API 修复线上（tarball 404→200），`npm-publish.yml` 新增发版后自动 PUT 镜像 sync API（best-effort，不阻断发版），README（中英）补「改用官方源 `npm i -g chainlesschain --registry https://registry.npmjs.org`」。新增 `npm-deprecate.yml` 参数化弃用 workflow（已弃用误从陈旧 tag 发布、漏 8 个 PDH adapter wiring（douban/ximalaya/keep/didi/mercedes/eleme/xianyu/vipshop）的 `0.162.68` → `0.162.69` 修复版）。VS Code 扩展 0.28/0.29（后台 tab 完成信号 + 面板 slash 命令/@ 补全/rewind）。CLI npm `latest` 0.162.70。
+> **v5.0.3.123 npm 发布/安装链路加固（2026-06-15）**：修复中国大陆镜像装机失败——`@chainlesschain/core-infra@0.1.0` 在 `registry.npmmirror.com` 仅有元数据、tarball 未缓存致 `npm install` E404（[#33](https://github.com/longfa/chainlesschain/issues/33)）；手动触发镜像 sync API 修复线上（tarball 404→200），`npm-publish.yml` 新增发版后自动 PUT 镜像 sync API（best-effort，不阻断发版），README（中英）补「改用官方源 `npm i -g chainlesschain --registry https://registry.npmjs.org`」。新增 `npm-deprecate.yml` 参数化弃用 workflow（已弃用误从陈旧 tag 发布、漏 8 个 PDH adapter wiring（douban/ximalaya/keep/didi/mercedes/eleme/xianyu/vipshop）的 `0.162.68` → `0.162.69` 修复版）。VS Code 扩展 0.28/0.29（后台 tab 完成信号 + 面板 slash 命令/@ 补全/rewind）。CLI npm `latest` 0.162.70。
 >
 > **v5.0.3.122 个人数据中台补 6 个跨平台采集器（2026-06-15）**：补齐路线图 / 参考机之外、但高个人数据价值的 6 个主流平台——饿了么（外卖订单）/ 闲鱼（二手买卖，买卖双向）/ 唯品会（品牌特卖订单）/ 豆瓣（书影音兴趣图谱）/ 喜马拉雅（听书播客收听历史）/ Keep（运动训练记录）。全部 snapshot 主路径 + cookie-api（注入式 fetch + `signProvider` seam，端点 best-effort 未实地验证）。`@chainlesschain/personal-data-hub` 0.4.24 + CLI 0.162.67 已发 npm；Android cc bundle 滚到 `internal-binaries-android-v20260615b`、USR_VERSION → 43。adapter 总数 83 → 89。
 >
@@ -192,7 +192,7 @@ ChainlessChain 将知识库、个人数据、AI Agent、去中心化社交和交
 | PC / mobile 公开产品 | **v5.0.3.145**                       | 22 个公开资产，独立发行身份                                           |
 | 当前发行门禁         | **CLI CI 76/76；Strict Sandbox 6/6** | 公开 CLI .149 的准确发行源 `168a3d561b5a16e9d27b060944c63b2264c99df0` |
 
-[命令清单来源](https://github.com/chainlesschain/chainlesschain/blob/168a3d561b5a16e9d27b060944c63b2264c99df0/packages/cli/src/command-manifest.json) · [公开下载和发行回读](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release149-public/publication.json)
+[命令清单来源](https://github.com/longfa/chainlesschain/blob/168a3d561b5a16e9d27b060944c63b2264c99df0/packages/cli/src/command-manifest.json) · [公开下载和发行回读](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release149-public/publication.json)
 
 旧版代码行数、组件数、用例数与阶段完成标签不作为本轮准确提交的统计或测试结果。历史版本记录在上方折叠区保留。
 
@@ -1571,7 +1571,7 @@ CLI 安装需要 Node.js **22.12.0+** 和 npm **10+**。使用本页顶部的固
 
 ```bash
 # 1. 克隆项目
-git clone https://github.com/chainlesschain/chainlesschain.git
+git clone https://github.com/longfa/chainlesschain.git
 cd chainlesschain
 
 # 2. 安装依赖
@@ -1844,10 +1844,10 @@ OPENAI_API_KEY=sk-...                # OpenAI API Key
 
 ### 开源贡献
 
-- 📖 [贡献指南](https://github.com/chainlesschain/chainlesschain/blob/main/CONTRIBUTING.md)
-- 🐛 [报告问题](https://github.com/chainlesschain/chainlesschain/issues)
-- 💡 [功能建议](https://github.com/chainlesschain/chainlesschain/discussions)
-- 🔧 [提交PR](https://github.com/chainlesschain/chainlesschain/pulls)
+- 📖 [贡献指南](https://github.com/longfa/chainlesschain/blob/main/CONTRIBUTING.md)
+- 🐛 [报告问题](https://github.com/longfa/chainlesschain/issues)
+- 💡 [功能建议](https://github.com/longfa/chainlesschain/discussions)
+- 🔧 [提交PR](https://github.com/longfa/chainlesschain/pulls)
 
 ### 技术支持
 

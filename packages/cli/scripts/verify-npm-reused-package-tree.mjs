@@ -37,6 +37,7 @@ export function verifyNpmReusedPackageTree(
   currentCommitValue,
   packagePathValue,
   git = defaultGit,
+  { mirrorRepository } = {},
 ) {
   if (!evidence || typeof evidence !== "object" || Array.isArray(evidence)) {
     throw new Error("npm provenance evidence must be an object");
@@ -44,6 +45,19 @@ export function verifyNpmReusedPackageTree(
   if (evidence.anchorMode !== "trusted-reuse") {
     throw new Error("npm provenance evidence is not a trusted reuse anchor");
   }
+  const repository = requiredString(
+    evidence.repository,
+    "signed provenance repository",
+  );
+  if (
+    ![
+      "https://github.com/chainlesschain/chainlesschain",
+      "https://github.com/longfa/chainlesschain",
+    ].includes(repository)
+  )
+    throw new Error(
+      "Signed provenance repository is outside the authorized release repositories",
+    );
   const anchorCommit = requiredString(
     evidence.commit,
     "provenance anchor commit",
@@ -66,8 +80,30 @@ export function verifyNpmReusedPackageTree(
   if (!PACKAGE_PATH.test(packagePath)) {
     throw new Error("package path must name one direct packages/ child");
   }
+  if (
+    mirrorRepository &&
+    (repository !== "https://github.com/chainlesschain/chainlesschain" ||
+      mirrorRepository !== "https://github.com/longfa/chainlesschain")
+  ) {
+    throw new Error(
+      "Provenance mirror is outside the authorized repository mapping",
+    );
+  }
 
-  git(["fetch", "--force", "--no-tags", "--depth=1", "origin", anchorRef]);
+  // A publishing fork may not contain the historical release tags. Fetch the
+  // repository authenticated by the signed provenance, then compare its tag,
+  // commit and package tree exactly as before.
+  // An explicitly authorized mirror supplies only the signed immutable commit
+  // object. The signed source/ref remains the original provenance authority;
+  // mirror tag names are never used as evidence.
+  git([
+    "fetch",
+    "--force",
+    "--no-tags",
+    "--depth=1",
+    mirrorRepository || repository,
+    mirrorRepository ? anchorCommit : anchorRef,
+  ]);
   const fetchedCommit = git([
     "rev-parse",
     "--verify",
@@ -107,6 +143,9 @@ export function verifyNpmReusedPackageTree(
       anchorTree,
       currentCommit,
       currentTree,
+      ...(mirrorRepository
+        ? { mirrorRepository, mirrorCommit: anchorCommit }
+        : {}),
     },
   };
 }
@@ -134,6 +173,8 @@ async function main() {
     readEvidence(evidencePath),
     currentCommit,
     packagePath,
+    defaultGit,
+    { mirrorRepository: process.env.CC_NPM_REUSE_MIRROR },
   );
   fs.writeFileSync(
     path.resolve(evidencePath),

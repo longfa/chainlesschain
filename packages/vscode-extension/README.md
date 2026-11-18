@@ -4,33 +4,35 @@ ChainlessChain agent workspace for VS Code-compatible editors with streaming cha
 
 ## Release pairing
 
-Version **0.37.191** recommends CLI **`0.166.154`** and pairs with JetBrains **0.4.206**.
+Version **0.37.192** recommends CLI **`0.166.156`** and pairs with JetBrains **0.4.207**.
 
-This is an unpublished IDE candidate paired with CLI 0.166.154. The verified public pairing below remains VS Code 0.37.189 with CLI 0.166.150 until the exact tag workflow and Open VSX readback complete.
+Public Open VSX **0.37.192** pairs with CLI **0.166.156** for corrected LK model IDs, protocol-filtered selection and authenticated price/billing queries. The complete tag workflow passed, and the public VSIX matches the immutable candidate byte for byte. JetBrains **0.4.207** is also approved, listed and publicly verified with the same CLI pairing. Older public releases below are historical pairings.
 
-This release adds fresh LK model prices, balance, Key quota and actual API billing (`cc llm account`), plus saved credentials for every configured channel, including Volcengine. Saved connections restore the Key when switching back; LK hosts and protocols share one credential. Desktop source supports the same account queries and encrypted connection history; a new desktop installer is not part of this release.
+Install `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org`, restart the IDE, and verify `cc --version`. See [release scope](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-156.md). No new PC/mobile installer is included.
 
 ## Current release
 
-<!-- release189-status -->
+<!-- release156-status -->
 
-Open VSX version **0.37.189** pairs with public CLI `0.166.150`.
+Open VSX version **0.37.192** pairs with public CLI `0.166.156`.
 
 | Component                 | Current public status                                       |
 | ------------------------- | ----------------------------------------------------------- |
-| VS Code extension         | **0.37.189**; verified public Open VSX release              |
-| Recommended CLI           | **`chainlesschain@0.166.150`**; verified public npm package |
+| VS Code extension         | **0.37.192**; verified public Open VSX release              |
+| Recommended CLI           | **`chainlesschain@0.166.156`**; verified public npm package |
 | Base bridge compatibility | `cc >= 0.162.190`; newer features require the paired CLI    |
 
-Open VSX **0.37.189** is [public and byte-verified](https://github.com/chainlesschain/chainlesschain/actions/runs/43646453630), and recommends CLI **0.166.150**. CLI `0.166.150` is the recommended public CLI; Using `@0.166.150` selects this verified pairing. Install `npm i -g chainlesschain@0.166.150 --registry https://registry.npmjs.org`, restart the host, then run `cc --version` and `cc doctor`.
+The [complete tag workflow](https://github.com/longfa/chainlesschain/actions/runs/44308435592) passed all Linux, Windows, macOS, browser and Remote SSH gates for source `a8cae89288d3a6119b152e04b750e10d726a5c5f`. The public VSIX SHA-256 is `6f7c5bde8a2a3b23dce08bf3b9c9c41b705f46207125882b3772d84c23956de3`, identical to the immutable candidate. CLI `0.166.156` is the recommended public CLI; Using `@0.166.156` selects this verified pairing.
 
-The immutable extension tag is `ide-vscode-v0.37.189`.
+The immutable extension tag is `ide-vscode-v0.37.192`.
 
-[Download chainlesschain-ide-0.37.189.vsix](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.189/file/chainlesschain.chainlesschain-ide-0.37.189.vsix). JetBrains **0.4.204** is publicly verified and recommends the same CLI. Microsoft Marketplace is not published by this tag workflow. Base bridge compatibility remains `cc >= 0.162.190`; the new configuration and account commands require the paired CLI.
+[Download chainlesschain-ide-0.37.192.vsix](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.192/file/chainlesschain.chainlesschain-ide-0.37.192.vsix). JetBrains **0.4.207** is approved, listed and its public ZIP preserves both candidate JAR payloads. Microsoft Marketplace is not published by this tag workflow.
 
-Open **Configure LLM** to select LK, protocol, endpoint and model, restore a saved channel, or refresh the saved LK account. Prices and actual bills use 算力; Token estimates are separate. The 197-entry media/chat directory includes 83 chat models; media task submission and polling are not implemented in these settings.
+Open **Configure LLM** to select LK, protocol, endpoint and model, restore a saved channel, or refresh the saved LK account. The current directory has 202 entries, including 86 chat models, and uses `gpt-6.1-sol` for the LK OpenAI default. Prices and actual bills use 算力; Token estimates are separate. Media task submission and polling are not implemented in these settings.
 
-[Setup and limits](../../docs/configuration/lk-api-channel.md) · [Publication evidence](../../docs/research/cli/evidence/release150-public/publication.json).
+Install `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org`, restart the host, then run `cc --version` and `cc doctor`.
+
+[Setup and limits](../../docs/configuration/lk-api-channel.md) · [Publication evidence](../../docs/research/cli/evidence/release156-public/publication.json).
 
 ### Previous verified release (0.37.188)
 
@@ -363,7 +365,7 @@ Install CLI with `npm i -g chainlesschain@0.166.133 --registry https://registry.
 
 Open VSX version **0.37.170** pairs with public CLI `0.166.132`.
 
-Open VSX **0.37.170** is public and listed, paired with approved JetBrains **0.4.187**. Immutable tag `ide-vscode-v0.37.170` selects [source 772fcdbda85bcf91df95bfced5b476dcf4c74614](https://github.com/chainlesschain/chainlesschain/commit/772fcdbda85bcf91df95bfced5b476dcf4c74614). The [release run](https://github.com/chainlesschain/chainlesschain/actions/runs/40987417858) passed; the [versioned VSIX](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.170/file/chainlesschain.chainlesschain-ide-0.37.170.vsix), `chainlesschain-ide-0.37.170.vsix`, matches [official candidate artifact 12947916372](https://github.com/chainlesschain/chainlesschain/actions/runs/40987417858/artifacts/12947916372) byte for byte. [Public readback](https://github.com/chainlesschain/chainlesschain/blob/0d57ebfea919ae941a36a1f11a9ee10964722120/docs/research/cli/evidence/release132-public/open-vsx.json) · [validation gates](https://github.com/chainlesschain/chainlesschain/blob/0d57ebfea919ae941a36a1f11a9ee10964722120/docs/research/cli/evidence/release132-public/gates.json) · [publication evidence](https://github.com/chainlesschain/chainlesschain/blob/0d57ebfea919ae941a36a1f11a9ee10964722120/docs/research/cli/evidence/release132-public/publication.json).
+Open VSX **0.37.170** is public and listed, paired with approved JetBrains **0.4.187**. Immutable tag `ide-vscode-v0.37.170` selects [source 772fcdbda85bcf91df95bfced5b476dcf4c74614](https://github.com/longfa/chainlesschain/commit/772fcdbda85bcf91df95bfced5b476dcf4c74614). The [release run](https://github.com/chainlesschain/chainlesschain/actions/runs/40987417858) passed; the [versioned VSIX](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.170/file/chainlesschain.chainlesschain-ide-0.37.170.vsix), `chainlesschain-ide-0.37.170.vsix`, matches [official candidate artifact 12947916372](https://github.com/chainlesschain/chainlesschain/actions/runs/40987417858/artifacts/12947916372) byte for byte. [Public readback](https://github.com/longfa/chainlesschain/blob/0d57ebfea919ae941a36a1f11a9ee10964722120/docs/research/cli/evidence/release132-public/open-vsx.json) · [validation gates](https://github.com/longfa/chainlesschain/blob/0d57ebfea919ae941a36a1f11a9ee10964722120/docs/research/cli/evidence/release132-public/gates.json) · [publication evidence](https://github.com/longfa/chainlesschain/blob/0d57ebfea919ae941a36a1f11a9ee10964722120/docs/research/cli/evidence/release132-public/publication.json).
 
 Install CLI with `npm i -g chainlesschain@0.166.132 --registry https://registry.npmjs.org`. Using `@0.166.132` selects this verified pairing. Restart the chat host and run `cc --version` and `cc doctor`. This release pairs the CLI response completion and current-task protections; it contains no independent IDE UI change.
 
@@ -375,7 +377,7 @@ Install CLI with `npm i -g chainlesschain@0.166.132 --registry https://registry.
 | Editor compatibility      | VS Code `>= 1.85.0` and compatible Open VSX editors             |
 | Distribution              | Open VSX and versioned VSIX; Microsoft Marketplace deferred     |
 
-At historical source `abbe13ad3658ff9e2e100989a4cfefc409d9261c`, the combined local suite actually ran **456 tests across 18 files + 10 real CLI tests across 3 files**, with no skips. Subsequent fixture and native-preflight repairs compared the selected runtime components byte for byte; release source `772fcdbda85bcf91df95bfced5b476dcf4c74614` did **not** repeat that combined local suite. [Component scope evidence](https://github.com/chainlesschain/chainlesschain/blob/0d57ebfea919ae941a36a1f11a9ee10964722120/docs/research/cli/evidence/release132-native-preflight-2026-10-30/review.json) and the release source's [cloud gates](https://github.com/chainlesschain/chainlesschain/blob/0d57ebfea919ae941a36a1f11a9ee10964722120/docs/research/cli/evidence/release132-public/gates.json) retain this distinction. Failed source `40753f179a3dc18760bd64a754b28a46ba718f57` and the earlier superseded `7f8ef64b4bd8b429f97d2e121c440143ed7ddf3b` remain historical; their successful checks do not transfer to this release.
+At historical source `abbe13ad3658ff9e2e100989a4cfefc409d9261c`, the combined local suite actually ran **456 tests across 18 files + 10 real CLI tests across 3 files**, with no skips. Subsequent fixture and native-preflight repairs compared the selected runtime components byte for byte; release source `772fcdbda85bcf91df95bfced5b476dcf4c74614` did **not** repeat that combined local suite. [Component scope evidence](https://github.com/longfa/chainlesschain/blob/0d57ebfea919ae941a36a1f11a9ee10964722120/docs/research/cli/evidence/release132-native-preflight-2026-10-30/review.json) and the release source's [cloud gates](https://github.com/longfa/chainlesschain/blob/0d57ebfea919ae941a36a1f11a9ee10964722120/docs/research/cli/evidence/release132-public/gates.json) retain this distinction. Failed source `40753f179a3dc18760bd64a754b28a46ba718f57` and the earlier superseded `7f8ef64b4bd8b429f97d2e121c440143ed7ddf3b` remain historical; their successful checks do not transfer to this release.
 
 Automatic acceptance remains **34/45**, with **11** unfinished; **3 assisted deliveries** are recorded separately and are not added to that total. The original broker **403** and Memory cold SLO remain unresolved. Publication adds no task acceptance or paid/native admission: **NOT_PAID_READY / NOT_ADMITTED / HOLD** remain. Microsoft Marketplace remains deferred. PC/mobile **v5.0.3.143** remain independent.
 
@@ -459,7 +461,7 @@ CLI `0.166.128` is the recommended public release. Using `@0.166.128` selects th
 
 <!-- release165-status -->
 
-Open VSX version **0.37.165** pairs with public CLI `0.166.127`. It is public and listed, preserves saved input attachments while an Agent may still read them, and rejects discard operations queued by an obsolete page or conversation. Exact source `43eff58a75c0702b17d7b99b2da5a199cef45a20` passed the Linux, Windows and macOS browser and host gates plus genuine Remote SSH verification in the [release workflow](https://github.com/chainlesschain/chainlesschain/actions/runs/40403003998). The public VSIX matches the immutable candidate by raw archive and canonical ZIP content hashes. [Publication evidence](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release127-public/open-vsx.json).
+Open VSX version **0.37.165** pairs with public CLI `0.166.127`. It is public and listed, preserves saved input attachments while an Agent may still read them, and rejects discard operations queued by an obsolete page or conversation. Exact source `43eff58a75c0702b17d7b99b2da5a199cef45a20` passed the Linux, Windows and macOS browser and host gates plus genuine Remote SSH verification in the [release workflow](https://github.com/chainlesschain/chainlesschain/actions/runs/40403003998). The public VSIX matches the immutable candidate by raw archive and canonical ZIP content hashes. [Publication evidence](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release127-public/open-vsx.json).
 
 Release identity: `ide-vscode-v0.37.165`. Download the [versioned VSIX](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.165/file/chainlesschain.chainlesschain-ide-0.37.165.vsix), artifact `chainlesschain-ide-0.37.165.vsix`. Install its recommended CLI with `npm i -g chainlesschain@0.166.127 --registry https://registry.npmjs.org`. Using `@0.166.127` selects that public release. JetBrains **0.4.182** is public; its exact-source release gates and public ZIP payload comparison passed. Microsoft Marketplace remains unpublished.
 
@@ -477,7 +479,7 @@ No new live model-task acceptance is claimed: cumulative acceptance is **32/45**
 
 <!-- release163-status -->
 
-Open VSX version **0.37.163** pairs with public CLI `0.166.125`. It is public and listed, preserves saved input attachments while an Agent may still read them, and rejects discard operations queued by an obsolete page or conversation. Exact source `ed07dc8673769f6caab78bca55737f30137f1c6a` passed the Linux, Windows and macOS browser and host gates plus genuine Remote SSH verification in the [release workflow](https://github.com/chainlesschain/chainlesschain/actions/runs/40351653016). The public VSIX matches the immutable candidate by raw archive and canonical ZIP content hashes. [Publication evidence](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release126-public/open-vsx.json).
+Open VSX version **0.37.163** pairs with public CLI `0.166.125`. It is public and listed, preserves saved input attachments while an Agent may still read them, and rejects discard operations queued by an obsolete page or conversation. Exact source `ed07dc8673769f6caab78bca55737f30137f1c6a` passed the Linux, Windows and macOS browser and host gates plus genuine Remote SSH verification in the [release workflow](https://github.com/chainlesschain/chainlesschain/actions/runs/40351653016). The public VSIX matches the immutable candidate by raw archive and canonical ZIP content hashes. [Publication evidence](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release126-public/open-vsx.json).
 
 Release identity: `ide-vscode-v0.37.163`. Download the [versioned VSIX](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.163/file/chainlesschain.chainlesschain-ide-0.37.163.vsix), artifact `chainlesschain-ide-0.37.163.vsix`. Install its recommended CLI with `npm i -g chainlesschain@0.166.125 --registry https://registry.npmjs.org`. Using `@0.166.125` selects that public release. JetBrains **0.4.179** remains the existing public version. Microsoft Marketplace remains unpublished.
 
@@ -497,7 +499,7 @@ No new live model-task acceptance is claimed: cumulative acceptance is **32/45**
 
 Open VSX version **0.37.162** pairs with public CLI `0.166.123`.
 
-Release identity: `ide-vscode-v0.37.162`. The saved [publication receipt](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release125-public/publication.json) records the public version and its CLI recommendation; it does not claim a new IDE archive comparison by this recovery change. Download the [versioned VSIX](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.162/file/chainlesschain.chainlesschain-ide-0.37.162.vsix), artifact `chainlesschain-ide-0.37.162.vsix`. Install its recommended CLI with `npm i -g chainlesschain@0.166.123 --registry https://registry.npmjs.org`. Using `@0.166.123` selects that public CLI release. JetBrains **0.4.179** remains the existing public pairing.
+Release identity: `ide-vscode-v0.37.162`. The saved [publication receipt](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release125-public/publication.json) records the public version and its CLI recommendation; it does not claim a new IDE archive comparison by this recovery change. Download the [versioned VSIX](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.162/file/chainlesschain.chainlesschain-ide-0.37.162.vsix), artifact `chainlesschain-ide-0.37.162.vsix`. Install its recommended CLI with `npm i -g chainlesschain@0.166.123 --registry https://registry.npmjs.org`. Using `@0.166.123` selects that public CLI release. JetBrains **0.4.179** remains the existing public pairing.
 
 No new live model-task acceptance was run. Cumulative acceptance remains **32/45**, with **13** unfinished; **NOT_PAID_READY**, **NOT_ADMITTED** and automatic promotion **HOLD** remain. Microsoft Marketplace remains unpublished.
 
@@ -509,7 +511,7 @@ Open VSX version **0.37.161** pairs with public CLI `0.166.121`.
 
 The immutable `ide-vscode-v0.37.161` tag selects source `4a7e5adc5e6a241434ecfa906a272e34b5ea6d2a`. Its [release workflow](https://github.com/chainlesschain/chainlesschain/actions/runs/40227329131) passed the Linux, Windows and macOS host gates. The public [versioned VSIX](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.161/file/chainlesschain.chainlesschain-ide-0.37.161.vsix) matches the immutable CI candidate by raw archive SHA-256 and canonical ZIP content digest, and recommends CLI `0.166.121`. Install with `npm i -g chainlesschain@0.166.121 --registry https://registry.npmjs.org`. Using `@0.166.121` selects this verified CLI release.
 
-JetBrains **0.4.178** is approved, publicly listed and its downloaded ZIP identity and CLI recommendation are verified. All candidate inner JAR entries match, with no added entries; raw ZIP bytes differ. [Publication evidence](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release121-public/publication.json). Microsoft Marketplace remains unpublished; stock VS Code can install the versioned VSIX.
+JetBrains **0.4.178** is approved, publicly listed and its downloaded ZIP identity and CLI recommendation are verified. All candidate inner JAR entries match, with no added entries; raw ZIP bytes differ. [Publication evidence](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release121-public/publication.json). Microsoft Marketplace remains unpublished; stock VS Code can install the versioned VSIX.
 
 No new live model-task acceptance was run. Cumulative acceptance remains **32/45**, with **13** unfinished; **NOT_PAID_READY**, **NOT_ADMITTED** and automatic promotion **HOLD** remain.
 
@@ -521,7 +523,7 @@ Open VSX version **0.37.159** pairs with public CLI `0.166.117`.
 
 The immutable `ide-vscode-v0.37.159` tag selects source `ab31677d6691b4fdd5390e16fae60de5a5895cf1`. Its [release workflow](https://github.com/chainlesschain/chainlesschain/actions/runs/39852148558) passed the Linux, Windows and macOS host gates, three-system browser evidence and Remote SSH checks. The public [versioned VSIX](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.159/file/chainlesschain.chainlesschain-ide-0.37.159.vsix) has the same contents as the immutable CI candidate and recommends CLI `0.166.117`. Install the CLI with `npm i -g chainlesschain@0.166.117 --registry https://registry.npmjs.org`.
 
-JetBrains **0.4.176** is approved, publicly listed and its public ZIP version and compiled CLI recommendation have been verified. [Publication evidence](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release117-public/publication.json).
+JetBrains **0.4.176** is approved, publicly listed and its public ZIP version and compiled CLI recommendation have been verified. [Publication evidence](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release117-public/publication.json).
 
 No new live model-task acceptance was run. Historical acceptance remains **31/45** across versions, with **14** unaccepted; **NOT_PAID_READY**, **NOT_ADMITTED** and automatic promotion **HOLD** remain. Microsoft Marketplace remains unpublished. Native product **v5.0.3.140** is a separate release.
 
@@ -535,7 +537,7 @@ Checked on **2026-10-22**: npm CLI **0.166.112**, Open VSX **0.37.155** and JetB
 
 npm publication used GitHub Actions OIDC from source `35a2508d156152a61d74fbf8135fcfa1225fe235` ([publish run](https://github.com/chainlesschain/chainlesschain/actions/runs/39661868416)); all 71 CLI CI jobs and all 5 Strict Sandbox jobs passed on that exact source. The public tarball integrity and npm provenance source/run binding were read back. Session Core **0.3.21** was available before CLI publication.
 
-The IDE tags `ide-vscode-v0.37.155` and `ide-jetbrains-v0.4.172` point to `ae27ef6dfc8cf1e45bf084030816b02c77dc2a34`. [Open VSX publication](https://github.com/chainlesschain/chainlesschain/actions/runs/39673804362) passed. [JetBrains publication, attempt 2](https://github.com/chainlesschain/chainlesschain/actions/runs/39676899944/attempts/2) passed after one bounded macOS 2024.2 rerun; the original performance failure is retained. JetBrains now reports `approve=true`, `listed=true`, `hidden=false`. Both public IDE archives were downloaded and their embedded version and CLI pairing checked. [Public readback evidence](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release112-public/publication.json).
+The IDE tags `ide-vscode-v0.37.155` and `ide-jetbrains-v0.4.172` point to `ae27ef6dfc8cf1e45bf084030816b02c77dc2a34`. [Open VSX publication](https://github.com/chainlesschain/chainlesschain/actions/runs/39673804362) passed. [JetBrains publication, attempt 2](https://github.com/chainlesschain/chainlesschain/actions/runs/39676899944/attempts/2) passed after one bounded macOS 2024.2 rerun; the original performance failure is retained. JetBrains now reports `approve=true`, `listed=true`, `hidden=false`. Both public IDE archives were downloaded and their embedded version and CLI pairing checked. [Public readback evidence](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release112-public/publication.json).
 
 No new model-task retest was run for this release; local Ollama model validation is left to the user after upgrading. Historical cross-version accepted deliveries remain **31/45** (**26/36** ordinary, **5/9** first-run), with **14** unaccepted. This is not a .112 single-round success rate. **NOT_PAID_READY**, **NOT_ADMITTED** and automatic promotion **HOLD** remain. Microsoft VS Code Marketplace remains unpublished; stock VS Code users can install the public Open VSX VSIX. Native product **v5.0.3.140** is a separate release; desktop integration requires matching builds, authorization and native confirmation.
 
@@ -547,11 +549,11 @@ Open VSX extension **0.37.153** recommends public CLI `0.166.108`.
 
 Checked on 2026-10-21:
 
-npm CLI **0.166.108**: public; exact-source gates and public artifact readback verified; source `e77c7ba85783576ac523dd73bc760bda63d91f3b`; [Actions 1](https://github.com/chainlesschain/chainlesschain/actions/runs/39484583983); [receipt](https://github.com/chainlesschain/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json).
+npm CLI **0.166.108**: public; exact-source gates and public artifact readback verified; source `e77c7ba85783576ac523dd73bc760bda63d91f3b`; [Actions 1](https://github.com/chainlesschain/chainlesschain/actions/runs/39484583983); [receipt](https://github.com/longfa/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json).
 
-Open VSX **0.37.153**: public; exact-source gates and public artifact readback verified; source `e77c7ba85783576ac523dd73bc760bda63d91f3b`; [Actions 1](https://github.com/chainlesschain/chainlesschain/actions/runs/39486919504); [receipt](https://github.com/chainlesschain/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json).
+Open VSX **0.37.153**: public; exact-source gates and public artifact readback verified; source `e77c7ba85783576ac523dd73bc760bda63d91f3b`; [Actions 1](https://github.com/chainlesschain/chainlesschain/actions/runs/39486919504); [receipt](https://github.com/longfa/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json).
 
-JetBrains Marketplace **0.4.170**: public; exact-source gates and public artifact readback verified; source `e77c7ba85783576ac523dd73bc760bda63d91f3b`; [Actions 1](https://github.com/chainlesschain/chainlesschain/actions/runs/39486921296/attempts/2); [receipt](https://github.com/chainlesschain/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json).
+JetBrains Marketplace **0.4.170**: public; exact-source gates and public artifact readback verified; source `e77c7ba85783576ac523dd73bc760bda63d91f3b`; [Actions 1](https://github.com/chainlesschain/chainlesschain/actions/runs/39486921296/attempts/2); [receipt](https://github.com/longfa/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json).
 
 No new model-task retest was run for this release. Historical `.105/.150/.167` generation and independent acceptance each collected **20/20** records and added **6** passes. Cumulative cross-version accepted deliveries remain **31/45** (**26/36** ordinary, **5/9** first-run), with **14** unaccepted; this is not a .108 single-round success rate. **NOT_PAID_READY**, **NOT_ADMITTED** and automatic promotion **HOLD** remain. Microsoft Marketplace remains unpublished. Native product **v5.0.3.140** is a separate release; desktop integration still requires matching builds, desktop authorization and native confirmation.
 

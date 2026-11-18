@@ -98,7 +98,7 @@ cc goal replay <goal-id> --connection ./history-connection.json --checkpoint ./g
 
 ## 相关文档
 
-[完整发行记录](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release142-public/README.md)
+[完整发行记录](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release142-public/README.md)
 · [npm 发布](https://github.com/chainlesschain/chainlesschain/actions/runs/41887211826)
 · [独立回读](https://github.com/chainlesschain/chainlesschain/actions/runs/41950556751)
 · [Open VSX](https://github.com/chainlesschain/chainlesschain/actions/runs/41950792178)

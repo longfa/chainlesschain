@@ -70,7 +70,7 @@ cc agent --no-recall-memory
 - `packages/cli/src/commands/session-show.js` 与 `src/lib/session-model-input-diagnostics.js`：只读输入诊断。
 - `packages/cli/src/lib/mcp-tasks.js`：任务持久状态和交付。
 - `packages/vscode-extension/test/extension-host/loopback-diagnostic.cjs`：宿主网络隔离诊断。
-- [回读、摘要与准确源码记录](https://github.com/chainlesschain/chainlesschain/blob/feature/site-refresh-20261109/docs/research/cli/evidence/documentation-refresh-20261109/README.md)。
+- [回读、摘要与准确源码记录](https://github.com/longfa/chainlesschain/blob/feature/site-refresh-20261109/docs/research/cli/evidence/documentation-refresh-20261109/README.md)。
 
 ## 相关文档
 

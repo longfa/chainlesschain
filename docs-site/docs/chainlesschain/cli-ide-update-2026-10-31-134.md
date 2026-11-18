@@ -40,7 +40,7 @@ cc doctor
 
 ## 测试覆盖
 
-历史 OpenAI 实测为 **39/45**，不是本版新的 45 项通过率。此次补充错误场景回归并修复根因；旧任务、候选文件、原始失败和用量没有改写。详情见[根因分析](https://github.com/chainlesschain/chainlesschain/blob/feature/fix-openai-turn-termination/docs/research/cli/openai-turn-recovery-134.md)。
+历史 OpenAI 实测为 **39/45**，不是本版新的 45 项通过率。此次补充错误场景回归并修复根因；旧任务、候选文件、原始失败和用量没有改写。详情见[根因分析](https://github.com/longfa/chainlesschain/blob/feature/fix-openai-turn-termination/docs/research/cli/openai-turn-recovery-134.md)。
 
 ## 安全考虑
 

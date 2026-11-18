@@ -14,7 +14,7 @@ CLI **0.166.132** / Kernel **0.1.11** / Open VSX **0.37.170** / JetBrains **0.4.
 
 ## 2026-10-28 当前公开桥接与模型配置
 
-> 当前核对（2026-10-28）：CLI **0.166.128** / Open VSX **0.37.166** / JetBrains **0.4.183**，均已公开并完成制品回读，两个 IDE 推荐 `.128`；产品 **v5.0.3.143** 的五平台构建、22 个资产与三套桌面更新元数据已核验。CLI、IDE 与产品分别冻结在 `dfa158e361`、`6551a06c2f`、`036d2b8be2`，Git 主线核对基线为 `d9f2511b95`。以下早期实施计划与旧日期记录保留其历史范围。[公开回执](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release128-public/publication.json)。
+> 当前核对（2026-10-28）：CLI **0.166.128** / Open VSX **0.37.166** / JetBrains **0.4.183**，均已公开并完成制品回读，两个 IDE 推荐 `.128`；产品 **v5.0.3.143** 的五平台构建、22 个资产与三套桌面更新元数据已核验。CLI、IDE 与产品分别冻结在 `dfa158e361`、`6551a06c2f`、`036d2b8be2`，Git 主线核对基线为 `d9f2511b95`。以下早期实施计划与旧日期记录保留其历史范围。[公开回执](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release128-public/publication.json)。
 
 Open VSX **0.37.166** 与 JetBrains **0.4.183** 均推荐 CLI **0.166.128**。实际宿主、三系统浏览器与发行检查通过；公开 VSIX 与正式 CI 制品逐字节相同，JetBrains 公开 ZIP 的全部原始 payload 条目匹配。Microsoft Marketplace 仍未发布。
 
@@ -32,7 +32,7 @@ CLI 的 `llm-onboarding-catalog.json` 为新连接提供共享推荐；IDE 读�
 > - **JetBrains**：`com.chainlesschain.ide` **0.4.146** 已在 [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/32208-chainlesschain-ide-bridge) 公开并回读。
 > - **当前配套 CLI**：公开 CLI 为 **0.166.84**，两端均推荐该版本；CLI、VSIX 和 ZIP 的发布提交均为 `d93c9c9766`，保持各自独立制品身份。两端延续 Workbench、会话恢复及 CLI-authoritative 投影，UI 只提交有界意图，不能成为 authority writer。
 > - **App Server 边界**：固定能力客户端只暴露允许的 Thread/Turn 与 lifecycle 方法，不提供任意 request；审批 UI 不可用时 canonical decline，IDE 不得绕过 CLI-owned policy、sandbox、audit 或 durable state。
-> - **源码与市场边界**：VS Code **0.37.127** 正在整合后续 CLI 修复，最新冻结提交与完整门结果见[共享实施状态](https://github.com/chainlesschain/chainlesschain/blob/feature/cli-ide-gap-completion-2026-10-02/docs/research/cli-ide-gap-implementation-2026-09-27.md)，尚未打发布 tag，继续推荐 CLI **0.166.84**。历史 `96cbf6ba56` 的 Strict Sandbox **5/5**、IDE Extensions **18 成功 / 1 正常跳过**已通过，但 CLI CI 的 Windows worker 同提交重跑仍失败；历史成功不转移到新候选，不能标为已发布。本轮未准备新的 JetBrains 生产版本。
+> - **源码与市场边界**：VS Code **0.37.127** 正在整合后续 CLI 修复，最新冻结提交与完整门结果见[共享实施状态](https://github.com/longfa/chainlesschain/blob/feature/cli-ide-gap-completion-2026-10-02/docs/research/cli-ide-gap-implementation-2026-09-27.md)，尚未打发布 tag，继续推荐 CLI **0.166.84**。历史 `96cbf6ba56` 的 Strict Sandbox **5/5**、IDE Extensions **18 成功 / 1 正常跳过**已通过，但 CLI CI 的 Windows worker 同提交重跑仍失败；历史成功不转移到新候选，不能标为已发布。本轮未准备新的 JetBrains 生产版本。
 > - **P2-16 协作控制**：两端只读观察本地 Agent Team schema v6 与分布式 queue schema v1；takeover、managed checkpoint recovery 和 side-effect adjudication 必须携带 CLI authority digest、lease/evidence fence，并由 CLI-owned compare-and-swap 路径执行。IDE 文件监听和刷新不能直接改写 authority state。
 >
 > 下文主体仍是 2026-06-10 起的 Phase 0–7 初版实施记录。首发版本、当时的待审状态和早期缺口仅作历史追溯；判断当前能力与发布状态时以上述区块及增量权威文档为准。
@@ -43,7 +43,7 @@ VS Code `0.37.127` 候选按有界文本节点追加流式正文，并保留用�
 
 Windows 实际 VS Code **1.132.0** 的安装旅程已测量 10K / 100K / 200K 文本、选区和滚动行为，并分别记录完成时的 Markdown、代码按钮与跟随布局耗时。JetBrains 的 `8460b786a8` 实际 ZIP 在 Windows / IntelliJ **2024.2** 中完成原生 transcript 测量、canonical recovery 和重启；该批新增探针仅用于测试，没有进入插件包或改变 JetBrains 发布版本。
 
-原始样本、准确提交及独立回读见 [CLI / IDE 差距实施记录](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli-ide/plans/cli-ide-gap-implementation-2026-09-27.md) 的 IDE-STREAM 与 JetBrains 原生 transcript 段落。VS Code 测量保留 `performanceGate=false`，JetBrains 为 `sloStatus=not-evaluated`；目标硬件、其余宿主及结束长任务仍待验收。JetBrains EDT Timer / 可见区域 paint 与 Chromium 帧间隔不是同一指标，不能直接排名或据此承诺固定性能。
+原始样本、准确提交及独立回读见 [CLI / IDE 差距实施记录](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli-ide/plans/cli-ide-gap-implementation-2026-09-27.md) 的 IDE-STREAM 与 JetBrains 原生 transcript 段落。VS Code 测量保留 `performanceGate=false`，JetBrains 为 `sloStatus=not-evaluated`；目标硬件、其余宿主及结束长任务仍待验收。JetBrains EDT Timer / 可见区域 paint 与 Chromium 帧间隔不是同一指标，不能直接排名或据此承诺固定性能。
 
 ### 2026-08-26 增量设计：宿主信任的授权决定与内容隔离投影
 
@@ -56,7 +56,7 @@ Windows 实际 VS Code **1.132.0** 的安装旅程已测量 10K / 100K / 200K �
 >
 > **本文档是 IDE 桥接的初版规划方案（v1.1，2026-06-10），记录 Phase 0–7 首轮落地。它已不再反映现状——请勿把下方 §1.2 缺口表当作当前状态。**
 >
-> - **当前权威**：[`docs/research/ide/CLAUDE_CODE_IDE_INCREMENTAL_GAP_ANALYSIS_2026-07-13.md`](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/ide/CLAUDE_CODE_IDE_INCREMENTAL_GAP_ANALYSIS_2026-07-13.md)（增量差距与优化建议）。IDE 落地状态另见 [`docs/research/ide/CLAUDE_CODE_IDE_GAP_ANALYSIS_2026-07-10.md`](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/ide/CLAUDE_CODE_IDE_GAP_ANALYSIS_2026-07-10.md) 与 [`docs/research/ide/CLAUDE_CODE_IDE_GAP_ANALYSIS.md`](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/ide/CLAUDE_CODE_IDE_GAP_ANALYSIS.md)。
+> - **当前权威**：[`docs/research/ide/CLAUDE_CODE_IDE_INCREMENTAL_GAP_ANALYSIS_2026-07-13.md`](https://github.com/longfa/chainlesschain/blob/main/docs/research/ide/CLAUDE_CODE_IDE_INCREMENTAL_GAP_ANALYSIS_2026-07-13.md)（增量差距与优化建议）。IDE 落地状态另见 [`docs/research/ide/CLAUDE_CODE_IDE_GAP_ANALYSIS_2026-07-10.md`](https://github.com/longfa/chainlesschain/blob/main/docs/research/ide/CLAUDE_CODE_IDE_GAP_ANALYSIS_2026-07-10.md) 与 [`docs/research/ide/CLAUDE_CODE_IDE_GAP_ANALYSIS.md`](https://github.com/longfa/chainlesschain/blob/main/docs/research/ide/CLAUDE_CODE_IDE_GAP_ANALYSIS.md)。
 > - **版本指针**：VS Code 扩展 **0.37.71**（Open VSX live）；JetBrains 插件 **0.4.100**（Marketplace live），源码/上传为 **0.4.102**；正文出现的 `0.2.x` / `0.1.0` 是首发版本号，不是当前版本。
 > - **§1.2 缺口表（下方）是实施前的原始基线**（2026-06-10）；表中"无 / HIGH"等判断均已在 Phase 0–7 及后续 7 个月的批次中落地，逐行 ✅ 标注见表内。
 > - **2026-06-10 之后落地、本文 Phase 日志未覆盖的主要能力**：Session Workbench / Sessions Index、Remote Handoff / Remote QR、IDE Diff Review（逐 hunk / 行批注 / openMultiDiff）、Browser State / Browser Action、managed CLI（检测 + 一键升级）、Artifacts / Policy / Quality 面板、Artifact access/deletion settlement、语义工具（VS symbol / JB PSI）、Capability 双向协商 + N/N-1 降级、跨事件 `trace_id`、事件 `seq` / replay / 背压、remote URI/path mapping、隐式上下文脱敏、操作指纹审批、后台 Agent 面板与 durable workflow recovery 源码增量。

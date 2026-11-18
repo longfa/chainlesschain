@@ -4,7 +4,7 @@
 
 CLI **0.166.129**、Open VSX **0.37.167** 和 JetBrains **0.4.184** 已公开并完成归档回读，两个 IDE 均推荐 CLI `.129`。Microsoft Marketplace 按计划暂缓；官方 VS Code 可安装版本化 VSIX。PC / 移动端继续使用独立发行的 [v5.0.3.143](https://github.com/chainlesschain/chainlesschain/releases/tag/v5.0.3.143)，本轮没有新的客户端发行。
 
-本页依据[公开发行回执](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release129-public/publication.json)。主分支后续的独立 Goal checker、Memory 磁盘与缓存修复、Terra 能力及计费改动尚未发布，不属于安装 `.129` 后可用的新增能力。
+本页依据[公开发行回执](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release129-public/publication.json)。主分支后续的独立 Goal checker、Memory 磁盘与缓存修复、Terra 能力及计费改动尚未发布，不属于安装 `.129` 后可用的新增能力。
 
 ## 核心特性
 
@@ -91,10 +91,10 @@ JetBrains 公开 ZIP 共 **1,560,992 字节**，SHA-256 `eed876bdf005856215200a3
 
 ## 关键文件
 
-- [公开发行回执](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release129-public/publication.json)：准确源码、工作流和各渠道回读。
-- [CLI README](https://github.com/chainlesschain/chainlesschain/blob/main/packages/cli/README.md)：当前安装命令与发行限制。
-- [VS Code README](https://github.com/chainlesschain/chainlesschain/blob/main/packages/vscode-extension/README.md) · [JetBrains README](https://github.com/chainlesschain/chainlesschain/blob/main/packages/jetbrains-plugin/README.md)：配套版本与制品身份。
-- [当前差距表](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli-ide/plans/cli-ide-codex-claude-gap-review-2026-10-27.md)：未完成任务、后续源码和验收边界。
+- [公开发行回执](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release129-public/publication.json)：准确源码、工作流和各渠道回读。
+- [CLI README](https://github.com/longfa/chainlesschain/blob/main/packages/cli/README.md)：当前安装命令与发行限制。
+- [VS Code README](https://github.com/longfa/chainlesschain/blob/main/packages/vscode-extension/README.md) · [JetBrains README](https://github.com/longfa/chainlesschain/blob/main/packages/jetbrains-plugin/README.md)：配套版本与制品身份。
+- [当前差距表](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli-ide/plans/cli-ide-codex-claude-gap-review-2026-10-27.md)：未完成任务、后续源码和验收边界。
 
 ## 相关文档
 
@@ -102,4 +102,4 @@ JetBrains 公开 ZIP 共 **1,560,992 字节**，SHA-256 `eed876bdf005856215200a3
 - [MCP Tool Search](./cli-tool-search) · [Skills 检索](./cli-skill) · [Memory 查询](./cli-memory)
 - [输入与恢复边界](./agent-input-and-recovery)
 - [上一轮升级说明（.128，历史）](./cli-ide-update-2026-10-28)
-- [本轮发行进度](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli-ide/releases/cli-ide-release129-progress-2026-10-28.md)
+- [本轮发行进度](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli-ide/releases/cli-ide-release129-progress-2026-10-28.md)

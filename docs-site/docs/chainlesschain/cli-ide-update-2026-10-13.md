@@ -37,7 +37,7 @@ CLI 负责会话、权限、工具执行和模型请求；IDE 展示其权威状
 
 ## 测试覆盖
 
-CLI 与 Open VSX 的发行结论来自准确源码的 GitHub Actions 门禁、发布及公开制品核对，[发行记录已归档](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/gap-2026-10-05/release-0.166.100/publication-20261013/README.md)。工作树回归包括真实 Git fixture 和指定错误的故障注入；它不等同于自然复现并发竞态。JetBrains 宿主通过也不等同于 Marketplace 已公开，安装状态以[发布指南](./agent-platform-release)为准。
+CLI 与 Open VSX 的发行结论来自准确源码的 GitHub Actions 门禁、发布及公开制品核对，[发行记录已归档](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/gap-2026-10-05/release-0.166.100/publication-20261013/README.md)。工作树回归包括真实 Git fixture 和指定错误的故障注入；它不等同于自然复现并发竞态。JetBrains 宿主通过也不等同于 Marketplace 已公开，安装状态以[发布指南](./agent-platform-release)为准。
 
 正式 **36+9** 评测仍为 **NOT_RUN**，完整 native review 为 **NOT_ADMITTED**，自动晋升保持 **HOLD**。局部真实模型诊断、离线回归和发布门禁不能代替这些验收。
 

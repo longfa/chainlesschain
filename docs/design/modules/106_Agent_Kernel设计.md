@@ -14,7 +14,7 @@ CLI **0.166.132** / Kernel **0.1.11** / Open VSX **0.37.170** / JetBrains **0.4.
 
 ## 2026-10-28 当前执行与 Goal 边界
 
-> 当前核对（2026-10-28）：CLI **0.166.128** / Open VSX **0.37.166** / JetBrains **0.4.183**，均已公开并完成制品回读，两个 IDE 推荐 `.128`；产品 **v5.0.3.143** 的五平台构建、22 个资产与三套桌面更新元数据已核验。CLI、IDE 与产品分别冻结在 `dfa158e361`、`6551a06c2f`、`036d2b8be2`，Git 主线核对基线为 `d9f2511b95`。以下早期实施计划与旧日期记录保留其历史范围。[公开回执](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release128-public/publication.json)。
+> 当前核对（2026-10-28）：CLI **0.166.128** / Open VSX **0.37.166** / JetBrains **0.4.183**，均已公开并完成制品回读，两个 IDE 推荐 `.128`；产品 **v5.0.3.143** 的五平台构建、22 个资产与三套桌面更新元数据已核验。CLI、IDE 与产品分别冻结在 `dfa158e361`、`6551a06c2f`、`036d2b8be2`，Git 主线核对基线为 `d9f2511b95`。以下早期实施计划与旧日期记录保留其历史范围。[公开回执](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release128-public/publication.json)。
 
 自然语言完成条件的判定轨迹与 Agent 工具执行分离：`GoalCheckEvidence` 为本轮最多保留 24 条有界观察，未知可变工具使此前观察过期，未结算/失败/后台运行或未知命令退出状态不能计作成功。模型返回 `met: true` 时须引用当前可用证据 ID；最终文本只是声明，不替代检查结果或独立验收。
 

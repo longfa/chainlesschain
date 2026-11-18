@@ -1,20 +1,18 @@
 # IDE 桥接（IDE Bridge）
 
-## LK 渠道与账户查询（2026-11-15）
+## LK 渠道与账户查询（2026-11-19）
 
-已公开 CLI **0.166.150**、Open VSX **0.37.189** 和 JetBrains **0.4.204**，两款插件配套 CLI .150。更新后重启宿主，运行 `cc --version` 和 `cc doctor`。
+CLI **0.166.156**、Open VSX **0.37.192** 和 JetBrains **0.4.207** 均已公开核验，两款插件推荐 CLI .156。升级并重启宿主，运行 `cc --version`、`cc doctor`。
 
-通过 `cc setup`、`cc ui` 的 LLM 配置或 IDE 的「配置大模型 / Configure LLM」选择 LK API，再选择协议、主备地址及模型。主地址为 `https://api.lk888.ai`，备用为 `https://api.lk666.ai`，域名使用字母 `lk`。主备手动切换，三种对话协议共用已保存的 LK Key。
+通过 `cc setup --skip-download --skip-services`、`cc ui` 的 LLM 配置或 IDE「配置大模型 / Configure LLM」选择 LK，再选择协议、端点和模型。主地址为 `https://api.vv666.ai`，备用为 `https://api.lk666.ai`，主备手动切换；LK 三种对话协议可恢复已保存的 LK Key。OpenAI 兼容连接使用 `https://api.vv666.ai/v1` 和 `gpt-6.1-sol`，不要填写具体 `/chat/completions` 请求路径。
 
-发布目录含 197 项模型，其中 83 项为按 OpenAI、Anthropic、Gemini 协议筛选的对话模型；图片、视频、音频条目为目录参考，聊天配置尚不提供媒体任务提交和轮询。可用模型和分组权限以当前 Key 为准。
+当前目录 **202 项**：86 对话、26 图片、82 视频、8 音频。聊天下拉仅显示所选协议兼容的对话模型；目录条目不保证当前 Key 权限或真实生成质量，媒体任务提交与轮询不在聊天配置内。旧别名 `tt-6.1-sol`、`tt-6-luna`、`fb-5-2`、`gem-3.8-flash` 分别迁移为 `gpt-6.1-sol`、`gpt-6-luna`、`claude-fable-5-2`、`gemini-3.8-flash`，未知自定义名称保留。
 
-各渠道的 Key 独立保存，包含火山等已有渠道。选择已保存连接时留空 Key 即可恢复原凭证；首次接入新服务才需填写。不要把完整 API 请求 URL 填作 Base URL，协议对应路径见[升级指南](./cli-ide-update-2026-11-14-150)。
+各渠道（含火山）的 Key 独立保存。恢复已保存连接时可留空 Key；首次配置其他服务必须提供该服务自己的凭证，不能复用 LK Key。[协议、地址与迁移指南](./cli-ide-update-2026-11-19-156)列出完整配置。
 
-`cc llm account` 动态读取当前 LK 模型分组价格、账户余额、Key 已用/剩余额度及实际 API 账单。`cc llm account --days 7 --scope user --limit 20 --offset 0 --json` 查询全部 Key 的 API 用量并分页。Web、IDE 和桌面源码提供账户刷新入口，使用已保存的 Key。桌面配置与 CLI 配置各自保存。
+`cc llm account` 查询动态分组价格、余额、Key 额度、用量与实际 API 账单；`cc llm account --days 7 --scope user --limit 20 --offset 0 --json` 读取全部 Key 的 API 用量并分页。Web 和 IDE 账户刷新复用已保存的 LK 连接。账单单位为平台算力，没有 Token 数；本地 Token 估算单独显示，退款计入净额，Key 限额 0 表示不限额。
 
-金额单位为平台「算力」，当前价格已含时段折扣；实际扣费以平台账单为准。平台账单不含 Token 数，与本地 Token 统计分开展示；运行中的任务可能预扣，退款已计入净额，Key 限额 0 表示不限额。API 用量不包括网站聊天，账户余额的统计范围可能更广。
-
-CLI 随附更新的 Web 面板；桌面源码已支持加密连接历史与账户查询，公开 PC/移动端安装包仍为 **v5.0.3.145**。
+CLI 随附更新的 Web 面板；桌面源码的连接和账户设置与 CLI 分开保存。最后已核验历史客户端为 **v5.0.3.145**，当前旧安装包源返回 404，本轮不发布新的 PC/mobile 安装包。
 
 > 历史核对（2026-11-06）：公开 CLI **0.166.143** 已完成准确提交三平台门禁、OIDC 发布及独立公开回读。Open VSX **0.37.179** 已公开且制品一致；JetBrains **0.4.196** 已获批且可下载，627 个原始 payload 文件与官方构建一致。两端均推荐 CLI `.143`；公开状态见[升级指南](./cli-ide-update-2026-11-06-143)。新增本地算力配置和待审创建请求；原生创建仍需匹配桌面实现与独立确认，本次不发布 PC/移动端。
 

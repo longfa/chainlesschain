@@ -11,6 +11,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed - cc CLI 0.166.156: LK release delivery from longfa (candidate, 2026-11-18)
+
+- Carry the corrected LK model catalog, same-family alias migration and live account query fixes from candidate 0.166.155. Candidate 0.166.155 was stopped before npm publication.
+- Use CPU ONNX installation across all release jobs. Bind the CLI package and new exact-source provenance to `longfa/chainlesschain`; retain original signed repositories and exact package-tree checks for reused child releases.
+- Pair VS Code 0.37.192 / JetBrains 0.4.207 with CLI 0.166.156 after complete exact-source CLI CI and Strict Sandbox matrices, Actions OIDC publication and public registry readback. IDE host and public channel verification follow the CLI.
+
+### Fixed - cc CLI 0.166.155: current LK model IDs and account queries (candidate, 2026-11-18)
+
+- Synchronize 202 model identities from the documented Skills API, including 86 protocol-filtered chat models. Default OpenAI-compatible setup to `gpt-6.1-sol` on `api.vv666.ai`; retain `api.lk666.ai` as the backup.
+- Migrate retired LK aliases to their corresponding model families for chat and pricing queries. Preserve unknown aliases and credential isolation. Refresh balance, usage, pricing and billing using the saved LK Key.
+- Pair CLI `0.166.155` with VS Code `0.37.192` and JetBrains `0.4.207`; require the published CLI before either IDE upload. Older uploaded versions and tags are retained.
+- A minimal `gpt-6.1-sol` Chat Completions probe and read-only account adapter query succeeded. The entire catalog has not been generation-tested. Publication requires this commit's complete CLI CI and Strict Sandbox matrices, Actions OIDC and public registry readback.
+
 ### Fixed - cc CLI 0.166.154: bound repeated background output recovery (candidate, 2026-11-16)
 
 - Count repeated large `stdout` and `stderr` returned by `run_code`, `run_shell` and `check_shell` in the same bounded recovery guard as normalized output. Background polling can no longer bypass the six-batch no-progress backstop by returning the same evidence under a different field.

@@ -225,6 +225,20 @@ test("test sources are excluded and an explicit scripts scan exposes unreviewed 
   );
 });
 
+test("generated Web Panel assets are excluded from canonical source review", (t) => {
+  const f = fixture(t);
+  const generated = path.join(
+    f.repository,
+    "packages/cli/src/assets/web-panel/assets",
+  );
+  fs.mkdirSync(generated, { recursive: true });
+  fs.writeFileSync(path.join(generated, "bundle.js"), "fetch(buildOutput);");
+  const scan = scanNetworkSources(f.repository);
+  assert.equal(scan.filesScanned, 0);
+  assert.equal(scan.networkCandidates.length, 0);
+  assert.equal(scan.skippedPaths.length, 0);
+});
+
 test("symlink directories are not followed and make the audit incomplete", (t) => {
   const f = fixture(t);
   const outside = path.join(f.root, "outside");

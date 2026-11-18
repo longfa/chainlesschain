@@ -74,7 +74,7 @@ cc context upgrade-check
 
 ## 相关文档
 
-- [发布证据](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release117-public/publication.json)
+- [发布证据](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release117-public/publication.json)
 - [最新设计](https://design.chainlesschain.com/release-runtime-update-2026-10-23.html)
 - [Agent 输入与会话恢复](./agent-input-and-recovery)
 - [发布与升级索引](./agent-platform-release)

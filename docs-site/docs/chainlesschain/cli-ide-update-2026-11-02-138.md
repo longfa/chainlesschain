@@ -4,7 +4,7 @@
 
 截至 **2026-11-02**，CLI **0.166.138** 与 Agent SDK **0.2.17** 已通过 GitHub Actions OIDC 发布。Open VSX **0.37.174** 已完成正式发布和公开 VSIX 核验；JetBrains **0.4.191** 已获 Marketplace 批准并公开列出（update `1209507`）；公开 ZIP 与正式构建的负载一致性仍待核验。两个新插件均推荐 CLI **0.166.138**。Kernel 保持 **0.1.11**，PC / 移动客户端继续使用独立 **v5.0.3.143**。
 
-本页依据 `main@94b6bd418e`、[发行证据](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release138-public/README.md)与[公开包四项复验](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/verify01-openai-138/README.md)更新。
+本页依据 `main@94b6bd418e`、[发行证据](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release138-public/README.md)与[公开包四项复验](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/verify01-openai-138/README.md)更新。
 
 ## 核心特性
 

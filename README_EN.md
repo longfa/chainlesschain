@@ -1,10 +1,18 @@
 # ChainlessChain - Personal Mobile AI Management System Based on USB Key and SIMKey
 
+## Documentation and website snapshot (2026-11-19)
+
+Reviewed source `8c937cbe9bc4b82f87479c124375401fa2fb3a72`. Public CLI **0.166.156**, Open VSX **0.37.192** and approved JetBrains **0.4.207** use release source `a8cae89288d3a6119b152e04b750e10d726a5c5f`; both IDEs recommend CLI .156. LK uses `api.vv666.ai` / `api.lk666.ai`, `gpt-6.1-sol`, 202 catalog entries and 86 chat models, with live account pricing and bills. Install `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org`, restart the host and check `cc --version`.
+
+The last verified native-client release was **v5.0.3.145**; its previous download source currently returns 404. No native installer is released here. **NOT_PAID_READY / NOT_ADMITTED / HOLD** and historical model-task scopes remain. [User guide](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-19-156.html) · [Design](https://design.chainlesschain.com/release-runtime-update-2026-11-19-156.html). Dated sections below retain their historical scope.
+
 Documentation baseline (2026-11-15): updated from current Git history and verified public releases. See [LK configuration and billing](docs-site/docs/chainlesschain/cli-llm.md) and [channel architecture and credential isolation](docs/design/release-runtime-update-2026-11-15-150.md).
 
-## CLI 0.166.154 release candidate (2026-11-16)
+## Public CLI 0.166.156 / IDE update (2026-11-18)
 
-Candidate 0.166.154 fixes the bounded recovery guard so repeated large stdout/stderr from check_shell cannot bypass the six-batch no-progress backstop. The release requires exact-source CLI CI and Strict Sandbox matrices, Actions OIDC publication and public readback. VS Code 0.37.191 and JetBrains 0.4.206 will pair with CLI 0.166.154 after the CLI is public.
+CLI **0.166.156** is public from source `a8cae89288d3a6119b152e04b750e10d726a5c5f`: **75/75 CLI CI**, **6/6 Strict Sandbox**, Actions OIDC publication and public npm readback passed. The published package includes current LK model IDs, same-family legacy aliases, 86 chat models and authenticated account billing. Install `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org`, restart IDE hosts, then check `cc --version`.
+
+VS Code **0.37.192** is public on Open VSX: its complete tag workflow passed and the downloadable VSIX is byte-identical to the immutable candidate. JetBrains **0.4.207** is approved, listed and publicly downloadable; both candidate JAR payloads match the public ZIP. Both IDEs recommend CLI **0.166.156**. [Public package verification](docs/research/cli/evidence/release156-public/publication.json). See [release scope](docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-156.md). PC/mobile installers are outside this update.
 
 ## Public CLI 0.166.150 / IDE pairing (2026-11-15)
 
@@ -238,7 +246,7 @@ CLI **0.166.121** is public through GitHub Actions OIDC after exact-source Linux
 
 ## Historical release (2026-10-23)
 
-CLI **0.166.117** is public on npm through [GitHub Actions OIDC](https://github.com/chainlesschain/chainlesschain/actions/runs/39845469661), with public archive integrity, signed provenance and an independent registry-only install verified. It fixes Evolution ingress rejecting Python/JavaScript code literals as malformed JSON, settles completed tool rounds on error exits, separates image and text budgets, and preserves valid JSON when bounding long tool results. Session Core **0.3.22** and Personal Data Hub **0.4.66** were published before the CLI. Install with `npm i -g chainlesschain@0.166.117 --registry https://registry.npmjs.org`. Open VSX **0.37.159** is public and its download verified; JetBrains **0.4.176** is approved and its public download verified. Both recommend CLI **0.166.117**. [Publication evidence](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release117-public/publication.json). No new live model-task acceptance was run; historical release records and limits below remain.
+CLI **0.166.117** is public on npm through [GitHub Actions OIDC](https://github.com/chainlesschain/chainlesschain/actions/runs/39845469661), with public archive integrity, signed provenance and an independent registry-only install verified. It fixes Evolution ingress rejecting Python/JavaScript code literals as malformed JSON, settles completed tool rounds on error exits, separates image and text budgets, and preserves valid JSON when bounding long tool results. Session Core **0.3.22** and Personal Data Hub **0.4.66** were published before the CLI. Install with `npm i -g chainlesschain@0.166.117 --registry https://registry.npmjs.org`. Open VSX **0.37.159** is public and its download verified; JetBrains **0.4.176** is approved and its public download verified. Both recommend CLI **0.166.117**. [Publication evidence](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release117-public/publication.json). No new live model-task acceptance was run; historical release records and limits below remain.
 
 [Upgrade and troubleshooting](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-10-26.html) · [Image budgets and session recovery](https://docs.chainlesschain.com/chainlesschain/agent-input-and-recovery.html) · [Runtime design](https://design.chainlesschain.com/release-runtime-update-2026-10-26.html)
 
@@ -250,7 +258,7 @@ Checked on **2026-10-22**: npm CLI **0.166.112**, Open VSX **0.37.155** and JetB
 
 npm publication used GitHub Actions OIDC from source `35a2508d156152a61d74fbf8135fcfa1225fe235` ([publish run](https://github.com/chainlesschain/chainlesschain/actions/runs/39661868416)); all 71 CLI CI jobs and all 5 Strict Sandbox jobs passed on that exact source. The public tarball integrity and npm provenance source/run binding were read back. Session Core **0.3.21** was available before CLI publication.
 
-The IDE tags `ide-vscode-v0.37.155` and `ide-jetbrains-v0.4.172` point to `ae27ef6dfc8cf1e45bf084030816b02c77dc2a34`. [Open VSX publication](https://github.com/chainlesschain/chainlesschain/actions/runs/39673804362) passed. [JetBrains publication, attempt 2](https://github.com/chainlesschain/chainlesschain/actions/runs/39676899944/attempts/2) passed after one bounded macOS 2024.2 rerun; the original performance failure is retained. JetBrains now reports `approve=true`, `listed=true`, `hidden=false`. Both public IDE archives were downloaded and their embedded version and CLI pairing checked. [Public readback evidence](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release112-public/publication.json).
+The IDE tags `ide-vscode-v0.37.155` and `ide-jetbrains-v0.4.172` point to `ae27ef6dfc8cf1e45bf084030816b02c77dc2a34`. [Open VSX publication](https://github.com/chainlesschain/chainlesschain/actions/runs/39673804362) passed. [JetBrains publication, attempt 2](https://github.com/chainlesschain/chainlesschain/actions/runs/39676899944/attempts/2) passed after one bounded macOS 2024.2 rerun; the original performance failure is retained. JetBrains now reports `approve=true`, `listed=true`, `hidden=false`. Both public IDE archives were downloaded and their embedded version and CLI pairing checked. [Public readback evidence](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release112-public/publication.json).
 
 ```bash
 npm i -g chainlesschain@0.166.112 --registry https://registry.npmjs.org
@@ -268,11 +276,11 @@ See the [current release and upgrade guide](docs-site/docs/chainlesschain/agent-
 
 Checked on 2026-10-21:
 
-npm CLI **0.166.108**: public; exact-source gates and public artifact readback verified; source `e77c7ba85783576ac523dd73bc760bda63d91f3b`; [Actions 1](https://github.com/chainlesschain/chainlesschain/actions/runs/39484583983); [receipt](https://github.com/chainlesschain/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json).
+npm CLI **0.166.108**: public; exact-source gates and public artifact readback verified; source `e77c7ba85783576ac523dd73bc760bda63d91f3b`; [Actions 1](https://github.com/chainlesschain/chainlesschain/actions/runs/39484583983); [receipt](https://github.com/longfa/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json).
 
-Open VSX **0.37.153**: public; exact-source gates and public artifact readback verified; source `e77c7ba85783576ac523dd73bc760bda63d91f3b`; [Actions 1](https://github.com/chainlesschain/chainlesschain/actions/runs/39486919504); [receipt](https://github.com/chainlesschain/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json).
+Open VSX **0.37.153**: public; exact-source gates and public artifact readback verified; source `e77c7ba85783576ac523dd73bc760bda63d91f3b`; [Actions 1](https://github.com/chainlesschain/chainlesschain/actions/runs/39486919504); [receipt](https://github.com/longfa/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json).
 
-JetBrains Marketplace **0.4.170**: public; exact-source gates and public artifact readback verified; source `e77c7ba85783576ac523dd73bc760bda63d91f3b`; [Actions 1](https://github.com/chainlesschain/chainlesschain/actions/runs/39486921296/attempts/2); [receipt](https://github.com/chainlesschain/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json).
+JetBrains Marketplace **0.4.170**: public; exact-source gates and public artifact readback verified; source `e77c7ba85783576ac523dd73bc760bda63d91f3b`; [Actions 1](https://github.com/chainlesschain/chainlesschain/actions/runs/39486921296/attempts/2); [receipt](https://github.com/longfa/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json).
 
 No new model-task retest was run for this release. Historical `.105/.150/.167` generation and independent acceptance each collected **20/20** records and added **6** passes. Cumulative cross-version accepted deliveries remain **31/45** (**26/36** ordinary, **5/9** first-run), with **14** unaccepted; this is not a .108 single-round success rate. **NOT_PAID_READY**, **NOT_ADMITTED** and automatic promotion **HOLD** remain. Microsoft Marketplace remains unpublished. Native product **v5.0.3.140** is a separate release; desktop integration still requires matching builds, desktop authorization and native confirmation.
 
@@ -300,7 +308,7 @@ cc --version
 cc doctor
 ```
 
-See the [architecture update](docs/design/release-runtime-update-2026-10-20.md), [goal draft guide](docs-site/docs/chainlesschain/goal-drafts-current.md), [current upgrade guide](docs-site/docs/chainlesschain/cli-ide-update-2026-10-20.md), [release and public install readback](https://github.com/chainlesschain/chainlesschain/blob/feature/docs-sites-20261020/docs/research/cli/evidence/documentation-release-status-2026-10-20.json), and [OIDC release](https://github.com/chainlesschain/chainlesschain/actions/runs/39315709208).
+See the [architecture update](docs/design/release-runtime-update-2026-10-20.md), [goal draft guide](docs-site/docs/chainlesschain/goal-drafts-current.md), [current upgrade guide](docs-site/docs/chainlesschain/cli-ide-update-2026-10-20.md), [release and public install readback](https://github.com/longfa/chainlesschain/blob/feature/docs-sites-20261020/docs/research/cli/evidence/documentation-release-status-2026-10-20.json), and [OIDC release](https://github.com/chainlesschain/chainlesschain/actions/runs/39315709208).
 
 ## Release snapshot (2026-10-17, historical)
 
@@ -467,7 +475,7 @@ The documented source baseline `8e7c45e32e` further hardens governed Desktop IPC
 
 ## 2026-09-10 historical release — CLI 0.166.43 / VS Code 0.37.93 / JetBrains 0.4.120: governed Skill-evolution deployment configuration
 
-> npm latest is `0.166.43`, tagged `v-npm-0-166-43` at [`7528bfb81d`](https://github.com/chainlesschain/chainlesschain/commit/7528bfb81ddb45427b5eb5d1281498cf65e8ab0c). The same commit passed the complete [CLI CI](https://github.com/chainlesschain/chainlesschain/actions/runs/34476406749), [Strict Sandbox](https://github.com/chainlesschain/chainlesschain/actions/runs/34476405180), and [IDE Extensions](https://github.com/chainlesschain/chainlesschain/actions/runs/34476405124) gates, followed by [npm Trusted Publishing and public readback](https://github.com/chainlesschain/chainlesschain/actions/runs/34479754264).
+> npm latest is `0.166.43`, tagged `v-npm-0-166-43` at [`7528bfb81d`](https://github.com/longfa/chainlesschain/commit/7528bfb81ddb45427b5eb5d1281498cf65e8ab0c). The same commit passed the complete [CLI CI](https://github.com/chainlesschain/chainlesschain/actions/runs/34476406749), [Strict Sandbox](https://github.com/chainlesschain/chainlesschain/actions/runs/34476405180), and [IDE Extensions](https://github.com/chainlesschain/chainlesschain/actions/runs/34476405124) gates, followed by [npm Trusted Publishing and public readback](https://github.com/chainlesschain/chainlesschain/actions/runs/34479754264).
 >
 > Administrators can verify, persist, and toggle governed-evolution deployments with `cc evolution deployment status/configure/enable/disable`. Configuration verifies the Ed25519 descriptor, trust root, and module digest before atomically writing an owner-only profile. When the shared switch permits evolution, environment deployment selection takes precedence over the saved profile; explicit `evolution.enabled: false` disables evolution even with inherited environment variables. Configuration loads deployment authority; automatic active promotion remains `HOLD`.
 >
@@ -489,7 +497,7 @@ The documented source baseline `8e7c45e32e` further hardens governed Desktop IPC
 >
 > **IDE release:** Open VSX `0.37.77` and JetBrains Marketplace `0.4.107` are public and recommend CLI `0.166.15`. Both use exact release commit `22db04f559`; the [VS Code release gate](https://github.com/chainlesschain/chainlesschain/actions/runs/33393387965) and [JetBrains release gate](https://github.com/chainlesschain/chainlesschain/actions/runs/33393394812) passed. Microsoft VS Code Marketplace still does not expose the extension.
 >
-> **Release and source boundary:** current GitHub `main` is [`458b342f5f`](https://github.com/chainlesschain/chainlesschain/commit/458b342f5f11f2ee82c0e6a91ee485d4309485fb), later than the `0.166.15` release SHA. Post-release source adds transient audit-blob retries, per-Agent HOME/config/cache isolation for formal Windows evaluation, stable CI cleanup, and a final Windows latency-ratio ceiling of `1.65`, while Linux, macOS, and the aggregate remain at `1.5`. In [formal run 33411796790](https://github.com/chainlesschain/chainlesschain/actions/runs/33411796790), pinned to `db53dc2da4`, Linux, macOS, and all three platforms' functional/security metrics passed, but Windows measured `1.6379980224` against the then-current `1.6` ceiling, so the run, workflow aggregate, and OIDC attestation did not succeed; the offline weighted three-platform aggregate was `0.6008293973 < 1.5`. After final threshold commit `917d18b055`, the release owner explicitly accepted the residual risk of no rerun and no final-SHA aggregate/OIDC evidence and closed P2-3. That decision does not rewrite the failed run as successful, is not part of the `0.166.15` artifact, and is not a general release-gate precedent.
+> **Release and source boundary:** current GitHub `main` is [`458b342f5f`](https://github.com/longfa/chainlesschain/commit/458b342f5f11f2ee82c0e6a91ee485d4309485fb), later than the `0.166.15` release SHA. Post-release source adds transient audit-blob retries, per-Agent HOME/config/cache isolation for formal Windows evaluation, stable CI cleanup, and a final Windows latency-ratio ceiling of `1.65`, while Linux, macOS, and the aggregate remain at `1.5`. In [formal run 33411796790](https://github.com/chainlesschain/chainlesschain/actions/runs/33411796790), pinned to `db53dc2da4`, Linux, macOS, and all three platforms' functional/security metrics passed, but Windows measured `1.6379980224` against the then-current `1.6` ceiling, so the run, workflow aggregate, and OIDC attestation did not succeed; the offline weighted three-platform aggregate was `0.6008293973 < 1.5`. After final threshold commit `917d18b055`, the release owner explicitly accepted the residual risk of no rerun and no final-SHA aggregate/OIDC evidence and closed P2-3. That decision does not rewrite the failed run as successful, is not part of the `0.166.15` artifact, and is not a general release-gate precedent.
 >
 > **Frozen local source-only snapshot for this cycle:** the anchor is `233e1bdc`; `b8490faa` is the specific evidence-projector commit, `d073bdf3` is the specific tamper-evident `EvolutionLedger` commit (signed append-only entries, independent witness, receipt/verify, and fail-closed handling of missing or inconsistent evidence), and `233e1bdc` then adds mutation-transition subject binding. The original six governance test files reran in that worktree with 6/6 files and 126/126 tests passing in 28.84 seconds, but that supplies no production import, instantiation, or unified wiring; the standalone ledger suite remains at 34 passed and one timeout out of 35. The snapshot is not in GitHub `main@458b342f5f`, `0.166.15`, or formal qualification and must not be described as automatically rewriting or upgrading an active Skill.
 >
@@ -678,7 +686,7 @@ The documented source baseline `8e7c45e32e` further hardens governed Desktop IPC
 
 > Desktop / Android / iOS version surfaces aligned to .113 (check-version-sync green); Android cc bundle rolled to `v20260615c` (carries cli 0.162.70 + pdh 0.4.24, `USR_VERSION` → 44).
 
-- **Fix China-mirror `npm install` E404** ([#33](https://github.com/chainlesschain/chainlesschain/issues/33)): `@chainlesschain/core-infra@0.1.0` had metadata but no cached tarball on `registry.npmmirror.com` → hard install failure for users defaulting to the Taobao mirror. Fixed live via a manual mirror sync (tarball 404→200); `npm-publish.yml` now PUTs the mirror sync API after each publish (best-effort, never fails the publish); README (zh+en) documents the `npm i -g chainlesschain --registry https://registry.npmjs.org` fallback.
+- **Fix China-mirror `npm install` E404** ([#33](https://github.com/longfa/chainlesschain/issues/33)): `@chainlesschain/core-infra@0.1.0` had metadata but no cached tarball on `registry.npmmirror.com` → hard install failure for users defaulting to the Taobao mirror. Fixed live via a manual mirror sync (tarball 404→200); `npm-publish.yml` now PUTs the mirror sync API after each publish (best-effort, never fails the publish); README (zh+en) documents the `npm i -g chainlesschain --registry https://registry.npmjs.org` fallback.
 - **`npm-deprecate.yml`**: parameterized workflow to deprecate/un-deprecate a published version via CI's `NPM_TOKEN` secret (local token is expired). Deprecated `chainlesschain@0.162.68` (published from a stale tag, missing 8 PDH adapter wirings: douban/ximalaya/keep/didi/mercedes/eleme/xianyu/vipshop); `0.162.69` is the complete fix and `0.162.70` is the current npm `latest`.
 - **VS Code extension 0.28.0 / 0.29.0 (Open VSX)**: background-tab completion signal; chat-panel `/` slash commands + `@` autocomplete + `/rewind` to agent checkpoints.
 
@@ -1008,7 +1016,7 @@ See [`docs/design/Adapter_WeChat_SQLCipher.md`](docs/design/Adapter_WeChat_SQLCi
 - **C.1 watch face → VoiceMode shortcut** (33 tests) — phone-side `VoiceLaunchActions` + `VoiceTriggerSource` 4-enum + NavGraph route + `CcPhoneVoiceListener` Data Layer service (`/cc/voice/start` MessageClient path) + wear `VoiceSender` + `VoiceShortcutTileService` standalone tile + `VoiceComplicationService` + `VoiceForwardActivity` (intent + 50ms vibration + 3s timeout). **Security constraint**: `trigger_source` is informational only on the wear side; the phone side locks it to `WEAR_FORWARD` — prevents wear-side forgery from escalating to `AUTO_BUTTON`/`PHONE_SHORTCUT`.
 - **Final sweep bug fix** (commit `f1d283833`) — C.1 PR1 `VoiceLaunchActionsTest` + PR2 `CcPhoneVoiceListenerTest` were missing `@Config(sdk=[33])`. Robolectric's `DefaultSdkPicker` rejects compileSdk=35 (maxSdkVersion=34); aligned with every other Robolectric test in `:app`.
 
-Details: [issue #21](https://github.com/chainlesschain/chainlesschain/issues/21) + [Android repositioning design doc §10 GA follow-up scope](docs/design/Android_重新定位_设计文档.md).
+Details: [issue #21](https://github.com/longfa/chainlesschain/issues/21) + [Android repositioning design doc §10 GA follow-up scope](docs/design/Android_重新定位_设计文档.md).
 
 ## 2026-05-14 Release — **v5.0.3.53 Plan A.1 Remote Terminal Android↔Desktop WebRTC DataChannel direct (Phase 1–5 landed in one day)**
 
@@ -1060,7 +1068,7 @@ Desktop `PtyManager` is a **singleton** shared by web-shell WS gateway + cc ui W
 
 **Tests**: 39 new unit + integration tests all green — 6× `RealtimeEventManagerProfileQueryTest` (race-fix: switched the round-trip test from `runTest` to `runBlocking` because the manager's internal scope uses `Dispatchers.IO`, off the virtual-time TestDispatcher graph) + 4×3 feature-p2p repo / VM + 2 `DefaultSelfProfileProvider` + 8 `PostReportDaoTest` real in-memory Room + 11 NavGraph + tab structural regressions (no emulator needed). Design doc: [Android_Social_Wiring_2026-05.md](docs/design/Android_Social_Wiring_2026-05.md). All three doc sites refreshed this round.
 
-## 2026-05-13 Mid-stage — **[#21](https://github.com/chainlesschain/chainlesschain/issues/21) v1.2 GA feedback integration: project workflow P1+P2+P3A + #2 delete fix + #3 daily templates**
+## 2026-05-13 Mid-stage — **[#21](https://github.com/longfa/chainlesschain/issues/21) v1.2 GA feedback integration: project workflow P1+P2+P3A + #2 delete fix + #3 daily templates**
 
 v1.2 GA feedback 5+3 items integrated (#2/#3/#4/#5/#7/#8). North star: "phone-side AI project interaction should be as smooth as desktop."
 
@@ -1072,7 +1080,7 @@ v1.2 GA feedback 5+3 items integrated (#2/#3/#4/#5/#7/#8). North star: "phone-si
 
 **Tests**: Phase 1 (P0) all pass + Phase 2 (project workflow): Android `:app` 80/80 + Desktop combined 51/51. **P3 Part B pending**: Android `ProjectCommands.kt` (so mobile can call project.\* via REMOTE on desktop projects) — wait for user verification of P1+P2+P3A first.
 
-## 2026-05-13 Earlier — **[#21](https://github.com/chainlesschain/chainlesschain/issues/21) Android v1.3+ P0 prerequisites GA-independent + AI-3 forward-compat + 2 bug fixes**
+## 2026-05-13 Earlier — **[#21](https://github.com/longfa/chainlesschain/issues/21) Android v1.3+ P0 prerequisites GA-independent + AI-3 forward-compat + 2 bug fixes**
 
 P0 prerequisite batch before v1.2 GA (**no version bump**; will release alongside P1 main scope after v1.2 GA feedback):
 
@@ -3010,7 +3018,7 @@ Fixes a real defect that **bypasses the M-of-N threshold**: producer + verifier 
 
 ### Latest Update - B4 post-pack ASAR surgery (v5.0.3.39, 2026-05-07, issue #8)
 
-Windows install time substantially reduced. **Measured: 190.9s on dev-box (NVMe SSD + Defender OFF) vs 1201s legacy baseline (issue #6) = 6.3× speedup; HDD + Defender ON default-environment strict parity not measured — see [issue #8 close comment](https://github.com/chainlesschain/chainlesschain/issues/8#issuecomment-4393734608) for methodology caveats.** v5.0.3.4-13 set `asar: false` to work around electron-builder's prod-dep walker dropping 4 transitive deps (`call-bind-apply-helpers`, `side-channel-{list,map,weakmap}`) — cost: ~110k loose files in NSIS × ~10 ms per-file = ~20 min install floor on the issue #6 baseline (LZMA dict reset + NTFS transaction + Defender scan). This release (B4 plan, commit `e11b46913`) takes the third path:
+Windows install time substantially reduced. **Measured: 190.9s on dev-box (NVMe SSD + Defender OFF) vs 1201s legacy baseline (issue #6) = 6.3× speedup; HDD + Defender ON default-environment strict parity not measured — see [issue #8 close comment](https://github.com/longfa/chainlesschain/issues/8#issuecomment-4393734608) for methodology caveats.** v5.0.3.4-13 set `asar: false` to work around electron-builder's prod-dep walker dropping 4 transitive deps (`call-bind-apply-helpers`, `side-channel-{list,map,weakmap}`) — cost: ~110k loose files in NSIS × ~10 ms per-file = ~20 min install floor on the issue #6 baseline (LZMA dict reset + NTFS transaction + Defender scan). This release (B4 plan, commit `e11b46913`) takes the third path:
 
 - **`scripts/asar-surgery.js`** — runs in electron-builder's `afterPack` hook: extract → inject the 4 walker-dropped packages at top-level → repack via `@electron/asar.createPackageWithOptions`, preserving electron-builder's original auto-unpack decisions. Build-time verification gate throws if any package fails to land at top-level.
 - **`scripts/build-win-with-deref.js`** — Win wrapper for `electron-builder --win` that temporarily replaces `@chainlesschain/{core-mtc,session-core}` workspace symlinks with verbatim copies (asar packer rejects symlinks pointing outside app root), restores in `finally` with `'junction'` (Windows non-admin can't create `'dir'` symlinks).
@@ -5219,7 +5227,7 @@ const chainInfo = blockchainAdapter.getCurrentChainInfo();
 
 #### Download Links
 
-- **GitHub Releases** (International): [https://github.com/chainlesschain/chainlesschain/releases/latest](https://github.com/chainlesschain/chainlesschain/releases/latest)
+- **GitHub Releases** (International): [https://github.com/chainlesschain/chainlesschain/releases/latest](https://github.com/longfa/chainlesschain/releases/latest)
 - **Gitee Releases** (China Mirror): [https://gitee.com/chainlesschaincn/chainlesschain/releases](https://gitee.com/chainlesschaincn/chainlesschain/releases)
 
 #### Choose Your Version
@@ -5253,7 +5261,7 @@ const chainInfo = blockchainAdapter.getCurrentChainInfo();
 
 #### Download Links
 
-- **GitHub Releases** (International): [https://github.com/chainlesschain/chainlesschain/releases/latest](https://github.com/chainlesschain/chainlesschain/releases/latest)
+- **GitHub Releases** (International): [https://github.com/chainlesschain/chainlesschain/releases/latest](https://github.com/longfa/chainlesschain/releases/latest)
 - **Gitee Releases** (China Mirror): [https://gitee.com/chainlesschaincn/chainlesschain/releases](https://gitee.com/chainlesschaincn/chainlesschain/releases)
 
 #### Download Version
@@ -5277,7 +5285,7 @@ const chainInfo = blockchainAdapter.getCurrentChainInfo();
 #### Build from Source (Optional)
 
 ```bash
-git clone https://github.com/chainlesschain/chainlesschain.git
+git clone https://github.com/longfa/chainlesschain.git
 cd chainlesschain/desktop-app-vue
 npm install
 npm run make:win
@@ -5287,7 +5295,7 @@ npm run make:win
 
 #### Download Links
 
-- **GitHub Releases** (International): [https://github.com/chainlesschain/chainlesschain/releases/latest](https://github.com/chainlesschain/chainlesschain/releases/latest)
+- **GitHub Releases** (International): [https://github.com/chainlesschain/chainlesschain/releases/latest](https://github.com/longfa/chainlesschain/releases/latest)
 - **Gitee Releases** (China Mirror): [https://gitee.com/chainlesschaincn/chainlesschain/releases](https://gitee.com/chainlesschaincn/chainlesschain/releases)
 
 #### Download Version
@@ -6117,7 +6125,7 @@ The CLI provides an interactive setup wizard that downloads binaries and configu
 #### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/chainlesschain/chainlesschain.git
+git clone https://github.com/longfa/chainlesschain.git
 cd chainlesschain
 ```
 
@@ -6675,9 +6683,9 @@ Thanks to the following open source projects and technologies:
 
 ## 📊 Project Stats
 
-![GitHub stars](https://img.shields.io/github/stars/chainlesschain/chainlesschain?style=social)
-![GitHub forks](https://img.shields.io/github/forks/chainlesschain/chainlesschain?style=social)
-![GitHub issues](https://img.shields.io/github/issues/chainlesschain/chainlesschain)
+![GitHub stars](https://img.shields.io/github/stars/longfa/chainlesschain?style=social)
+![GitHub forks](https://img.shields.io/github/forks/longfa/chainlesschain?style=social)
+![GitHub issues](https://img.shields.io/github/issues/longfa/chainlesschain)
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/chainlesschain/chainlesschain)
 
 ### Overall Code Statistics

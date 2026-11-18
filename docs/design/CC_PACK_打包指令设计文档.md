@@ -1,6 +1,6 @@
 # `cc pack` — 项目一键打包为可执行文件 设计文档
 
-> **2026-10-04 当前核对**：公开 CLI **0.166.85@84f204db94** 已包含 Linux standalone 固定 supervisor、有界真实编译请求与 Windows updater 异步握手。npm 发行门已通过；六平台 native 复验 Windows ARM64 updater **64 通过 / 5 失败**，整轮失败，无签名 native 发行。独立本机单用例通过不能替代此失败。详见 [最新增量设计](agent-runtime-update-2026-09-26.md)和 [实施证据](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli-ide/plans/cli-ide-gap-implementation-2026-09-27.md)。以下阶段与 10 月 3 日候选描述保留当时的历史状态。
+> **2026-10-04 当前核对**：公开 CLI **0.166.85@84f204db94** 已包含 Linux standalone 固定 supervisor、有界真实编译请求与 Windows updater 异步握手。npm 发行门已通过；六平台 native 复验 Windows ARM64 updater **64 通过 / 5 失败**，整轮失败，无签名 native 发行。独立本机单用例通过不能替代此失败。详见 [最新增量设计](agent-runtime-update-2026-09-26.md)和 [实施证据](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli-ide/plans/cli-ide-gap-implementation-2026-09-27.md)。以下阶段与 10 月 3 日候选描述保留当时的历史状态。
 
 > 版本：v0.7 (Phase 0-3 + 4a + 5a/5b/5c + 项目模式 Phase 2a/2b/3a/3b 已落地)
 > 日期：2026-04-24
@@ -8,7 +8,7 @@
 > 状态：**Phase 0 / 1 / 2 / 3 + 4a + 5a + 5b + 5c 完成**；**项目模式（`--project`）Phase 2a / 2b / 3a / 3b 完成**；Phase 4b（macOS / Windows 代码签名）未启动；Phase 5d（delta）未启动
 > 关联版本：ChainlessChain v5.0.2.49 / CLI 0.156.6
 
-> **2026-10-03 实施补充**：当前公开 CLI 为 **0.166.84**；`b776be5fc8` 的 standalone Linux 修复属于后续开发提交，尚未公开发布。以下原阶段记录保留历史范围，当前验收见 [CLI / IDE 共享状态](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli-ide/plans/cli-ide-gap-implementation-2026-09-27.md)。
+> **2026-10-03 实施补充**：当前公开 CLI 为 **0.166.84**；`b776be5fc8` 的 standalone Linux 修复属于后续开发提交，尚未公开发布。以下原阶段记录保留历史范围，当前验收见 [CLI / IDE 共享状态](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli-ide/plans/cli-ide-gap-implementation-2026-09-27.md)。
 
 ---
 
@@ -18,7 +18,7 @@
 
 候选 `fedc71423e` 将 Windows updater 私有 ready 等待改为每 25 ms 异步检查，保持 **30 秒**截止与 marker/nonce 校验；真实子进程的 error/exit 可以在等待期间交付。update 和 rescue 两处调用均 await，防止外层 finally 提前释放锁或删除 rescue 暂存文件。握手未确认时继续保留事务归属与现场，不将失败当作已转移。
 
-原有 applier 全文件 **69/69**，新增 readiness/inventory **20/20** 通过。独立原始探针的启动失败/提前退出原先约 **30.2 秒**后才拒绝，修后为 **130.0 / 264.1 ms**；源码、事件及摘要见[可重放回执](https://github.com/chainlesschain/chainlesschain/blob/feature/cli-ide-gap-completion-2026-10-02/docs/research/cli/evidence/updater-readiness-eventloop-13095-7655.json)。这是独立事件饥饿缺陷；此前握手成功后耗时 **106.76 秒**的广范围事务问题仍开放，原 **60/90 秒**回归期限未改，完整发布门仍须重新通过。
+原有 applier 全文件 **69/69**，新增 readiness/inventory **20/20** 通过。独立原始探针的启动失败/提前退出原先约 **30.2 秒**后才拒绝，修后为 **130.0 / 264.1 ms**；源码、事件及摘要见[可重放回执](https://github.com/longfa/chainlesschain/blob/feature/cli-ide-gap-completion-2026-10-02/docs/research/cli/evidence/updater-readiness-eventloop-13095-7655.json)。这是独立事件饥饿缺陷；此前握手成功后耗时 **106.76 秒**的广范围事务问题仍开放，原 **60/90 秒**回归期限未改，完整发布门仍须重新通过。
 
 ### 2026-10-03 —— 目标检查与构建资源预算修复
 
@@ -1070,7 +1070,7 @@ v0.2 期间抓出并修掉的典型症状，遇到时的定位方式：
 
 **产出**：
 
-- [x] `cc pack` 命令骨架（[packages/cli/src/commands/pack.js](https://github.com/chainlesschain/chainlesschain/blob/main/packages/cli/src/commands/pack.js)）
+- [x] `cc pack` 命令骨架（[packages/cli/src/commands/pack.js](https://github.com/longfa/chainlesschain/blob/main/packages/cli/src/commands/pack.js)）
 - [x] 8 个 packer 子模块（precheck / web-panel-builder / config-template-builder / native-prebuild-collector / pkg-config-generator / pkg-runner / manifest-writer / smoke-runner）
 - [x] `--dry-run` 能跑完 phase 1-5 不调 pkg
 

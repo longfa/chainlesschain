@@ -37,12 +37,12 @@
 
 `e32e75e2b4` 固定正式 36+9 计划、任务执行窗口和采集身份；计划或离线验收存在不代表正式样本已经运行。正式 36+9 仍为 **NOT_RUN**。
 
-[PR #436](https://github.com/chainlesschain/chainlesschain/pull/436) 的耐久预算 authority 是独立开发，不包含在本次 `6a8db627c8` 发行中。它保留单库预留、结算冲突保护、严格 JSON/SSE 与正式启动拒绝，但跨数据库的同谱系唯一性、防回滚、真实账号价格/汇率/输入上界证据、完整运行时 IPC 与出站隔离仍未闭环，状态为 **NOT_PAID_READY**。不能把普通模型 token 预算、合成账单测试或发布成功解释为 $99 的真实费用保证。
+[PR #436](https://github.com/longfa/chainlesschain/pull/436) 的耐久预算 authority 是独立开发，不包含在本次 `6a8db627c8` 发行中。它保留单库预留、结算冲突保护、严格 JSON/SSE 与正式启动拒绝，但跨数据库的同谱系唯一性、防回滚、真实账号价格/汇率/输入上界证据、完整运行时 IPC 与出站隔离仍未闭环，状态为 **NOT_PAID_READY**。不能把普通模型 token 预算、合成账单测试或发布成功解释为 $99 的真实费用保证。
 
 完整 native review 仍为 **NOT_ADMITTED**，自动晋升仍为 **HOLD**。Windows/macOS 持久任务恢复、独立信任根和生产灾备继续按专项证据验收。
 
 ## 关联记录
 
-- [PR #435：流式重试与 worktree 注册表读取](https://github.com/chainlesschain/chainlesschain/pull/435)。
+- [PR #435：流式重试与 worktree 注册表读取](https://github.com/longfa/chainlesschain/pull/435)。
 - [10 月 10 日设计快照](release-runtime-update-2026-10-10.md)：保留当时版本与验证结果。
 - [CLI 当前架构](cli-runtime-current.md)与[发行升级指南](https://docs.chainlesschain.com/chainlesschain/agent-platform-release.html)。

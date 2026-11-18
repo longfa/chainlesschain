@@ -27,7 +27,7 @@ cc evolution deployment status --json
 
 显式 `false` 优先于部署环境变量；配置项缺省时，已有手动启用的 managed/test 部署和显式外部部署仍保留主动开启的选择。CLI 与 IDE 必须使用同一配置目录才能共享开关。Quick Ask 和意图理解的新请求重新读取设置，运行中的 Agent 会话需停止后重启。
 
-这个开关控制 Evolution 运行时接入。RRSI 完整评估活动需要单独发起，候选自动晋升仍保持 **HOLD**。启用后无效部署继续拒绝执行。完整说明见[CLI 与 IDE 自进化开关配置](https://github.com/chainlesschain/chainlesschain/blob/main/docs/cli/SELF_EVOLUTION_CONFIGURATION.md)。
+这个开关控制 Evolution 运行时接入。RRSI 完整评估活动需要单独发起，候选自动晋升仍保持 **HOLD**。启用后无效部署继续拒绝执行。完整说明见[CLI 与 IDE 自进化开关配置](https://github.com/longfa/chainlesschain/blob/main/docs/cli/SELF_EVOLUTION_CONFIGURATION.md)。
 
 > 2026-10-23 当前核对：CLI **0.166.117**、Open VSX **0.37.159** 和 JetBrains **0.4.176** 均已公开，两个 IDE 均推荐 CLI `.117`。Session Core **0.3.22**、Personal Data Hub **0.4.66** 已先行发布。新增代码输入兼容、独立图片预算、完整 JSON 预览和异常退出工具轮次结算；本轮未新增真实模型任务验收，自动晋升继续 **HOLD**。
 

@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "baselineCommit": "7e7b5b5cd48848add710957e9a70a1b3e21268ad",
+  "scope": "requested-domain-and-generated-resource-reference-changes-only",
+  "comparisons": [
+    {
+      "oldPath": "packages/cli/scripts/sync-lk-model-catalog.mjs",
+      "oldDigest": "sha256:efa2a975a962c4ce518b62b1e7396812d1246c1fe12785fea1185e9562602517",
+      "newPath": "packages/cli/scripts/sync-lk-model-catalog.mjs",
+      "newDigest": "sha256:813783430b5d4255e60e416e56085acc914157b45701a7bb2f809c2a32abb892",
+      "normalization": "requested-domain-only"
+    },
+    {
+      "oldPath": "packages/cli/src/assets/web-panel/assets/Artifacts-Db0iD_H2.js",
+      "oldDigest": "sha256:1f2be7d32923b4ffeee4292c14082c87df3986a4463c88d976bf5d4b01b6c39e",
+      "newPath": "packages/cli/src/assets/web-panel/assets/Artifacts-D1Ta6-z-.js",
+      "newDigest": "sha256:84ef5605470b3d70f72bea062eed30931d36ec1fa56fc9a88b707dfa0995b319",
+      "normalization": "same-basename-eight-character-js-css-resource-hashes-and-requested-domain"
+    },
+    {
+      "oldPath": "packages/cli/src/assets/web-panel/assets/MtcAudit-CAnmf1Im.js",
+      "oldDigest": "sha256:8743a1fa0c5f25548445e2fedd9881063bf66bf3693d27e56351c51d5bda1993",
+      "newPath": "packages/cli/src/assets/web-panel/assets/MtcAudit-CNrCQaRH.js",
+      "newDigest": "sha256:55c3928e3635c4e8ae3bceb496240158ca0dd8f5b92215bf75d5fdef3e20329b",
+      "normalization": "same-basename-eight-character-js-css-resource-hashes-and-requested-domain"
+    },
+    {
+      "oldPath": "packages/cli/src/assets/web-panel/assets/RemoteSession-KE-6VZN0.js",
+      "oldDigest": "sha256:51edc1fe1f1f743d949836c508ef8890e2f749294a4944219702b12b5abc306a",
+      "newPath": "packages/cli/src/assets/web-panel/assets/RemoteSession-DNF5nPf7.js",
+      "newDigest": "sha256:d190ede5ed5d0610676113490788be089b01e82f74546409d873d72f08c4e5e4",
+      "normalization": "same-basename-eight-character-js-css-resource-hashes-and-requested-domain"
+    },
+    {
+      "oldPath": "packages/cli/src/assets/web-panel/assets/index-hmILMYKF.js",
+      "oldDigest": "sha256:0c7db67a9d52d5ce8984b49382eedd74cfd2b9d27e6f014d82bb20ba6c87982e",
+      "newPath": "packages/cli/src/assets/web-panel/assets/index-B21ba5CK.js",
+      "newDigest": "sha256:60024e220fd9b084b7f29732cbfb13d4644e2149a7d96a95aebb058b35a623b1",
+      "normalization": "same-basename-eight-character-js-css-resource-hashes-and-requested-domain"
+    }
+  ],
+  "runtimeVerified": false,
+  "paidAdmission": false
+}

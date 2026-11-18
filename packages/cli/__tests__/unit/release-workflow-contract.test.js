@@ -68,7 +68,7 @@ describe("CLI release workflow contracts", () => {
   it("gates PDH release source on all three native hosts without filtered suites", () => {
     const text = workflow("cli-ci.yml");
     const job = workflowJob(text, "pdh-native-tests");
-    expect(job).toContain("os: [ubuntu-latest, windows-latest, macos-latest]");
+    expect(job).toContain("os: [ubuntu-latest, windows-latest, macos-15]");
     expect(job).toContain("fail-fast: false");
     expect(job).toContain("timeout-minutes: 25");
     expect(job).toContain(
@@ -567,15 +567,14 @@ describe("CLI release workflow contracts", () => {
   it("runs the complete native campaign contract on three hosts before CLI test fan-out", () => {
     const ci = workflow("cli-ci.yml");
     const preflight = workflowJob(ci, "native-campaign-preflight");
-    expect(preflight).toContain("needs: [docs-scope]");
+    expect(preflight).toContain("needs: [docs-scope, pdh-native-tests]");
     expect(preflight).toContain("needs.docs-scope.result == 'success'");
+    expect(preflight).toContain("needs.pdh-native-tests.result == 'success'");
     expect(preflight).toContain(
       "needs.docs-scope.outputs.docs_only == 'false'",
     );
     expect(preflight).toContain("fail-fast: false");
-    expect(preflight).toContain(
-      "os: [ubuntu-latest, windows-latest, macos-latest]",
-    );
+    expect(preflight).toContain("os: [ubuntu-latest, windows-latest]");
     expect(preflight).toContain("runs-on: ${{ matrix.os }}");
     expect(preflight).toContain(
       "ref: ${{ github.event.pull_request.head.sha || github.sha }}",
@@ -626,6 +625,9 @@ describe("CLI release workflow contracts", () => {
         "Verify native campaign dispatch and acceptance preflight without provider execution",
       ),
     ).toBe(1);
+    expect(ci).toContain(
+      "Verify macOS native campaign dispatch and acceptance preflight",
+    );
     expect(workflowJob(ci, "verify-cli")).not.toContain(
       "verify01-native-task-campaign.node-test.mjs",
     );
@@ -647,7 +649,7 @@ describe("CLI release workflow contracts", () => {
   it("runs all installed assisted regressions on the three exact-source hosts", () => {
     const verification = workflowJob(workflow("cli-ci.yml"), "verify-cli");
     expect(verification).toContain(
-      "os: [ubuntu-latest, windows-latest, macos-latest]",
+      "os: [ubuntu-latest, windows-latest, macos-15]",
     );
     expect(verification).toContain(
       "ref: ${{ github.event.pull_request.head.sha || github.sha }}",
@@ -682,7 +684,7 @@ describe("CLI release workflow contracts", () => {
       .split("  verify-cli:")[1]
       .split("  pack-linux-dryrun:")[0];
     expect(verification).toContain(
-      "os: [ubuntu-latest, windows-latest, macos-latest]",
+      "os: [ubuntu-latest, windows-latest, macos-15]",
     );
     expect(verification).toContain(
       "ref: ${{ github.event.pull_request.head.sha || github.sha }}",
@@ -816,6 +818,46 @@ describe("CLI release workflow contracts", () => {
     expect(readback).toContain('CC_RELEASE_COMMIT="$TAG_SHA"');
     expect(readback).toContain("chainlesschain-npm-readback.json");
     expect(readback).not.toContain("NPM_TOKEN");
+  });
+
+  it("binds independent npm readback to the publishing repository and signed tag commit", () => {
+    const readback = workflowJob(
+      workflow("cli-npm-release-readback.yml"),
+      "public-readback",
+    );
+    const provenance = readback
+      .split(
+        "      - name: Verify public registry bytes and signed provenance",
+      )[1]
+      ?.split("      - name:")[0];
+    expect(provenance).toBeTypeOf("string");
+    const environment = readback.match(/^ {4}env:\n((?: {6}.*\n)+)/mu)?.[1];
+    expect(environment).toContain(
+      "CC_NPM_RELEASE_REPOSITORY: https://github.com/${{ github.repository }}",
+    );
+    expect(provenance).toContain(
+      "npm audit signatures --include-attestations --json",
+    );
+    expect(provenance).toContain(
+      '"$AUDIT_ROOT/npm-signatures.json" "$VERSION" "$TAG_SHA" "refs/tags/$TAG" "$REGISTRY_SHA512"',
+    );
+    expect(provenance).not.toContain("--trusted-anchor");
+    expect(readback).toContain('TAG_SHA=$(git rev-parse "${TAG}^{commit}")');
+    expect(readback).toContain("repository: ${{ github.repository }}");
+    expect(readback).toContain(
+      "run-id: ${{ steps.provenance.outputs.run_id }}",
+    );
+    expect(readback.match(/CC_NPM_RELEASE_REPOSITORY:/gu)).toHaveLength(1);
+    const byteReadback = readback
+      .split(
+        "      - name: Prove registry tarball is the immutable workflow artifact",
+      )[1]
+      ?.split("      - name:")[0];
+    expect(byteReadback).toContain('CC_RELEASE_COMMIT="$TAG_SHA"');
+    expect(byteReadback).toContain("verify-npm-registry-readback.mjs");
+    expect(byteReadback).toContain(
+      "readback/chainlesschain-npm-provenance.json",
+    );
   });
 
   it("keeps local generic publish scripts outside the CLI authority", () => {

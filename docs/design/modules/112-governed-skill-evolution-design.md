@@ -1,6 +1,12 @@
 # 112 受治理的 Skill 自进化设计
 
-> 2026-10-23 当前核对：CLI **0.166.117**、Open VSX **0.37.159** 和 JetBrains **0.4.176** 均已公开，两个 IDE 均推荐 CLI `.117`。Session Core **0.3.22**、Personal Data Hub **0.4.66** 已先行发布。新增代码输入兼容、独立图片预算、完整 JSON 预览和异常退出工具轮次结算；本轮未新增真实模型任务验收，自动晋升继续 **HOLD**。
+> 2026-11-19 当前核对：CLI **0.166.156**、Open VSX **0.37.192** 和 JetBrains **0.4.207** 已公开，两款 IDE 均推荐 CLI `.156`，发行源码为 `a8cae89288d3a6119b152e04b750e10d726a5c5f`。本次文档按源码 `8c937cbe9bc4b82f87479c124375401fa2fb3a72` 核对，不将相同版本字段当作相同发行 tree。PC/mobile 最后已核验的历史客户端为 **v5.0.3.145**，当前下载源暂不可用；**NOT_PAID_READY / NOT_ADMITTED / HOLD** 保留。[运行时设计与公开证据](../release-runtime-update-2026-11-19-156.md)。
+
+LK 渠道配置、模型目录和只读账户查询属于模型接入层，不新增本模块的 Eval、review、promotion 或 release authority。主备 `api.vv666.ai / api.lk666.ai` 共用 LK 渠道凭证身份，其它端点保持凭证隔离；202 项目录中 86 项对话模型按协议筛选，精确旧别名迁移不跨模型替换。目录继续声明 `runtimeVerified:false / accountVerified:false`，余额、Key 额度、动态价格与 API 账单以算力计量，账单不提供 Token 数，也不自动成为一次运行的计费或效果证据。
+
+重复输出恢复仅维护工具观察与重复计数边界；IDE 动作仍要求当前有效的 `freshPreview`，不能由旧 UI 状态或渠道配置推导执行授权。RRSI 各段局部证明仍按原记录范围读取，不因本次发行或站点部署升级为完整存储图、生产准入、A/B 收益或自动晋升证明。下文带日期的版本与验收记录均保留其历史范围。
+
+> 2026-10-23 历史核对：CLI **0.166.117**、Open VSX **0.37.159** 和 JetBrains **0.4.176** 均已公开，两个 IDE 均推荐 CLI `.117`。Session Core **0.3.22**、Personal Data Hub **0.4.66** 已先行发布。新增代码输入兼容、独立图片预算、完整 JSON 预览和异常退出工具轮次结算；本轮未新增真实模型任务验收，自动晋升继续 **HOLD**。
 
 详见[本轮运行时设计](../release-runtime-update-2026-10-23.md)。文本输入快照 1 MiB、模型可见投影 896 KiB，图片单消息 20 MiB、单请求 40 MiB，视觉 token 预留与实际 usage 分别处理。持久图片消息包须与 JSONL 一起备份。
 
@@ -290,7 +296,7 @@ Skill、Prompt、Hook 与 Knowledge 可共享最小制品 envelope：tenant/type
 | 5    | `EVO-OPT-7` deployment composition            | 公共 npm 入口装载真实 branded host；KMS/HSM、PKI/身份/policy、独立 witness、scheduler、traffic、metrics 和灾备通过目标环境验收                     |
 | 6    | `EVO-OPT-6` multi-artifact governance         | Prompt/Hook/Knowledge 合同测试证明不能绕过 candidate gate，类型专属安全门和依赖重评测有效                                                          |
 
-统一硬门包括：`100%` active/stable lineage 可回溯、未授权 active writer 与 security/permission violation 为 `0`、paired quality 置信下界通过、成本和 p95/p99 非劣、reconciliation backlog/age 有上限、rollback MTTR 达标，以及 Wiki contradiction/stale/删除传播可观测。详细任务和状态以 [Agent 自进化差距与优化建议](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/agents/AGENT_SELF_EVOLUTION_GAP_ANALYSIS_2026-09-01.md) §13 为准。在目标部署验收完成前，production auto-promotion 继续 HOLD。
+统一硬门包括：`100%` active/stable lineage 可回溯、未授权 active writer 与 security/permission violation 为 `0`、paired quality 置信下界通过、成本和 p95/p99 非劣、reconciliation backlog/age 有上限、rollback MTTR 达标，以及 Wiki contradiction/stale/删除传播可观测。详细任务和状态以 [Agent 自进化差距与优化建议](https://github.com/longfa/chainlesschain/blob/main/docs/research/agents/AGENT_SELF_EVOLUTION_GAP_ANALYSIS_2026-09-01.md) §13 为准。在目标部署验收完成前，production auto-promotion 继续 HOLD。
 
 ## 18.6 2026-09-06 实现核对：持久治理运行时
 
@@ -325,10 +331,10 @@ Wiki pruning 的计划、授权 checkpoint、维护结果、检索投影和 wiki
 
 仓库回归覆盖真实文件账本、进程退出/SIGKILL 窗口、双实例恢复、超期人工 preparation、来源撤销、候选包损坏和徽章 HTTP 只读边界。测试中的签名身份、grader 和文件系统适配器明确属于 TEST fixture，不是生产 PKI、实际用户 IDE 或断电演练。
 
-- [Workbench 启动合同](https://github.com/chainlesschain/chainlesschain/blob/main/docs/features/evolution-workbench/EVOLUTION_WORKBENCH_STARTUP.md)
-- [审核持久化合同](https://github.com/chainlesschain/chainlesschain/blob/main/docs/features/evolution-workbench/EVOLUTION_WORKBENCH_REVIEW_RUNTIME.md)
-- [回滚持久化合同](https://github.com/chainlesschain/chainlesschain/blob/main/docs/features/evolution-workbench/EVOLUTION_WORKBENCH_ROLLBACK_RUNTIME.md)
-- [市场候选与徽章合同](https://github.com/chainlesschain/chainlesschain/blob/main/docs/cli/GOVERNED_SKILL_MARKETPLACE_CLI.md)
+- [Workbench 启动合同](https://github.com/longfa/chainlesschain/blob/main/docs/features/evolution-workbench/EVOLUTION_WORKBENCH_STARTUP.md)
+- [审核持久化合同](https://github.com/longfa/chainlesschain/blob/main/docs/features/evolution-workbench/EVOLUTION_WORKBENCH_REVIEW_RUNTIME.md)
+- [回滚持久化合同](https://github.com/longfa/chainlesschain/blob/main/docs/features/evolution-workbench/EVOLUTION_WORKBENCH_ROLLBACK_RUNTIME.md)
+- [市场候选与徽章合同](https://github.com/longfa/chainlesschain/blob/main/docs/cli/GOVERNED_SKILL_MARKETPLACE_CLI.md)
 
 ## 18.7 2026-09-07 源码核对：Desktop 模型入口与 witness 性能
 
@@ -413,7 +419,7 @@ CLI CI 在精确提交 `77572e7355` 上完成 Linux、Windows、macOS 全矩阵�
 
 同一发布链随后补齐 Windows 恢复临时路径规范化、存活状态锁保护和 ACL 瞬态超时重试上限；npm 发布工作流还会校验复用子包的 provenance 与字节未漂移。上述可靠性修复不会扩大 PM Explorer、Skill promotion 或 Desktop native 安装包的发布范围。
 
-实施证据见[第一批基线](https://github.com/chainlesschain/chainlesschain/blob/main/docs/reports/rsiagent/rsiagent-first-batch-implementation-2026-09-17.md)、[第二批轮次合同](https://github.com/chainlesschain/chainlesschain/blob/main/docs/reports/rsiagent/rsiagent-second-batch-implementation-2026-09-17.md)、[第三至第五批持久化与 Desktop 接线](https://github.com/chainlesschain/chainlesschain/blob/main/docs/reports/rsiagent/rsiagent-fifth-batch-implementation-2026-09-17.md)、[第六至第七批恢复门禁](https://github.com/chainlesschain/chainlesschain/blob/main/docs/reports/rsiagent/rsiagent-seventh-batch-implementation-2026-09-17.md)和[第八批故障关闭](https://github.com/chainlesschain/chainlesschain/blob/main/docs/reports/rsiagent/rsiagent-eighth-batch-implementation-2026-09-17.md)。
+实施证据见[第一批基线](https://github.com/longfa/chainlesschain/blob/main/docs/reports/rsiagent/rsiagent-first-batch-implementation-2026-09-17.md)、[第二批轮次合同](https://github.com/longfa/chainlesschain/blob/main/docs/reports/rsiagent/rsiagent-second-batch-implementation-2026-09-17.md)、[第三至第五批持久化与 Desktop 接线](https://github.com/longfa/chainlesschain/blob/main/docs/reports/rsiagent/rsiagent-fifth-batch-implementation-2026-09-17.md)、[第六至第七批恢复门禁](https://github.com/longfa/chainlesschain/blob/main/docs/reports/rsiagent/rsiagent-seventh-batch-implementation-2026-09-17.md)和[第八批故障关闭](https://github.com/longfa/chainlesschain/blob/main/docs/reports/rsiagent/rsiagent-eighth-batch-implementation-2026-09-17.md)。
 
 ## 18.11 2026-09-19 发布核对：签名执行证据与 SQLite 恢复链
 
@@ -465,7 +471,7 @@ autoPromotion: hold
 
 第 23 批最终定向回归为 Desktop seal/reader/deployment/readiness `65 passed`，CLI PM/snapshot store/loader/签名 TEST fixture `184 passed`；精确 CLI 发布提交的 Linux、Windows、macOS CLI CI 与 Strict Sandbox 均通过。这些测试使用本地或合成 durability authority，不能外推生产 PKI/KMS、远端故障域、父目录 fsync/物理断电、8 GiB 大库内存预算、workspace/外部服务恢复、关闭连接后的原子文件替换、taint 解除或真实 Electron DID/RBAC 工具旅程。
 
-实施证据见[第九批预算与签名回执](https://github.com/chainlesschain/chainlesschain/blob/main/docs/reports/rsiagent/rsiagent-ninth-batch-implementation-2026-09-18.md)、[第十至十四批 provider 与 settlement](https://github.com/chainlesschain/chainlesschain/blob/main/docs/reports/rsiagent/rsiagent-fourteenth-batch-implementation-2026-09-18.md)、[第十五批业务 grader](https://github.com/chainlesschain/chainlesschain/blob/main/docs/reports/rsiagent/rsiagent-fifteenth-batch-implementation-2026-09-18.md)、[第十六至十七批 Desktop 只读结果源](https://github.com/chainlesschain/chainlesschain/blob/main/docs/reports/rsiagent/rsiagent-seventeenth-batch-implementation-2026-09-18.md)、[第十八至二十批 SQLite seal 与 taint](https://github.com/chainlesschain/chainlesschain/blob/main/docs/reports/rsiagent/rsiagent-twentieth-batch-implementation-2026-09-18.md)、[第二十一批耐久提交](https://github.com/chainlesschain/chainlesschain/blob/main/docs/reports/rsiagent/rsiagent-twenty-first-batch-implementation-2026-09-18.md)、[第二十二批链头恢复](https://github.com/chainlesschain/chainlesschain/blob/main/docs/reports/rsiagent/rsiagent-twenty-second-batch-implementation-2026-09-18.md)和[第二十三批恢复快照](https://github.com/chainlesschain/chainlesschain/blob/main/docs/reports/rsiagent/rsiagent-twenty-third-batch-implementation-2026-09-18.md)。
+实施证据见[第九批预算与签名回执](https://github.com/longfa/chainlesschain/blob/main/docs/reports/rsiagent/rsiagent-ninth-batch-implementation-2026-09-18.md)、[第十至十四批 provider 与 settlement](https://github.com/longfa/chainlesschain/blob/main/docs/reports/rsiagent/rsiagent-fourteenth-batch-implementation-2026-09-18.md)、[第十五批业务 grader](https://github.com/longfa/chainlesschain/blob/main/docs/reports/rsiagent/rsiagent-fifteenth-batch-implementation-2026-09-18.md)、[第十六至十七批 Desktop 只读结果源](https://github.com/longfa/chainlesschain/blob/main/docs/reports/rsiagent/rsiagent-seventeenth-batch-implementation-2026-09-18.md)、[第十八至二十批 SQLite seal 与 taint](https://github.com/longfa/chainlesschain/blob/main/docs/reports/rsiagent/rsiagent-twentieth-batch-implementation-2026-09-18.md)、[第二十一批耐久提交](https://github.com/longfa/chainlesschain/blob/main/docs/reports/rsiagent/rsiagent-twenty-first-batch-implementation-2026-09-18.md)、[第二十二批链头恢复](https://github.com/longfa/chainlesschain/blob/main/docs/reports/rsiagent/rsiagent-twenty-second-batch-implementation-2026-09-18.md)和[第二十三批恢复快照](https://github.com/longfa/chainlesschain/blob/main/docs/reports/rsiagent/rsiagent-twenty-third-batch-implementation-2026-09-18.md)。
 
 ## 19. 关键文件
 
@@ -517,7 +523,7 @@ autoPromotion: hold
 
 ## 20. 相关文档
 
-- [Agent 自进化差距与实施状态](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/agents/AGENT_SELF_EVOLUTION_GAP_ANALYSIS_2026-09-01.md)
+- [Agent 自进化差距与实施状态](https://github.com/longfa/chainlesschain/blob/main/docs/research/agents/AGENT_SELF_EVOLUTION_GAP_ANALYSIS_2026-09-01.md)
 - [模块 65：自进化 AI 系统](./65_自进化AI系统.md)
 - [Desktop Cowork Skill 执行安全](./109_Desktop_Cowork_Skill_Execution_Security.md)
 - [Agent Platform 发布与证据边界](./110-agent-platform-release-boundaries.md)

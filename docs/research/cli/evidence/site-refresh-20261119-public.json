@@ -1,0 +1,67 @@
+{
+  "schema": "chainlesschain.three-site-publication/v1",
+  "verifiedAt": "2026-11-18T21:47:01.976400+00:00",
+  "status": "deployed-verified",
+  "repository": "https://github.com/longfa/chainlesschain",
+  "pullRequest": "https://github.com/longfa/chainlesschain/pull/9",
+  "buildSourceCommit": "b0b8ec60c1dbdc4622334a7c7b903df4d677e4d1",
+  "reviewedCodeCommit": "8c937cbe9bc4b82f87479c124375401fa2fb3a72",
+  "runtimeReleaseCommit": "a8cae89288d3a6119b152e04b750e10d726a5c5f",
+  "buildRunId": 44402444592,
+  "buildRunAttempt": 1,
+  "stamp": "20261118-213654-591213-b0b8ec60c1-docs",
+  "sites": {
+    "docs": {
+      "url": "https://docs.chainlesschain.com/",
+      "archiveSha256": "74887b67df10347c26e65d89148b86c8a848b40c082222b6f703326e7c893a63",
+      "htmlPages": 697,
+      "files": 2118,
+      "publicSourceIdentityVerified": true,
+      "rollbackDirectory": "/www/wwwroot/docs.chainlesschain.com.bak-20261118-213654-591213-b0b8ec60c1-docs"
+    },
+    "design": {
+      "url": "https://design.chainlesschain.com/",
+      "archiveSha256": "fdb58fa939a27a60cb4f032dcd8893bb1c6b0cea2e4dc2f2ab14ea7bc6b88cab",
+      "htmlPages": 304,
+      "files": 938,
+      "publicSourceIdentityVerified": true,
+      "rollbackDirectory": "/www/wwwroot/design.chainlesschain.com.bak-20261118-213654-591213-b0b8ec60c1-docs"
+    },
+    "www": {
+      "url": "https://www.chainlesschain.com/",
+      "archiveSha256": "25fc27254f74f0ccf8548f487f05b752a28e2e5cc84263239d213247aba9194d",
+      "htmlPages": 20,
+      "files": 45,
+      "publicSourceIdentityVerified": true,
+      "rollbackDirectory": "/www/wwwroot/www.chainlesschain.com.bak-20261118-213654-591213-b0b8ec60c1-docs"
+    }
+  },
+  "checks": {
+    "publicHttpChecks": 17,
+    "publicHttpPassed": true,
+    "browserChecks": 12,
+    "browserPassed": true,
+    "viewports": [
+      1440,
+      390
+    ],
+    "javascriptErrors": 0,
+    "horizontalOverflow": false,
+    "currentGitHubLinks": "longfa/chainlesschain",
+    "nativeDownloadLinksHidden": true,
+    "tlsCertificateValidation": true
+  },
+  "runtimeComparison": {
+    "onlyDifferencesInReviewedRuntimeDirectories": [
+      "packages/cli/src/lib/lk-model-catalog.json",
+      "packages/vscode-extension/src/vendor/lk-channel-presets.json",
+      "packages/web-panel/src/vendor/lk-channel-presets.json"
+    ],
+    "allThreeJsonDocumentsSemanticallyEqual": true
+  },
+  "limits": [
+    "Last historical native client v5.0.3.145 source currently returns 404; no new native package released",
+    "No new npm or IDE publication in this website task",
+    "No additional model-task acceptance; NOT_PAID_READY / NOT_ADMITTED / HOLD retained"
+  ]
+}

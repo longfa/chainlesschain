@@ -277,7 +277,7 @@ describe("PM exploration recovery evidence", () => {
 
     const verifyJob = workflow.slice(verifyStart, aggregateStart);
     expect(verifyJob).toContain(
-      "os: [ubuntu-latest, windows-latest, macos-latest]",
+      "os: [ubuntu-latest, windows-latest, macos-15]",
     );
     expect(verifyJob).toContain("pm-exploration-recovery-drill.mjs");
     expect(verifyJob).toContain(

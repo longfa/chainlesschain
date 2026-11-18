@@ -55,7 +55,7 @@ console.log(
 
 manifest 与 checker 由操作者在任务开始前准备，宿主在首次作者模型调用前冻结其字节和文件身份。`checkerFiles` 相对 manifest 解析，命令参数相对候选工作区解析；所有检查代码、夹具与配置依赖都应列入 `checkerFiles`。命令使用独立 argv，不经 shell。所有检查和 requirement 都须通过；仅 exit 0、旧回执、缺失交付物或验证期间源码改变均不能完成 Goal。
 
-检查沿用剩余时间和取消信号，输出有上限；清理状态不明或检查定义改变会停止自动重试。可信 checker 仍须自行保证断言有效、依赖完整并等待子进程退出：此功能不把任意检查代码变成沙箱，也不证明验证结束后的文件永不变化。[完整限制与持久恢复说明](https://github.com/chainlesschain/chainlesschain/blob/main/docs/cli/managed-agents.md#published-cli-0166131-independent-goal-acceptance)。
+检查沿用剩余时间和取消信号，输出有上限；清理状态不明或检查定义改变会停止自动重试。可信 checker 仍须自行保证断言有效、依赖完整并等待子进程退出：此功能不把任意检查代码变成沙箱，也不证明验证结束后的文件永不变化。[完整限制与持久恢复说明](https://github.com/longfa/chainlesschain/blob/main/docs/cli/managed-agents.md#published-cli-0166131-independent-goal-acceptance)。
 
 默认的自然语言 / `model:` Goal 仍使用模型判断；`--review-changes` 仍是默认关闭的交付复查。两者不会自动获得 `verify:` 的独立检查。原生评测 driver 当前只有六个文件工具且没有 `--goal-condition` 参数，升级 `.131` 不会自动给 native generation 添加此验证流程或执行权限。
 
@@ -162,7 +162,7 @@ chainlesschain agent --session <id>     # 恢复历史会话
 
 `cc agent -p` 是**单轮非交互**执行（`claude -p` 对标），进 CI / 管道 / 脚本；prompt 来自
 `-p` 值 / 位置参数 / stdin。完整旗标 + 输出格式 + 权限档表见
-[CLI_COMMANDS_REFERENCE → managed-agents](https://github.com/chainlesschain/chainlesschain/blob/main/docs/cli/managed-agents.md)。
+[CLI_COMMANDS_REFERENCE → managed-agents](https://github.com/longfa/chainlesschain/blob/main/docs/cli/managed-agents.md)。
 
 ```bash
 chainlesschain agent -p "fix the bug in x.js"                     # 单轮执行后退出

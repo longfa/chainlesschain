@@ -6,7 +6,7 @@
 >
 > 用户文档：[CLI Runtime 收口路线图](https://docs.chainlesschain.com/chainlesschain/cli-runtime-convergence-roadmap.html)
 >
-> ADR：[CLI_RUNTIME_CONVERGENCE_ADR](https://github.com/chainlesschain/chainlesschain/blob/main/docs/implementation-plans/CLI_RUNTIME_CONVERGENCE_ADR.md)
+> ADR：[CLI_RUNTIME_CONVERGENCE_ADR](https://github.com/longfa/chainlesschain/blob/main/docs/implementation-plans/CLI_RUNTIME_CONVERGENCE_ADR.md)
 
 ## 0. 基线审计 (2026-04-09)
 

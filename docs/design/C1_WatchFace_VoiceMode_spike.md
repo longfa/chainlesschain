@@ -1,6 +1,6 @@
 # C.1 watch face → VoiceMode — spike v0.3
 
-> **Issue**: [#21](https://github.com/chainlesschain/chainlesschain/issues/21) C.1（GA 后续 scope · P1）
+> **Issue**: [#21](https://github.com/longfa/chainlesschain/issues/21) C.1（GA 后续 scope · P1）
 > **状态**: 🟢 PR1 ✅ + PR2 ✅ + PR3 ✅ landed (2026-05-15) — **C.1 主体闭环**
 > **作者**: 2026-05-15
 > **关联**: [Android 重新定位 §10 C.1](Android_重新定位_设计文档.md) / [三端 UI Consistency §3.1 + §3.4](三端_UI_Consistency_设计文档.md)

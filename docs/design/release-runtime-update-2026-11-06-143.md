@@ -79,10 +79,10 @@ Memory 是单独选择的资料能力；确认前、输出读取和后续预览/
 
 ## 源码与操作入口
 
-- [CLI 目标命令](https://github.com/chainlesschain/chainlesschain/blob/3fa3a4b258bbcb60b23b4298cec375661ad6f410/packages/cli/src/commands/goal.js)
-- [组合场景声明](https://github.com/chainlesschain/chainlesschain/blob/3fa3a4b258bbcb60b23b4298cec375661ad6f410/packages/cli/src/lib/plugin-runtime/examples/project-delivery-assistant/plugin.json)
-- [桌面模型草稿实现](https://github.com/chainlesschain/chainlesschain/blob/3fa3a4b258bbcb60b23b4298cec375661ad6f410/desktop-app-vue/src/main/task/project-goal-model-drafts.js)
-- [公开发行与制品回读](https://github.com/chainlesschain/chainlesschain/blob/d2070ce914af8d675191e3492e0ce7db650c79c3/docs/research/cli/evidence/release143-public/README.md)
+- [CLI 目标命令](https://github.com/longfa/chainlesschain/blob/3fa3a4b258bbcb60b23b4298cec375661ad6f410/packages/cli/src/commands/goal.js)
+- [组合场景声明](https://github.com/longfa/chainlesschain/blob/3fa3a4b258bbcb60b23b4298cec375661ad6f410/packages/cli/src/lib/plugin-runtime/examples/project-delivery-assistant/plugin.json)
+- [桌面模型草稿实现](https://github.com/longfa/chainlesschain/blob/3fa3a4b258bbcb60b23b4298cec375661ad6f410/desktop-app-vue/src/main/task/project-goal-model-drafts.js)
+- [公开发行与制品回读](https://github.com/longfa/chainlesschain/blob/d2070ce914af8d675191e3492e0ce7db650c79c3/docs/research/cli/evidence/release143-public/README.md)
 - [用户升级与本地算力配置](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-06-143.html)
 - [原生产品 .145](https://github.com/chainlesschain/chainlesschain/releases/tag/v5.0.3.145)
 

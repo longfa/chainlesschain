@@ -41,6 +41,16 @@ function publicReleaseInputs() {
   return inputs;
 }
 
+function neutralReleaseInputs() {
+  const inputs = publicReleaseInputs();
+  const { pluginVersion, cliVersion } = verifyReleaseMetadata(inputs);
+  inputs.readme = inputs.readme.replace(
+    /## Release compatibility\n\n[\s\S]*?(?=\n\n## )/u,
+    `## Release compatibility\n\nPlugin **${pluginVersion}** recommends \`chainlesschain@${cliVersion}\`.`,
+  );
+  return inputs;
+}
+
 test("checked-in release documentation matches the package pairing", () => {
   const inputs = releaseInputs();
   assert.ok(
@@ -55,7 +65,9 @@ test("checked-in release documentation matches the package pairing", () => {
 test("public release documentation matches the checked-in package pairing", () => {
   const inputs = publicReleaseInputs();
   const result = verifyReleaseMetadata(inputs);
-  assert.ok(compareVersions(result.cliVersion, inputs.cliManifest.version) <= 0);
+  assert.ok(
+    compareVersions(result.cliVersion, inputs.cliManifest.version) <= 0,
+  );
   assert.ok(
     inputs.readme.includes(
       `Plugin **${result.pluginVersion}** is the current public release`,
@@ -74,12 +86,8 @@ test("candidate wording remains valid before the next Marketplace publication", 
 });
 
 test("neutral source pairing preserves exact versions without claiming public availability", () => {
-  const inputs = publicReleaseInputs();
+  const inputs = neutralReleaseInputs();
   const expected = verifyReleaseMetadata(inputs);
-  inputs.readme = inputs.readme.replace(
-    `Plugin **${expected.pluginVersion}** is the current public release. It recommends`,
-    `Plugin **${expected.pluginVersion}** recommends`,
-  );
   assert.deepEqual(verifyReleaseMetadata(inputs), expected);
   const section = inputs.readme
     .split("## Release compatibility\n\n")[1]
@@ -99,10 +107,10 @@ test("neutral source pairing preserves exact versions without claiming public av
 });
 
 test("neutral source wording cannot change the recommended CLI", () => {
-  const inputs = publicReleaseInputs();
+  const inputs = neutralReleaseInputs();
   const expected = verifyReleaseMetadata(inputs);
   inputs.readme = inputs.readme.replace(
-    `Plugin **${expected.pluginVersion}** is the current public release. It recommends \`chainlesschain@${expected.cliVersion}\``,
+    `Plugin **${expected.pluginVersion}** recommends \`chainlesschain@${expected.cliVersion}\``,
     `Plugin **${expected.pluginVersion}** recommends \`chainlesschain@0.166.0\``,
   );
   assert.throws(

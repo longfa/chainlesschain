@@ -246,7 +246,15 @@ export function scanNetworkSources(repository, roots = ["packages/cli/src"]) {
         continue;
       }
       if (item.isDirectory()) {
-        if (["__tests__", "node_modules", ".git"].includes(item.name)) continue;
+        // The Web Panel bundle is generated during CI/publish from the
+        // separately reviewed `packages/web-panel/src` sources. Its hashed
+        // JavaScript assets are build outputs, so scanning them as canonical
+        // CLI sources creates unstable UNREVIEWED entries on every build.
+        if (
+          ["__tests__", "node_modules", ".git"].includes(item.name) ||
+          name === "packages/cli/src/assets/web-panel"
+        )
+          continue;
         scan(absolute);
       } else if (item.isFile() && /\.(?:js|mjs|cjs)$/u.test(item.name)) {
         const bytes = fs.readFileSync(absolute),

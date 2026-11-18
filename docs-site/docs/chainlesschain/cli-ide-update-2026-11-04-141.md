@@ -4,7 +4,7 @@
 
 ## 概述
 
-本次配套版本为 CLI **0.166.141**、VS Code 兼容编辑器扩展 **0.37.177**、JetBrains 插件 **0.4.194**。准确发行源码为 [`df9295e33ad04aec0aa74cab4dd242766d5556a4`](https://github.com/chainlesschain/chainlesschain/commit/df9295e33ad04aec0aa74cab4dd242766d5556a4)。文档复核主线为 `a60b9cdb35d9d598202930cb3317117b651948fd`，其文件树与该发行源码一致；后续文档或部署提交不替换不可变发行身份。
+本次配套版本为 CLI **0.166.141**、VS Code 兼容编辑器扩展 **0.37.177**、JetBrains 插件 **0.4.194**。准确发行源码为 [`df9295e33ad04aec0aa74cab4dd242766d5556a4`](https://github.com/longfa/chainlesschain/commit/df9295e33ad04aec0aa74cab4dd242766d5556a4)。文档复核主线为 `a60b9cdb35d9d598202930cb3317117b651948fd`，其文件树与该发行源码一致；后续文档或部署提交不替换不可变发行身份。
 
 核验时间：`2026-11-04T10:59:34.766935+00:00`。
 
@@ -102,12 +102,12 @@ CLI 与 IDE 网关调用共享的 `agentLoop`。读取结果经过有界预览�
 
 ## 相关文档
 
-[输入与读取恢复](./agent-input-and-recovery)、[Agent 命令](./cli-agent)、[自进化开关](./self-evolution-configuration)、[本次运行时设计](https://design.chainlesschain.com/release-runtime-update-2026-11-04-141.html)及[发行回执](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release141-public/README.md)分别说明操作、配置和证据范围。
+[输入与读取恢复](./agent-input-and-recovery)、[Agent 命令](./cli-agent)、[自进化开关](./self-evolution-configuration)、[本次运行时设计](https://design.chainlesschain.com/release-runtime-update-2026-11-04-141.html)及[发行回执](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release141-public/README.md)分别说明操作、配置和证据范围。
 
-- [45项任务账本及比较边界](https://github.com/chainlesschain/chainlesschain/blob/df9295e33ad04aec0aa74cab4dd242766d5556a4/docs/research/cli/verify01-36-plus-9-task-list.md)
-- [火山修正轮原始成绩](https://github.com/chainlesschain/chainlesschain/blob/df9295e33ad04aec0aa74cab4dd242766d5556a4/docs/research/cli/verify01-volcengine-140-full-20261103/internal-output-repair/final-54d0064cab/results.json)
-- [火山累计及历史限定](https://github.com/chainlesschain/chainlesschain/blob/df9295e33ad04aec0aa74cab4dd242766d5556a4/docs/research/cli/verify01-volcengine-140-full-20261103/internal-output-repair/cumulative-status.json)
-- [Sol 四项原始成绩](https://github.com/chainlesschain/chainlesschain/blob/df9295e33ad04aec0aa74cab4dd242766d5556a4/docs/research/cli/verify01-openai-140-frozen-four-20261103/public-802c51a9f2/results.json)
-- [Sol 跨源码累计](https://github.com/chainlesschain/chainlesschain/blob/df9295e33ad04aec0aa74cab4dd242766d5556a4/docs/research/cli/verify01-volcengine-139-20261103/sol-comparison/cumulative-coverage.json)
+- [45项任务账本及比较边界](https://github.com/longfa/chainlesschain/blob/df9295e33ad04aec0aa74cab4dd242766d5556a4/docs/research/cli/verify01-36-plus-9-task-list.md)
+- [火山修正轮原始成绩](https://github.com/longfa/chainlesschain/blob/df9295e33ad04aec0aa74cab4dd242766d5556a4/docs/research/cli/verify01-volcengine-140-full-20261103/internal-output-repair/final-54d0064cab/results.json)
+- [火山累计及历史限定](https://github.com/longfa/chainlesschain/blob/df9295e33ad04aec0aa74cab4dd242766d5556a4/docs/research/cli/verify01-volcengine-140-full-20261103/internal-output-repair/cumulative-status.json)
+- [Sol 四项原始成绩](https://github.com/longfa/chainlesschain/blob/df9295e33ad04aec0aa74cab4dd242766d5556a4/docs/research/cli/verify01-openai-140-frozen-four-20261103/public-802c51a9f2/results.json)
+- [Sol 跨源码累计](https://github.com/longfa/chainlesschain/blob/df9295e33ad04aec0aa74cab4dd242766d5556a4/docs/research/cli/verify01-volcengine-139-20261103/sol-comparison/cumulative-coverage.json)
 
 另见[输入与恢复](./agent-input-and-recovery)、[CLI Agent](./cli-agent)、[自进化配置](./self-evolution-configuration)与[本次运行时设计](/design/release-runtime-update-2026-11-04-141)。

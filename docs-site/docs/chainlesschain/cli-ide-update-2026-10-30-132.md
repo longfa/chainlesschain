@@ -2,7 +2,7 @@
 
 ## 概述
 
-CLI **0.166.132**、Kernel **0.1.11**、Open VSX **0.37.170**、JetBrains **0.4.187** 已公开并核验配对，发行源码为 `772fcdbda85bcf91df95bfced5b476dcf4c74614`。PC / mobile 仍为独立 **v5.0.3.143**。Microsoft Marketplace 暂缓；公开制品与准确来源见[发行回执](https://github.com/chainlesschain/chainlesschain/blob/0d57ebfea919ae941a36a1f11a9ee10964722120/docs/research/cli/evidence/release132-public/publication.json)。
+CLI **0.166.132**、Kernel **0.1.11**、Open VSX **0.37.170**、JetBrains **0.4.187** 已公开并核验配对，发行源码为 `772fcdbda85bcf91df95bfced5b476dcf4c74614`。PC / mobile 仍为独立 **v5.0.3.143**。Microsoft Marketplace 暂缓；公开制品与准确来源见[发行回执](https://github.com/longfa/chainlesschain/blob/0d57ebfea919ae941a36a1f11a9ee10964722120/docs/research/cli/evidence/release132-public/publication.json)。
 
 ## 核心特性
 
@@ -50,7 +50,7 @@ abbe 本机实际通过 **456/456**（18 文件、无跳过）及 **10/10 实际
 
 ## 关键文件
 
-[本批实现与限定验证](https://github.com/chainlesschain/chainlesschain/blob/0d57ebfea919ae941a36a1f11a9ee10964722120/docs/research/cli-ide-release132-progress-2026-10-30.md)说明终态、当前任务绑定及原 broker 的边界；[公开发行回执](https://github.com/chainlesschain/chainlesschain/blob/0d57ebfea919ae941a36a1f11a9ee10964722120/docs/research/cli/evidence/release132-public/publication.json)绑定实际渠道和来源。
+[本批实现与限定验证](https://github.com/longfa/chainlesschain/blob/0d57ebfea919ae941a36a1f11a9ee10964722120/docs/research/cli-ide-release132-progress-2026-10-30.md)说明终态、当前任务绑定及原 broker 的边界；[公开发行回执](https://github.com/longfa/chainlesschain/blob/0d57ebfea919ae941a36a1f11a9ee10964722120/docs/research/cli/evidence/release132-public/publication.json)绑定实际渠道和来源。
 
 ## 相关文档
 

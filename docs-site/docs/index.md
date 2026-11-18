@@ -4,7 +4,7 @@ layout: home
 hero:
   name: ChainlessChain
   text: 去中心化个人 AI 管理平台
-  tagline: "CLI 0.166.150 / Open VSX 0.37.189 已公开；JetBrains .204 已公开核验，客户端公开版仍为 v5.0.3.145"
+  tagline: "CLI 0.166.156 / Open VSX 0.37.192 已公开；JetBrains .207 已公开核验，历史客户端 v5.0.3.145 下载源暂不可用"
   image:
     src: /logo.png
     alt: ChainlessChain Logo
@@ -22,8 +22,8 @@ hero:
 features:
   - icon: ⚠️
     title: LK 渠道、动态账单与凭证保留
-    details: "CLI .150 / Open VSX .189 已公开核验；JetBrains .204 已公开核验。新增 LK 主备与协议配置、动态价格和实际 API 账单，火山等各渠道 Key 切换后保留。"
-    link: /chainlesschain/cli-ide-update-2026-11-14-150
+    details: "CLI .156 / Open VSX .192 已公开核验；JetBrains .207 已公开核验。LK 真实模型 ID、202 项目录与 86 项对话模型、动态算力价格和真实 API 账单，火山等各渠道 Key 切换后保留。"
+    link: /chainlesschain/cli-ide-update-2026-11-19-156
   - icon: 🔗
     title: CLI / IDE 与桌面目标草稿
     details: "CLI .140 修复损坏工具参数恢复与可信摘要；桌面目标草稿互通仍需匹配客户端构建、显式授权及原生确认，CLI 或插件发布不能替代产品验收。"
@@ -74,7 +74,7 @@ features:
     link: /chainlesschain/desktop-model-governance
   - icon: 🧑‍💻
     title: IDE Bridge 当前公开配对
-    details: "Open VSX .189 推荐 CLI .150；JetBrains .204 已公开核验并推荐同一 CLI。Microsoft Marketplace 未由本批标签发布。"
+    details: "Open VSX .192 推荐 CLI .156；JetBrains .207 已公开核验并推荐同一 CLI。Microsoft Marketplace 未由本批标签发布。"
     link: /chainlesschain/ide-plugin
   - icon: 🔐
     title: 安全优先
@@ -87,7 +87,17 @@ features:
     details: "CLI 与 IDE 的精确提交门禁、公共制品回读、模型任务验收具有不同证据范围。客户端公开版仍为 .145，.146 的 Android bundle 对齐与整体发行仍待完成；完整 native review 保持 NOT_ADMITTED。"
 ---
 
-## 2026-11-10 当前公开发行
+## 当前公开版本与源码核对（2026-11-19）
+
+已验证公开 **CLI 0.166.156 / Open VSX 0.37.192 / JetBrains 0.4.207**，两款 IDE 推荐 CLI .156；JetBrains 已审核公开，公开安装包已与正式候选核对。安装 `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`、`cc doctor`。
+
+LK 使用 `https://api.vv666.ai` 主地址和 `https://api.lk666.ai` 手动备用地址；OpenAI 兼容连接为 `/v1`、默认 `gpt-6.1-sol`。目录为 **202 项 / 86 项对话模型**，聊天下拉按协议筛选；余额、动态分组价格与实际 API 账单通过已保存的 LK 连接读取，金额单位为算力，与本地 Token 统计分开。
+
+文档核对源码 `8c937cbe9bc4b82f87479c124375401fa2fb3a72`；不可变发行来源 `a8cae89288d3a6119b152e04b750e10d726a5c5f`。Git 标题中的“1.5.6”不代表可安装版本号，CLI 包的真实版本为 **0.166.156**。本轮不新增模型任务验收，**NOT_PAID_READY / NOT_ADMITTED / HOLD** 保留。最后已核验历史客户端为 **v5.0.3.145**，旧安装包源目前返回 404，不能视为当前可下载；本轮不发布 PC/mobile 安装包。
+
+[本轮安装与故障排查](/chainlesschain/cli-ide-update-2026-11-19-156) · [设计与发行边界](https://design.chainlesschain.com/release-runtime-update-2026-11-19-156.html)。后续带日期记录保留各自历史范围。
+
+## 历史：2026-11-10 当前公开发行
 
 公开组合为 **CLI 0.166.146 / Session Core 0.3.27 / Open VSX 0.37.185 / JetBrains 0.4.199**，两款 IDE 均推荐 CLI .146。Protocol **0.1.13**、Memory Kernel **0.1.12** 和 Agent SDK **0.2.18** 已公开。JetBrains .199 已完成市场审核，不再作为待审版本记录。
 
@@ -119,11 +129,11 @@ cc doctor
 
 CLI **0.166.143**、Session Core **0.3.26**、Open VSX **0.37.179**、JetBrains **0.4.196** 已公开核验，两个 IDE 均推荐 CLI .143。新增本地算力配置、端点凭据隔离和受控创建请求；客户端 **v5.0.3.145** 独立公开，新增原生 v6 创建与模型草稿仍需匹配的新桌面构建。后文带日期记录保留历史范围。
 
-## 当前公开版本（2026-11-03）
+## 历史：当前公开版本（2026-11-03）
 
 2026-11-03 按 `main@d62866538c` 核对：CLI **0.166.140** / Open VSX **0.37.176** 已公开核验，修复损坏工具参数续接与可信传输摘要误判。JetBrains **0.4.193** 已上传，公开可用性未核验；商店已核验公开版 **0.4.192** 的推荐标记仍为 CLI **0.166.139**。PC / mobile **v5.0.3.144** 已独立公开。火山 .140 全量 **36+9** 最终成绩尚未核验；历史 .138 **2/4**、原冻结项目 **41/45** 和含修复项目的 Sol 跨版本 **45/45** 分别保留。后续读取恢复提示与 Web Panel bundle 修复不在 CLI .140 发行源中。**NOT_PAID_READY / NOT_ADMITTED / HOLD** 保留。
 
-[当前升级指南](/chainlesschain/cli-ide-update-2026-11-03-140) · [最新设计](https://design.chainlesschain.com/release-runtime-update-2026-11-03-140.html) · [公开包复验记录](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/verify01-openai-138/README.md)
+[当前升级指南](/chainlesschain/cli-ide-update-2026-11-03-140) · [最新设计](https://design.chainlesschain.com/release-runtime-update-2026-11-03-140.html) · [公开包复验记录](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/verify01-openai-138/README.md)
 
 ### 按任务查阅当前参考
 
@@ -144,7 +154,7 @@ cc --version
 cc doctor
 ```
 
-参见[历史指南](/chainlesschain/cli-ide-update-2026-10-20)与[当时发行证据](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release112-public/publication.json)。
+参见[历史指南](/chainlesschain/cli-ide-update-2026-10-20)与[当时发行证据](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release112-public/publication.json)。
 
 <!-- release108-status -->
 
@@ -152,11 +162,11 @@ cc doctor
 
 2026-10-21 核对：
 
-npm CLI **0.166.108**: 已公开，精确提交发行门与公开制品回读通过; source `e77c7ba85783576ac523dd73bc760bda63d91f3b`; [Actions 1](https://github.com/chainlesschain/chainlesschain/actions/runs/39484583983); [receipt](https://github.com/chainlesschain/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json).
+npm CLI **0.166.108**: 已公开，精确提交发行门与公开制品回读通过; source `e77c7ba85783576ac523dd73bc760bda63d91f3b`; [Actions 1](https://github.com/chainlesschain/chainlesschain/actions/runs/39484583983); [receipt](https://github.com/longfa/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json).
 
-Open VSX **0.37.153**: 已公开，精确提交发行门与公开制品回读通过; source `e77c7ba85783576ac523dd73bc760bda63d91f3b`; [Actions 1](https://github.com/chainlesschain/chainlesschain/actions/runs/39486919504); [receipt](https://github.com/chainlesschain/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json).
+Open VSX **0.37.153**: 已公开，精确提交发行门与公开制品回读通过; source `e77c7ba85783576ac523dd73bc760bda63d91f3b`; [Actions 1](https://github.com/chainlesschain/chainlesschain/actions/runs/39486919504); [receipt](https://github.com/longfa/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json).
 
-JetBrains Marketplace **0.4.170**: 已公开，精确提交发行门与公开制品回读通过; source `e77c7ba85783576ac523dd73bc760bda63d91f3b`; [Actions 1](https://github.com/chainlesschain/chainlesschain/actions/runs/39486921296/attempts/2); [receipt](https://github.com/chainlesschain/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json).
+JetBrains Marketplace **0.4.170**: 已公开，精确提交发行门与公开制品回读通过; source `e77c7ba85783576ac523dd73bc760bda63d91f3b`; [Actions 1](https://github.com/chainlesschain/chainlesschain/actions/runs/39486921296/attempts/2); [receipt](https://github.com/longfa/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json).
 
 本轮没有新的模型任务补测。历史 `.105/.150/.167` 轮生成和独立验收各 **20/20**，新增通过 **6** 项；跨版本累计候选合格交付 **31/45**（普通 **26/36**、首次 **5/9**），剩余 **14** 项；这不是 .109 单轮成功率。**NOT_PAID_READY**、**NOT_ADMITTED** 与自动晋升 **HOLD** 保留。Microsoft Marketplace 未发行。原生产品 **v5.0.3.140** 独立发行；桌面互通仍需匹配构建、桌面授权和原生确认。
 
@@ -203,7 +213,7 @@ CLI .109 修复 Web Panel Quick Ask 对已保存 LLM 设置的路由。IDE .154 
 >
 > 2026-05-07 更新 III：**v5.0.3.41 — chat-panel-v5 三壳对齐 + B4 social 滚动收口**。本版 productVersion .40 → .41，正式 ship 前 4 个 "5.0.3.40 续" 滚动条目（cred-persist + auto-archive、mofn-sign v2 + webpanel UI、merkle envelope finality、跨机同步 Phase A + Web Shell Phase 3c.7）以及两条新增：(A) V6 默认壳 AIChatPanel 反向对齐 V5 ChatPanel 的 4 个核心特性（流式响应 + 历史会话切换 + 上下文记忆引用 + 工具调用面板，Phase E commit `b33527d31`）；(B) web-shell ChatPanel v5 端口 v1+v1.1（commit `72b13388a`）port V5 全部 router 协议 / autoSendMessage 信号 / virtual list / 5 intent / 6 IPC 走 WS topic。从此 V5 / V6 / web-shell 三壳聊天体验严格对等，Phase 1.6 默认 web-shell 用户不再缺任何 V5 聊天能力。同时修：web-panel `views-mount-smoke.test.js` 在 63 文件并行套件 first-import 撞 30s timeout（Pipeline.vue + Chat.vue 在 4-fork 池下 SFC transform 竞争），fix 走 file-level `vi.setConfig({ testTimeout: 60_000 })`，全局 timeout 不动（验证全局升 60s 反让 worker pool 调度恶化）。回归全绿：desktop 1454/1454 + CLI mtc-federation 集成 41/41 + web-panel 1853/1853 unit + 63/63 e2e。
 
-> 2026-05-15 更新：**Android GA 后续 scope #21 P1 主体 5/5 全闭环**。issue #21 5 项主体一日内全部 land：A.1 桌面 Linux native 配对（`cc pair preflight` 5 项 LAN 诊断 + `cc pair token` CLI 子命令组 + systemd 模板 + 9 段用户指南，57 单测，audit 反驳"Linux 需补 mDNS systemd 单元"误解 — `@libp2p/mdns` 纯 JS 不依赖 avahi）/ A.2 三端 UI consistency 设计文档 v0.1（4 项必须一致 + 4 项必须不同）/ B.1 web-shell 私钥签字 UI（`MultisigSigner` + `multisig.sign` in-process WS topic 绕开 cc subprocess 6-10s 冷启 + `SignProposalModal.vue` Pinia store + `unified-key-manager` DID 路由，113 单测）/ B.5 跨链桥 outbound × m-of-n 多签（Layer 1+2 共 8 PRs：CLI `bridge --require-multisig` + `bridge-consume` + `cc_bridges` provenance 列 + `crosschain-mtc` multisig helpers + `verifyMultiHopBridgeEnvelope` auto-runs provenance check）/ C.1 watch face → VoiceMode shortcut（`VoiceLaunchActions` + `CcPhoneVoiceListener` Data Layer service + wear `VoiceSender`/`VoiceShortcutTileService`/`VoiceComplicationService`，trigger_source 锁 WEAR_FORWARD 防伪，33 单测）。最终 sweep 修 2 个 Robolectric 测试漏标 `@Config(sdk = [33])`（compileSdk=35 vs maxSdkVersion=34）— commit `f1d283833`。P2 候选 4 项 (B.3/B.4/C.2/C.3) 等 GA Play Store + 真用户反馈复评。详见 [issue #21](https://github.com/chainlesschain/chainlesschain/issues/21) + [Android 重新定位 §10](/design/android-repositioning)。
+> 2026-05-15 更新：**Android GA 后续 scope #21 P1 主体 5/5 全闭环**。issue #21 5 项主体一日内全部 land：A.1 桌面 Linux native 配对（`cc pair preflight` 5 项 LAN 诊断 + `cc pair token` CLI 子命令组 + systemd 模板 + 9 段用户指南，57 单测，audit 反驳"Linux 需补 mDNS systemd 单元"误解 — `@libp2p/mdns` 纯 JS 不依赖 avahi）/ A.2 三端 UI consistency 设计文档 v0.1（4 项必须一致 + 4 项必须不同）/ B.1 web-shell 私钥签字 UI（`MultisigSigner` + `multisig.sign` in-process WS topic 绕开 cc subprocess 6-10s 冷启 + `SignProposalModal.vue` Pinia store + `unified-key-manager` DID 路由，113 单测）/ B.5 跨链桥 outbound × m-of-n 多签（Layer 1+2 共 8 PRs：CLI `bridge --require-multisig` + `bridge-consume` + `cc_bridges` provenance 列 + `crosschain-mtc` multisig helpers + `verifyMultiHopBridgeEnvelope` auto-runs provenance check）/ C.1 watch face → VoiceMode shortcut（`VoiceLaunchActions` + `CcPhoneVoiceListener` Data Layer service + wear `VoiceSender`/`VoiceShortcutTileService`/`VoiceComplicationService`，trigger_source 锁 WEAR_FORWARD 防伪，33 单测）。最终 sweep 修 2 个 Robolectric 测试漏标 `@Config(sdk = [33])`（compileSdk=35 vs maxSdkVersion=34）— commit `f1d283833`。P2 候选 4 项 (B.3/B.4/C.2/C.3) 等 GA Play Store + 真用户反馈复评。详见 [issue #21](https://github.com/longfa/chainlesschain/issues/21) + [Android 重新定位 §10](/design/android-repositioning)。
 
 > 2026-05-07 更新 II：**v5.0.3.40 — MTC 视图 in-process 提速 + CI 三发解锁**。主修：v5.0.3.39 切到 `asar:true` 后 `cc` 子进程冷启动从 dev 的 ~2.5s 涨到打包后 6-10s，`Mtc.vue` `onMounted` 三发并发（`loadStatus` + `loadBridgeStatus` + `loadBridgeSla`）必撞 8s/6s ws.execute timeout（用户截图 "状态加载失败 / 加载桥 MTC 状态失败"）。修法：新增 3 个 in-process WS topic（`mtc.audit-status` / `mtc.bridge-status` / `mtc.bridge-sla`）直查 `audit-mtc` / `cross-chain-mtc` lib（纯文件读，无 SQLite，无 spawn，零 asar 开销）；`Mtc.vue` 通过 `useShellMode().isEmbedded` 双路径分叉，embedded 走新 topic，浏览器/`cc serve` 仍走旧 `ws.execute`；保底 timeout 8000/6000 → 30000 ms。配 7 + 1 新单测。同时打包三发 CI 修复（commit `25d834958`）：(1) `build-win-with-deref` 7 个 test 在 macOS unit fallback 上 fail，根因 `isSymlink` 用 `realpathSync` 比较，但 macOS `os.tmpdir()` 路径含 `/var → /private/var` 的隐式 symlink，所有 tmp 子目录都误判 → platform split：Win 用 realpath（junction 需要），POSIX 用 `lstat.isSymbolicLink()`；(2) rules-validator 把测试 fixture `TestDbManager.exec(sql)` 当 SQL_INJECTION 报红 → `getAllFiles` 跳过 `__tests__/__mocks__/` + `.test.js`/`.spec.js`/`.d.ts`；(3) CLI subprocess `node bin/chainlesschain.js` cold-start 在繁忙 Windows 主机超 10/15s execSync timeout → 统一 bump 60s（与项目 testTimeout 对齐）。Tests：Desktop unit 10482/10482 + MTC handler 7/7 + web-panel mtc-parser 14/14 + CLI unit 17392/17392 + CLI integration 821/821，共 28716+ 测试。
 
@@ -251,7 +261,7 @@ chainlesschain start
 ### 方式二：源码运行
 
 ```bash
-git clone https://github.com/chainlesschain/chainlesschain.git
+git clone https://github.com/longfa/chainlesschain.git
 cd chainlesschain
 npm install
 npm run dev:desktop-vue

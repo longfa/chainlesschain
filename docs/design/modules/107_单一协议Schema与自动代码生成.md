@@ -317,4 +317,4 @@ JetBrains Marketplace `0.4.100` 已公开并让 chat mapper、raw stdout fallbac
 - [106 Agent Kernel 设计](./106_Agent_Kernel设计.md)
 - [98 IDE Bridge 对标方案](./98_IDE桥接对标方案.md)
 - [CLI Runtime 当前实现](../cli-runtime-current.md)
-- [Agent Protocol 包说明](https://github.com/chainlesschain/chainlesschain/tree/main/packages/agent-protocol)
+- [Agent Protocol 包说明](https://github.com/longfa/chainlesschain/tree/main/packages/agent-protocol)

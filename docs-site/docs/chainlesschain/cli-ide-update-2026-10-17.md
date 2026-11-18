@@ -43,7 +43,7 @@ CLI 持有会话记录、预算根、模型调用结算与 MCP 工具清单；ID
 
 ## 测试覆盖
 
-发行提交的 CLI CI、CLI Strict Sandbox、OIDC 发布与公开 npm 回读已完成；VS Code 的 Open VSX 工作流及 JetBrains 六组真实宿主与市场回读也成功。准确提交和工作流链接见[发布证据](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/implementation-plan-2026-10-15/formal-paid-release-gate/README.md)。正式 36+9 评测没有运行。
+发行提交的 CLI CI、CLI Strict Sandbox、OIDC 发布与公开 npm 回读已完成；VS Code 的 Open VSX 工作流及 JetBrains 六组真实宿主与市场回读也成功。准确提交和工作流链接见[发布证据](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/implementation-plan-2026-10-15/formal-paid-release-gate/README.md)。正式 36+9 评测没有运行。
 
 ## 故障排查
 
@@ -63,4 +63,4 @@ CLI 持有会话记录、预算根、模型调用结算与 MCP 工具清单；ID
 
 ## 相关文档
 
-参见[本轮设计](https://design.chainlesschain.com/release-runtime-update-2026-10-17.html)、[上一轮功能与草稿指南](./cli-ide-update-2026-10-16.md)和[发布证据](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/implementation-plan-2026-10-15/formal-paid-release-gate/README.md)。
+参见[本轮设计](https://design.chainlesschain.com/release-runtime-update-2026-10-17.html)、[上一轮功能与草稿指南](./cli-ide-update-2026-10-16.md)和[发布证据](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/implementation-plan-2026-10-15/formal-paid-release-gate/README.md)。

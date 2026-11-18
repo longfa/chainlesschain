@@ -39,7 +39,7 @@ VS Code bridge 不可达时失败闭合；独立 Electron loopback 诊断将主�
 ## 代码与证据
 
 - [本轮用户升级指南](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-09-145.html)
-- [公开渠道与下载回执](https://github.com/chainlesschain/chainlesschain/blob/feature/site-refresh-20261109/docs/research/cli/evidence/documentation-refresh-20261109/README.md)
-- [原生计价原始范围](https://github.com/chainlesschain/chainlesschain/blob/c34a664f426f8ff1c026d21a25bf8d3fd2f6f959/docs/research/cli/evidence/native-price-windows-20261109/README.md)
-- [逐项完成审计](https://github.com/chainlesschain/chainlesschain/blob/c34a664f426f8ff1c026d21a25bf8d3fd2f6f959/docs/research/cli-ide/plans/cli-ide-codex-claude-gap-review-2026-11-08.md)
+- [公开渠道与下载回执](https://github.com/longfa/chainlesschain/blob/feature/site-refresh-20261109/docs/research/cli/evidence/documentation-refresh-20261109/README.md)
+- [原生计价原始范围](https://github.com/longfa/chainlesschain/blob/c34a664f426f8ff1c026d21a25bf8d3fd2f6f959/docs/research/cli/evidence/native-price-windows-20261109/README.md)
+- [逐项完成审计](https://github.com/longfa/chainlesschain/blob/c34a664f426f8ff1c026d21a25bf8d3fd2f6f959/docs/research/cli-ide/plans/cli-ide-codex-claude-gap-review-2026-11-08.md)
 - [移交设计](./cli-goal-transfer-source-2026-11-07) · [历史 .143 设计](./release-runtime-update-2026-11-06-143)

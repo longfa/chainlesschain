@@ -98,7 +98,7 @@ CLI 包含 RRSI 评估相关模块。这个开关控制普通模型入口是否�
 
 ## 测试覆盖
 
-CLI .127 的精确发行源码通过 Linux、Windows、macOS CLI CI 与 Strict Sandbox，经 OIDC 发布并验证公共归档。两个 IDE 与五平台客户端已分别通过发布门与公开制品回读。累计 **32/45**、**13** 项未完成；**NOT_PAID_READY / NOT_ADMITTED / HOLD** 保留。[发布回执](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release127-public/publication.json)。
+CLI .127 的精确发行源码通过 Linux、Windows、macOS CLI CI 与 Strict Sandbox，经 OIDC 发布并验证公共归档。两个 IDE 与五平台客户端已分别通过发布门与公开制品回读。累计 **32/45**、**13** 项未完成；**NOT_PAID_READY / NOT_ADMITTED / HOLD** 保留。[发布回执](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release127-public/publication.json)。
 
 ## 安全考虑
 
@@ -112,9 +112,9 @@ CLI .127 的精确发行源码通过 Linux、Windows、macOS CLI CI 与 Strict S
 
 ## 相关文档
 
-- [CLI 使用说明](https://github.com/chainlesschain/chainlesschain/blob/main/packages/cli/README.md)
-- [VS Code 插件使用说明](https://github.com/chainlesschain/chainlesschain/blob/main/packages/vscode-extension/README.md)
-- [JetBrains 插件使用说明](https://github.com/chainlesschain/chainlesschain/blob/main/packages/jetbrains-plugin/README.md)
+- [CLI 使用说明](https://github.com/longfa/chainlesschain/blob/main/packages/cli/README.md)
+- [VS Code 插件使用说明](https://github.com/longfa/chainlesschain/blob/main/packages/vscode-extension/README.md)
+- [JetBrains 插件使用说明](https://github.com/longfa/chainlesschain/blob/main/packages/jetbrains-plugin/README.md)
 - [CLI / IDE 当前升级指南](./cli-ide-update-2026-10-27)
 
 ## 2026-11-13 状态投影与发布边界

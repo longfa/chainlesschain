@@ -4,7 +4,7 @@
 
 CLI **0.166.130**、Open VSX **0.37.168**、JetBrains **0.4.185** 已公开，两个 IDE 均推荐 CLI `.130`。准确发行源码为 `f3015e799624b81af564aaaa1b7701c0a5c70e26`；CLI 使用已公开的 Kernel **0.1.10**。Microsoft Marketplace 暂缓，官方 VS Code 使用版本化 VSIX。PC / 移动端继续独立使用 **v5.0.3.143**。
 
-[公开发布回执](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release130-public/publication.json)及[独立新回读](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release130-reconcile-2026-10-29/review.json)分别记录准确来源、门禁和公开归档。旧 [.129 升级页](./cli-ide-update-2026-10-29)保留历史范围。
+[公开发布回执](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release130-public/publication.json)及[独立新回读](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release130-reconcile-2026-10-29/review.json)分别记录准确来源、门禁和公开归档。旧 [.129 升级页](./cli-ide-update-2026-10-29)保留历史范围。
 
 ## 核心特性
 
@@ -80,9 +80,9 @@ Goal 的工具证据、文件摘要和模型结论分别核对。取消、未知
 
 ## 关键文件
 
-- [公开发行回执](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release130-public/publication.json)
-- [CLI README](https://github.com/chainlesschain/chainlesschain/blob/main/packages/cli/README.md)
-- [当前任务表](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli-ide/plans/cli-ide-codex-claude-gap-review-2026-10-27.md)
+- [公开发行回执](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release130-public/publication.json)
+- [CLI README](https://github.com/longfa/chainlesschain/blob/main/packages/cli/README.md)
+- [当前任务表](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli-ide/plans/cli-ide-codex-claude-gap-review-2026-10-27.md)
 
 ## 相关文档
 

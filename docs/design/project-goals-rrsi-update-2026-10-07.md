@@ -103,9 +103,9 @@ Linux 的 `process-ownership` 恢复核验并停止指定持久 cgroup，确认�
 
 ## 11 来源与关联文档
 
-- [Dots/Muse/Mods 实施进度](https://github.com/chainlesschain/chainlesschain/blob/36ca503291/docs/research/agents/dots-muse-mods-implementation-progress-2026-10-07.md)
-- [RRSI 实施进度](https://github.com/chainlesschain/chainlesschain/blob/36ca503291/docs/research/agents/rrsi-implementation-progress-2026-10-07.md)
-- [Palantir 实施进度](https://github.com/chainlesschain/chainlesschain/blob/36ca503291/docs/research/palantir/palantir-gap-implementation-progress-2026-10-06.md)
+- [Dots/Muse/Mods 实施进度](https://github.com/longfa/chainlesschain/blob/36ca503291/docs/research/agents/dots-muse-mods-implementation-progress-2026-10-07.md)
+- [RRSI 实施进度](https://github.com/longfa/chainlesschain/blob/36ca503291/docs/research/agents/rrsi-implementation-progress-2026-10-07.md)
+- [Palantir 实施进度](https://github.com/longfa/chainlesschain/blob/36ca503291/docs/research/palantir/palantir-gap-implementation-progress-2026-10-06.md)
 - [项目目标用户指南](https://docs.chainlesschain.com/chainlesschain/project-goals-current.html)
 - [RRSI 使用与证据边界](https://docs.chainlesschain.com/chainlesschain/rrsi-current.html)
 - [既有数据与受控动作设计](./data-actions-update-2026-10-06.md)

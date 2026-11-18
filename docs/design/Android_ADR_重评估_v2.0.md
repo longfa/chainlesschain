@@ -1,6 +1,6 @@
 # Android ADR 重评估 v2.0
 
-> **触发**: [#21](https://github.com/chainlesschain/chainlesschain/issues/21) v1.3+ A.3（P0 前置，blocks B.3 DID rotate）
+> **触发**: [#21](https://github.com/longfa/chainlesschain/issues/21) v1.3+ A.3（P0 前置，blocks B.3 DID rotate）
 > **起稿日期**: 2026-05-12
 > **基线**: 设计文档 v0.8（§10 v1.3+ 加 triage 分层）
 > **作者**: A.3 P0 前置任务

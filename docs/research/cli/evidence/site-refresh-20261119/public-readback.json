@@ -1,0 +1,136 @@
+{
+  "schema": "chainlesschain.sites-public-readback/v1",
+  "verifiedAt": "2026-11-18T21:41:11.355428+00:00",
+  "sourceCommit": "b0b8ec60c1dbdc4622334a7c7b903df4d677e4d1",
+  "buildRunId": "44402444592",
+  "stamp": "20261118-213654-591213-b0b8ec60c1-docs",
+  "transport": "direct HTTPS with TLS certificate validation",
+  "checks": [
+    {
+      "site": "www",
+      "url": "https://www.chainlesschain.com/deployment-source.json",
+      "kind": "metadata",
+      "errors": [],
+      "httpStatus": 200,
+      "sourceCommit": "b0b8ec60c1dbdc4622334a7c7b903df4d677e4d1",
+      "archiveSha256": "25fc27254f74f0ccf8548f487f05b752a28e2e5cc84263239d213247aba9194d"
+    },
+    {
+      "site": "docs",
+      "url": "https://docs.chainlesschain.com/deployment-source.json",
+      "kind": "metadata",
+      "errors": [],
+      "httpStatus": 200,
+      "sourceCommit": "b0b8ec60c1dbdc4622334a7c7b903df4d677e4d1",
+      "archiveSha256": "74887b67df10347c26e65d89148b86c8a848b40c082222b6f703326e7c893a63"
+    },
+    {
+      "site": "design",
+      "url": "https://design.chainlesschain.com/deployment-source.json",
+      "kind": "metadata",
+      "errors": [],
+      "httpStatus": 200,
+      "sourceCommit": "b0b8ec60c1dbdc4622334a7c7b903df4d677e4d1",
+      "archiveSha256": "fdb58fa939a27a60cb4f032dcd8893bb1c6b0cea2e4dc2f2ab14ea7bc6b88cab"
+    },
+    {
+      "site": "www",
+      "url": "https://www.chainlesschain.com/",
+      "kind": "all",
+      "errors": [],
+      "httpStatus": 200
+    },
+    {
+      "site": "www",
+      "url": "https://www.chainlesschain.com/en/",
+      "kind": "all",
+      "errors": [],
+      "httpStatus": 200
+    },
+    {
+      "site": "www",
+      "url": "https://www.chainlesschain.com/cli/",
+      "kind": "all",
+      "errors": [],
+      "httpStatus": 200
+    },
+    {
+      "site": "www",
+      "url": "https://www.chainlesschain.com/ide/",
+      "kind": "all",
+      "errors": [],
+      "httpStatus": 200
+    },
+    {
+      "site": "www",
+      "url": "https://www.chainlesschain.com/desktop/",
+      "kind": "native",
+      "errors": [],
+      "httpStatus": 200
+    },
+    {
+      "site": "www",
+      "url": "https://www.chainlesschain.com/mobile/",
+      "kind": "native",
+      "errors": [],
+      "httpStatus": 200
+    },
+    {
+      "site": "www",
+      "url": "https://www.chainlesschain.com/en/desktop/",
+      "kind": "native",
+      "errors": [],
+      "httpStatus": 200
+    },
+    {
+      "site": "www",
+      "url": "https://www.chainlesschain.com/en/mobile/",
+      "kind": "native",
+      "errors": [],
+      "httpStatus": 200
+    },
+    {
+      "site": "docs",
+      "url": "https://docs.chainlesschain.com/",
+      "kind": "all",
+      "errors": [],
+      "httpStatus": 200
+    },
+    {
+      "site": "docs",
+      "url": "https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-19-156.html",
+      "kind": "all",
+      "errors": [],
+      "httpStatus": 200
+    },
+    {
+      "site": "docs",
+      "url": "https://docs.chainlesschain.com/chainlesschain/cli-llm.html",
+      "kind": "all",
+      "errors": [],
+      "httpStatus": 200
+    },
+    {
+      "site": "docs",
+      "url": "https://docs.chainlesschain.com/guide/getting-started.html",
+      "kind": "all",
+      "errors": [],
+      "httpStatus": 200
+    },
+    {
+      "site": "design",
+      "url": "https://design.chainlesschain.com/",
+      "kind": "all",
+      "errors": [],
+      "httpStatus": 200
+    },
+    {
+      "site": "design",
+      "url": "https://design.chainlesschain.com/release-runtime-update-2026-11-19-156.html",
+      "kind": "all",
+      "errors": [],
+      "httpStatus": 200
+    }
+  ],
+  "passed": true
+}

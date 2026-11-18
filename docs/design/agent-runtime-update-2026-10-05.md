@@ -12,13 +12,13 @@
 
 升级旧 v2 存储保留权威正文、revision 与审计，但新 descriptor 会被不认识索引字段的旧 reader 拒绝。升级前备份，停止旧 writer；降级需要兼容快照。默认 shadow 不触发迁移。索引不是全文搜索，也不构成新的权限来源。
 
-Windows x64 / Node 22.22.2 的本地 100K、category-7、limit 20 测量中，全扫 p95 为 14,160.960 ms，冷索引 2,416.313 ms，热索引 1,746.812 ms，重建 28,615.208 ms。每路径 11 次，冷查询使用新进程但未清空 OS 缓存；热查询仍需验证索引字节，重建可能持锁。该结果不是跨平台性能 SLO。原始测量见[查询索引回执](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/gap-2026-10-05/memory-query-index.json)。
+Windows x64 / Node 22.22.2 的本地 100K、category-7、limit 20 测量中，全扫 p95 为 14,160.960 ms，冷索引 2,416.313 ms，热索引 1,746.812 ms，重建 28,615.208 ms。每路径 11 次，冷查询使用新进程但未清空 OS 缓存；热查询仍需验证索引字节，重建可能持锁。该结果不是跨平台性能 SLO。原始测量见[查询索引回执](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/gap-2026-10-05/memory-query-index.json)。
 
 ## VERIFY-01 执行与结果采集
 
 `482c1b2727` 接入 `cc eval --suite verify01`，执行前要求外部固定的 plan/review 摘要、项目准确提交及项目外的可信 reviewer 根。独立 setup/check 在有界任务工作区运行；执行材料保存原始进程输出和完整 diff，报告保留失败及 missing。36 个项目任务与 9 个首次安装样本的固定分母不能通过选择部分样本缩小。
 
-公开版已接入冻结执行与审阅包生成；后续源码的 `verify01-host-capture.mjs` 提供 prepare/finish，配合原始协议 observer、双 IDE UI driver 和只读导入器。prepare 从冻结 Git blobs 建立全新工作区，执行受摘要锁定的 setup，保存状态摘要与总 deadline；实际 IDE 操作后 finish 核验材料并执行 reviewed check。首次安装另存安装、发现、认证、首条输入与首次成功阶段回执。它们不自动写入正式样本目录，失败和重试不得覆盖首次证据；费用缺失保留 `null`。完整参数见[宿主采集说明](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/verify01-plan-2026-10-04/HOST_CAPTURE_README.md)。
+公开版已接入冻结执行与审阅包生成；后续源码的 `verify01-host-capture.mjs` 提供 prepare/finish，配合原始协议 observer、双 IDE UI driver 和只读导入器。prepare 从冻结 Git blobs 建立全新工作区，执行受摘要锁定的 setup，保存状态摘要与总 deadline；实际 IDE 操作后 finish 核验材料并执行 reviewed check。首次安装另存安装、发现、认证、首条输入与首次成功阶段回执。它们不自动写入正式样本目录，失败和重试不得覆盖首次证据；费用缺失保留 `null`。完整参数见[宿主采集说明](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/verify01-plan-2026-10-04/HOST_CAPTURE_README.md)。
 
 结果采集适配器复用 Eval history 与 outcome report；只读采集不是模型或 GUI 验收。observer 普通启动不启用，须显式配置受控 capture 目录；原始材料可能包含任务正文、工具及模型输出。导入核对 session/generation、唯一输入、接受回执、终态与退出，拒绝缺序、重复或外国 session，不把多轮重试拼成单样本。静态合同、AI 审查、无模型 dry-run 与本地测试不能替代独立人工签核、真实账号/账单或 8h/24h 观察。
 
@@ -50,11 +50,11 @@ Windows x64 / Node 22.22.2 的本地 100K、category-7、limit 20 测量中，�
 
 ## 发行与验收边界
 
-`7db17a12e1` 的 CLI CI 全矩阵、CLI Strict Sandbox 全矩阵、IDE 与 ARM64 门已通过，按子 npm 包 → CLI OIDC → IDE 顺序发行；公开 tarball、provenance、VSIX 与 JetBrains 准确版本均已回读。CLI CI 和 VS Code 宿主首次失败及同 SHA 官方重跑仍保留，见[0.166.88 发行证据](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/gap-2026-10-05/release-0.166.88/README.md)。后续源码已合并，但没有随上述公开包发布。
+`7db17a12e1` 的 CLI CI 全矩阵、CLI Strict Sandbox 全矩阵、IDE 与 ARM64 门已通过，按子 npm 包 → CLI OIDC → IDE 顺序发行；公开 tarball、provenance、VSIX 与 JetBrains 准确版本均已回读。CLI CI 和 VS Code 宿主首次失败及同 SHA 官方重跑仍保留，见[0.166.88 发行证据](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/gap-2026-10-05/release-0.166.88/README.md)。后续源码已合并，但没有随上述公开包发布。
 
 最新候选仍必须完成自身准确提交的完整 CLI CI、Strict Sandbox 和 IDE 门。旧发行或专项成功不转移为候选发布资格。本次工作只部署静态文档与官网。
 
-历史 unsigned native 六目标验证及后续 journal 诊断已在[实施证据](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli-ide/plans/cli-ide-gap-implementation-2026-10-05.md)分开记录；它们不等于准确候选提交的签名 native 发行。真实 PM 效果、完整成本、真人辅助技术验收和自动 active Skill 晋升仍保持 HOLD。
+历史 unsigned native 六目标验证及后续 journal 诊断已在[实施证据](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli-ide/plans/cli-ide-gap-implementation-2026-10-05.md)分开记录；它们不等于准确候选提交的签名 native 发行。真实 PM 效果、完整成本、真人辅助技术验收和自动 active Skill 晋升仍保持 HOLD。
 
 ## 后续源码：JetBrains CLI 发现与溯源
 

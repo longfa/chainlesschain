@@ -4,7 +4,7 @@
 
 ## 源码与发行身份
 
-配套版本为 CLI **0.166.141**、Open VSX **0.37.177**、JetBrains **0.4.194**。准确发行源为 [`df9295e33ad04aec0aa74cab4dd242766d5556a4`](https://github.com/chainlesschain/chainlesschain/commit/df9295e33ad04aec0aa74cab4dd242766d5556a4)，对应标签计划为 `v-npm-0-166-141`、`ide-vscode-v0.37.177`、`ide-jetbrains-v0.4.194`；实际标签来源须从发行回执验证。合入后的 `main@a60b9cdb35d9d598202930cb3317117b651948fd` 与发行源文件树一致。
+配套版本为 CLI **0.166.141**、Open VSX **0.37.177**、JetBrains **0.4.194**。准确发行源为 [`df9295e33ad04aec0aa74cab4dd242766d5556a4`](https://github.com/longfa/chainlesschain/commit/df9295e33ad04aec0aa74cab4dd242766d5556a4)，对应标签计划为 `v-npm-0-166-141`、`ide-vscode-v0.37.177`、`ide-jetbrains-v0.4.194`；实际标签来源须从发行回执验证。合入后的 `main@a60b9cdb35d9d598202930cb3317117b651948fd` 与发行源文件树一致。
 
 上一公开 `.140` 源码为 `e2a91bf54332ff3d252c40ecc25c5887e0f0430d`；上一版文档复核主线为 `d62866538c1988258b93998f9705c2cdd76ee105`。读取恢复和部分诊断代码已在后者出现，但不在 `.140` 不可变发行源中。本次按发行差异记录交付行为，避免把先前主线修复误称为先前 npm 包已包含。
 
@@ -80,13 +80,13 @@ Sol 原项目 `b2aa3aba082873570e85dce39b00754e5504ff37` 的历史成绩仍为 *
 
 版本、源码和配置不同，累计覆盖不能直接用于单变量模型排名。`.141` 文档与发行工作没有重复已测模型样本。候选回放、离线检查和工程修复不新增模型验收；正式计划 `NOT_RUN` 及 `NOT_PAID_READY / NOT_ADMITTED / HOLD` 保留。
 
-- [任务账本与失败分类](https://github.com/chainlesschain/chainlesschain/blob/df9295e33ad04aec0aa74cab4dd242766d5556a4/docs/research/cli/verify01-36-plus-9-task-list.md)
-- [火山原始修正轮](https://github.com/chainlesschain/chainlesschain/blob/df9295e33ad04aec0aa74cab4dd242766d5556a4/docs/research/cli/verify01-volcengine-140-full-20261103/internal-output-repair/final-54d0064cab/results.json)
-- [累计与历史限定](https://github.com/chainlesschain/chainlesschain/blob/df9295e33ad04aec0aa74cab4dd242766d5556a4/docs/research/cli/verify01-volcengine-140-full-20261103/internal-output-repair/cumulative-status.json)
-- [CLI/IDE 评测范围差异证据](https://github.com/chainlesschain/chainlesschain/blob/df9295e33ad04aec0aa74cab4dd242766d5556a4/docs/research/cli/verify01-volcengine-140-full-20261103/internal-output-repair/diagnostics-cli-ide-scope/proof.json)
-- [Sol 四项原始结果](https://github.com/chainlesschain/chainlesschain/blob/df9295e33ad04aec0aa74cab4dd242766d5556a4/docs/research/cli/verify01-openai-140-frozen-four-20261103/public-802c51a9f2/results.json)
-- [源码读取独立审计](https://github.com/chainlesschain/chainlesschain/blob/df9295e33ad04aec0aa74cab4dd242766d5556a4/docs/research/cli/verify01-openai-140-frozen-four-20261103/harness-audit-20261104/README.md)
-- [Sol 跨源码累计](https://github.com/chainlesschain/chainlesschain/blob/df9295e33ad04aec0aa74cab4dd242766d5556a4/docs/research/cli/verify01-volcengine-139-20261103/sol-comparison/cumulative-coverage.json)
+- [任务账本与失败分类](https://github.com/longfa/chainlesschain/blob/df9295e33ad04aec0aa74cab4dd242766d5556a4/docs/research/cli/verify01-36-plus-9-task-list.md)
+- [火山原始修正轮](https://github.com/longfa/chainlesschain/blob/df9295e33ad04aec0aa74cab4dd242766d5556a4/docs/research/cli/verify01-volcengine-140-full-20261103/internal-output-repair/final-54d0064cab/results.json)
+- [累计与历史限定](https://github.com/longfa/chainlesschain/blob/df9295e33ad04aec0aa74cab4dd242766d5556a4/docs/research/cli/verify01-volcengine-140-full-20261103/internal-output-repair/cumulative-status.json)
+- [CLI/IDE 评测范围差异证据](https://github.com/longfa/chainlesschain/blob/df9295e33ad04aec0aa74cab4dd242766d5556a4/docs/research/cli/verify01-volcengine-140-full-20261103/internal-output-repair/diagnostics-cli-ide-scope/proof.json)
+- [Sol 四项原始结果](https://github.com/longfa/chainlesschain/blob/df9295e33ad04aec0aa74cab4dd242766d5556a4/docs/research/cli/verify01-openai-140-frozen-four-20261103/public-802c51a9f2/results.json)
+- [源码读取独立审计](https://github.com/longfa/chainlesschain/blob/df9295e33ad04aec0aa74cab4dd242766d5556a4/docs/research/cli/verify01-openai-140-frozen-four-20261103/harness-audit-20261104/README.md)
+- [Sol 跨源码累计](https://github.com/longfa/chainlesschain/blob/df9295e33ad04aec0aa74cab4dd242766d5556a4/docs/research/cli/verify01-volcengine-139-20261103/sol-comparison/cumulative-coverage.json)
 
 ## 文档构建与服务器身份
 

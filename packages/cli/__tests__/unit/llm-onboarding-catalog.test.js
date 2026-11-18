@@ -28,7 +28,7 @@ describe("shared new-connection model recommendations", () => {
       "custom",
       "ollama",
     ]);
-    expect(LK_CHANNEL.protocols.openai.defaultModel).toBe("tt-6.1-sol");
+    expect(LK_CHANNEL.protocols.openai.defaultModel).toBe("gpt-6.1-sol");
   });
 
   it("keeps CLI and both IDEs synchronized with one normalized source digest", () => {

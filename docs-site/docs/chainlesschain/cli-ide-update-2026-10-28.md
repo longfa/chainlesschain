@@ -2,7 +2,7 @@
 
 ## 概述
 
-CLI **0.166.128**、Open VSX **0.37.166** 和 JetBrains **0.4.183** 已公开并完成归档回读；两个 IDE 均推荐 CLI `.128`。移动/PC 客户端 [**v5.0.3.143**](https://github.com/chainlesschain/chainlesschain/releases/tag/v5.0.3.143) 已公开，五平台构建、22 个公开资产与桌面更新元数据均已核验。各阶段状态以[公开发行回执](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release128-public/publication.json)为准。
+CLI **0.166.128**、Open VSX **0.37.166** 和 JetBrains **0.4.183** 已公开并完成归档回读；两个 IDE 均推荐 CLI `.128`。移动/PC 客户端 [**v5.0.3.143**](https://github.com/chainlesschain/chainlesschain/releases/tag/v5.0.3.143) 已公开，五平台构建、22 个公开资产与桌面更新元数据均已核验。各阶段状态以[公开发行回执](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release128-public/publication.json)为准。
 
 CLI 发行源为 `dfa158e36171e347a40e23356c2ed7bd04e0c061`；公开 npm 包与不可变 CI 制品逐字节一致，签名来源及十个直接子依赖版本已核验。配套 IDE 使用独立的固定发行提交，不把默认分支上的后续改动当作已发布代码。
 
@@ -102,7 +102,7 @@ MCP token 数字和 Memory 局部性能基线属于合成估算，不代表真�
 - `packages/cli/src/runtime/agent-core.js`：交付复查与运行预算。
 - `packages/cli/src/runtime/mcp-tool-search.js`：工具检索与可选紧凑目录。
 - `packages/cli/src/lib/context-memory-kernel/segmented-memory-port.js`：Memory 索引归并。
-- [公开发行回执](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release128-public/publication.json)：各渠道状态、准确源码和独立回读。
+- [公开发行回执](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release128-public/publication.json)：各渠道状态、准确源码和独立回读。
 
 ## 当前命令与模块参考
 
@@ -117,4 +117,4 @@ MCP token 数字和 Memory 局部性能基线属于合成估算，不代表真�
 - [输入与恢复边界](./agent-input-and-recovery)
 - [运行时与发行设计](/design/release-runtime-update-2026-10-28)
 - [上一轮升级说明（历史）](./cli-ide-update-2026-10-27)
-- [本轮发布进度](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli-ide/releases/cli-ide-release128-progress-2026-10-27.md)
+- [本轮发布进度](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli-ide/releases/cli-ide-release128-progress-2026-10-27.md)

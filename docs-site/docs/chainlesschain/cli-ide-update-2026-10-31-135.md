@@ -4,7 +4,7 @@
 
 CLI **0.166.135** 与 Open VSX **0.37.173** 已公开并完成正式制品核验；JetBrains **0.4.189** 已通过完整测试、构建与上传，仍待 Marketplace 审核/上架。两个新 IDE 的推荐版本均为 CLI **0.166.135**，但目前公开 JetBrains 仍是 **0.4.188**，其推荐标记为 CLI **0.166.133**。Kernel 保持 **0.1.11**。完整精确源码 CLI CI（76/76）和 Strict Sandbox（6/6）、OIDC 发行与独立回读已通过。
 
-CLI / JetBrains 来源为 `82aa6d703a8695721a7ccf0793a435853bc2bbf2`，Open VSX 来源为 `98db89940de30106f57ee73c063acf249d23bec0`；后者仅修改两个 VS Code README/版本文件，CLI、Web Panel、锁文件、SDK 和 Kernel 对象相同。 [发行回执](https://github.com/chainlesschain/chainlesschain/blob/feature/fix-openai-turn-termination/docs/research/cli/evidence/release135-public/publication.json)记录本次发行时的公开状态和待审上传。
+CLI / JetBrains 来源为 `82aa6d703a8695721a7ccf0793a435853bc2bbf2`，Open VSX 来源为 `98db89940de30106f57ee73c063acf249d23bec0`；后者仅修改两个 VS Code README/版本文件，CLI、Web Panel、锁文件、SDK 和 Kernel 对象相同。 [发行回执](https://github.com/longfa/chainlesschain/blob/feature/fix-openai-turn-termination/docs/research/cli/evidence/release135-public/publication.json)记录本次发行时的公开状态和待审上传。
 
 ## 核心特性
 
@@ -38,11 +38,11 @@ cc doctor
 
 ## 测试覆盖
 
-历史 OpenAI 实测为 **39/45**，不是本版新的 45 项通过率。此次补充错误场景回归并修复根因；旧任务、候选文件、原始失败和用量没有改写。详情见[根因分析](https://github.com/chainlesschain/chainlesschain/blob/feature/fix-openai-turn-termination/docs/research/cli/openai-turn-recovery-134.md)。
+历史 OpenAI 实测为 **39/45**，不是本版新的 45 项通过率。此次补充错误场景回归并修复根因；旧任务、候选文件、原始失败和用量没有改写。详情见[根因分析](https://github.com/longfa/chainlesschain/blob/feature/fix-openai-turn-termination/docs/research/cli/openai-turn-recovery-134.md)。
 
 CLI 0.166.134 的候选标签指向已通过完整测试的源码，但其提交包含 `[skip ci]`，没有触发正式发布。该版本未发布到 npm。0.166.135 使用新的、无跳过标记的发布提交并重新运行完整精确提交门禁；已推送标签的源码身份保持不变。
 
-VS Code 0.37.172 被现有 Marketplace overview 单测拦截，因为 README 首段混入发行说明，不再等于包描述。保留原测试和不可变标签，仅修复 README 结构与版本，顺延到 0.37.173；没有重复发布 CLI。用户随后允许使用可测试包，不等待 JetBrains 审核，并限定先重测上次失败的 6 项。本轮 **1/6** 通过（`verify-26`），其余 **5** 项仍未通过；跨版本累计 **40/45** 不是新版完整 45 项重跑。历史 **39/45** 不改写。[完整重测报告](https://github.com/chainlesschain/chainlesschain/blob/feature/fix-openai-turn-termination/docs/research/cli/verify01-openai-135/retest-six-99b93fc209/REPORT.md)保留全部独立验收和失败候选。
+VS Code 0.37.172 被现有 Marketplace overview 单测拦截，因为 README 首段混入发行说明，不再等于包描述。保留原测试和不可变标签，仅修复 README 结构与版本，顺延到 0.37.173；没有重复发布 CLI。用户随后允许使用可测试包，不等待 JetBrains 审核，并限定先重测上次失败的 6 项。本轮 **1/6** 通过（`verify-26`），其余 **5** 项仍未通过；跨版本累计 **40/45** 不是新版完整 45 项重跑。历史 **39/45** 不改写。[完整重测报告](https://github.com/longfa/chainlesschain/blob/feature/fix-openai-turn-termination/docs/research/cli/verify01-openai-135/retest-six-99b93fc209/REPORT.md)保留全部独立验收和失败候选。
 
 ## 安全考虑
 
@@ -58,4 +58,4 @@ VS Code 0.37.172 被现有 Marketplace overview 单测拦截，因为 README 首
 
 ## 相关文档
 
-参见[前序候选说明](./cli-ide-update-2026-10-31-134)、[CLI 0.166.133 升级说明](./cli-ide-update-2026-10-30-133)及[根因分析](https://github.com/chainlesschain/chainlesschain/blob/feature/fix-openai-turn-termination/docs/research/cli/openai-turn-recovery-134.md)。
+参见[前序候选说明](./cli-ide-update-2026-10-31-134)、[CLI 0.166.133 升级说明](./cli-ide-update-2026-10-30-133)及[根因分析](https://github.com/longfa/chainlesschain/blob/feature/fix-openai-turn-termination/docs/research/cli/openai-turn-recovery-134.md)。

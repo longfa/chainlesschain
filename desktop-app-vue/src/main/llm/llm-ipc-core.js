@@ -1055,7 +1055,7 @@ function registerCoreHandlers(ctx) {
       const account = await fetchLkAccount(
         {
           provider: config.provider,
-          baseUrl: /^https:\/\/api\.lk(?:888|666)\.ai$/.test(baseUrl)
+          baseUrl: /^https:\/\/api\.(?:vv666|lk666)\.ai$/.test(baseUrl)
             ? baseUrl + "/v1"
             : baseUrl,
           model: current.model,

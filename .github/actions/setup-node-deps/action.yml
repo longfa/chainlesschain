@@ -42,6 +42,11 @@ runs:
     - name: Install npm dependencies (3-attempt retry, transient ECONNRESET hardening)
       shell: bash
       working-directory: ${{ inputs.working-directory }}
+      env:
+        # Hosted runners do not provide CUDA and the package's default GPU
+        # bootstrap URL is not published for every release. Keep CI on the
+        # CPU runtime; GPU execution is not part of these release gates.
+        npm_config_onnxruntime_node_install_cuda: skip
       # v5.0.3.44 release.yml's build-linux failed in 52s on a single
       # ECONNRESET during `npm ci`. Same class of transient that motivated
       # test-automation-full.yml's retry (issue #7). Backoff 15s / 30s; on

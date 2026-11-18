@@ -539,6 +539,16 @@ export class ReadFileLoopGuard {
       ].filter((value) => typeof value === "string");
       const output = outputParts.length ? outputParts.join("\n") : null;
       const identity = hostToolOutputIdentity(result);
+      // A JSON-cloned preview has no host-owned identity. Treat a short
+      // untrusted preview as fresh evidence so it cannot preserve a previous
+      // duplicate batch count or borrow the original output fingerprint.
+      if (
+        output !== null &&
+        output.length < 8000 &&
+        !(identity?.chars >= 8000)
+      ) {
+        this.batch.advanced = true;
+      }
       if (
         output !== null &&
         (output.length >= 8000 || identity?.chars >= 8000)

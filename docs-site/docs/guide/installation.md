@@ -41,7 +41,7 @@ NSIS 进度条在文件批次切换时会停滞数十秒。判断真假卡死的
 
 ### 优化路线
 
-把安装时间砍到 5 分钟内需要重启用 `asar:true`。前期 `asar:true` + `asarUnpack` glob 方案（[issue #6](https://github.com/chainlesschain/chainlesschain/issues/6)，已关）实测被 electron-builder walker 的 nested-only 决策证伪；剩余可行路径是 post-pack asar surgery，暂未排期。
+把安装时间砍到 5 分钟内需要重启用 `asar:true`。前期 `asar:true` + `asarUnpack` glob 方案（[issue #6](https://github.com/longfa/chainlesschain/issues/6)，已关）实测被 electron-builder walker 的 nested-only 决策证伪；剩余可行路径是 post-pack asar surgery，暂未排期。
 
 ---
 
@@ -112,7 +112,7 @@ NSIS 进度条在文件批次切换时会停滞数十秒。判断真假卡死的
 
 ### 改回"X 即退出"的旧行为
 
-目前没有 UI 开关。如果你强烈希望 X 直接退出，请[反馈](https://github.com/chainlesschain/chainlesschain/issues/new)。后续可能加用户偏好开关。
+目前没有 UI 开关。如果你强烈希望 X 直接退出，请[反馈](https://github.com/longfa/chainlesschain/issues/new)。后续可能加用户偏好开关。
 
 ---
 
@@ -213,7 +213,7 @@ C:\Program Files\ChainlessChain\（散文件，asar:false）
 
 ### 6. 技术架构
 
-Electron 39.2.6 + NSIS 安装器 + better-sqlite3（fallback sql.js）。当前 `asar:false` 散文件部署是安装慢的结构性原因；提速路径为 post-pack asar surgery（[issue #6](https://github.com/chainlesschain/chainlesschain/issues/6) 已证伪 electron-builder walker glob 方案）。
+Electron 39.2.6 + NSIS 安装器 + better-sqlite3（fallback sql.js）。当前 `asar:false` 散文件部署是安装慢的结构性原因；提速路径为 post-pack asar surgery（[issue #6](https://github.com/longfa/chainlesschain/issues/6) 已证伪 electron-builder walker glob 方案）。
 
 ### 7. 系统特点
 

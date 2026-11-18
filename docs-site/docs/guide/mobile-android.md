@@ -209,7 +209,7 @@ ApprovalUI 4 类审批：
 
 ### APK 安装步骤
 
-1. 手机浏览器打开 [release 页面](https://github.com/chainlesschain/chainlesschain/releases/latest)
+1. 手机浏览器打开 [release 页面](https://github.com/longfa/chainlesschain/releases/latest)
 2. 下载对应 APK
 3. 系统提示"未知来源应用"——开启对应权限（设置 → 应用 → 你的浏览器 → 允许安装应用）
 4. 点击 APK 完成安装
@@ -868,7 +868,7 @@ cc ui --port 9001
 | `v5.0.3.53`          | 2026-05-14 | Plan A.1 — 4 跳信令砍到 1 跳 DC 直连；RTT p50 30-80ms              |
 | `v5.0.3.54`          | 2026-05-14 | 远程终端真机收口 — 6 root cause bug 一次扫净；地铁里能跑 cc/claude |
 
-完整 changelog：[CHANGELOG.md](https://github.com/chainlesschain/chainlesschain/blob/main/CHANGELOG.md)。
+完整 changelog：[CHANGELOG.md](https://github.com/longfa/chainlesschain/blob/main/CHANGELOG.md)。
 
 ## 相关文档
 
@@ -881,22 +881,22 @@ cc ui --port 9001
 
 ### 设计文档（开发者）
 
-- [Android 重新定位 v0.8（主文档）](https://github.com/chainlesschain/chainlesschain/blob/main/docs/design/Android_重新定位_设计文档.md) — L1/L2/L3 三层模型 + M1-M7 milestones + ADR 8 项
-- [Android Remote Terminal Plan A](https://github.com/chainlesschain/chainlesschain/blob/main/docs/design/Android_Remote_Terminal_Plan_A.md) — 远程终端架构
-- [Android Remote Terminal Plan A.1](https://github.com/chainlesschain/chainlesschain/blob/main/docs/design/Android_Remote_Terminal_Plan_A1.md) — DC 直连升级
-- [Android Remote Operate Plan A+B](https://github.com/chainlesschain/chainlesschain/blob/main/docs/design/Android_Remote_Operate_Plan_AB.md) — WebRTC + TURN
-- [Android Remote Operate Plan C](https://github.com/chainlesschain/chainlesschain/blob/main/docs/design/Android_Remote_Operate_Plan_C.md) — 信令转发
-- [Android W3 Pairing E2E](https://github.com/chainlesschain/chainlesschain/blob/main/docs/design/Android_W3_Pairing_E2E.md) — Flow B 扫码配对
-- [Android Social Wiring 2026-05](https://github.com/chainlesschain/chainlesschain/blob/main/docs/design/Android_Social_Wiring_2026-05.md) — 社交产线化
-- [Android REMOTE commands inventory](https://github.com/chainlesschain/chainlesschain/blob/main/docs/design/Android_REMOTE_commands_inventory.md) — 23 command 清单
-- [Phase 3d 移动端同步](https://github.com/chainlesschain/chainlesschain/blob/main/docs/design/phase3d-mobile-sync.md)
+- [Android 重新定位 v0.8（主文档）](https://github.com/longfa/chainlesschain/blob/main/docs/design/Android_重新定位_设计文档.md) — L1/L2/L3 三层模型 + M1-M7 milestones + ADR 8 项
+- [Android Remote Terminal Plan A](https://github.com/longfa/chainlesschain/blob/main/docs/design/Android_Remote_Terminal_Plan_A.md) — 远程终端架构
+- [Android Remote Terminal Plan A.1](https://github.com/longfa/chainlesschain/blob/main/docs/design/Android_Remote_Terminal_Plan_A1.md) — DC 直连升级
+- [Android Remote Operate Plan A+B](https://github.com/longfa/chainlesschain/blob/main/docs/design/Android_Remote_Operate_Plan_AB.md) — WebRTC + TURN
+- [Android Remote Operate Plan C](https://github.com/longfa/chainlesschain/blob/main/docs/design/Android_Remote_Operate_Plan_C.md) — 信令转发
+- [Android W3 Pairing E2E](https://github.com/longfa/chainlesschain/blob/main/docs/design/Android_W3_Pairing_E2E.md) — Flow B 扫码配对
+- [Android Social Wiring 2026-05](https://github.com/longfa/chainlesschain/blob/main/docs/design/Android_Social_Wiring_2026-05.md) — 社交产线化
+- [Android REMOTE commands inventory](https://github.com/longfa/chainlesschain/blob/main/docs/design/Android_REMOTE_commands_inventory.md) — 23 command 清单
+- [Phase 3d 移动端同步](https://github.com/longfa/chainlesschain/blob/main/docs/design/phase3d-mobile-sync.md)
 
 ### 真机验证 / 性能 / GA
 
-- [Android M3 Real Device Test Plan](https://github.com/chainlesschain/chainlesschain/blob/main/docs/design/Android_M3_Real_Device_Test_Plan.md)
-- [Android M4 D2 E2E](https://github.com/chainlesschain/chainlesschain/blob/main/docs/design/Android_M4_D2_E2E.md)
-- [Android M6 Performance Validation](https://github.com/chainlesschain/chainlesschain/blob/main/docs/design/Android_M6_Performance_Validation.md)
-- [v1.0_GA_checklist](https://github.com/chainlesschain/chainlesschain/blob/main/docs/releases/v1.0_GA_checklist.md) — 剩 5 项用户出场清单
+- [Android M3 Real Device Test Plan](https://github.com/longfa/chainlesschain/blob/main/docs/design/Android_M3_Real_Device_Test_Plan.md)
+- [Android M4 D2 E2E](https://github.com/longfa/chainlesschain/blob/main/docs/design/Android_M4_D2_E2E.md)
+- [Android M6 Performance Validation](https://github.com/longfa/chainlesschain/blob/main/docs/design/Android_M6_Performance_Validation.md)
+- [v1.0_GA_checklist](https://github.com/longfa/chainlesschain/blob/main/docs/releases/v1.0_GA_checklist.md) — 剩 5 项用户出场清单
 
 ---
 

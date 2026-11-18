@@ -76,11 +76,13 @@ describe("LK Web configuration", () => {
         const result = lkConnection(model.protocol, address, model.id);
         expect(result.model).toBe(model.id);
         expect(result.baseUrl).toBe(
-          `https://api.lk${address === "primary" ? "888" : "666"}.ai/${model.protocol === "gemini" ? "v1beta" : "v1"}`,
+          `https://api.${address === "primary" ? "vv666" : "lk666"}.ai/${model.protocol === "gemini" ? "v1beta" : "v1"}`,
         );
       }
     }
-    expect(() => lkConnection("openai", "primary", "fb-5-2")).toThrow("协议");
+    expect(() => lkConnection("openai", "primary", "claude-opus-5-5")).toThrow(
+      "协议",
+    );
     expect(() =>
       lkConnection(
         "openai",
@@ -117,12 +119,16 @@ describe("LK Web configuration", () => {
     form.handleChannelChange();
     expect(form.configForm).toMatchObject({
       provider: "custom",
-      model: "tt-6-luna",
+      model: "gpt-6.1-sol",
       apiKey: "",
     });
     form.lkProtocol.value = "anthropic";
     form.applyLk();
-    expect(form.lkModelOptions.value).toHaveLength(14);
+    expect(form.lkModelOptions.value).toHaveLength(
+      lkModels.filter(
+        (entry) => entry.type === "chat" && entry.protocol === "anthropic",
+      ).length,
+    );
     form.configForm.model = "team/alias";
     form.configForm.apiKey = "typed-channel-key";
     form.lkAddress.value = "backup";
@@ -146,8 +152,8 @@ describe("LK Web configuration", () => {
       },
       {
         provider: "custom",
-        model: "tt-6-luna",
-        baseUrl: "https://api.lk888.ai/v1",
+        model: "gpt-6.1-sol",
+        baseUrl: "https://api.vv666.ai/v1",
         hasKey: true,
         channel: "lk",
       },
@@ -209,8 +215,8 @@ describe("LK Web configuration", () => {
         type: "llm-configure",
         connection: {
           provider: "custom",
-          model: "tt-6-luna",
-          baseUrl: "https://api.lk888.ai/v1",
+          model: "gpt-6.1-sol",
+          baseUrl: "https://api.vv666.ai/v1",
           visionModel: "",
           apiKey: "fixture-channel-key",
           allowHttp: false,
@@ -257,8 +263,8 @@ describe("LK Web configuration", () => {
   it("preserves a key only for the same saved destination and tests only saved connections", async () => {
     const { form, providers } = setup({
       provider: "custom",
-      model: "tt-6-luna",
-      baseUrl: "https://api.lk888.ai/v1",
+      model: "gpt-6.1-sol",
+      baseUrl: "https://api.vv666.ai/v1",
     });
     await form.loadConfig();
     form.configForm.model = "team/future";

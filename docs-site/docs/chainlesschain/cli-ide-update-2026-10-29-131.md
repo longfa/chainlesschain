@@ -4,7 +4,7 @@
 
 CLI **0.166.131**、Context/Memory Kernel **0.1.11**、Open VSX **0.37.169** 和 JetBrains **0.4.186** 均已公开并完成制品核验，两个 IDE 都推荐 CLI `.131`。本次准确发行源码为 `c9d0bab231850697df38f2d476c2dd974cbcb6c0`；安装顺序是子 npm 包、CLI、IDE。PC / 移动端仍使用独立发行的 **v5.0.3.143**，不能据本次 CLI 发行推断客户端已经包含全部改动。
 
-Microsoft Marketplace 按本轮安排暂缓。官方 VS Code 用户可以安装下方版本化 VSIX。[完整公开回执](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release131-public/publication.json)记录各渠道、准确来源、签名和官方候选比对；[.130 升级页](./cli-ide-update-2026-10-29-130)保留当时的历史范围。
+Microsoft Marketplace 按本轮安排暂缓。官方 VS Code 用户可以安装下方版本化 VSIX。[完整公开回执](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release131-public/publication.json)记录各渠道、准确来源、签名和官方候选比对；[.130 升级页](./cli-ide-update-2026-10-29-130)保留当时的历史范围。
 
 ## 核心特性
 
@@ -59,7 +59,7 @@ cc agent -p "完成当前项目中约定的修改" --goal-condition "verify:./go
 - `--review-changes` 继续使用原任务剩余回合、物理请求、输出、费用和取消预算，不产生额外免费额度。
 - Skill 自进化保持显式开关，普通升级不会自动启用；详见[自进化配置](./self-evolution-configuration)。
 
-checker 的输入清单、回执格式和恢复步骤见 [Managed Agents](https://github.com/chainlesschain/chainlesschain/blob/main/docs/cli/managed-agents.md)。当前固定 native 生成流程没有传入 `--goal-condition`，因此不会自动使用新的 `verify:` checker。
+checker 的输入清单、回执格式和恢复步骤见 [Managed Agents](https://github.com/longfa/chainlesschain/blob/main/docs/cli/managed-agents.md)。当前固定 native 生成流程没有传入 `--goal-condition`，因此不会自动使用新的 `verify:` checker。
 
 ## 性能指标
 
@@ -71,7 +71,7 @@ checker 的输入清单、回执格式和恢复步骤见 [Managed Agents](https:
 | 派生索引重建 / 损坏恢复               | 三种规模、两场景各 100 次，共 **600** 次结果摘要匹配参考；100K p95 **23522.737 / 21330.307ms** | 原测量从 98c4 开始，相关 16 个源码与 c9d0 字节一致；不是在新 SHA 重跑完整依赖闭包 |
 | 混合读写补测                          | 1K 的 100 轮完成；10K 最后记录 90 轮后，worker 触发原 **120 秒**上限                           | 进程退出 1，100K 未开始，没有完整 300 轮通过记录，未放宽上限                      |
 
-恢复基准只主动移除或损坏派生索引，没有逐样本独立哈希全部 authority 原始字节。测量方法、原始结果和失败均保留在[查询 / Stop 记录](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli-ide/implementation/cli-ide-memory-slo131-progress-2026-10-29.md)及[恢复与混合补测记录](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli-ide/implementation/cli-ide-memory-recovery131-progress-2026-10-29.md)。
+恢复基准只主动移除或损坏派生索引，没有逐样本独立哈希全部 authority 原始字节。测量方法、原始结果和失败均保留在[查询 / Stop 记录](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli-ide/implementation/cli-ide-memory-slo131-progress-2026-10-29.md)及[恢复与混合补测记录](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli-ide/implementation/cli-ide-memory-recovery131-progress-2026-10-29.md)。
 
 ## 测试覆盖
 
@@ -84,7 +84,7 @@ checker 的输入清单、回执格式和恢复步骤见 [Managed Agents](https:
 | Windows 安装补充 | 独立临时目录安装公开 CLI，禁用生命周期脚本，核对归档完整性、Kernel `.11`、真实二进制 `--version` 与 `--help` 通过                                          |
 | 真实任务         | 跨版本累计 **34/45**，普通 **27/36**、首次入口 **7/9**，剩余 **11** 项；本版新计划已准备，尚未派发，不是 `.131` 单轮成功率                                 |
 
-本机安装补充不等于完整正常 postinstall、IDE 启动或模型任务验收。源码、公开包和发行门禁证据分别保存在[公开回执](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release131-public/publication.json)。正式付费 / native 生产准入与自动晋升状态继续为 **NOT_PAID_READY / NOT_ADMITTED / HOLD**。
+本机安装补充不等于完整正常 postinstall、IDE 启动或模型任务验收。源码、公开包和发行门禁证据分别保存在[公开回执](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release131-public/publication.json)。正式付费 / native 生产准入与自动晋升状态继续为 **NOT_PAID_READY / NOT_ADMITTED / HOLD**。
 
 ## 安全考虑
 
@@ -105,9 +105,9 @@ checker 的输入清单、回执格式和恢复步骤见 [Managed Agents](https:
 
 ## 关键文件
 
-- [完整公开发行回执](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli/evidence/release131-public/publication.json)
-- [CLI README](https://github.com/chainlesschain/chainlesschain/blob/main/packages/cli/README.md)
-- [当前任务进度表](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/cli-ide/plans/cli-ide-codex-claude-gap-review-2026-10-27.md)
+- [完整公开发行回执](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli/evidence/release131-public/publication.json)
+- [CLI README](https://github.com/longfa/chainlesschain/blob/main/packages/cli/README.md)
+- [当前任务进度表](https://github.com/longfa/chainlesschain/blob/main/docs/research/cli-ide/plans/cli-ide-codex-claude-gap-review-2026-10-27.md)
 - [本版运行时设计](/design/release-runtime-update-2026-10-29-131)
 
 ## 相关文档

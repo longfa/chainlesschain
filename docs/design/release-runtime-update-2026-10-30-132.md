@@ -2,7 +2,7 @@
 
 ## 公开制品与来源
 
-CLI **0.166.132**、Kernel **0.1.11**、Open VSX **0.37.170**、JetBrains **0.4.187** 的公开状态与配对已经核对。发行源码为 `772fcdbda85bcf91df95bfced5b476dcf4c74614`；两个 IDE 推荐 CLI `.132`。PC / mobile 保持独立 **v5.0.3.143**，Microsoft Marketplace 暂缓。准确源码门禁、OIDC 与制品回读见[公开发行回执](https://github.com/chainlesschain/chainlesschain/blob/0d57ebfea919ae941a36a1f11a9ee10964722120/docs/research/cli/evidence/release132-public/publication.json)。不从 CLI 更新推断客户端新版本或功能验收。
+CLI **0.166.132**、Kernel **0.1.11**、Open VSX **0.37.170**、JetBrains **0.4.187** 的公开状态与配对已经核对。发行源码为 `772fcdbda85bcf91df95bfced5b476dcf4c74614`；两个 IDE 推荐 CLI `.132`。PC / mobile 保持独立 **v5.0.3.143**，Microsoft Marketplace 暂缓。准确源码门禁、OIDC 与制品回读见[公开发行回执](https://github.com/longfa/chainlesschain/blob/0d57ebfea919ae941a36a1f11a9ee10964722120/docs/research/cli/evidence/release132-public/publication.json)。不从 CLI 更新推断客户端新版本或功能验收。
 
 ## 响应终态完整性
 
@@ -26,7 +26,7 @@ OpenAI Chat JSON 与 SSE 路径保留 provider 的终止原因。`length` 截断
 
 ## 关联记录
 
-- [本批修复与验证来源](https://github.com/chainlesschain/chainlesschain/blob/0d57ebfea919ae941a36a1f11a9ee10964722120/docs/research/cli-ide-release132-progress-2026-10-30.md)
+- [本批修复与验证来源](https://github.com/longfa/chainlesschain/blob/0d57ebfea919ae941a36a1f11a9ee10964722120/docs/research/cli-ide-release132-progress-2026-10-30.md)
 - [用户升级说明](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-10-30-132.html)
 - [.131 历史设计](./release-runtime-update-2026-10-29-131.md)
 
