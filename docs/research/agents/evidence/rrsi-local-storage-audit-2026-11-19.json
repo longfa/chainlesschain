@@ -1,0 +1,125 @@
+{
+  "schema": "chainlesschain.rrsi-local-storage-audit-controls/v1",
+  "observedDate": "2026-11-19",
+  "baseCommit": "e7676a12879b625de52d95d0702c8b5a0fc15635",
+  "environment": {
+    "platform": "win32",
+    "node": "22.20.0",
+    "vitest": "4.1.10"
+  },
+  "sourceDigests": {
+    "packages/cli/src/lib/evolution/evolution-ledger-storage-audit.js": "sha256:5d336ef8802e0f53933145dac0fcb64a7cd29269c3116d635190c92e866e316d",
+    "packages/cli/src/lib/evolution/rrsi-observed-text-index.js": "sha256:70895de510812e1fe1430a700df6ff136ec538cac7f47212f0dbc4d57d917038",
+    "packages/cli/src/lib/evolution/evolution-deployment-loader.js": "sha256:4598054cb5c4bedcdc7794c34a1293b47a6e604a5605c1dd556661c42de2e9de",
+    "packages/cli/__tests__/unit/evolution-deployment-loader.test.js": "sha256:b569f0f53ed42e542d984170a57d44ee0419cea36553b2086db6a43dcf6973af",
+    "packages/cli/__tests__/integration/evolution-ledger-storage-audit.test.js": "sha256:6dd2fed117a901092eeb568a1afadcdfda4c88db3fb7d478fbe49edd969b7747",
+    "packages/cli/__tests__/fixtures/evolution-storage-audit-crash.mjs": "sha256:a6b8ff0b9756bb5c0626e06745238a8309c480b7af4b998264071cd945717adb"
+  },
+  "regression": {
+    "files": 12,
+    "passed": 224,
+    "failed": 0,
+    "skipped": 0,
+    "newTests": 15,
+    "existingTests": 209,
+    "rawLocalReport": ".tmp/evolution-storage-audit-20261119-final.json",
+    "rawLocalReportSha256": "0fa3abaaaecbf06e89af34143ea98ca5a825c7ad82ab8231c7f49eda3191cf60",
+    "suites": [
+      {
+        "path": "__tests__/integration/evolution-ledger-storage-audit.test.js",
+        "status": "passed",
+        "tests": 15
+      },
+      {
+        "path": "__tests__/integration/evolution-local-artifact-inventory.test.js",
+        "status": "passed",
+        "tests": 27
+      },
+      {
+        "path": "__tests__/integration/evolution-local-retention-inventory.test.js",
+        "status": "passed",
+        "tests": 14
+      },
+      {
+        "path": "__tests__/integration/evolution-read-only-source-history.test.js",
+        "status": "passed",
+        "tests": 14
+      },
+      {
+        "path": "__tests__/integration/rrsi-observed-artifact-inventory.test.js",
+        "status": "passed",
+        "tests": 14
+      },
+      {
+        "path": "__tests__/integration/rrsi-observed-text-controls.test.js",
+        "status": "passed",
+        "tests": 8
+      },
+      {
+        "path": "__tests__/integration/rrsi-tenant-index-anchor-history-process.test.js",
+        "status": "passed",
+        "tests": 3
+      },
+      {
+        "path": "__tests__/unit/evolution-deployment-loader.test.js",
+        "status": "passed",
+        "tests": 64
+      },
+      {
+        "path": "__tests__/unit/evolution-ledger-file-backend.test.js",
+        "status": "passed",
+        "tests": 2
+      },
+      {
+        "path": "__tests__/unit/evolution-ledger-v2-journal.test.js",
+        "status": "passed",
+        "tests": 14
+      },
+      {
+        "path": "__tests__/unit/rrsi-observed-text-index.test.js",
+        "status": "passed",
+        "tests": 16
+      },
+      {
+        "path": "__tests__/unit/rrsi-tenant-index-anchor-history.test.js",
+        "status": "passed",
+        "tests": 33
+      }
+    ]
+  },
+  "testWorkbenchJourney": {
+    "mode": "local-test",
+    "candidateCount": 3,
+    "checks": [
+      "signed-startup",
+      "ide-list",
+      "ide-evidence",
+      "ide-compare",
+      "ide-approve",
+      "ide-rollback",
+      "restart-persistence",
+      "test-mode-label"
+    ],
+    "preseededCandidates": true,
+    "syntheticEvalAndIdentity": true,
+    "realIdeAdapterAndStdioCli": true,
+    "realProviderGenerationVerified": false,
+    "businessQualityVerified": false
+  },
+  "diagnostics": [
+    "Initial storage-only run: 14 passed, 1 failed. A thrown writer fault was recovered by the public journal catch before audit. The final test interrupts a real child process after segment publication, before JS catch/finally.",
+    "Initial TEST Workbench startup could not load AJV 8 from the shared incomplete dependency tree. Restored lock-exact ajv 8.20.0, ajv-formats 3.0.1 and json-schema-traverse 1.0.0 only in the isolated worktree, verifying each tarball against lock SHA-512. Dependency declarations and lockfile unchanged."
+  ],
+  "limits": {
+    "scope": "Sequential original local v2 source/witness/retention/ArtifactStore component audit",
+    "independentInstallationVerified": false,
+    "crossProcessRollbackProtectionVerified": false,
+    "atomicSnapshotVerified": false,
+    "fullPhysicalStorageGraphVerified": false,
+    "generationProvenanceVerified": false,
+    "realAbcExperimentsRun": false,
+    "remoteOsMatrixVerified": false,
+    "productionAdmissionVerified": false,
+    "automaticPromotion": "HOLD"
+  }
+}

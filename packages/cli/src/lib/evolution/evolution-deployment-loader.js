@@ -225,6 +225,7 @@ async function loadBuiltInFactories(commandName) {
       ledgerBackend,
       artifactStore,
       manifest,
+      storageAudit,
     ] = await Promise.all([
       import("./skill-runtime-revalidation.js"),
       import("./skill-runtime-revalidation-ledger-adapter.js"),
@@ -234,6 +235,7 @@ async function loadBuiltInFactories(commandName) {
       import("./evolution-ledger-file-backend.js"),
       import("../artifact-store.js"),
       import("./skill-execution-manifest.js"),
+      import("./evolution-ledger-storage-audit.js"),
     ]);
     Object.assign(factories, {
       createSkillRuntimeRevalidationAuthority:
@@ -247,6 +249,8 @@ async function loadBuiltInFactories(commandName) {
         new artifactPorts.EvolutionArtifactPorts(options),
       createEvolutionLedgerFileBackend:
         ledgerBackend.createEvolutionLedgerFileBackend,
+      captureEvolutionLedgerStorageAudit:
+        storageAudit.captureEvolutionLedgerStorageAudit,
       createArtifactStore: (options) =>
         new artifactStore.ArtifactStore(options),
       buildSkillRuntimeManifest: manifest.buildSkillRuntimeManifest,
@@ -623,9 +627,7 @@ async function loadBuiltInFactories(commandName) {
       import("./evolution-eval-process-supervisor.js"),
       import("./governed-skill-synthesis-attestor-trust-approval-client.js"),
       import("./governed-skill-synthesis-attestor-trust-operations-client.js"),
-      import(
-        "./governed-skill-synthesis-attestor-trust-operations-cli-host.js"
-      ),
+      import("./governed-skill-synthesis-attestor-trust-operations-cli-host.js"),
     ]);
     factories.createEvolutionWorkbenchCliHost = createEvolutionWorkbenchCliHost;
     factories.createEvolutionWorkbenchReviewRuntime =
@@ -1037,16 +1039,14 @@ export async function loadEvolutionDeploymentCommandDependencies(
   // Unsupported commands (including read-only session show) need no deployment
   // configuration. Loading it eagerly also loads secret-store and the full
   // process broker/platform sandbox graph before this early return.
-  const { readEvolutionEnabled, resolveEvolutionEnabled } = await import(
-    "./evolution-enabled.js"
-  );
+  const { readEvolutionEnabled, resolveEvolutionEnabled } =
+    await import("./evolution-enabled.js");
   const localModelDependencies = () =>
     dependencies(
       {
         evolutionCompositionFactory: async (context) => {
-          const { initializeDefaultLocalUiEvolutionDeployment } = await import(
-            "./local-ui-evolution-deployment.js"
-          );
+          const { initializeDefaultLocalUiEvolutionDeployment } =
+            await import("./local-ui-evolution-deployment.js");
           await initializeDefaultLocalUiEvolutionDeployment({ env, cwd });
           const admitted = await loadEvolutionDeploymentCommandDependencies(
             commandName,
@@ -1080,9 +1080,8 @@ export async function loadEvolutionDeploymentCommandDependencies(
   )
     return null;
   if (choice === true && currentProfile.profile?.enabled === false) {
-    const { setEvolutionDeploymentProfileEnabled } = await import(
-      "./evolution-deployment-profile.js"
-    );
+    const { setEvolutionDeploymentProfileEnabled } =
+      await import("./evolution-deployment-profile.js");
     await setEvolutionDeploymentProfileEnabled(true, { env, cwd });
   }
   if (
@@ -1091,9 +1090,8 @@ export async function loadEvolutionDeploymentCommandDependencies(
     !descriptorPath &&
     !trustRootPath
   ) {
-    const { initializeDefaultLocalUiEvolutionDeployment } = await import(
-      "./local-ui-evolution-deployment.js"
-    );
+    const { initializeDefaultLocalUiEvolutionDeployment } =
+      await import("./local-ui-evolution-deployment.js");
     await initializeDefaultLocalUiEvolutionDeployment({ env, cwd });
   }
   let fromSavedProfile = false;
@@ -1221,9 +1219,8 @@ export async function loadEvolutionDeploymentCommandDependencies(
   const builtIn = await loadBuiltInFactories(commandName);
   let localFactories = null;
   if (localProfile) {
-    const { createLocalUiEvolutionComposition } = await import(
-      "./local-ui-evolution-runtime.js"
-    );
+    const { createLocalUiEvolutionComposition } =
+      await import("./local-ui-evolution-runtime.js");
     localFactories = {
       createLocalUiEvolutionComposition: (options = {}) =>
         createLocalUiEvolutionComposition({

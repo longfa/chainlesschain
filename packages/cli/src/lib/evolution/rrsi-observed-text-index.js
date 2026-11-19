@@ -1,6 +1,7 @@
 /** Retained observations and prohibitions, never proof of causal generation. */
 import { createHash } from "node:crypto";
 import { isProxy } from "node:util/types";
+import { captureEvolutionLedgerStorageAudit } from "./evolution-ledger-storage-audit.js";
 import {
   captureEvolutionLedgerV2JournalManifestDirectoryBoundaries,
   captureEvolutionLedgerV2JournalWitnessDirectoryBoundaries,
@@ -1201,6 +1202,14 @@ export function createRrsiObservedTextIndex(input) {
             },
           });
         }),
+      captureStorageAudit: () =>
+        guarded(() =>
+          captureEvolutionLedgerStorageAudit({
+            backend,
+            artifactPorts: options.artifactPorts,
+            ledgerArtifactResolver: options.ledgerArtifactResolver,
+          }),
+        ),
     }),
   );
   return index;
@@ -1217,4 +1226,11 @@ export function captureRrsiObservedTextArtifactInventory(value) {
   if (arguments.length !== 1 || !INDEXES.has(value))
     throw new TypeError("one original observed text index is required");
   return INDEXES.get(value).captureArtifactInventory();
+}
+
+/** Explicit full local component audit; ordinary text reads stay unchanged. */
+export function captureRrsiObservedTextStorageAudit(value) {
+  if (arguments.length !== 1 || !INDEXES.has(value))
+    throw new TypeError("one original observed text index is required");
+  return INDEXES.get(value).captureStorageAudit();
 }
