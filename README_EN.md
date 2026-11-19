@@ -1,3 +1,7 @@
+## CLI 0.166.157 governed evolution audit candidate (2026-11-19)
+
+This candidate adds a read-only governed evolution storage audit that binds the original source/v2 journal, witnesses, manifest chain, retained segments and complete ArtifactStore inventory to one head. Copied objects, missing artifacts, changed authorities, interrupted WAL state and incomplete physical capabilities remain HOLD. CLI **0.166.157** is not public until the exact commit passes CLI CI, Strict Sandbox, OIDC publication and registry readback. Existing Open VSX **0.37.192** and JetBrains **0.4.207** are not republished by this CLI-only change.
+
 # ChainlessChain - Personal Mobile AI Management System Based on USB Key and SIMKey
 
 ## Documentation and website snapshot (2026-11-19)

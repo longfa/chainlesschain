@@ -1,3 +1,7 @@
+## 2026-11-19 CLI 0.166.157 自进化存储审计候选
+
+新增受治理自进化本地存储审计：把原始 source/v2 日志、见证、manifest、保留分段和完整 ArtifactStore 清单绑定到同一 head，复制对象、缺失产物、篡改、WAL 中断和不完整物理能力均保持 HOLD。CLI **0.166.157** 尚未公开，发布前必须通过准确提交的 CLI CI、Strict Sandbox、OIDC 和公共包回读；Open VSX **0.37.192** 与 JetBrains **0.4.207** 暂不重新发布。
+
 # ChainlessChain - 基于U盾和SIMKey的个人移动AI管理系统
 
 ## 2026-11-19 文档与网站同步
