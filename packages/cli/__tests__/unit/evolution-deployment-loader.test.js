@@ -126,6 +126,7 @@ describe("signed evolution deployment loader", () => {
         "createEvolutionLedgerPorts",
         "createEvolutionArtifactPorts",
         "createEvolutionLedgerFileBackend",
+        "captureEvolutionLedgerStorageAudit",
         "createArtifactStore",
         "buildSkillRuntimeManifest",
         "buildSkillDependencyLock",

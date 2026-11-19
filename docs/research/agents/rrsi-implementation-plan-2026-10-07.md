@@ -377,6 +377,8 @@ PM 试点通过后，增加 CLI 的缺陷定位、跨文件修改、取消恢复
 
 第 47 节记录首轮正式发行门禁：候选 .151 的 Strict Sandbox 通过，但 Ubuntu POSIX 权限测试误把内部 cause 当作外层错误匹配，CLI CI 未通过，发布已取消且保留不可变 .151 标签。修复候选 .152 同时验证外层拒绝码、真实权限原因、原权限保持和不执行 chmod/签名，生产门禁不变；重新运行新准确提交的完整三系统检查与 OIDC/公开回读。公开 CLI 仍为 .150，不将本地平台跳过或旧提交成功结果视为新候选的发行资格，生产自动晋升 HOLD 保持。
 
+第 48 节（2026-11-19）新增原始本地存储组件的统一只读审计：原 backend/resolver/ArtifactPorts 的对象关系、source/v2 全事件一致性、retention 全目录和 ArtifactStore 全索引在同一原组合下核验，摘要绑定共同 manifest head 与原目录能力；重新核验不接受调用者选路径或裁剪清单。原 observed index 提供显式宿主入口，普通读写及持久格式保持。该顺序组件审计不等于全局原子存储图、独立安装、防回滚 pin 或业务准入；这些边界仍为 false/HOLD，下一步继续接独立管理状态与实际业务入口。当前公开版本以 2026-11-19 发行文档为准，以上 .150/.151/.152 记录均为历史时点。
+
 父版本接线已增加真正 Skill Registry/预期 Ledger 的回读绑定及 PM broad 的 off/shadow 初步组装，并将 Registry transaction ports、实际 History、原 ArtifactPorts/resolver 与真正 v1/v2 backend 关联。预占和实际 host 调用前重读当前父版本，父版本失效仍允许既有历史对账。它不认证生产 Ledger 权威、永久来源约束或锚点稳定性，不替代原 CAS；持久 store identity、writer floor、来源 cutover、完整生产准入、enforced 和晋级门仍待实施，参与写者的维护排他过渡层已接入实际写边界，首次旧部署排空仍需独立认证；详见进度第 9、19、20 节。
 
 新存储已新增前置 v2 store-policy 日志与 fresh pair 创建，按 prepared→markers-installed→committed 认证随机目录、配对标记与 writer floor；真正的 component binding 已接入当前 Registry 构造，保留 namespace 及其物理路径别名不允许无绑定的 v1 初始化，见进度第 21、22 节。第 23 节新增独立 runtime attachment，以八条原 Ledger 事件认证六个空运行目录；恢复仅续建完整登记前缀之后的缺失后缀，未登记残留、已登记目录丢失或替换均 HOLD。显式绑定后 Registry 仍为空只读模式，构造不创建目录、不恢复事务、不清理残留，业务写入和迁移保持 HOLD；旧绑定不会自动升级。它不升级既有 v1 存储，也不认证历史旧二进制已经排空。后续优先实现永久内容来源登记与 alias finalization，再接运行布局和业务写边界。Registry 文本 contentDigest 与 RRSI artifact manifest 的 contentDigest 语义不同，必须关联真实 UTF-8 Skill 内容，不能复用候选 ID 或 manifest 摘要当来源主键。保留 provisioning policy v1 的不可变摘要，后续来源能力通过独立的认证关联接入。

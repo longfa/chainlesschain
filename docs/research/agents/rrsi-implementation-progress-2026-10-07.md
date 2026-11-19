@@ -865,3 +865,19 @@ Windows / Node.js 22.20.0 最终一次完整回归为 **26 文件、653 项通�
 修复后本机 Windows / Node.js 22.20.0 的 witness/source 两文件定向回归为 **90 项通过、1 项 POSIX 条件跳过、零失败**，changelog parity 另 1 项通过；不与第 46 节旧提交的完整 653 项重复累计，也不声称 POSIX 用例已在本机执行。新准确提交仍须完整三系统 CLI CI/Strict Sandbox，再由新不可变标签、既有 OIDC 和公开包/来源/registry-only 安装验证完成发布，不能拿旧提交的成功检查替代。
 
 截至本节核对，npm 公开 CLI 仍为 **0.166.150**，.151 不存在；.152 只是修复候选。子包版本、已公开 IDE 推荐 .150、PC/mobile v5.0.3.145 和生产自动晋升 **HOLD** 均保持，未新增模型任务验收。
+
+## 48 原始本地存储组件的统一只读审计（2026-11-19）
+
+第 44–46 节的 retention 全目录、ArtifactStore 全索引/文件对应与 source/v2 完整事件对账原先需要分别调用，单个组件成功不能证明同一运行组合已全部核验。本轮新增 `captureEvolutionLedgerStorageAudit({ backend, artifactPorts, ledgerArtifactResolver })`，只接受原工厂对象，核对原 backend 的 resolver 身份、resolver 的实际 ArtifactPorts 对象及 tenant/audience/purpose；相同描述符的另一套存储、结构副本、Proxy、getter 和调用者附加路径均不成为可选来源。
+
+审计先捕获原 source 四目录、source witness、manifest catalog/head、manifest witness、本地 retention 和 ArtifactStore 目录能力；随后对 source/v2、retention 全目录与 ArtifactStore 全索引分别进行实际只读认证，并复读三份结果、复查所有原目录。source 与 retention 必须指向完全相同的 manifest head，产物范围必须与原 journal 一致。统一结果包含原组件快照和域分离的 `storageAuditDigest`，冻结所有输出；`recheck()` 重新调用原认证链并比较整份审计摘要，不能接受替换上下文或复用一次成功作为永久授权。缺失原组件或自定义 wrapper 无法提供原生完整清单时明确 HOLD。
+
+`captureRrsiObservedTextStorageAudit(index)` 从原 observed index 的私有组合取得这一入口，失败继续沿原 `CC_RRSI_CONTENT_PROVENANCE_HOLD` 包装，保留底层 cause。已验签且允许原相应命令的部署宿主也可使用 `factories.captureEvolutionLedgerStorageAudit`，沿用既有命令白名单与部署验签流程。该审计是显式的宿主接口；普通文本读取、写入、history/anchor 持久格式及既有签名摘要不变。它不调用 journal.verify/recover、不获取 source 写锁、不创建目录、不修复权限、不签名或清理残留。原组件各自的文件数/字节上限保持，未把它们的独立窗口称作一次全局 I/O 预算或原子磁盘快照。
+
+新增 15 项真实文件集成用例，覆盖原组合与摘要、冻结输出、同一 head 下新增未引用产物、目录中的未知残留、实际 chunk 缺失、当前产物和 retention 权限撤销、日志头推进、后续 authority 回调中的实际目录 clone、错配原对象及 wrapper 拒绝。写入/rename/delete/mkdir/chmod/fsync/link 与写模式 open 的禁止探针验证 capture/recheck 不写文件。崩溃用例让独立 Node 子进程在实际 source segment 写入后以 23 退出，跳过写者自身的 JS 恢复逻辑；审计必须保留现场并 HOLD，显式 recover 后才能重新认证。
+
+Windows / Node.js 22.20.0 的最终 12 文件相关回归为 **224 项通过，零失败、零条件跳过**，其中新增 15 项、既有 209 项，包含部署 loader 的 64 项验签/接线回归，不累计此前的定向和 11 文件运行。开发首轮 14 通过/1 失败：原 fault 用例通过公共 writer 抛出普通异常，writer 自身已清理未完成状态，未形成预期崩溃现场；改为真实子进程中断后通过。源码的只读校验与原恢复语义未放宽。原始本地报告位于 `.tmp/evolution-storage-audit-20261119-final.json`，不冒充远程矩阵或真实模型效果证据。
+
+另以源码提供的 TEST 工作台跑过真实 IDE adapter → stdio CLI → 文件治理运行时，8 项检查通过：签名启动、候选列表、证据、版本对比、批准、回滚、重启持久化与 TEST 标签。该流程使用预置候选、测试身份/密钥和模拟 Eval，验证接口与事务接线，不作为真实模型生成、真实评测得分或生产人工授权证据。首轮启动因共享环境缺少 lock 中的 AJV 8 而失败；只在独立工作树恢复 lock 精确版本和经 SHA-512 验证的依赖后重新跑过，未修改依赖声明或生产入口。
+
+统一结果仍明确 `independentInstallationVerified=false`、`crossProcessRollbackProtectionVerified=false`、`atomicSnapshotVerified=false`、`fullPhysicalStorageGraphVerified=false`、`generationProvenanceVerified=false`、`grantsMutationOrPromotionAuthority=false` 和 `decision=HOLD`。本轮只证明所列原组件的顺序认证与重新核验；任意回调、全局 ABA、其它未列布局/文件、独立安装认可、受保护 pin/高水位及业务强制准入仍需后续闭合。真实 producer、alias/lease、A/B/C 效果对照与自动晋升也未据此完成，不调整公开版本或创建发行标签。
