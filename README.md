@@ -6,6 +6,16 @@
 
 安装 `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org`，重启宿主并核对 `cc --version`。历史客户端最后核验为 **v5.0.3.145**，当前旧下载源返回 404，本轮不发新 PC/mobile 安装包。**NOT_PAID_READY / NOT_ADMITTED / HOLD** 与历史模型任务成绩范围保留。[用户指南](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-19-156.html) · [设计说明](https://design.chainlesschain.com/release-runtime-update-2026-11-19-156.html)。下列带日期记录保留历史范围。
 
+## 开发者微信群
+
+欢迎开发者加入微信群，交流项目使用、二次开发、插件/IDE 接入、问题排查和企业 AI 落地实践。群聊名称为 **免费测评企业 AI 落地**，请扫码入群：
+
+<p align="center">
+  <img src="wechat/群聊：免费测评企业 AI 落地.png" alt="微信群：免费测评企业 AI 落地" width="280" />
+</p>
+
+群二维码有效期以微信页面显示为准。项目文档入口：[官网](https://www.chainlesschain.com) · [用户文档](https://docs.chainlesschain.com) · [设计文档](https://design.chainlesschain.com) · [AI 模型/API 聚合平台](https://chainlesschain.net/api/pricing)。提问时请附版本、系统环境、复现步骤和完整日志；请勿在群内公开 API Key、私钥或密码。
+
 文档基线（2026-11-15）：依据最新 Git 提交与已核验发行版本更新。查看 [LK 用户配置与账单](docs-site/docs/chainlesschain/cli-llm.md) 和 [渠道架构、凭证隔离与发布设计](docs/design/release-runtime-update-2026-11-15-150.md)。
 
 ## Public CLI 0.166.156 / IDE update (2026-11-18)

@@ -45,11 +45,13 @@ fi
 # 0.5 防止直接编辑 docs-site 生成副本（CLAUDE.md "Doc-site source-of-truth"）
 # docs-site/docs/design/**/*.md 和 docs-site-design/docs/**/*.md 由 sync 脚本
 # 从 docs/design/**/*.md 自动生成。直接改副本会被下一次 sync 静默覆盖且
-# git status 看不到，定位极隐蔽。例外：index.md / .vitepress/（每个 site 自管）。
+# git status 看不到，定位极隐蔽。例外：index.md / .vitepress/ / public/
+# （每个 site 自管；public/ 用于站点静态资源）。
 GENERATED_DOC_HITS=$(git diff --cached --name-only --diff-filter=ACMR \
   | grep -E '^(docs-site/docs/design/|docs-site-design/docs/)' \
   | grep -v -E '(^|/)index\.md$' \
   | grep -v -E '(^|/)\.vitepress/' \
+  | grep -v -E '(^|/)public/' \
   || true)
 if [ -n "$GENERATED_DOC_HITS" ]; then
   echo ""
@@ -63,7 +65,7 @@ if [ -n "$GENERATED_DOC_HITS" ]; then
   echo "   修法：(1) 改源 docs/design/<对应名>.md；(2) 跑上面两个 sync 脚本刷新副本；"
   echo "        (3) 一并 git add 源 + 副本，再 commit。"
   echo ""
-  echo "   例外白名单（已放行）：index.md / .vitepress/"
+  echo "   例外白名单（已放行）：index.md / .vitepress/ / public/"
   echo "   绕过（自担风险）: git commit --no-verify"
   exit 1
 fi

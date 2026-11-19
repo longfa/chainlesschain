@@ -87,6 +87,19 @@ features:
     details: "CLI 与 IDE 的精确提交门禁、公共制品回读、模型任务验收具有不同证据范围。客户端公开版仍为 .145，.146 的 Android bundle 对齐与整体发行仍待完成；完整 native review 保持 NOT_ADMITTED。"
 ---
 
+## 开发者微信群
+
+欢迎开发者加入 **「免费测评企业 AI 落地」** 微信交流群，交流 ChainlessChain 的使用、二次开发、插件/IDE 接入、问题排查和企业 AI 落地实践。请扫码入群：
+
+<div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;margin:24px 0 32px;padding:20px;border:1px solid var(--vp-c-divider);border-radius:12px;background:var(--vp-c-bg-soft)">
+  <img src="/wechat-group-qr.png" alt="微信群：免费测评企业 AI 落地" width="260" />
+  <div>
+    <p><strong>群聊：免费测评企业 AI 落地</strong></p>
+    <p>二维码有效期以微信页面显示为准。提问时请附版本、系统环境、复现步骤和完整日志。</p>
+    <p><a href="https://chainlesschain.net/api/pricing" target="_blank" rel="noopener">AI 模型/API 聚合平台 →</a></p>
+  </div>
+</div>
+
 ## 当前公开版本与源码核对（2026-11-19）
 
 已验证公开 **CLI 0.166.156 / Open VSX 0.37.192 / JetBrains 0.4.207**，两款 IDE 推荐 CLI .156；JetBrains 已审核公开，公开安装包已与正式候选核对。安装 `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`、`cc doctor`。
