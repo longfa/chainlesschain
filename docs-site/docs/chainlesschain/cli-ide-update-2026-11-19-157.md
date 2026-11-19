@@ -4,7 +4,7 @@
 
 ## 概述
 
-本轮同步官方网站、用户文档、设计文档与 README。CLI 候选为 **0.166.157**；Open VSX **0.37.192** 与 JetBrains **0.4.207** 仍为已公开版本，尚未重新发布。CLI 候选新增受治理自进化存储审计，发布前必须完成准确提交的 CLI CI、Strict Sandbox、OIDC 与公共 registry 回读。
+本轮同步官方网站、用户文档、设计文档与 README。CLI 候选为 **0.166.157**；Open VSX **0.37.192** 与 JetBrains **0.4.207** 仍为候选待验证版本，尚未重新发布。CLI 候选新增受治理自进化存储审计，发布前必须完成准确提交的 CLI CI、Strict Sandbox、OIDC 与公共 registry 回读。
 
 ## 核心特性
 
@@ -12,7 +12,7 @@ LK 主地址改为 `https://api.vv666.ai`，手动备用 `https://api.lk666.ai`�
 
 ## 系统架构
 
-CLI 负责连接规范化、旧模型别名迁移与账户适配，Web 和 IDE 使用同一模型目录。文档来源源码为 `8c937cbe9bc4b82f87479c124375401fa2fb3a72`，已发行包的不可变来源为 `a8cae89288d3a6119b152e04b750e10d726a5c5f`；网页部署的提交身份另由 `/deployment-source.json` 记录。设计权威源位于 `docs/design/`，两个文档站由同步脚本生成副本。
+CLI 负责连接规范化、旧模型别名迁移与账户适配，Web 和 IDE 使用同一模型目录。文档来源源码为 `bfc3c849093d67aebfc1cc92843cf8a9229b24d6`，已发行包的不可变来源为 `bfc3c849093d67aebfc1cc92843cf8a9229b24d6`；网页部署的提交身份另由 `/deployment-source.json` 记录。设计权威源位于 `docs/design/`，两个文档站由同步脚本生成副本。
 
 ## 配置参考
 
