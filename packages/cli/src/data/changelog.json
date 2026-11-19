@@ -3,6 +3,19 @@
   "releases": [
     {
       "productVersion": null,
+      "cliVersion": "0.166.157",
+      "cliVersions": ["0.166.157"],
+      "date": "2026-11-19",
+      "title": "",
+      "sections": [
+        {
+          "heading": "Added - cc CLI 0.166.157: governed evolution storage audit (candidate, 2026-11-19)",
+          "body": "- Add a read-only audit binding the original evolution journal, witnesses, manifest chain, retained segments and artifact inventory to one verified head.\n- Expose it only through authenticated deployment factories; copied objects, missing components, changed files and interrupted WAL state remain HOLD.\n- Publication requires the exact commit's CLI CI, Strict Sandbox, OIDC and public registry readback."
+        }
+      ]
+    },
+    {
+      "productVersion": null,
       "cliVersion": "0.166.156",
       "cliVersions": ["0.166.156"],
       "date": "2026-11-18",

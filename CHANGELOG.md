@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added - cc CLI 0.166.157: governed evolution storage audit (candidate, 2026-11-19)
+
+- Add a read-only audit binding the original evolution journal, witnesses, manifest chain, retained segments and artifact inventory to one verified head.
+- Expose it only through authenticated deployment factories; copied objects, missing components, changed files and interrupted WAL state remain HOLD.
+- Publication requires the exact commit's CLI CI, Strict Sandbox, OIDC and public registry readback.
+
+
 ### Fixed - cc CLI 0.166.156: LK release delivery from longfa (candidate, 2026-11-18)
 
 - Carry the corrected LK model catalog, same-family alias migration and live account query fixes from candidate 0.166.155. Candidate 0.166.155 was stopped before npm publication.

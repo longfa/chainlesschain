@@ -1,14 +1,14 @@
 # chainlesschain CLI
 
-Documentation checked 2026-11-19 against source `8c937cbe9bc4b82f87479c124375401fa2fb3a72`; published CLI remains **0.166.156**, paired with public Open VSX **0.37.192** and JetBrains **0.4.207**. Historical PC/mobile .145 download URLs currently return 404. [Current installation and limits](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-19-156.html).
+Documentation checked 2026-11-19 against source `8c937cbe9bc4b82f87479c124375401fa2fb3a72`; CLI candidate is **0.166.157**, paired with public Open VSX **0.37.192** and JetBrains **0.4.207**. Historical PC/mobile .145 download URLs currently return 404. [Current installation and limits](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-19-156.html).
 
 Command-line interface for installing, configuring, and managing [ChainlessChain](https://www.chainlesschain.com), including the coding agent, governed tools, sessions, memory, and IDE integrations.
 
-## Public CLI 0.166.156 (2026-11-18)
+## CLI 0.166.157 candidate (2026-11-19)
 
-CLI **0.166.156** is public on npm. Exact source `a8cae89288d3a6119b152e04b750e10d726a5c5f` passed all 75 CLI CI jobs and all 6 Strict Sandbox jobs before Actions OIDC publication and registry readback. See [CLI CI](https://github.com/longfa/chainlesschain/actions/runs/44222103058), [Strict Sandbox](https://github.com/longfa/chainlesschain/actions/runs/44222103031), and [Actions OIDC publication](https://github.com/longfa/chainlesschain/actions/runs/44222103142). The package contains the current 202-entry LK catalog, including 86 chat models, with `gpt-6.1-sol` at `https://api.vv666.ai/v1` and backup `https://api.lk666.ai`.
+CLI **0.166.157** is a candidate and is not public. Exact source `a8cae89288d3a6119b152e04b750e10d726a5c5f` passed all 75 CLI CI jobs and all 6 Strict Sandbox jobs before Actions OIDC publication and registry readback. See [CLI CI](https://github.com/longfa/chainlesschain/actions/runs/44222103058), [Strict Sandbox](https://github.com/longfa/chainlesschain/actions/runs/44222103031), and [Actions OIDC publication](https://github.com/longfa/chainlesschain/actions/runs/44222103142). The candidate contains the governed evolution storage audit and the current 202-entry LK catalog, including 86 chat models, with `gpt-6.1-sol` at `https://api.vv666.ai/v1` and backup `https://api.lk666.ai`.
 
-Child npm versions remain unchanged. The new pairing is public Open VSX **0.37.192**, verified byte-for-byte against its immutable candidate; JetBrains **0.4.207** is approved, listed and publicly verified, with both candidate JAR payloads preserved. Install `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org` then restart IDE hosts, then run `cc --version`. Native installers and media task execution are outside this release. [Release scope](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-156.md).
+Child npm versions remain unchanged. The new pairing is public Open VSX **0.37.192**, verified byte-for-byte against its immutable candidate; JetBrains **0.4.207** is approved, listed and publicly verified, with both candidate JAR payloads preserved. Until publication, install `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org` then restart IDE hosts, then run `cc --version`. Native installers and media task execution are outside this release. [Release scope](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-156.md).
 
 ## Historical CLI 0.166.150 / IDE pairing (2026-11-15)
 
