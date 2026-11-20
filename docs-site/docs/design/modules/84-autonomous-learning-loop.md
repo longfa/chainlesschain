@@ -1,9 +1,9 @@
 # 模块 84：自主学习组件与受治理接线
 
-**状态**：组件可用，自动闭环尚未完成
-**更新日期**：2026-09-03
+**状态**：仓库闭环完成，目标部署待验收
+**更新日期**：2026-11-20
 
-> **关联文档**：[65. 历史自进化模拟壳（已退役）](./65-self-evolving-ai.md) · [112. 受治理 Skill 自进化](./112-governed-skill-evolution-design.md) · [Agent 自进化差距分析](https://github.com/chainlesschain/chainlesschain/blob/main/docs/research/agents/AGENT_SELF_EVOLUTION_GAP_ANALYSIS_2026-09-01.md)
+> **关联文档**：[65. 历史自进化模拟壳（已退役）](./65-self-evolving-ai.md) · [112. 受治理 Skill 自进化](./112-governed-skill-evolution-design.md) · [Agent 自进化差距分析](https://github.com/longfa/chainlesschain/blob/main/docs/research/agents/AGENT_SELF_EVOLUTION_GAP_ANALYSIS_2026-09-01.md)
 
 ## 一、真实性边界
 
