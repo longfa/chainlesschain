@@ -38,9 +38,35 @@ describe("DMM-09 independent business acceptance drill", () => {
       replayed: true,
       goalStatus: "done",
     });
+    expect(result.rejectedAttemptCount).toBe(1);
+    expect(result.falseCompletionCount).toBe(0);
+    expect(result.completionCount).toBe(1);
+    expect(result.reopened.taskSnapshot).toEqual(
+      result.completedAttempt.taskSnapshot,
+    );
+    expect(
+      result.completedAttempt.taskSnapshot.every(
+        (row) => row.updatedAt <= Date.parse(result.fixtureAsOf),
+      ),
+    ).toBe(true);
     expect(JSON.parse(fs.readFileSync(output, "utf8"))).toMatchObject({
       schema: "chainlesschain.dmm-business-acceptance/v1",
       status: "passed",
     });
+  });
+
+  it("closes SQLite on a failed rerun and preserves the existing database", () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "dmm09-close-"));
+    roots.push(root);
+    runBusinessAcceptanceDrill({ root });
+    const database = path.join(root, "project.sqlite");
+    const before = fs.readFileSync(database);
+    expect(() => runBusinessAcceptanceDrill({ root })).toThrow(
+      /table projects already exists/,
+    );
+    // Windows refuses this rename if the failing invocation leaked its handle.
+    const retained = path.join(root, "retained.sqlite");
+    fs.renameSync(database, retained);
+    expect(fs.readFileSync(retained)).toEqual(before);
   });
 });

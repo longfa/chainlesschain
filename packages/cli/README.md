@@ -6,7 +6,7 @@ Command-line interface for installing, configuring, and managing [ChainlessChain
 
 ## Next release candidate: CLI 0.166.159 (2026-11-21)
 
-CLI **0.166.159** is a source candidate and is not public yet. It restores supported macOS 15 release runners and carries the DMM-09 native SQLite business acceptance drill from unpublished candidate .158. The drill checks incomplete-outcome refusal, durable completion evidence, database-reopen recovery and idempotent replay. Publish only after the exact CLI CI and Strict Sandbox matrices pass, then use Actions OIDC and public npm readback. The paired IDE candidates are Open VSX **0.37.194** and JetBrains **0.4.209**; native clients remain outside this release. The immutable .158 tag is retained as a failed candidate.
+CLI **0.166.159** is a source candidate and is not public yet. It restores supported macOS 15 release runners and fixes the DMM-09 native SQLite business acceptance drill from unpublished candidate .158. The drill uses a consistent fixture clock, derives acceptance counts from stored records, closes SQLite after errors, and checks incomplete-outcome refusal, durable completion evidence, database-reopen recovery and idempotent replay. Publish only after the exact CLI CI and Strict Sandbox matrices pass, then use Actions OIDC and public npm readback. The paired IDE candidates are Open VSX **0.37.194** and JetBrains **0.4.209**; native clients remain outside this release. The immutable .158 tag is retained as a failed candidate.
 
 ## Public CLI 0.166.157 (2026-11-20)
 
