@@ -2,6 +2,7 @@ name: CLI Strict Sandbox
 
 # Keep the exact-source release gate sensitive to release-candidate metadata
 # commits that must be verified together with CLI CI.
+# The paired workflow files are intentionally touched in the final release commit.
 
 on:
   push:

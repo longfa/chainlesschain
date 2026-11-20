@@ -1,5 +1,8 @@
 name: CLI CI
 
+# Release-candidate metadata changes must execute the complete exact-source
+# CLI matrix together with CLI Strict Sandbox before publication.
+
 on:
   push:
     branches: [main]
