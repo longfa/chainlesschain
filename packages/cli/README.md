@@ -4,6 +4,10 @@ Documentation checked 2026-11-20 against release source `0ad9968f0498fce77e538f6
 
 Command-line interface for installing, configuring, and managing [ChainlessChain](https://www.chainlesschain.com), including the coding agent, governed tools, sessions, memory, and IDE integrations.
 
+## Next release candidate: CLI 0.166.158 (2026-11-20)
+
+CLI **0.166.158** is a source candidate and is not public yet. It adds the deterministic DMM-09 native SQLite business acceptance drill, including incomplete-outcome refusal, durable completion evidence, process-reopen recovery and idempotent replay. Publish only after the exact CLI CI and Strict Sandbox matrices pass, then use Actions OIDC and public npm readback. The paired IDE candidates are Open VSX **0.37.194** and JetBrains **0.4.209**; native clients remain outside this release.
+
 ## Public CLI 0.166.157 (2026-11-20)
 
 CLI **0.166.157** is public on npm from exact source `0ad9968f0498fce77e538f6e5e64bba35db184c8`. The GitHub Actions OIDC release workflow passed the exact SHA gate, all required CLI CI and Strict Sandbox gates, immutable tarball verification, signed npm provenance and public registry readback. Install `npm i -g chainlesschain@0.166.157 --registry https://registry.npmjs.org`, restart IDE hosts, then run `cc --version`. The release adds the governed evolution storage audit and is paired with the public IDE releases **0.37.193** and **0.4.208**; native clients remain outside this release. [Publication evidence](../../docs/research/cli/evidence/release157-public/chainlesschain-release.json) · [npm provenance](../../docs/research/cli/evidence/release157-public/chainlesschain-npm-provenance.json) · [public registry readback](../../docs/research/cli/evidence/release157-public/chainlesschain-npm-readback.json).
