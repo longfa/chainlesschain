@@ -21,6 +21,7 @@
     "test:scheduler-reliability-soak": "node scripts/scheduler-reliability-soak.mjs",
     "test:evolution-ledger-reliability-soak": "node scripts/evolution-ledger-reliability-soak.mjs",
     "test:pm-exploration-recovery-drill": "node scripts/pm-exploration-recovery-drill.mjs",
+    "test:dmm-business-acceptance": "node scripts/dmm-business-acceptance-drill.mjs --json",
     "test:pm-exploration-volcengine-live": "node scripts/pm-exploration-volcengine-live-probe.mjs --confirm-live",
     "test:pm-exploration-signed-volcengine-live": "node scripts/pm-exploration-signed-volcengine-live-probe.mjs --confirm-live",
     "test:governed-learning-volcengine-pilot": "node scripts/governed-learning-volcengine-pilot.mjs",
