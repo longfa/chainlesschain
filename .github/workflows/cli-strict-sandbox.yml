@@ -1,4 +1,4 @@
-﻿name: CLI Strict Sandbox
+name: CLI Strict Sandbox
 
 # Keep the exact-source release gate sensitive to release-candidate metadata
 # commits that must be verified together with CLI CI.
@@ -467,8 +467,8 @@ jobs:
   macos-latest-capability:
     needs: [docs-scope]
     if: ${{ needs.docs-scope.result == 'success' && needs.docs-scope.outputs.docs_only == 'false' }}
-    name: "macOS native capability (macos-14)"
-    runs-on: macos-14
+    name: "macOS native capability (macos-15)"
+    runs-on: macos-15
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v5
@@ -509,7 +509,7 @@ jobs:
         # Keep the full Seatbelt acceptance lane pinned to macOS 15 while the
         # separate macos-latest job probes the current hosted image. A latest
         # capability result does not substitute for this full contract suite.
-        os: [ubuntu-24.04, macos-14, windows-latest]
+        os: [ubuntu-24.04, macos-15, windows-latest]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 25
     steps:

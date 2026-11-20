@@ -1,4 +1,4 @@
-﻿# ChainlessChain IDE Bridge (JetBrains)
+# ChainlessChain IDE Bridge (JetBrains)
 
 Public JetBrains **0.4.208** pairs with CLI **0.166.157** for the corrected LK model IDs, protocol-filtered selection and authenticated price/billing queries. The exact host gates, Marketplace upload, approval, listing and public ZIP readback passed.
 
@@ -318,9 +318,9 @@ See the [verified publication evidence](https://github.com/longfa/chainlesschain
 
 ## Release compatibility
 
-Plugin **0.4.209** is the current release candidate and has not been publicly verified. It recommends `chainlesschain@0.166.158`; publish only after the exact CLI release gates, JetBrains host matrix and Marketplace upload/readback pass.
+Plugin **0.4.209** is the current release candidate and has not been publicly verified. It recommends `chainlesschain@0.166.159`; publish only after the exact CLI release gates, JetBrains host matrix and Marketplace upload/readback pass.
 
-Install the paired candidate CLI with `npm i -g chainlesschain@0.166.158 --registry https://registry.npmjs.org` only after its OIDC publication and public readback. Goal transfer and native Graph features require matching desktop support and explicit native authorization. Model-task improvement and automatic promotion remain unverified.
+Install the paired candidate CLI with `npm i -g chainlesschain@0.166.159 --registry https://registry.npmjs.org` only after its OIDC publication and public readback. Goal transfer and native Graph features require matching desktop support and explicit native authorization. Model-task improvement and automatic promotion remain unverified.
 
 ## Previous candidates and development notes
 

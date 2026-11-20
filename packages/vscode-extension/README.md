@@ -12,7 +12,7 @@ Install `npm i -g chainlesschain@0.166.157 --registry https://registry.npmjs.org
 
 ## Next release candidate
 
-Source candidate **0.37.194** recommends CLI **0.166.158**. The extension has not been published. Publish only after the CLI 0.166.158 public release and the exact VS Code host, browser, Remote SSH, packaging and Open VSX gates pass.
+Source candidate **0.37.194** recommends CLI **0.166.159**. The extension has not been published. Publish only after the CLI 0.166.159 public release and the exact VS Code host, browser, Remote SSH, packaging and Open VSX gates pass.
 
 ## Current release
 

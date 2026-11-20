@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed - cc CLI 0.166.159: restore supported macOS release gates (candidate, 2026-11-21)
+
+- Restore macOS 15 for the complete CLI CI and Strict Sandbox matrices. GitHub rejected macOS 14 ARM64 before assigning a runner; earlier macOS 15 attempts were cancelled by superseding branch runs.
+- Carry the DMM-09 native SQLite acceptance drill from unpublished candidate 0.166.158. Preserve its immutable tag and require a new exact-source three-platform validation for this candidate.
+- Pair Open VSX 0.37.194 and JetBrains 0.4.209 with CLI 0.166.159 only after Actions OIDC publication and public npm readback. Child npm versions remain unchanged.
+
 ### Added - cc CLI 0.166.158: DMM-09 independent business acceptance drill (candidate, 2026-11-20)
 
 - Add a deterministic native SQLite business acceptance drill that refuses incomplete outcomes, records independent completion evidence, survives process reopen and replays the same request idempotently.
