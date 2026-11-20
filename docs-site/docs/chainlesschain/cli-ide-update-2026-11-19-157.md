@@ -2,7 +2,7 @@
 
 ## 概述
 
-CLI **0.166.157** 已公开发布。准确发行源码为 `0ad9968f0498fce77e538f6e5e64bba35db184c8`，GitHub Actions OIDC 流程通过准确 SHA 门禁、CLI CI、Strict Sandbox、不可变 tarball、npm provenance 与公开 registry 回读。安装 `npm i -g chainlesschain@0.166.157 --registry https://registry.npmjs.org`。本轮是 CLI-only 发布：Open VSX **0.37.192** 与 JetBrains **0.4.207** 保持现有公开版本，仍推荐 CLI **0.166.156**，没有重新发布 IDE 插件；PC/mobile 也不在本轮范围。
+CLI **0.166.157** 已公开发布。准确发行源码为 `0ad9968f0498fce77e538f6e5e64bba35db184c8`，GitHub Actions OIDC 流程通过准确 SHA 门禁、CLI CI、Strict Sandbox、不可变 tarball、npm provenance 与公开 registry 回读。安装 `npm i -g chainlesschain@0.166.157 --registry https://registry.npmjs.org`。本轮 CLI 与 IDE 均已公开发布：Open VSX **0.37.193**、JetBrains **0.4.208** 均推荐 CLI **0.166.157**；PC/mobile 也不在本轮范围。
 
 公开回执：[发行清单](../../docs/research/cli/evidence/release157-public/chainlesschain-release.json) · [npm provenance](../../docs/research/cli/evidence/release157-public/chainlesschain-npm-provenance.json) · [registry 回读](../../docs/research/cli/evidence/release157-public/chainlesschain-npm-readback.json)。
 
@@ -57,7 +57,7 @@ cc llm account --days 7 --scope user --limit 20 --offset 0 --json
 cc ui
 ```
 
-升级后重启 CLI / IDE 宿主；在 Configure LLM 恢复或保存 LK 连接。VS Code 可直接安装 [Open VSX .192 VSIX](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.192/file/chainlesschain.chainlesschain-ide-0.37.192.vsix)；JetBrains 可安装 [已批准的 .207 ZIP](https://plugins.jetbrains.com/files/32208/1223726/chainlesschain-ide-bridge-0.4.207.zip)。Microsoft VS Code Marketplace 不在本次标签发布范围。
+升级后重启 CLI / IDE 宿主；在 Configure LLM 恢复或保存 LK 连接。VS Code 可直接安装 [Open VSX .193 VSIX](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.193/file/chainlesschain.chainlesschain-ide-0.37.193.vsix)；JetBrains 可安装 [已批准的 .208 ZIP](https://plugins.jetbrains.com/files/32208/1223726/chainlesschain-ide-bridge-0.4.208.zip)。Microsoft VS Code Marketplace 不在本次标签发布范围。
 
 ## 相关文档
 

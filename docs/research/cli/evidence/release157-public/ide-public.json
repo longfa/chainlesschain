@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "verifiedAt": "2026-11-20T04:59:33Z",
+  "sourceCommit": "ba729d1022826ae57cc2e20177f9228f70a13033",
+  "cliVersion": "0.166.157",
+  "vscode": {
+    "version": "0.37.193",
+    "tag": "ide-vscode-v0.37.193",
+    "workflow": "https://github.com/longfa/chainlesschain/actions/runs/44666583403",
+    "status": "ready",
+    "listed": true,
+    "downloadable": true,
+    "registryArchiveSha256": "9aab2dba0e2f03f82e6347a7c55a5645f2afed23ed63e43cd46f4d6727c3a944",
+    "contentSha256": "45d3bc16c14fa3caad2a470e995fd84ae729c74bf4ffa493d4806925346c5e53"
+  },
+  "jetbrains": {
+    "version": "0.4.208",
+    "tag": "ide-jetbrains-v0.4.208",
+    "workflow": "https://github.com/longfa/chainlesschain/actions/runs/44666581792",
+    "status": "ready",
+    "approved": true,
+    "listed": true,
+    "hidden": false
+  }
+}

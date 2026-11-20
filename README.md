@@ -2,13 +2,13 @@
 
 ## 当前公开版本（2026-11-20）
 
-CLI **0.166.157** 已通过 GitHub Actions OIDC 发布到 npm，准确源码提交为 `0ad9968f0498fce77e538f6e5e64bba35db184c8`。CLI CI、Strict Sandbox、不可变 tarball、npm provenance 和公开 registry 回读均已通过。安装：`npm i -g chainlesschain@0.166.157 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`。本轮为 CLI-only 发布；公开 Open VSX **0.37.192** 与 JetBrains **0.4.207** 保持不变，仍推荐 CLI **0.166.156**，未重复发布 IDE 或原生客户端。
+CLI **0.166.157** 已通过 GitHub Actions OIDC 发布到 npm，准确源码提交为 `0ad9968f0498fce77e538f6e5e64bba35db184c8`。CLI CI、Strict Sandbox、不可变 tarball、npm provenance 和公开 registry 回读均已通过。安装：`npm i -g chainlesschain@0.166.157 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`。本轮 CLI 与 IDE 已公开发布：Open VSX **0.37.193**、JetBrains **0.4.208** 均推荐 CLI **0.166.157**；PC/mobile 原生客户端不在本轮范围。
 
-[发布证据](docs/research/cli/evidence/release157-public/chainlesschain-release.json) · [npm 回读](docs/research/cli/evidence/release157-public/chainlesschain-npm-readback.json)
+[发布证据](docs/research/cli/evidence/release157-public/chainlesschain-release.json) · [IDE 回读](docs/research/cli/evidence/release157-public/ide-public.json) · [npm 回读](docs/research/cli/evidence/release157-public/chainlesschain-npm-readback.json)
 
 ## 2026-11-19 文档与网站同步
 
-按最新源码 `8c937cbe9bc4b82f87479c124375401fa2fb3a72` 与 Git 记录核对。CLI **0.166.156**、Open VSX **0.37.192**、JetBrains **0.4.207** 均已公开验证，两款 IDE 推荐 CLI .156；发行来源为 `a8cae89288d3a6119b152e04b750e10d726a5c5f`，与网站部署提交分别记录。LK 主备为 `api.vv666.ai` / `api.lk666.ai`，默认 OpenAI 兼容模型 `gpt-6.1-sol`，目录为 **202 项 / 86 项对话模型**，支持动态算力价格与实际 API 账单。
+按最新源码 `8c937cbe9bc4b82f87479c124375401fa2fb3a72` 与 Git 记录核对。CLI **0.166.156**、Open VSX **0.37.192**、JetBrains **0.4.207** 是上一轮公开版本；本轮新版本已在上方公开发布；发行来源为 `a8cae89288d3a6119b152e04b750e10d726a5c5f`，与网站部署提交分别记录。LK 主备为 `api.vv666.ai` / `api.lk666.ai`，默认 OpenAI 兼容模型 `gpt-6.1-sol`，目录为 **202 项 / 86 项对话模型**，支持动态算力价格与实际 API 账单。
 
 安装 `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org`，重启宿主并核对 `cc --version`。历史客户端最后核验为 **v5.0.3.145**，当前旧下载源返回 404，本轮不发新 PC/mobile 安装包。**NOT_PAID_READY / NOT_ADMITTED / HOLD** 与历史模型任务成绩范围保留。[用户指南](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-19-156.html) · [设计说明](https://design.chainlesschain.com/release-runtime-update-2026-11-19-156.html)。下列带日期记录保留历史范围。
 
