@@ -1,10 +1,14 @@
 # Changelog — ChainlessChain IDE Bridge (JetBrains)
 
-## [0.4.207] - Current LK API models and billing (candidate, 2026-11-18)
+## [0.4.208] - CLI 0.166.157 pairing candidate (2026-11-20)
 
-- Pair with CLI `0.166.156` after its verified public npm release.
+- Pair with public CLI `0.166.157` after its verified public npm release.
 - Refresh the LK dropdown from the documented Skills API; use `gpt-6.1-sol` and current protocol-specific model IDs. Retired aliases retain their corresponding model family.
 - Correct relay provider identity, local protocol and saved credential state. Require complete host gates before upload and public Marketplace readback after approval.
+
+## [0.4.207] - Current LK API models and billing (public, 2026-11-18)
+
+- Pair with public CLI `0.166.156`; this remains the latest verified IDE pairing until the 0.4.208 tag passes.
 
 ## [0.4.206] - CLI recovery pairing (candidate, 2026-11-16)
 
