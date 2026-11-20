@@ -1,22 +1,20 @@
-# ChainlessChain IDE Bridge (JetBrains)
+﻿# ChainlessChain IDE Bridge (JetBrains)
 
-Public JetBrains **0.4.207** pairs with CLI **0.166.156** for corrected LK model IDs, protocol-filtered selection and authenticated price/billing queries. All host and compatibility gates passed; Marketplace approval, listing and the downloaded ZIP payload are verified. Older releases below retain their historical scope.
+Candidate JetBrains **0.4.208** recommends CLI **0.166.157** for the corrected LK model IDs, protocol-filtered selection and authenticated price/billing queries. It is not public until the exact tag workflow, Marketplace upload, approval and public ZIP readback pass. The public pairing remains JetBrains **0.4.207** with CLI **0.166.156** until then.
 
-Install `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org`, restart the IDE, and verify `cc --version`. See [release scope](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-156.md). No new PC/mobile installer is included.
+Install `npm i -g chainlesschain@0.166.157 --registry https://registry.npmjs.org`, restart the IDE, and verify `cc --version`. See [release scope](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-19-157.md). No new PC/mobile installer is included.
 
-## Current release 0.4.207 / CLI 0.166.156
+## Current release candidate 0.4.208 / CLI 0.166.157
 
-The [immutable tag workflow](https://github.com/longfa/chainlesschain/actions/runs/44308436365) passed complete Linux, Windows and macOS host, browser, unit, build and compatibility gates for source `a8cae89288d3a6119b152e04b750e10d726a5c5f`. Marketplace update **1223726** is approved, listed and publicly downloadable. The [public plugin ZIP](https://plugins.jetbrains.com/files/32208/1223726/chainlesschain-ide-bridge-0.4.207.zip) preserves both original candidate JAR payloads. Plugin **0.4.207** and compiled CLI recommendation **0.166.156** are verified.
-
-Install `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org`, restart the host, then run `cc --version` and `cc doctor`. Open **Configure LLM** to select the updated LK directory and query saved account pricing and bills. [Publication evidence](../../docs/research/cli/evidence/release156-public/jetbrains-public.json).
+The exact tag workflow will verify the immutable candidate across Linux, Windows and macOS host, browser, unit, build and compatibility gates before Marketplace upload. This candidate binds the compiled CLI recommendation to **0.166.157**; public Marketplace approval and ZIP readback are still pending.
 
 ## Previous release 0.4.204 / CLI 0.166.150
 
 The [official tag workflow](https://github.com/chainlesschain/chainlesschain/actions/runs/43646453588) passed the complete host, browser, build and compatibility gates. JetBrains **0.4.204** is publicly verified. It recommends public CLI **0.166.150**. Install `npm i -g chainlesschain@0.166.150 --registry https://registry.npmjs.org`, restart the host, then run `cc --version` and `cc doctor`.
 
-Open **Configure LLM** to select LK, protocol, endpoint and model, restore a saved channel, or refresh the saved LK account. Amounts use platform credits (算力); actual bill records have no Token counts. Media task submission/polling is outside these chat settings.
+Open **Configure LLM** to select LK, protocol, endpoint and model, restore a saved channel, or refresh the saved LK account. Amounts use platform credits (绠楀姏); actual bill records have no Token counts. Media task submission/polling is outside these chat settings.
 
-[LK setup and limits](../../docs/configuration/lk-api-channel.md) · [Publication evidence](../../docs/research/cli/evidence/release150-public/publication.json).
+[LK setup and limits](../../docs/configuration/lk-api-channel.md) 路 [Publication evidence](../../docs/research/cli/evidence/release150-public/publication.json).
 
 ## Previous release 0.4.203 / CLI 0.166.149 (2026-11-14)
 
@@ -24,11 +22,10 @@ The [official tag workflow](https://github.com/chainlesschain/chainlesschain/act
 
 CLI **0.166.149** is public through Actions OIDC. Install `npm i -g chainlesschain@0.166.149 --registry https://registry.npmjs.org`, restart the host, then run `cc --version` and `cc doctor`. Self-evolution checks cover local original-directory metadata; production authority/runtime evidence remain false and automatic promotion remains **HOLD**.
 
-## 工作树新增：本地算力平台（待发布）
+## 宸ヤ綔鏍戞柊澧烇細鏈湴绠楀姏骞冲彴锛堝緟鍙戝竷锛?
 
-在“配置大模型 / Configure LLM”选择 **Local compute / OpenAI compatible (LEXDATA / vLLM / SGLang)**，填写平台 Base URL 与 API 模型 ID。力数截图给出的示例为 `http://192.168.31.79:8889/v1`、`glm5.3-flash-tensorfold`；模型 ID 仍以平台 `/v1/models` 为准。API Key 按平台要求填写，可留空；HTTP 局域网地址须显式勾选允许。不要填写具体 `/chat/completions` 路径或复用云端密钥。
-
-该选项使用 CLI 的 `custom` OpenAI Chat Completions 路径，原子保存并回读，已有中转站协议选项保留。保存后可显式测试连接，聊天下一条消息使用新配置；现有 CLI 签名部署等前置条件继续生效。无密钥本机接口已通过真实 CLI 子进程回归，力数实机 `/models` 检查当前为 `ECONNRESET`，尚未验证其实际权重推理。真实 IDE GUI 尚未运行，本节描述未发布工作树能力。
+鍦ㄢ€滈厤缃ぇ妯″瀷 / Configure LLM鈥濋€夋嫨 **Local compute / OpenAI compatible (LEXDATA / vLLM / SGLang)**锛屽～鍐欏钩鍙?Base URL 涓?API 妯″瀷 ID銆傚姏鏁版埅鍥剧粰鍑虹殑绀轰緥涓?`http://192.168.31.79:8889/v1`銆乣glm5.3-flash-tensorfold`锛涙ā鍨?ID 浠嶄互骞冲彴 `/v1/models` 涓哄噯銆侫PI Key 鎸夊钩鍙拌姹傚～鍐欙紝鍙暀绌猴紱HTTP 灞€鍩熺綉鍦板潃椤绘樉寮忓嬀閫夊厑璁搞€備笉瑕佸～鍐欏叿浣?`/chat/completions` 璺緞鎴栧鐢ㄤ簯绔瘑閽ャ€?
+璇ラ€夐」浣跨敤 CLI 鐨?`custom`OpenAI Chat Completions 璺緞锛屽師瀛愪繚瀛樺苟鍥炶锛屽凡鏈変腑杞珯鍗忚閫夐」淇濈暀銆備繚瀛樺悗鍙樉寮忔祴璇曡繛鎺ワ紝鑱婂ぉ涓嬩竴鏉℃秷鎭娇鐢ㄦ柊閰嶇疆锛涚幇鏈?CLI 绛惧悕閮ㄧ讲绛夊墠缃潯浠剁户缁敓鏁堛€傛棤瀵嗛挜鏈満鎺ュ彛宸查€氳繃鐪熷疄 CLI 瀛愯繘绋嬪洖褰掞紝鍔涙暟瀹炴満`/models`妫€鏌ュ綋鍓嶄负`ECONNRESET`锛屽皻鏈獙璇佸叾瀹為檯鏉冮噸鎺ㄧ悊銆傜湡瀹?IDE GUI 灏氭湭杩愯锛屾湰鑺傛弿杩版湭鍙戝竷宸ヤ綔鏍戣兘鍔涖€?
 
 ## Previous public release (.200 / CLI .146)
 
@@ -39,7 +36,7 @@ CLI **0.166.146** alongside Open VSX **0.37.185**.
 ## Task-creation request files (source-only)
 
 Matching local CLI, Session Core and IDE builds add **Export task creation
-request…**. Select `goal-task-creator` or the admitted combined
+request鈥?*. Select `goal-task-creator` or the admitted combined
 `project-delivery-assistant` 0.3.0. Native dialogs choose a goal connection,
 current creation source ID, task type, description and new output file. The
 bounded child runner accepts only zero exit, valid UTF-8 and a matching creation
@@ -56,8 +53,8 @@ pending.
 
 ## Online pending task creation (source-only)
 
-Matching source builds add **Export online creation access…**, **Submit pending
-creation…** and **Look up creation receipt…**. Select an admitted
+Matching source builds add **Export online creation access鈥?*, _*Submit pending
+creation鈥?* and \**Look up creation receipt鈥?_. Select an admitted
 `goal-task-creator` or combined assistant 0.3.0. Export access, then obtain a
 separate native v6 creation connection in the desktop. v3 description grants
 cannot authorize creation. Native file/source/type controls fix the selected
@@ -69,8 +66,7 @@ schemas, action, goal/plugin/grant identity, paths and request identity. A saved
 pending draft still requires a current desktop preview and individual native
 confirmation before task creation. It does not execute the created task.
 
-After interruption or `unknown`, preserve the selected reference and use
-**Look up creation receipt…** with the same grant's current v6 connection.
+After interruption or `unknown`, preserve the selected reference and use *_Look up creation receipt鈥?_ with the same grant's current v6 connection.
 `not-found` never automatically resubmits. Closing, refreshing or selecting a
 different plugin discards late UI results; a dispatched operation may still
 save its draft. No reference is deleted or replaced to recover an outcome.
@@ -87,7 +83,7 @@ installing the package starts no automatic work. Task creation and real GUI
 acceptance remain pending.
 
 In the plugin manager select the admitted `goal-project-observer` plugin and
-choose **Recover retained history…**. Native dialogs select the separately
+choose **Recover retained history鈥?*. Native dialogs select the separately
 authorized v5 `goal.event-history` connection, desktop goal ID, and either a new
 checkpoint or the original existing checkpoint. Results appear as plain text in
 **Retained history** after the CLI exits zero and the bounded result passes
@@ -108,7 +104,7 @@ Real JetBrains GUI and cross-platform acceptance remain pending.
 ## Desktop goal event observer (.195)
 
 In the plugin manager select the installed, trusted/consented
-`goal-project-observer` extension and choose **Observe desktop events…**. Select
+`goal-project-observer` extension and choose **Observe desktop events鈥?*. Select
 a separately authorized v4 `goal.events` connection using the native file picker,
 then enter the goal ID shown in the desktop. Read-only results appear in the
 **Goal events** tab with **Stop and clear**. Use matching local CLI and desktop
@@ -127,7 +123,7 @@ real JetBrains GUI journey.
 
 CLI **0.166.141** is public through GitHub Actions OIDC. Open VSX **0.37.177** and JetBrains **0.4.194** are public and both recommend CLI **0.166.141**. CLI public bytes, signed provenance, registry-only `--ignore-scripts` installation and the Agent capability startup probe passed. Both public IDE payloads match their official builds.
 
-Exact release source：`df9295e33ad04aec0aa74cab4dd242766d5556a4`。CLI CI **76/76** / Strict Sandbox **6/6** passed across Linux, Windows and macOS.
+Exact release source锛歚df9295e33ad04aec0aa74cab4dd242766d5556a4`銆侰LI CI **76/76** / Strict Sandbox **6/6** passed across Linux, Windows and macOS.
 
 This release preserves valid spread expressions in complete source previews, keeps read recovery actionable, and shares launcher-owned exact file scope across CLI and IDE evaluations. The diagnostic broker rejects a formal budget scope before reading options. Existing interactive permissions, IDE protocol and finite diagnostic limits remain.
 
@@ -135,7 +131,7 @@ Install `npm i -g chainlesschain@0.166.141 --registry https://registry.npmjs.org
 
 No additional model-task retests were run. Volcengine corrected .140 round: generation **39/45**, strict acceptance **24/45**; historical automatic-deliverable union **36/45**, with **9** remaining and the verify-06 candidate-only qualification preserved. Sol original frozen-project history **41/45**, cross-version coverage including repaired sources **45/45**, and the separate .140 repaired-project four-case result **2/4** retain distinct scopes.
 
-[Publication evidence](../../docs/research/cli/evidence/release141-public/README.md) · [45-task ledger](../../docs/research/cli/verify01-36-plus-9-task-list.md)
+[Publication evidence](../../docs/research/cli/evidence/release141-public/README.md) 路 [45-task ledger](../../docs/research/cli/verify01-36-plus-9-task-list.md)
 
 SDK **0.2.17**, Protocol **0.1.12**, Kernel **0.1.11** and child npm versions are unchanged; public child bytes and dependency installation were verified before CLI publication. PC/mobile **v5.0.3.144** remain independent. Microsoft Marketplace is deferred. NOT_PAID_READY / NOT_ADMITTED / HOLD remain.
 
@@ -149,13 +145,13 @@ As checked at **2026-11-03T11:42:31.329Z**, CLI **0.166.140** is verified public
 
 Open VSX **0.37.176** is public, listed and downloadable; its VSIX matches the official build byte for byte. JetBrains **0.4.193** has been uploaded and awaits Marketplace review or public indexing; public availability has not been verified. The previously verified public JetBrains release remains **0.4.192**, whose recommendation is CLI **0.166.139**. Both new IDE versions recommend CLI **0.166.140**.
 
-[Publication and channel receipts](../../docs/research/cli/evidence/release140-public/publication-readback.json) · [Exact-source gates](../../docs/research/cli/evidence/release140-public/gates.json) · [CLI public readback](../../docs/research/cli/evidence/release140-public/cli.json) · [Open VSX readback](../../docs/research/cli/evidence/release140-public/open-vsx.json) · [JetBrains status](../../docs/research/cli/evidence/release140-public/jetbrains.json)
+[Publication and channel receipts](../../docs/research/cli/evidence/release140-public/publication-readback.json) 路 [Exact-source gates](../../docs/research/cli/evidence/release140-public/gates.json) 路 [CLI public readback](../../docs/research/cli/evidence/release140-public/cli.json) 路 [Open VSX readback](../../docs/research/cli/evidence/release140-public/open-vsx.json) 路 [JetBrains status](../../docs/research/cli/evidence/release140-public/jetbrains.json)
 
 Install `npm i -g chainlesschain@0.166.140 --registry https://registry.npmjs.org`, restart the CLI and IDE chat hosts, then run `cc --version` and `cc doctor`.
 
 Malformed provider tool arguments are rejected before tool execution. A uniquely paired pre-execution rejection produces a model-only placeholder so the next turn can continue through strict self-evolution projection. Legacy run_code snapshot rejections can resume without replaying the rejected call; original durable history stays unchanged. Valid object arguments, duplicate-key rejection, nested JSON checks, redaction and decoding budgets retain their existing boundaries.
 
-Agent projection v10 also prevents genuine image and reasoning transport SHA-256 digests from being mistaken for phone numbers. Only authenticated protocol metadata uses the scan view; the original digest and byte-length restoration binding is unchanged. Real phone numbers, user-supplied digest-like text and forged markers retain their existing checks, and v1–v9 historical rules are preserved.
+Agent projection v10 also prevents genuine image and reasoning transport SHA-256 digests from being mistaken for phone numbers. Only authenticated protocol metadata uses the scan view; the original digest and byte-length restoration binding is unchanged. Real phone numbers, user-supplied digest-like text and forged markers retain their existing checks, and v1鈥搗9 historical rules are preserved.
 
 The focused Windows checks passed **129 tests**. The earlier v9 recovery check used **five real Volcengine requests and 6,401 tokens**; its first scenario explicitly injected the exact logged malformed argument into one inbound model response. [Original scoped evidence](../../docs/research/cli/evidence/tool-argument-recovery-20261103/live-volcengine.json). The separate v10 check passed both recovery scenarios with **five real Volcengine requests and 6,501 tokens**, with runtime source hashes matching this release. [Additional scoped evidence](../../docs/research/cli/evidence/tool-argument-recovery-20261103/live-volcengine-v10.json). The complete related projector/agent-model tests passed **393/393**. These runs remain separate and add no historical model-task acceptance.
 
@@ -179,14 +175,13 @@ Main also contains the later standalone WebSocket host-model-policy repair (`2e9
 
 ## Self-evolution switch
 
-完整中文配置与排查步骤见[CLI 与 IDE 自进化开关配置](../../docs/cli/SELF_EVOLUTION_CONFIGURATION.md)。
+瀹屾暣涓枃閰嶇疆涓庢帓鏌ユ楠よ[CLI 涓?IDE 鑷繘鍖栧紑鍏抽厤缃甝(../../docs/cli/SELF_EVOLUTION_CONFIGURATION.md)銆?
+Open *_Skill 鑷繘鍖栭厤缃?_ through ChainlessChain settings/actions to enable or disable self-evolution. The switch shares the CLI user `config.json` field `evolution.enabled`, defaults to off, and can initialize the local signed runtime on explicit enable. Disabling preserves deployment data and ordinary Agent functionality. Stop and restart a running Agent session after changing it. These controls require CLI 0.166.127 and the paired plugin version below.
 
-Open **Skill 自进化配置** through ChainlessChain settings/actions to enable or disable self-evolution. The switch shares the CLI user `config.json` field `evolution.enabled`, defaults to off, and can initialize the local signed runtime on explicit enable. Disabling preserves deployment data and ordinary Agent functionality. Stop and restart a running Agent session after changing it. These controls require CLI 0.166.127 and the paired plugin version below.
-
-Phase 3 of the IDE bridge (`docs/design/modules/98_IDE桥接对标方案.md`). The
+Phase 3 of the IDE bridge (`docs/design/modules/98_IDE妗ユ帴瀵规爣鏂规.md`). The
 JetBrains counterpart of the [VS Code extension](../vscode-extension/): it lets
 the ChainlessChain **`cc` agent CLI** read editor context and propose native
-diffs inside IntelliJ-platform IDEs (IDEA, PyCharm, WebStorm, …).
+diffs inside IntelliJ-platform IDEs (IDEA, PyCharm, WebStorm, 鈥?.
 
 ## Previous public release: 0.4.189
 
@@ -200,7 +195,7 @@ JetBrains **0.4.188** is approved, listed, visible and publicly downloadable. It
 
 JetBrains **0.4.187** is approved and listed, recommends public CLI **0.166.132**, and pairs with Open VSX **0.37.170**. Install the CLI with `npm i -g chainlesschain@0.166.132 --registry https://registry.npmjs.org`, restart the chat host, then run `cc --version` and `cc doctor`.
 
-Immutable tag `ide-jetbrains-v0.4.187` selects [source 772fcdbda85bcf91df95bfced5b476dcf4c74614](https://github.com/longfa/chainlesschain/commit/772fcdbda85bcf91df95bfced5b476dcf4c74614). The [release run](https://github.com/chainlesschain/chainlesschain/actions/runs/40987418150) passed. Public [update 1206433](https://plugins.jetbrains.com/files/32208/1206433/chainlesschain-ide-bridge-0.4.187.zip) preserves all **2** original payload entries from [official candidate artifact 12948179434](https://github.com/chainlesschain/chainlesschain/actions/runs/40987418150/artifacts/12948179434). [Public ZIP readback](https://github.com/longfa/chainlesschain/blob/0d57ebfea919ae941a36a1f11a9ee10964722120/docs/research/cli/evidence/release132-public/jetbrains.json) · [validation gates](https://github.com/longfa/chainlesschain/blob/0d57ebfea919ae941a36a1f11a9ee10964722120/docs/research/cli/evidence/release132-public/gates.json) · [publication evidence](https://github.com/longfa/chainlesschain/blob/0d57ebfea919ae941a36a1f11a9ee10964722120/docs/research/cli/evidence/release132-public/publication.json). This pairing carries CLI response completion and current-task protections; there is no independent IDE UI change.
+Immutable tag `ide-jetbrains-v0.4.187` selects [source 772fcdbda85bcf91df95bfced5b476dcf4c74614](https://github.com/longfa/chainlesschain/commit/772fcdbda85bcf91df95bfced5b476dcf4c74614). The [release run](https://github.com/chainlesschain/chainlesschain/actions/runs/40987418150) passed. Public [update 1206433](https://plugins.jetbrains.com/files/32208/1206433/chainlesschain-ide-bridge-0.4.187.zip) preserves all **2** original payload entries from [official candidate artifact 12948179434](https://github.com/chainlesschain/chainlesschain/actions/runs/40987418150/artifacts/12948179434). [Public ZIP readback](https://github.com/longfa/chainlesschain/blob/0d57ebfea919ae941a36a1f11a9ee10964722120/docs/research/cli/evidence/release132-public/jetbrains.json) 路 [validation gates](https://github.com/longfa/chainlesschain/blob/0d57ebfea919ae941a36a1f11a9ee10964722120/docs/research/cli/evidence/release132-public/gates.json) 路 [publication evidence](https://github.com/longfa/chainlesschain/blob/0d57ebfea919ae941a36a1f11a9ee10964722120/docs/research/cli/evidence/release132-public/publication.json). This pairing carries CLI response completion and current-task protections; there is no independent IDE UI change.
 
 At historical source `abbe13ad3658ff9e2e100989a4cfefc409d9261c`, the combined local suite actually ran **456 tests across 18 files + 10 real CLI tests across 3 files**, with no skips. Subsequent fixture and native-preflight repairs compared the selected runtime components byte for byte; release source `772fcdbda85bcf91df95bfced5b476dcf4c74614` did **not** repeat that combined local suite. [Component scope evidence](https://github.com/longfa/chainlesschain/blob/0d57ebfea919ae941a36a1f11a9ee10964722120/docs/research/cli/evidence/release132-native-preflight-2026-10-30/review.json) and the release source's [cloud gates](https://github.com/longfa/chainlesschain/blob/0d57ebfea919ae941a36a1f11a9ee10964722120/docs/research/cli/evidence/release132-public/gates.json) retain this distinction. Failed source `40753f179a3dc18760bd64a754b28a46ba718f57` and the earlier superseded `7f8ef64b4bd8b429f97d2e121c440143ed7ddf3b` remain historical; their successful checks do not transfer to this release.
 
@@ -208,13 +203,13 @@ Automatic acceptance remains **34/45**, with **11** unfinished; **3 assisted del
 
 ## Previous public release: 0.4.186
 
-Plugin **0.4.186** is approved, listed, visible and publicly downloadable. It recommends CLI **0.166.131** and pairs with Open VSX **0.37.169**. Exact-source release [40866846685](https://github.com/chainlesschain/chainlesschain/actions/runs/40866846685) passed; public update **1206001** matches all **2** official ZIP payload entries from artifact **12896140907**, with no added members. [Public ZIP](https://plugins.jetbrains.com/files/32208/1206001/chainlesschain-ide-bridge-0.4.186.zip) · [Readback](../../docs/research/cli/evidence/release131-public/jetbrains.json). Install CLI with `npm i -g chainlesschain@0.166.131 --registry https://registry.npmjs.org`, restart the host and run `cc --version` and `cc doctor`. Acceptance remains **34/45**; full Memory, semantic and paid/native admission limits remain. Older notes below retain their historical scope.
+Plugin **0.4.186** is approved, listed, visible and publicly downloadable. It recommends CLI **0.166.131** and pairs with Open VSX **0.37.169**. Exact-source release [40866846685](https://github.com/chainlesschain/chainlesschain/actions/runs/40866846685) passed; public update **1206001** matches all **2** official ZIP payload entries from artifact **12896140907**, with no added members. [Public ZIP](https://plugins.jetbrains.com/files/32208/1206001/chainlesschain-ide-bridge-0.4.186.zip) 路 [Readback](../../docs/research/cli/evidence/release131-public/jetbrains.json). Install CLI with `npm i -g chainlesschain@0.166.131 --registry https://registry.npmjs.org`, restart the host and run `cc --version` and `cc doctor`. Acceptance remains **34/45**; full Memory, semantic and paid/native admission limits remain. Older notes below retain their historical scope.
 
 ## Previous public release: 0.4.185
 
 Plugin **0.4.185** was the previous public release. It recommends CLI **`0.166.130`** and pairs with public Open VSX **0.37.168**. It is approved, listed, not hidden and publicly downloadable. Immutable tag `ide-jetbrains-v0.4.185` selects source `f3015e799624b81af564aaaa1b7701c0a5c70e26`; the exact-source [release workflow](https://github.com/chainlesschain/chainlesschain/actions/runs/40800404557) passed, including real host and browser journeys. Clean-home onboarding validates the actual IDE configuration root.
 
-The public [plugin ZIP](https://plugins.jetbrains.com/files/32208/1205656/chainlesschain-ide-bridge-0.4.185.zip) contains plugin **0.4.185** and compiled CLI recommendation **0.166.130**. All **2** original ZIP payload entries match tagged CI, with no added entries. Public SHA-256: `28724dd6d05401acea944a8fc1cfb8c7cc894b3fa8c0c29215db21fafd95f3f6`, **1,561,088 bytes**. [Archive readback](../../docs/research/cli/evidence/release130-public/jetbrains.json) · [Publication evidence](../../docs/research/cli/evidence/release130-public/publication.json).
+The public [plugin ZIP](https://plugins.jetbrains.com/files/32208/1205656/chainlesschain-ide-bridge-0.4.185.zip) contains plugin **0.4.185** and compiled CLI recommendation **0.166.130**. All **2** original ZIP payload entries match tagged CI, with no added entries. Public SHA-256: `28724dd6d05401acea944a8fc1cfb8c7cc894b3fa8c0c29215db21fafd95f3f6`, **1,561,088 bytes**. [Archive readback](../../docs/research/cli/evidence/release130-public/jetbrains.json) 路 [Publication evidence](../../docs/research/cli/evidence/release130-public/publication.json).
 
 Install `npm i -g chainlesschain@0.166.130 --registry https://registry.npmjs.org`, restart the chat host and check `cc --version`, `cc doctor` and the actual CLI path. Historical cumulative accepted deliverables remain **34/45** (ordinary **27/36**, first-run **7/9**), with **11** unfinished. The frozen formal evaluation remains **NOT_RUN (0/36, 0/9)**. Publication and CI add no task acceptance; **NOT_PAID_READY / NOT_ADMITTED / HOLD** remain. Public `.130` pins `@chainlesschain/context-memory-kernel@0.1.10`. Later main-branch kernel `0.1.11`, independent `verify:` Goal checks, Memory disk cancellation/cache changes and Terra capability/billing work are unreleased and require a separate release with child publication and fresh exact-source gates. [Current upgrade guide](../../docs-site/docs/chainlesschain/agent-platform-release.md).
 
@@ -222,7 +217,7 @@ Install `npm i -g chainlesschain@0.166.130 --registry https://registry.npmjs.org
 
 JetBrains **0.4.184** is approved, listed, not hidden and publicly downloadable. It recommends CLI **`0.166.129`** and pairs with public Open VSX **0.37.167**. Immutable tag `ide-jetbrains-v0.4.184` selects source `800e9cc99711f9f02eb3bbd78eb14600406bdba5`; the exact-source [release workflow](https://github.com/chainlesschain/chainlesschain/actions/runs/40724923599) passed. This release retains shared model configuration and conversation-local overrides, and includes clean-home onboarding validation of the actual IDE configuration root.
 
-The public [plugin ZIP](https://plugins.jetbrains.com/files/32208/1205524/chainlesschain-ide-bridge-0.4.184.zip) contains plugin **0.4.184** and compiled CLI recommendation **0.166.129**. All ZIP member bytes match the CI payload; the outer ZIP bytes differ. Public SHA-256: `eed876bdf005856215200a353af952a76234ea5e62043d0b23b6dc1b3cf4ffe3`, **1,560,992 bytes**. [Publication evidence](../../docs/research/cli/evidence/release129-public/publication.json) · [Archive readback](../../docs/research/cli/evidence/implementation-plan-2026-10-15/task-campaign-2026-10-18/next-package-128-review-20261028/supersession/package-readback.json).
+The public [plugin ZIP](https://plugins.jetbrains.com/files/32208/1205524/chainlesschain-ide-bridge-0.4.184.zip) contains plugin **0.4.184** and compiled CLI recommendation **0.166.129**. All ZIP member bytes match the CI payload; the outer ZIP bytes differ. Public SHA-256: `eed876bdf005856215200a353af952a76234ea5e62043d0b23b6dc1b3cf4ffe3`, **1,560,992 bytes**. [Publication evidence](../../docs/research/cli/evidence/release129-public/publication.json) 路 [Archive readback](../../docs/research/cli/evidence/implementation-plan-2026-10-15/task-campaign-2026-10-18/next-package-128-review-20261028/supersession/package-readback.json).
 
 Install the paired CLI with `npm i -g chainlesschain@0.166.129 --registry https://registry.npmjs.org`. Restart the chat host and check `cc --version`, `cc doctor` and the actual CLI path. Cumulative task acceptance remains **34/45**, with **11** unfinished; **NOT_PAID_READY / NOT_ADMITTED / HOLD** remain. Later main-branch Goal, Memory and Terra changes are not part of these public packages. [Upgrade guide](../../docs-site/docs/chainlesschain/cli-ide-update-2026-10-29.md). Microsoft distribution is deferred.
 
@@ -313,7 +308,7 @@ observed process-tree termination in the current development branch.
 text, attachment snapshots, saved input review, and CLI acceptance receipts in
 the current development branch.
 
-**The bridge needs no IDE-specific CLI transport fork** — this plugin writes
+**The bridge needs no IDE-specific CLI transport fork** 鈥?this plugin writes
 the _same_ lockfile and speaks the _same_ MCP protocol as the VS Code
 extension; only `ide` differs (`"jetbrains"`). Feature controls still require
 the corresponding exact-gated CLI command, as documented below.
@@ -323,9 +318,9 @@ See the [verified publication evidence](https://github.com/longfa/chainlesschain
 
 ## Release compatibility
 
-Plugin **0.4.207** is the current public release, approved and listed. It recommends `chainlesschain@0.166.156` for current LK model identities and authenticated account queries. Complete host gates, upload and public ZIP verification passed. [Release scope](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-156.md).
+Plugin **0.4.208** is the current release candidate and recommends `chainlesschain@0.166.157`. It has not been published; the previous verified public pairing remains current until the exact tag workflow and Marketplace readback pass. [Release scope](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-19-157.md).
 
-Install the paired public CLI with `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org`, restart the chat host, and run `cc --version` and `cc doctor`. Goal transfer and native Graph features require matching desktop support and explicit native authorization. Model-task improvement and automatic promotion remain unverified.
+Install the paired public CLI with `npm i -g chainlesschain@0.166.157 --registry https://registry.npmjs.org`, restart the chat host, and run `cc --version` and `cc doctor`. Goal transfer and native Graph features require matching desktop support and explicit native authorization. Model-task improvement and automatic promotion remain unverified.
 
 ## Previous candidates and development notes
 
@@ -503,7 +498,7 @@ message subjects/bodies and attempt credentials are never retained or rendered.
 ## Governed ghost-text completion
 
 Press **Alt+\\** for an explicit completion at the caret. Automatic ghost text
-is independently opt-in under **Settings → Tools → ChainlessChain IDE** and is
+is independently opt-in under **Settings 鈫?Tools 鈫?ChainlessChain IDE** and is
 off by default to prevent surprise model cost. Once enabled it uses a 650 ms
 debounce, platform cancellation, exact-context in-flight dedupe and TTL cache,
 bounded local context, independent hourly request/context-character budgets,
@@ -511,15 +506,15 @@ and length/line/prose quality fallback. Rolling metrics evaluate a fixed
 P50 <= 2 s / P95 <= 5 s visible-latency SLO after 20 samples; results slower
 than five seconds fail quiet and do not interrupt editing or the main Agent.
 
-## Automatic awareness (cc ≥ 0.162.39)
+## Automatic awareness (cc 鈮?0.162.39)
 
-With a current `cc` CLI the agent doesn't just _have_ the bridge tools — it
+With a current `cc` CLI the agent doesn't just _have_ the bridge tools 鈥?it
 uses them on its own:
 
 - **Your selection rides along with every prompt** as an ephemeral
   `<ide-context>` block (active file, open tabs, selected text); never written
   into the saved session.
-- **Post-edit diagnostics feed back into the loop** — after the agent edits a
+- **Post-edit diagnostics feed back into the loop** 鈥?after the agent edits a
   file, the IDE's fresh errors/warnings are attached to the tool result so the
   model fixes what it just broke in the same run.
 - **REPL `@` tab-completion prefers your open tabs.**
@@ -527,7 +522,7 @@ uses them on its own:
   deterministic 4,096-token budget, per-chip source/scope/freshness/range,
   allocation status, and inclusion reason. `@selection`, `@diagnostics`, and
   `@terminal` remain available for focused references.
-- **Tools → ChainlessChain: Context Center** opens the project chip list with
+- **Tools 鈫?ChainlessChain: Context Center** opens the project chip list with
   pin/unpin, remove/restore, refresh, and fixed-budget controls. Preferences
   persist in project state and become the default for `getContextCenter`. The
   list includes VCS change-list hunks, bounded project instruction files, and
@@ -538,15 +533,15 @@ Set `CC_IDE_CONTEXT=0` to turn the automatic sharing off.
 
 ## Remote Control network exposure
 
-Tools → **ChainlessChain: Remote Control** starts direct mode on loopback by
+Tools 鈫?**ChainlessChain: Remote Control** starts direct mode on loopback by
 default. Its local-only URI is shown as local pairing details and is not
-rendered as a phone QR. To pair another device, open **Connection settings…**
+rendered as a phone QR. To pair another device, open *_Connection settings鈥?_
 and configure an E2EE relay, or explicitly choose **Allow LAN (trusted
 networks only)**. The LAN choice is off by default, persists application-wide,
 and is the only IDE setting that adds `--allow-lan`; direct LAN transport uses
 plaintext `ws://` and may require a firewall rule.
 
-## Project memory & REPL steering (cc ≥ 0.162.41)
+## Project memory & REPL steering (cc 鈮?0.162.41)
 
 The bridge injects `CHAINLESSCHAIN_IDE_PORT/TOKEN` into the IDE terminal, so
 the CLI's 0.162.41 batch works there with zero plugin changes:
@@ -565,7 +560,7 @@ the CLI's 0.162.41 batch works there with zero plugin changes:
 
 ## Configure the LLM (first run)
 
-Tools → **ChainlessChain: Configure LLM** — pick a provider (10 presets),
+Tools 鈫?**ChainlessChain: Configure LLM** 鈥?pick a provider (10 presets),
 enter model/API key/base URL (defaults prefilled); the wizard writes
 `~/.chainlesschain/config.json` via `cc config set` and verifies with
 `cc llm test`. One config shared by the CLI, this plugin, and the VS Code
@@ -575,28 +570,28 @@ extension; the key never enters IDE settings.
 
 The code is split into two layers:
 
-| Layer         | Package                           | IntelliJ SDK?     | Verified                        |
-| ------------- | --------------------------------- | ----------------- | ------------------------------- |
-| Protocol core | `com.chainlesschain.ide`          | **No — pure JDK** | compiled + interop-tested       |
-| Editor glue   | `com.chainlesschain.ide.intellij` | Yes               | Gradle test/smoke/package gates |
+| Layer         | Package                           | IntelliJ SDK?      | Verified                        |
+| ------------- | --------------------------------- | ------------------ | ------------------------------- |
+| Protocol core | `com.chainlesschain.ide`          | **No 鈥?pure JDK** | compiled + interop-tested       |
+| Editor glue   | `com.chainlesschain.ide.intellij` | Yes                | Gradle test/smoke/package gates |
 
 **Wire contract**: the protocol core implements Agent Protocol v1 as
 documented in [`packages/agent-sdk/docs/PROTOCOL.md`](../agent-sdk/docs/PROTOCOL.md)
-— the same contract the TypeScript consumers (VS Code extension, web-panel)
+鈥?the same contract the TypeScript consumers (VS Code extension, web-panel)
 get as types from `@chainlesschain/agent-sdk`. Kotlin/Java consumes the
 protocol directly; the protocol document, not the SDK, is the compatibility
 surface. `AgentChatSession` / `ChatEvents` must track that document.
 
-- **`MiniJson`** — dependency-free JSON parse/serialize.
-- **`McpServer`** — Streamable-HTTP MCP server (`com.sun.net.httpserver`), the
+- **`MiniJson`** 鈥?dependency-free JSON parse/serialize.
+- **`McpServer`** 鈥?Streamable-HTTP MCP server (`com.sun.net.httpserver`), the
   same wire protocol the CLI MCP client POSTs (initialize / tools/list /
   tools/call) + bearer auth.
-- **`LockfileWriter`** — writes `~/.chainlesschain/ide/<port>.json` (0600/0700,
+- **`LockfileWriter`** 鈥?writes `~/.chainlesschain/ide/<port>.json` (0600/0700,
   `ide:"jetbrains"`), read by the CLI's Phase-0 discovery.
-- **`IdeTools` / `EditorFacade`** — the editor bridge tools against an editor
+- **`IdeTools` / `EditorFacade`** 鈥?the editor bridge tools against an editor
   facade; the complete tool-to-feature map is pinned by the generated public
   capability contract below.
-- **`intellij.*`** — `IntellijEditorFacade` (Editor/PSI/Diff APIs),
+- **`intellij.*`** 鈥?`IntellijEditorFacade` (Editor/PSI/Diff APIs),
   `IdeBridgeService` (lifecycle), `IdeBridgeStartup` (postStartupActivity),
   `IdeBridgeTerminalCustomizer` (env injection), `ShowStatusAction`.
 

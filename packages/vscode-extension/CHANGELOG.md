@@ -1,10 +1,14 @@
 # Changelog — ChainlessChain IDE Bridge (VS Code)
 
-## [0.37.192] - Current LK API models and billing (candidate, 2026-11-18)
+## [0.37.193] - CLI 0.166.157 pairing candidate (2026-11-20)
 
-- Pair with CLI `0.166.156` after its verified public npm release.
+- Pair with public CLI `0.166.157` after its verified public npm release.
 - Refresh LK model choices from the documented Skills API. Use `gpt-6.1-sol` and current protocol-specific IDs, keeping retired aliases in the same model family.
 - Validate saved LK pricing, balance, usage and billing through the paired CLI. Require complete host and browser gates before Open VSX publication.
+
+## [0.37.192] - Current LK API models and billing (public, 2026-11-18)
+
+- Pair with public CLI `0.166.156`; this remains the latest verified IDE pairing until the 0.37.193 tag passes.
 
 ## [0.37.191] - CLI recovery pairing (candidate, 2026-11-16)
 
