@@ -101,17 +101,23 @@ function assertDrill(result) {
     result.status !== "passed" ||
     result.firstAttempt.completed !== false ||
     result.firstAttempt.goalStatus !== "active" ||
+    result.firstAttempt.reportMet !== false ||
     result.completedAttempt.completed !== true ||
     result.completedAttempt.goalStatus !== "done" ||
+    result.completedAttempt.reportMet !== true ||
     result.reopened.goalStatus !== "done" ||
     result.replayed.replayed !== true ||
     result.replayed.completed !== true ||
     result.replayed.goalStatus !== "done" ||
-    result.falseCompletionCount !== 1 ||
+    result.falseCompletionCount !== 0 ||
+    result.rejectedAttemptCount !== 1 ||
     result.completionCount !== 1 ||
     result.reopened.completionEvidenceRefs !== 1
   )
-    throw new Error("DMM-09 business acceptance drill did not pass");
+    throw Object.assign(
+      new Error("DMM-09 business acceptance drill did not pass"),
+      { report: result },
+    );
   return result;
 }
 
@@ -122,126 +128,147 @@ export function runBusinessAcceptanceDrill({ root, output } = {}) {
     : fs.mkdtempSync(path.join(os.tmpdir(), "chainlesschain-dmm09-"));
   fs.mkdirSync(workRoot, { recursive: true });
   const databasePath = path.join(workRoot, "project.sqlite");
-  let db = new Database(databasePath);
-  db.pragma("journal_mode = WAL");
-  db.pragma("synchronous = FULL");
-  initialize(db);
+  let db;
+  let now = CLOCK;
+  try {
+    db = new Database(databasePath);
+    db.pragma("journal_mode = WAL");
+    db.pragma("synchronous = FULL");
+    initialize(db);
 
-  const makeService = () =>
-    new ProjectGoalCompletionService({
-      db,
-      getActor: () => OWNER,
-      clock: () => CLOCK,
-      approvalGate: new ApprovalGate({ confirm: async () => true }),
+    const makeService = () =>
+      new ProjectGoalCompletionService({
+        db,
+        getActor: () => OWNER,
+        clock: () => now,
+        approvalGate: new ApprovalGate({ confirm: async () => true }),
+      });
+    let service = makeService();
+    let goal = service.goals.create({
+      projectId: "dmm-business-sample",
+      objective: "Deliver the customer report with independent verification",
+      budgetPolicy: { maxRuns: 10 },
     });
-  let service = makeService();
-  let goal = service.goals.create({
-    projectId: "dmm-business-sample",
-    objective: "Deliver the customer report with independent verification",
-    budgetPolicy: { maxRuns: 10 },
-  });
-  goal = service.configure({
-    goalId: goal.id,
-    expectedRevision: goal.revision,
-    acceptanceCriteria: [
-      {
-        id: "report-delivered",
-        kind: "business-assertion",
-        description:
-          "The report preparation and verification tasks are complete",
+    goal = service.configure({
+      goalId: goal.id,
+      expectedRevision: goal.revision,
+      acceptanceCriteria: [
+        {
+          id: "report-delivered",
+          kind: "business-assertion",
+          description:
+            "The report preparation and verification tasks are complete",
+        },
+      ],
+      assertions: [
+        { criterionId: "report-delivered", type: "all-tasks-completed" },
+      ],
+    }).goal;
+
+    const pendingInput = {
+      goalId: goal.id,
+      expectedRevision: goal.revision,
+      requestId: "dmm09-pending-check",
+    };
+    const first = service.complete(pendingInput);
+    const pendingTasks = taskSnapshot(db);
+    if (first.completed || first.report.met || first.goal.status !== "active")
+      throw new Error("incomplete business outcome was accepted");
+
+    // Business rows and the verifier share a forward-moving fixture clock.
+    // A task updated after the verifier's as-of watermark must stay rejected.
+    now += 1000;
+    db.prepare(
+      "UPDATE project_tasks SET status='completed',updated_at=? WHERE project_id=?",
+    ).run(now, "dmm-business-sample");
+    const completedInput = {
+      goalId: goal.id,
+      expectedRevision: goal.revision,
+      requestId: "dmm09-complete",
+    };
+    const completed = service.complete(completedInput);
+    const completedTasks = taskSnapshot(db);
+    const completionEvidenceRefs =
+      completed.goal.completion?.evidenceRefs || [];
+
+    db.close();
+    db = new Database(databasePath);
+    db.pragma("journal_mode = WAL");
+    db.pragma("synchronous = FULL");
+    service = makeService();
+    const reopenedGoal = service.goals.get({ id: goal.id });
+    const reopened = {
+      goalStatus: reopenedGoal.status,
+      completionEvidenceRefs:
+        reopenedGoal.completion?.evidenceRefs?.length || 0,
+      taskSnapshot: taskSnapshot(db),
+    };
+    const replayed = service.complete(completedInput);
+    const fixtureDigest = digest({
+      projectId: "dmm-business-sample",
+      tasks: completedTasks,
+      acceptance: "report-delivered",
+    });
+    const result = assertDrill({
+      schema: DMM_BUSINESS_ACCEPTANCE_SCHEMA,
+      status: "passed",
+      generatedAt: new Date().toISOString(),
+      fixtureAsOf: new Date(now).toISOString(),
+      owner: OWNER,
+      projectId: "dmm-business-sample",
+      goalId: goal.id,
+      fixtureDigest,
+      firstAttempt: {
+        completed: first.completed,
+        goalStatus: first.goal.status,
+        reportMet: first.report.met,
+        taskSnapshot: pendingTasks,
       },
-    ],
-    assertions: [
-      { criterionId: "report-delivered", type: "all-tasks-completed" },
-    ],
-  }).goal;
-
-  const pendingInput = {
-    goalId: goal.id,
-    expectedRevision: goal.revision,
-    requestId: "dmm09-pending-check",
-  };
-  const first = service.complete(pendingInput);
-  const pendingTasks = taskSnapshot(db);
-  if (first.completed || first.report.met || first.goal.status !== "active")
-    throw new Error("incomplete business outcome was accepted");
-
-  db.prepare(
-    "UPDATE project_tasks SET status='completed',updated_at=? WHERE project_id=?",
-  ).run(CLOCK + 1000, "dmm-business-sample");
-  const completedInput = {
-    goalId: goal.id,
-    expectedRevision: goal.revision,
-    requestId: "dmm09-complete",
-  };
-  const completed = service.complete(completedInput);
-  const completedTasks = taskSnapshot(db);
-  const completionEvidenceRefs = completed.goal.completion?.evidenceRefs || [];
-
-  db.close();
-  db = new Database(databasePath);
-  db.pragma("journal_mode = WAL");
-  db.pragma("synchronous = FULL");
-  service = makeService();
-  const reopenedGoal = service.goals.get({ id: goal.id });
-  const reopened = {
-    goalStatus: reopenedGoal.status,
-    completionEvidenceRefs: reopenedGoal.completion?.evidenceRefs?.length || 0,
-    taskSnapshot: taskSnapshot(db),
-  };
-  const replayed = service.complete(completedInput);
-  const fixtureDigest = digest({
-    projectId: "dmm-business-sample",
-    tasks: completedTasks,
-    acceptance: "report-delivered",
-  });
-  const result = assertDrill({
-    schema: DMM_BUSINESS_ACCEPTANCE_SCHEMA,
-    status: "passed",
-    generatedAt: new Date(CLOCK).toISOString(),
-    owner: OWNER,
-    projectId: "dmm-business-sample",
-    goalId: goal.id,
-    fixtureDigest,
-    firstAttempt: {
-      completed: first.completed,
-      goalStatus: first.goal.status,
-      reportMet: first.report.met,
-      taskSnapshot: pendingTasks,
-    },
-    completedAttempt: {
-      completed: completed.completed,
-      goalStatus: completed.goal.status,
-      reportMet: completed.report.met,
-      evidenceRefs: completionEvidenceRefs.length,
-      taskSnapshot: completedTasks,
-    },
-    reopened,
-    replayed: {
-      completed: replayed.completed,
-      replayed: replayed.replayed,
-      goalStatus: replayed.goal.status,
-    },
-    falseCompletionCount: 1,
-    completionCount: db
-      .prepare(
-        "SELECT COUNT(*) AS n FROM cc_project_goal_acceptance WHERE kind='check' AND json_extract(record_json,'$.met')=1",
-      )
-      .get().n,
-  });
-  db.close();
-  if (output) {
-    const outputPath = path.resolve(output);
-    fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-    fs.writeFileSync(
-      outputPath,
-      `${JSON.stringify(result, null, 2)}\n`,
-      "utf8",
-    );
-    result.output = outputPath;
+      completedAttempt: {
+        completed: completed.completed,
+        goalStatus: completed.goal.status,
+        reportMet: completed.report.met,
+        evidenceRefs: completionEvidenceRefs.length,
+        taskSnapshot: completedTasks,
+      },
+      reopened,
+      replayed: {
+        completed: replayed.completed,
+        replayed: replayed.replayed,
+        goalStatus: replayed.goal.status,
+      },
+      rejectedAttemptCount: db
+        .prepare(
+          "SELECT COUNT(*) AS n FROM cc_project_goal_acceptance WHERE kind='check' AND json_extract(record_json,'$.met')=0",
+        )
+        .get().n,
+      falseCompletionCount: db
+        .prepare(
+          "SELECT COUNT(*) AS n FROM cc_project_goal_acceptance WHERE kind='check' AND json_extract(record_json,'$.met')=0 AND json_extract(record_json,'$.appliedRevision') IS NOT NULL",
+        )
+        .get().n,
+      completionCount: db
+        .prepare(
+          "SELECT COUNT(*) AS n FROM cc_project_goal_acceptance WHERE kind='check' AND json_extract(record_json,'$.met')=1",
+        )
+        .get().n,
+    });
+    db.close();
+    if (output) {
+      const outputPath = path.resolve(output);
+      fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+      fs.writeFileSync(
+        outputPath,
+        `${JSON.stringify(result, null, 2)}\n`,
+        "utf8",
+      );
+      result.output = outputPath;
+    }
+    return result;
+  } finally {
+    if (db?.open) db.close();
+    if (ownsRoot) fs.rmSync(workRoot, { recursive: true, force: true });
   }
-  if (ownsRoot) fs.rmSync(workRoot, { recursive: true, force: true });
-  return result;
 }
 
 function parseArgs(argv) {
