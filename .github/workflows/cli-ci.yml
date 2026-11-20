@@ -531,6 +531,20 @@ jobs:
       - name: Test Session Core release payload source
         working-directory: packages/session-core
         run: npm test -- --maxWorkers=1
+      - name: Run DMM-09 independent business acceptance drill
+        working-directory: packages/cli
+        shell: bash
+        run: >-
+          node scripts/dmm-business-acceptance-drill.mjs
+          --output "${RUNNER_TEMP}/dmm-business-acceptance-${RUNNER_OS}.json"
+      - name: Upload DMM-09 business acceptance evidence
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: dmm-business-acceptance-${{ matrix.os }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/dmm-business-acceptance-${{ runner.os }}.json
+          if-no-files-found: error
+          retention-days: 90
       - name: Verify packed scheduler host boundary
         run: node --test packages/session-core/__tests__/scheduler-host-boundary.node.cjs packages/session-core/__tests__/project-goal-graph-packed.node.cjs
       - name: Test Agent SDK release payload source
