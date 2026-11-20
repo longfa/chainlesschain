@@ -1,6 +1,6 @@
 # Changelog — ChainlessChain IDE Bridge (VS Code)
 
-## [0.37.193] - CLI 0.166.157 pairing candidate (2026-11-20)
+## [0.37.193] - CLI 0.166.157 pairing (2026-11-20)
 
 - Pair with public CLI `0.166.157` after its verified public npm release.
 - Refresh LK model choices from the documented Skills API. Use `gpt-6.1-sol` and current protocol-specific IDs, keeping retired aliases in the same model family.

@@ -4,7 +4,7 @@
 
 本轮 CLI 公开发行版本为 **0.166.157**，不可变发行源码为 `0ad9968f0498fce77e538f6e5e64bba35db184c8`，标签为 `v-npm-0-166-157`。GitHub Actions OIDC 发布流程（[run 44639411772](https://github.com/longfa/chainlesschain/actions/runs/44639411772)）通过准确 SHA 门禁、CLI CI、Strict Sandbox、子包顺序发布、tarball 字节校验、npm provenance 和公开 registry 回读。
 
-本轮只发布 CLI。Open VSX **0.37.192** 与 JetBrains **0.4.207** 的公开包保持不变，仍推荐 CLI **0.166.156**；PC/mobile 客户端也没有发布。公开证据位于 [发行清单](../research/cli/evidence/release157-public/chainlesschain-release.json)、[npm provenance](../research/cli/evidence/release157-public/chainlesschain-npm-provenance.json) 和 [registry 回读](../research/cli/evidence/release157-public/chainlesschain-npm-readback.json)。
+本轮 CLI 与 IDE 均已公开发布。Open VSX **0.37.193** 与 JetBrains **0.4.208** 均推荐 CLI **0.166.157**；PC/mobile 客户端没有发布。公开证据位于 [发行清单](../research/cli/evidence/release157-public/chainlesschain-release.json)、[npm provenance](../research/cli/evidence/release157-public/chainlesschain-npm-provenance.json) 和 [registry 回读](../research/cli/evidence/release157-public/chainlesschain-npm-readback.json)。
 
 ## 2. LK 渠道与协议分离
 

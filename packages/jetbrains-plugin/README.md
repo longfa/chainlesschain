@@ -1,12 +1,12 @@
 ﻿# ChainlessChain IDE Bridge (JetBrains)
 
-Candidate JetBrains **0.4.208** recommends CLI **0.166.157** for the corrected LK model IDs, protocol-filtered selection and authenticated price/billing queries. It is not public until the exact tag workflow, Marketplace upload, approval and public ZIP readback pass. The public pairing remains JetBrains **0.4.207** with CLI **0.166.156** until then.
+Public JetBrains **0.4.208** pairs with CLI **0.166.157** for the corrected LK model IDs, protocol-filtered selection and authenticated price/billing queries. The exact host gates, Marketplace upload, approval, listing and public ZIP readback passed.
 
 Install `npm i -g chainlesschain@0.166.157 --registry https://registry.npmjs.org`, restart the IDE, and verify `cc --version`. See [release scope](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-19-157.md). No new PC/mobile installer is included.
 
-## Current release candidate 0.4.208 / CLI 0.166.157
+## Current public release 0.4.208 / CLI 0.166.157
 
-The exact tag workflow will verify the immutable candidate across Linux, Windows and macOS host, browser, unit, build and compatibility gates before Marketplace upload. This candidate binds the compiled CLI recommendation to **0.166.157**; public Marketplace approval and ZIP readback are still pending.
+The exact tag workflow passed the immutable Linux, Windows and macOS host, browser, unit, build and compatibility gates. Marketplace upload and public verification completed; plugin **0.4.208** recommends CLI **0.166.157**.
 
 ## Previous release 0.4.204 / CLI 0.166.150
 
@@ -318,7 +318,7 @@ See the [verified publication evidence](https://github.com/longfa/chainlesschain
 
 ## Release compatibility
 
-Plugin **0.4.208** is the current release candidate and recommends `chainlesschain@0.166.157`. It has not been published; the previous verified public pairing remains current until the exact tag workflow and Marketplace readback pass. [Release scope](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-19-157.md).
+Plugin **0.4.208** is the current public release, approved, listed and downloadable. It recommends `chainlesschain@0.166.157`; Marketplace upload and public ZIP verification passed. [Release scope](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-19-157.md).
 
 Install the paired public CLI with `npm i -g chainlesschain@0.166.157 --registry https://registry.npmjs.org`, restart the chat host, and run `cc --version` and `cc doctor`. Goal transfer and native Graph features require matching desktop support and explicit native authorization. Model-task improvement and automatic promotion remain unverified.
 

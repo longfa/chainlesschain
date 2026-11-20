@@ -1,6 +1,6 @@
 # Changelog — ChainlessChain IDE Bridge (JetBrains)
 
-## [0.4.208] - CLI 0.166.157 pairing candidate (2026-11-20)
+## [0.4.208] - CLI 0.166.157 pairing (2026-11-20)
 
 - Pair with public CLI `0.166.157` after its verified public npm release.
 - Refresh the LK dropdown from the documented Skills API; use `gpt-6.1-sol` and current protocol-specific model IDs. Retired aliases retain their corresponding model family.
