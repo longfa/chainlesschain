@@ -81,6 +81,19 @@ features:
     details: RBAC权限、SOC2合规、SCIM用户配置、DLP数据防泄漏、SIEM安全信息管理
 ---
 
+## 开发者微信群
+
+欢迎开发者加入 **「免费测评企业 AI 落地」** 微信交流群，交流系统架构、模块设计、插件/IDE 接入、问题排查和企业 AI 落地实践。请扫码入群：
+
+<div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;margin:24px 0 32px;padding:20px;border:1px solid var(--vp-c-divider);border-radius:12px;background:var(--vp-c-bg-soft)">
+  <img src="/wechat-group-qr.png" alt="微信群：免费测评企业 AI 落地" width="260" />
+  <div>
+    <p><strong>群聊：免费测评企业 AI 落地</strong></p>
+    <p>二维码有效期以微信页面显示为准。架构问题请尽量附模块、版本、复现步骤和相关日志。</p>
+    <p><a href="https://chainlesschain.net/api/pricing" target="_blank" rel="noopener">AI 模型/API 聚合平台 →</a></p>
+  </div>
+</div>
+
 ## 当前公开版本与源码核对（2026-11-19）
 
 已验证公开 **CLI 0.166.156 / Open VSX 0.37.192 / JetBrains 0.4.207**，两款 IDE 推荐 CLI .156；JetBrains 已审核公开，公开安装包已与正式候选核对。安装 `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`、`cc doctor`。
