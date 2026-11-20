@@ -3,6 +3,19 @@
   "releases": [
     {
       "productVersion": null,
+      "cliVersion": "0.166.159",
+      "cliVersions": ["0.166.159"],
+      "date": "2026-11-21",
+      "title": "",
+      "sections": [
+        {
+          "heading": "Fixed - cc CLI 0.166.159: restore supported macOS release gates (candidate, 2026-11-21)",
+          "body": "- Restore macOS 15 for the complete CLI CI and Strict Sandbox matrices. GitHub rejected macOS 14 ARM64 before assigning a runner; earlier macOS 15 attempts were cancelled by superseding branch runs.\n- Carry the DMM-09 native SQLite acceptance drill from unpublished candidate 0.166.158. Preserve its immutable tag and require a new exact-source three-platform validation for this candidate.\n- Pair Open VSX 0.37.194 and JetBrains 0.4.209 with CLI 0.166.159 only after Actions OIDC publication and public npm readback. Child npm versions remain unchanged."
+        }
+      ]
+    },
+    {
+      "productVersion": null,
       "cliVersion": "0.166.158",
       "cliVersions": ["0.166.158"],
       "date": "2026-11-20",

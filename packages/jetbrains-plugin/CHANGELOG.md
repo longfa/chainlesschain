@@ -1,8 +1,8 @@
 # Changelog — ChainlessChain IDE Bridge (JetBrains)
 
-## [0.4.209] - CLI 0.166.158 pairing (candidate, 2026-11-20)
+## [0.4.209] - CLI 0.166.159 pairing (candidate, 2026-11-21)
 
-- Pair the DMM-09 business acceptance drill with CLI `0.166.158`.
+- Pair the DMM-09 business acceptance drill with CLI `0.166.159`.
 - Publish only after the exact CLI release gates, JetBrains host matrix and Marketplace readback pass.
 
 ## [0.4.208] - CLI 0.166.157 pairing (2026-11-20)
