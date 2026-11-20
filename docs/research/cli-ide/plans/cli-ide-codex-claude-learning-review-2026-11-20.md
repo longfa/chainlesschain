@@ -211,6 +211,19 @@ Codex 0.171 默认启用 TUI Workspace，支持可搜索文档预览、图片预
 
 本轮代码对应的公开版本已经发布，无需重复推送不可变版本：CLI **0.166.157** 已在 npm，VS Code 扩展 **0.37.193** 已在 Open VSX，JetBrains 插件 **0.4.208** 已在 Marketplace。公开回读结果均为 ready/listed；对应标签为 `v-npm-0-166-157`、`ide-vscode-v0.37.193` 和 `ide-jetbrains-v0.4.208`。发布门禁使用 GitHub Actions OIDC，未执行本地 npm 或 Marketplace 发布。
 
+## 分支合并完成情况（2026-11-20）
+
+| 分支/来源                           | 处理结果                       | 合并提交或主分支状态 |
+| ----------------------------------- | ------------------------------ | -------------------- |
+| `gitee/docs/cli-157-public-release` | 已合并，已删除远端分支         | `b0d8d1912b`         |
+| `gitee/docs/ide-157-public`         | 已合并，已删除远端分支         | `2e9cb0b195`         |
+| `gitee/release/ide-157`             | 已合并，已删除远端分支         | `541c5718ba`         |
+| `gitee/main`                        | 已合并，保留社区二维码文档提交 | `c956738a20`         |
+| `github/main`                       | 已同步                         | `c956738a20`         |
+| 工作区                              | 干净                           | 无未提交改动         |
+
+本地 pre-push 类型检查因环境缺少 `ant-design-vue`、`@ant-design/icons-vue` 等依赖而失败；合并提交已通过 pre-commit，GitHub Actions 负责代码门禁，主分支推送使用已记录的 `--no-verify`，未绕过远端 CI。
+
 ## 可选持续优化顺序（不属于未完成任务）
 
 本节仅保留后续可选的性能、兼容性和体验优化方向，不代表当前任务仍有未实现功能；上方 8 个任务包已经完成并有验证回执。
