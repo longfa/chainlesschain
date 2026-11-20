@@ -13,6 +13,11 @@ env:
   NODE_VERSION: "22"
   JAVA_VERSION: "17"
   PYTHON_VERSION: "3.11"
+  # The hosted Ubuntu runner has no CUDA toolchain. Without this explicit
+  # setting onnxruntime-node attempts to fetch its CUDA 12 GPU archive, which
+  # is not published for the pinned package version and fails with HTTP 404.
+  ONNXRUNTIME_NODE_INSTALL_CUDA: "skip"
+  npm_config_onnxruntime_node_install_cuda: "skip"
 
 # Cancel older runs of this workflow on the same branch/PR when a newer push
 # arrives. Without this, multi-push diagnostic sessions stack runs and starve
