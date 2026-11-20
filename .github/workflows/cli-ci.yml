@@ -2,6 +2,7 @@
 
 # Release-candidate metadata changes must execute the complete exact-source
 # CLI matrix together with CLI Strict Sandbox before publication.
+# Keep this workflow in the final release commit so the exact SHA is rechecked.
 
 on:
   push:
