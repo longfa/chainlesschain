@@ -1,4 +1,4 @@
-name: CLI CI
+﻿name: CLI CI
 
 # Release-candidate metadata changes must execute the complete exact-source
 # CLI matrix together with CLI Strict Sandbox before publication.
@@ -48,7 +48,7 @@ on:
       - "tests/fixtures/claude-code-increment-audit-contract.json"
       - "docs/cli/COMMAND_LIFECYCLE_TELEMETRY.md"
       # 76+ vscode-ext-*.test.js suites in packages/cli/__tests__/unit import the
-      # extension sources (and its manifest / l10n bundles) directly — an
+      # extension sources (and its manifest / l10n bundles) directly 鈥?an
       # extension-only commit must still run them.
       - "packages/vscode-extension/src/**"
       - "packages/vscode-extension/package.json"
@@ -258,7 +258,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-15]
+        os: [ubuntu-latest, windows-latest, macos-14]
     env:
       PDH_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
@@ -305,12 +305,12 @@ jobs:
         with:
           python-version: "3.12"
       - uses: actions/setup-java@v5
-        if: ${{ matrix.os == 'macos-15' && needs.docs-scope.result == 'success' && needs.docs-scope.outputs.docs_only == 'false' }}
+        if: ${{ matrix.os == 'macos-14' && needs.docs-scope.result == 'success' && needs.docs-scope.outputs.docs_only == 'false' }}
         with:
           distribution: temurin
           java-version: "21"
       - name: Verify macOS native campaign preflight on the PDH runner
-        if: ${{ matrix.os == 'macos-15' && needs.docs-scope.result == 'success' && needs.docs-scope.outputs.docs_only == 'false' }}
+        if: ${{ matrix.os == 'macos-14' && needs.docs-scope.result == 'success' && needs.docs-scope.outputs.docs_only == 'false' }}
         shell: bash
         run: >-
           node --test
@@ -319,10 +319,10 @@ jobs:
           desktop-app-vue/scripts/__tests__/goal-journey-observation.test.mjs
           packages/cli/test-node/lk-channel.node-test.mjs
       - name: Install dependencies for macOS native campaign preflight
-        if: ${{ matrix.os == 'macos-15' && needs.docs-scope.result == 'success' && needs.docs-scope.outputs.docs_only == 'false' }}
+        if: ${{ matrix.os == 'macos-14' && needs.docs-scope.result == 'success' && needs.docs-scope.outputs.docs_only == 'false' }}
         uses: ./.github/actions/setup-node-deps
       - name: Verify macOS native campaign dispatch and acceptance preflight
-        if: ${{ matrix.os == 'macos-15' && needs.docs-scope.result == 'success' && needs.docs-scope.outputs.docs_only == 'false' }}
+        if: ${{ matrix.os == 'macos-14' && needs.docs-scope.result == 'success' && needs.docs-scope.outputs.docs_only == 'false' }}
         run: >-
           node --test
           packages/cli/test-node/verify01-native-task-campaign.node-test.mjs
@@ -367,7 +367,7 @@ jobs:
       commit_sha: ${{ github.event.pull_request.head.sha || github.sha }}
 
   # Per-OS test fan-out via the shared reusable workflow.
-  # Each call spawns its own (suite × shard) matrix internally — see _cli-test.yml.
+  # Each call spawns its own (suite 脳 shard) matrix internally 鈥?see _cli-test.yml.
   test-ubuntu:
     needs: [docs-scope, source-review-preflight, native-campaign-preflight]
     if: ${{ needs.docs-scope.result == 'success' && needs.docs-scope.outputs.docs_only == 'false' && needs.source-review-preflight.result == 'success' && needs.native-campaign-preflight.result == 'success' }}
@@ -391,7 +391,7 @@ jobs:
     uses: ./.github/workflows/_cli-test.yml
     with:
       commit_sha: ${{ github.event.pull_request.head.sha || github.sha }}
-      runs-on: macos-15
+      runs-on: macos-14
 
   verify-cli:
     needs: [docs-scope, test-ubuntu, test-windows, test-macos]
@@ -399,7 +399,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-15]
+        os: [ubuntu-latest, windows-latest, macos-14]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Enable Windows long paths before checkout
@@ -731,10 +731,10 @@ jobs:
           retention-days: 90
 
   # Phase 4a: validate `cc pack` end-to-end on Linux without running pkg.
-  # Dry-run exercises precheck → web-panel → config-template → native-prebuilds
-  # → pkg-config synthesis, which is where most platform regressions surface.
+  # Dry-run exercises precheck 鈫?web-panel 鈫?config-template 鈫?native-prebuilds
+  # 鈫?pkg-config synthesis, which is where most platform regressions surface.
   # A full pkg + smoke run would need CC_PACK_E2E=1 and ~30s of pkg download
-  # on every PR — out of scope for this job; use the manual e2e suite instead.
+  # on every PR 鈥?out of scope for this job; use the manual e2e suite instead.
   pack-linux-dryrun:
     needs: [docs-scope, test-ubuntu]
     if: ${{ needs.docs-scope.result == 'success' && needs.docs-scope.outputs.docs_only == 'false' }}
