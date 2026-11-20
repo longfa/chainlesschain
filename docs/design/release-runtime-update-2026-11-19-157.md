@@ -1,21 +1,10 @@
-> 本轮为 CLI-only 自进化存储审计候选，CLI 尚未公开；旧版 0.166.156 继续作为最新已验证安装版本。
+# CLI 0.166.157 / IDE 公开发布与 LK 运行时边界
 
-# CLI 0.166.157 / IDE 公开发行与 LK 运行时边界
+## 1. 源码、发布与部署身份
 
-## 1. 源码、发行与网站部署身份
+本轮 CLI 公开发行版本为 **0.166.157**，不可变发行源码为 `0ad9968f0498fce77e538f6e5e64bba35db184c8`，标签为 `v-npm-0-166-157`。GitHub Actions OIDC 发布流程（[run 44639411772](https://github.com/longfa/chainlesschain/actions/runs/44639411772)）通过准确 SHA 门禁、CLI CI、Strict Sandbox、子包顺序发布、tarball 字节校验、npm provenance 和公开 registry 回读。
 
-本次设计核对基线为 `bfc3c849093d67aebfc1cc92843cf8a9229b24d6`。该提交标题中的 `1.5.6` 不是 npm 版本；`packages/cli/package.json` 的实际版本为 **0.166.157**。当前文档源码与不可变发行源码 `bfc3c849093d67aebfc1cc92843cf8a9229b24d6` 分开记录，不能仅凭相同 package 版本推断两个 Git tree 完全一致。
-
-| 制品           | 候选待验证版本 / 配对                                 | 证明范围                                                                                  |
-| -------------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| npm CLI        | `chainlesschain@0.166.157`                            | OIDC 发布、签名 provenance、完整 SHA/tag 绑定与公共 tarball 字节回读                      |
-| VS Code 扩展   | Open VSX `0.37.192`，仍推荐候选待验证 CLI `0.166.156` | 正式工作流与公共 VSIX 字节匹配；不代表 Microsoft Marketplace 发布                         |
-| JetBrains 插件 | `0.4.207`，仍推荐候选待验证 CLI `0.166.156`           | Marketplace update `1223726` 已批准、列出、未隐藏；公开 ZIP 全部非目录 payload 与候选匹配 |
-| PC / mobile    | 最后已核验的历史客户端 `v5.0.3.145`                   | 当前下载源暂不可用；本次文档与站点更新不发行新客户端                                      |
-
-CLI 候选尚未形成发行清单或公共回执；上述候选待验证 IDE 的发行源码仍为 `bfc3c849093d67aebfc1cc92843cf8a9229b24d6`。CLI 的 [发行清单](../research/cli/evidence/release157-public/chainlesschain-release.json)、[provenance](../research/cli/evidence/release157-public/chainlesschain-npm-provenance.json) 与 [npm 字节回读](../research/cli/evidence/release157-public/chainlesschain-npm-readback.json) 共同绑定该身份；IDE 状态见 [综合公开回执](../research/cli/evidence/release157-public/publication.json) 和 [JetBrains 公开归档核验](../research/cli/evidence/release157-public/jetbrains-public.json)。
-
-网站构建另记录其实际文档提交、构建产物与服务器回读。将本说明部署到网站不会改变 npm/IDE 标签、安装包内容或生产权限，也不能把文档分支当作已发布二进制的来源。2026-11-19 复查时，`chainlesschain/chainlesschain` 与 `longfa/chainlesschain` 的 `v5.0.3.145` Release 查询均返回 404，现有官网目录也没有安装包备份；因此历史客户端核验不能写成当前可下载，原生下载入口须以实际源可用性为准。
+本轮只发布 CLI。Open VSX **0.37.192** 与 JetBrains **0.4.207** 的公开包保持不变，仍推荐 CLI **0.166.156**；PC/mobile 客户端也没有发布。公开证据位于 [发行清单](../research/cli/evidence/release157-public/chainlesschain-release.json)、[npm provenance](../research/cli/evidence/release157-public/chainlesschain-npm-provenance.json) 和 [registry 回读](../research/cli/evidence/release157-public/chainlesschain-npm-readback.json)。
 
 ## 2. LK 渠道与协议分离
 
@@ -75,10 +64,6 @@ LK 主备地址及兼容协议共享 `channel:lk` 连接身份，同一个 LK Ke
 
 ## 6. 验证与保留项
 
-发行门绑定 `bfc3c849093d67aebfc1cc92843cf8a9229b24d6`：CLI CI run `44222103058`、Strict Sandbox run `44222103031`，npm OIDC run `44222103142`；公共 tarball 的 SHA-256 为 `18be9e5baea37169585985c3d56ac9c051d18b43040007b247a969dfc615ea16`。后续文档审计或新分支 CI 不替代这组发行门，也不改变已签来源。
+发行门绑定不可变提交 `0ad9968f0498fce77e538f6e5e64bba35db184c8` 和标签 `v-npm-0-166-157`。GitHub Actions [CLI OIDC 发布 run 44639411772](https://github.com/longfa/chainlesschain/actions/runs/44639411772) 已完成：子包按依赖顺序发布，CLI tarball SHA-256 为 `39bffc0029726c44483309362525893be8056f0acd6f361a4ecf28dd1f3eb639`，npm provenance 审计为 invalid=0、missing=0，公开 registry 回读版本为 **0.166.157**。CLI CI（[run 44531389743](https://github.com/longfa/chainlesschain/actions/runs/44531389743)）与 Strict Sandbox（[run 44531389591](https://github.com/longfa/chainlesschain/actions/runs/44531389591)）均以该 SHA 通过；本轮未重新发布 IDE 插件或 native 客户端。
 
-JetBrains macOS 首轮两个宿主的 needs-input visibility P95 分别为 **2000 ms / 2015 ms**，违反严格 **P95 < 2000 ms** 的门禁。保留 [首轮失败样本](../research/cli/evidence/release157-public/jetbrains-macos-attempt1.json) 后，同一不可变 SHA 的失败 job 只重跑一次，未修改代码、阈值或测量链；[第二轮独立样本](../research/cli/evidence/release157-public/jetbrains-macos-attempt2.json) 的 P95 分别为 **1258 ms / 1980 ms**。两轮样本不合并，canonical 恢复成功也不补造不存在的延迟序列。
-
-Marketplace 审核完成后，公开 ZIP 的 SHA-256 为 `1a4d04397b2dfa80205b8272bd95d81daf1e856ed707b71bcd600fba42e1cddf`，候选 ZIP 为 `5daa5ddc63b374908aa2a7ac6f90f5f5f96dc50ba7d3ee8912dcba548cff1a9a`。重新打包使整体 ZIP 不同；全部非目录 payload 恰为两个 JAR，名称集合及文件字节严格一致，无额外 payload。另解析 `plugin.xml` 的版本和 `CliVersionCheck.class` 的推荐 CLI 常量，才认定 [公开核验通过](../research/cli/evidence/release157-public/jetbrains-public.json)。
-
-本说明与网站部署没有新增付费模型任务验收，也不将目录条数、测试数量、源码组合、历史任务或发行成功转换成产品效果成绩。**NOT_PAID_READY / NOT_ADMITTED / HOLD** 保留。Module 112 的 candidate、独立 Eval、review、promotion、release authority、部署签名与 RRSI 局部证明范围不变，见 [受治理 Skill 演进设计](modules/112-governed-skill-evolution-design.md)。Desktop 源码有 LK 配置和账户能力不等于历史 `v5.0.3.145` 安装包已包含本轮代码，该版本当前下载源也暂不可用；原生功能、新安装包与目标生产部署仍需各自独立证据。
+本说明与网站部署没有新增付费模型任务验收，也不将目录条数、测试数量、源码组合、历史任务或发行成功转换成产品效果成绩。**NOT_PAID_READY / NOT_ADMITTED / HOLD** 保留。Module 112 的 candidate、独立 Eval、review、promotion、release authority、部署签名与 RRSI 局部证明范围不变，见 [受治理 Skill 演进设计](modules/112-governed-skill-evolution-design.md)。Desktop 源码有 LK 配置和账户能力不等于历史 `v5.0.3.145` 安装包已包含本轮代码；原生功能、新安装包与目标生产部署仍需各自独立证据。

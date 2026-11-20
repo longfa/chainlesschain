@@ -1,18 +1,10 @@
-## CLI 0.166.157 governed evolution audit candidate (2026-11-19)
-
-This candidate adds a read-only governed evolution storage audit that binds the original source/v2 journal, witnesses, manifest chain, retained segments and complete ArtifactStore inventory to one head. Copied objects, missing artifacts, changed authorities, interrupted WAL state and incomplete physical capabilities remain HOLD. CLI **0.166.157** is not public until the exact commit passes CLI CI, Strict Sandbox, OIDC publication and registry readback. Existing Open VSX **0.37.192** and JetBrains **0.4.207** are not republished by this CLI-only change.
-
 # ChainlessChain - Personal Mobile AI Management System Based on USB Key and SIMKey
 
-## Documentation and website snapshot (2026-11-19)
+## Current public release (2026-11-20)
 
-Reviewed source `8c937cbe9bc4b82f87479c124375401fa2fb3a72`. Public CLI **0.166.156**, Open VSX **0.37.192** and approved JetBrains **0.4.207** use release source `a8cae89288d3a6119b152e04b750e10d726a5c5f`; both IDEs recommend CLI .156. LK uses `api.vv666.ai` / `api.lk666.ai`, `gpt-6.1-sol`, 202 catalog entries and 86 chat models, with live account pricing and bills. Install `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org`, restart the host and check `cc --version`.
+CLI **0.166.157** is public on npm from exact source `0ad9968f0498fce77e538f6e5e64bba35db184c8`. The Actions OIDC workflow passed the exact SHA gate, CLI CI, Strict Sandbox, immutable tarball verification, signed npm provenance and public registry readback. Install `npm i -g chainlesschain@0.166.157 --registry https://registry.npmjs.org`, restart the host and check `cc --version`. This is a CLI-only release: public Open VSX **0.37.192** and JetBrains **0.4.207** remain unchanged and continue to recommend CLI **0.166.156**; native clients are outside this release. [Publication evidence](docs/research/cli/evidence/release157-public/chainlesschain-release.json) · [npm readback](docs/research/cli/evidence/release157-public/chainlesschain-npm-readback.json).
 
-The last verified native-client release was **v5.0.3.145**; its previous download source currently returns 404. No native installer is released here. **NOT_PAID_READY / NOT_ADMITTED / HOLD** and historical model-task scopes remain. [User guide](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-19-156.html) · [Design](https://design.chainlesschain.com/release-runtime-update-2026-11-19-156.html). Dated sections below retain their historical scope.
-
-Documentation baseline (2026-11-15): updated from current Git history and verified public releases. See [LK configuration and billing](docs-site/docs/chainlesschain/cli-llm.md) and [channel architecture and credential isolation](docs/design/release-runtime-update-2026-11-15-150.md).
-
-## Public CLI 0.166.156 / IDE update (2026-11-18)
+## Previous public CLI 0.166.156 / IDE update (2026-11-18)
 
 CLI **0.166.156** is public from source `a8cae89288d3a6119b152e04b750e10d726a5c5f`: **75/75 CLI CI**, **6/6 Strict Sandbox**, Actions OIDC publication and public npm readback passed. The published package includes current LK model IDs, same-family legacy aliases, 86 chat models and authenticated account billing. Install `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org`, restart IDE hosts, then check `cc --version`.
 

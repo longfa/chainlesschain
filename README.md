@@ -1,8 +1,10 @@
-## 2026-11-19 CLI 0.166.157 自进化存储审计候选
+# ChainlessChain - 基于U盘和SIMKey的个人移动AI管理系统
 
-新增受治理自进化本地存储审计：把原始 source/v2 日志、见证、manifest、保留分段和完整 ArtifactStore 清单绑定到同一 head，复制对象、缺失产物、篡改、WAL 中断和不完整物理能力均保持 HOLD。CLI **0.166.157** 尚未公开，发布前必须通过准确提交的 CLI CI、Strict Sandbox、OIDC 和公共包回读；Open VSX **0.37.192** 与 JetBrains **0.4.207** 暂不重新发布。
+## 当前公开版本（2026-11-20）
 
-# ChainlessChain - 基于U盾和SIMKey的个人移动AI管理系统
+CLI **0.166.157** 已通过 GitHub Actions OIDC 发布到 npm，准确源码提交为 `0ad9968f0498fce77e538f6e5e64bba35db184c8`。CLI CI、Strict Sandbox、不可变 tarball、npm provenance 和公开 registry 回读均已通过。安装：`npm i -g chainlesschain@0.166.157 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`。本轮为 CLI-only 发布；公开 Open VSX **0.37.192** 与 JetBrains **0.4.207** 保持不变，仍推荐 CLI **0.166.156**，未重复发布 IDE 或原生客户端。
+
+[发布证据](docs/research/cli/evidence/release157-public/chainlesschain-release.json) · [npm 回读](docs/research/cli/evidence/release157-public/chainlesschain-npm-readback.json)
 
 ## 2026-11-19 文档与网站同步
 
@@ -12,7 +14,7 @@
 
 文档基线（2026-11-15）：依据最新 Git 提交与已核验发行版本更新。查看 [LK 用户配置与账单](docs-site/docs/chainlesschain/cli-llm.md) 和 [渠道架构、凭证隔离与发布设计](docs/design/release-runtime-update-2026-11-15-150.md)。
 
-## Public CLI 0.166.156 / IDE update (2026-11-18)
+## Previous public CLI 0.166.156 / IDE update (2026-11-18)
 
 CLI **0.166.156** is public from source `a8cae89288d3a6119b152e04b750e10d726a5c5f`: **75/75 CLI CI**, **6/6 Strict Sandbox**, Actions OIDC publication and public npm readback passed. The published package includes current LK model IDs, same-family legacy aliases, 86 chat models and authenticated account billing. Install `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org`, restart IDE hosts, then check `cc --version`.
 

@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "verifiedAt": "2026-11-20T00:00:01.176Z",
+  "verifier": "npm audit signatures --include-attestations",
+  "package": "@chainlesschain/session-core",
+  "version": "0.3.27",
+  "sha512": "14783bb63aac46dc1d50c699f86adde69785cda5e60b36d9322a137e7fd7872dce39fa05115976af26d37585d2607eb252c58fa7c69cb2e6de41e8dc136a5d4a",
+  "repository": "https://github.com/chainlesschain/chainlesschain",
+  "workflow": ".github/workflows/npm-publish.yml",
+  "ref": "refs/tags/v-npm-0-166-145",
+  "commit": "4e4b421bfb42e524f071c9ad70c2a2a2ce607374",
+  "builder": "https://github.com/actions/runner/github-hosted",
+  "invocationId": "https://github.com/chainlesschain/chainlesschain/actions/runs/42495050656/attempts/1",
+  "runId": 42495050656,
+  "attempt": 1,
+  "anchorMode": "trusted-reuse",
+  "audit": {
+    "invalid": 0,
+    "missing": 0
+  },
+  "reuse": {
+    "packagePath": "packages/session-core",
+    "anchorCommit": "4e4b421bfb42e524f071c9ad70c2a2a2ce607374",
+    "anchorRef": "refs/tags/v-npm-0-166-145",
+    "anchorTree": "7f8788c3e6d9b6cc32eafe1c6c1e974293c82b9c",
+    "currentCommit": "0ad9968f0498fce77e538f6e5e64bba35db184c8",
+    "currentTree": "7f8788c3e6d9b6cc32eafe1c6c1e974293c82b9c",
+    "mirrorRepository": "https://github.com/longfa/chainlesschain",
+    "mirrorCommit": "4e4b421bfb42e524f071c9ad70c2a2a2ce607374"
+  }
+}

@@ -1,10 +1,10 @@
-> 本轮为 CLI-only 自进化存储审计候选，CLI 尚未公开；旧版 0.166.156 继续作为最新已验证安装版本。
-
-# CLI .157 / IDE 与 LK 更新指南（2026-11-19）
+# CLI 0.166.157 / IDE 与 LK 更新指南（2026-11-20）
 
 ## 概述
 
-本轮同步官方网站、用户文档、设计文档与 README。CLI 候选为 **0.166.157**；Open VSX **0.37.192** 与 JetBrains **0.4.207** 仍为候选待验证版本，尚未重新发布。CLI 候选新增受治理自进化存储审计，发布前必须完成准确提交的 CLI CI、Strict Sandbox、OIDC 与公共 registry 回读。
+CLI **0.166.157** 已公开发布。准确发行源码为 `0ad9968f0498fce77e538f6e5e64bba35db184c8`，GitHub Actions OIDC 流程通过准确 SHA 门禁、CLI CI、Strict Sandbox、不可变 tarball、npm provenance 与公开 registry 回读。安装 `npm i -g chainlesschain@0.166.157 --registry https://registry.npmjs.org`。本轮是 CLI-only 发布：Open VSX **0.37.192** 与 JetBrains **0.4.207** 保持现有公开版本，仍推荐 CLI **0.166.156**，没有重新发布 IDE 插件；PC/mobile 也不在本轮范围。
+
+公开回执：[发行清单](../../docs/research/cli/evidence/release157-public/chainlesschain-release.json) · [npm provenance](../../docs/research/cli/evidence/release157-public/chainlesschain-npm-provenance.json) · [registry 回读](../../docs/research/cli/evidence/release157-public/chainlesschain-npm-readback.json)。
 
 ## 核心特性
 
@@ -12,7 +12,7 @@ LK 主地址改为 `https://api.vv666.ai`，手动备用 `https://api.lk666.ai`�
 
 ## 系统架构
 
-CLI 负责连接规范化、旧模型别名迁移与账户适配，Web 和 IDE 使用同一模型目录。文档来源源码为 `bfc3c849093d67aebfc1cc92843cf8a9229b24d6`，已发行包的不可变来源为 `bfc3c849093d67aebfc1cc92843cf8a9229b24d6`；网页部署的提交身份另由 `/deployment-source.json` 记录。设计权威源位于 `docs/design/`，两个文档站由同步脚本生成副本。
+CLI 负责连接规范化、旧模型别名迁移与账户适配，Web 和 IDE 使用同一模型目录。文档来源源码为 `0ad9968f0498fce77e538f6e5e64bba35db184c8`，已发行包的不可变来源为 `0ad9968f0498fce77e538f6e5e64bba35db184c8`；网页部署的提交身份另由 `/deployment-source.json` 记录。设计权威源位于 `docs/design/`，两个文档站由同步脚本生成副本。
 
 ## 配置参考
 
@@ -61,4 +61,4 @@ cc ui
 
 ## 相关文档
 
-[LK 配置与账单](./cli-llm) · [IDE 使用](./ide-plugin) · [设计与来源边界](https://design.chainlesschain.com/release-runtime-update-2026-11-19-156.html) · [公开发行证据](https://github.com/longfa/chainlesschain/blob/b4ce98696/docs/research/cli/evidence/release157-public/publication.json) · [官方模型接口说明](https://chainlesschain.net/apidoc#model/gpt-6.1-sol)。
+[LK 配置与账单](./cli-llm) · [IDE 使用](./ide-plugin) · [设计与来源边界](https://design.chainlesschain.com/release-runtime-update-2026-11-19-157.html) · [公开发行证据](https://github.com/longfa/chainlesschain/actions/runs/44639411772) · [官方模型接口说明](https://chainlesschain.net/apidoc#model/gpt-6.1-sol)。

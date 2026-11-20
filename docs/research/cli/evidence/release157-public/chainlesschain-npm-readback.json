@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "checkedAt": "2026-11-20T00:15:00Z",
+  "registry": "https://registry.npmjs.org",
+  "package": "chainlesschain",
+  "version": "0.166.157",
+  "tarball": "https://registry.npmjs.org/chainlesschain/-/chainlesschain-0.166.157.tgz",
+  "integrity": "sha512-73ahbQHLWOP46uhNlRcQi5XnT4v8fhtv/DKr56wIQUNsjhvlNMb3JdSswqoNXdoTAdGIsnR6T3k8ToZZgDcFFA==",
+  "sourceCommit": "0ad9968f0498fce77e538f6e5e64bba35db184c8",
+  "tag": "v-npm-0-166-157",
+  "workflow": "https://github.com/longfa/chainlesschain/actions/runs/44639411772",
+  "artifactSha256": "39bffc0029726c44483309362525893be8056f0acd6f361a4ecf28dd1f3eb639",
+  "provenance": "docs/research/cli/evidence/release157-public/chainlesschain-npm-provenance.json",
+  "notes": "Registry metadata was read after the GitHub Actions OIDC publish and matches the release artifact SHA-512."
+}
