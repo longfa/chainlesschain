@@ -2,13 +2,17 @@
 
 ChainlessChain agent workspace for VS Code-compatible editors with streaming chat, inline assistance, governed review, sessions, automation, and a localhost MCP bridge.
 
-## Release pairing
+## Current public pairing
 
 Version **0.37.193** recommends CLI **`0.166.157`** and pairs with JetBrains **0.4.208**.
 
 Public Open VSX **0.37.193** pairs with CLI **0.166.157** for corrected LK model IDs, protocol-filtered selection and authenticated price/billing queries. The complete tag workflow passed, and the public VSIX matches the immutable candidate byte for byte. JetBrains **0.4.208** is also approved, listed and publicly verified with the same CLI pairing. Older public releases below are historical pairings.
 
 Install `npm i -g chainlesschain@0.166.157 --registry https://registry.npmjs.org`, restart the IDE, and verify `cc --version`. See [release scope](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-19-157.md). No new PC/mobile installer is included.
+
+## Next release candidate
+
+Source candidate **0.37.193** recommends CLI **0.166.157**. The extension has not been published. Publish only after the CLI 0.166.157 public release and the exact VS Code host, browser, Remote SSH, packaging and Open VSX gates pass.
 
 ## Current release
 
