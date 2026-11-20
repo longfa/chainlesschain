@@ -1,5 +1,8 @@
 name: CLI Strict Sandbox
 
+# Keep the exact-source release gate sensitive to release-candidate metadata
+# commits that must be verified together with CLI CI.
+
 on:
   push:
     branches: [main]
