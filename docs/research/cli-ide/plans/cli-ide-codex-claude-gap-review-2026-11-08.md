@@ -6,6 +6,24 @@
 
 保存前工作区已有原评审文档和 Memory 实现的未提交修改；本文不将这些修改视为准确提交的验证结果。初次保存时，本文只记录分析与建议，未重新执行模型任务、性能测试、GUI 旅程、GitHub Actions 或公开包下载核验。历史测试结果保持原版本、平台和样本范围，不累计为当前 HEAD 成绩。
 
+## 当前状态（截至 2026-11-20）
+
+下表是当前 HEAD `fbffc6e9e1cde6d6f9408595d5b32d2592e9b3d2` 的最新结论。后文带日期的 Partial、NOT_RUN、HOLD 和失败记录属于历史快照，继续保留，不代表当前实现状态。
+
+| 对应项                    | 当前状态     | 当前证据                                                                                                                                                                                                                                                                              | 当前边界                                                         |
+| ------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| 1. 上游比较基线           | 已完成       | [最新 Codex/Claude 学习评审](./cli-ide-codex-claude-learning-review-2026-11-20.md) 已核对 Codex CLI 0.171.0、Claude Code 2.1.329                                                                                                                                                      | 上游版本会继续变化，下次复核需重新读取官方 changelog             |
+| 2. 模型实际输入与任务归因 | 工程门禁完成 | CLI/IDE 模型输入诊断、Context/Permission、IDE Safety、CLI CI 和本地 357 项联合测试通过                                                                                                                                                                                                | 历史真实任务的原始失败仍按原提交和原环境保留，不回写为新任务成绩 |
+| 3. 跨入口生命周期与恢复   | 已完成       | [Session Host Consistency](https://github.com/longfa/chainlesschain/actions/runs/44740046721)、[Context/Permission](https://github.com/longfa/chainlesschain/actions/runs/44740048615)、[Native Validation](https://github.com/longfa/chainlesschain/actions/runs/44740048539) 均成功 | 真实账号账单和外部生产服务属于独立准入                           |
+| 4. MCP Tasks              | 已完成       | [MCP Reference Interoperability](https://github.com/longfa/chainlesschain/actions/runs/44739780598) 成功；本地 MCP/交付测试通过                                                                                                                                                       | 不把本地/loopback 证据扩大为任意第三方生产服务授权               |
+| 5. 成本、上下文与付费准入 | 工程实现完成 | Observability、Statusline、Context/Permission、CLI CI 与预算/用量测试通过                                                                                                                                                                                                             | 真实账号计费、汇率、账单对账和付费准入仍需独立生产门禁           |
+| 6. Codex 兼容性           | 已完成       | [CLI Strict Sandbox](https://github.com/longfa/chainlesschain/actions/runs/44739779837)、[CLI Native Validation](https://github.com/longfa/chainlesschain/actions/runs/44740048539)、CLI CI 成功                                                                                      | 上游 Codex 版本变化时需重新执行兼容矩阵                          |
+| 7. IDE 与桌面端完整流程   | 已完成       | [IDE Safety Matrix](https://github.com/longfa/chainlesschain/actions/runs/44740047789)、Context/Permission、Native Validation 成功；IDE 0.37.193/0.4.208 已公开回读                                                                                                                   | PC/mobile 原生客户端和人工业务效果不属于本轮 CLI/IDE 发布门禁    |
+| 8. Memory 性能与质量      | 已完成       | 既有三系统托管矩阵 12/12 成功，当前 CI 保持相关回归；本轮统一任务/观测门禁通过                                                                                                                                                                                                        | 本机历史超时样本保留，不因新矩阵成功而删除或改写                 |
+| 9. 共享逻辑与指导         | 已完成       | [Agent Team Soak](https://github.com/chainlesschain/actions/runs/44740047198)、MCP、Session、IDE 门禁成功；分支合并状态见下表                                                                                                                                                         | 后续只做兼容性和体验增强，不再作为本轮未完成工程任务             |
+
+当前公开版本：CLI 0.166.157、Open VSX 0.37.193、JetBrains 0.4.208，已完成 npm/Open VSX/JetBrains ready/listed 回读。`gitee/docs/cli-157-public-release`、`gitee/docs/ide-157-public`、`gitee/release/ide-157` 已合并并删除；GitHub/Gitee `main` 均指向 `fbffc6e9e1`。完整任务表和回执见[最新学习评审](./cli-ide-codex-claude-learning-review-2026-11-20.md)。
+
 **完成情况（截至 2026-11-12）**
 
 第 1 项的上游比较基线已记录。第 2–9 项均已取得部分证据，仍有验收项未完成。下表汇总当前完成情况，各轮历史结果保留在后文。
