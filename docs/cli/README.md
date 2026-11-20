@@ -1,10 +1,10 @@
 # CLI 文档
 
-## 当前公开 CLI：0.166.143 / 本地算力配置和待审创建请求
+## 当前公开 CLI：0.166.157 / 配套 IDE 扩展 0.37.193、0.4.208
 
-Session Core **0.3.26** 和 CLI **0.166.143** 已通过准确提交三平台门禁、Actions OIDC 发布和独立公开字节/签名来源回读。Open VSX **0.37.179** 已公开，公开 VSIX 与官方制品一致；JetBrains **0.4.196** 已获批且可下载，627 个原始 payload 文件与官方构建一致。两端均推荐 CLI **0.166.143**；渠道状态见[发行证据](../research/cli/evidence/release143-public/README.md)。
+CLI **0.166.157** 已通过 GitHub Actions OIDC 发布并完成 npm 公共 registry 回读；对应 npm tag `v-npm-0-166-157` 绑定提交 `dbbf6d91cf020ff4c371ea278c996a4d7d3826c0`。VS Code 扩展 **0.37.193**（Open VSX）和 JetBrains 插件 **0.4.208** 已公开，Marketplace 回读均为 ready/listed，分别绑定 `ide-vscode-v0.37.193` 和 `ide-jetbrains-v0.4.208`。两端推荐 CLI **0.166.157**。
 
-安装 `npm i -g chainlesschain@0.166.143 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`、`cc doctor`。新增本地算力平台配置及端点凭据隔离；目标创建请求仍需匹配桌面实现和原生确认。本次不发布 PC/移动端，真实 GUI、力数推理和业务效果验收保持独立。[升级说明](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-06-143.md)。
+安装 `npm i -g chainlesschain@0.166.157 --registry https://registry.npmjs.org`，重启 CLI / IDE 宿主后运行 `cc --version`、`cc doctor`。公开回读：[Open VSX 0.37.193](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide)、[JetBrains 0.4.208](https://plugins.jetbrains.com/plugin/32208-chainlesschain)。真实账号计费、生产远程服务和业务效果验收仍按独立发布准入执行。
 
 <!-- release141-current:start -->
 
