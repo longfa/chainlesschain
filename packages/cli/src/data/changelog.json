@@ -3,6 +3,19 @@
   "releases": [
     {
       "productVersion": null,
+      "cliVersion": "0.166.158",
+      "cliVersions": ["0.166.158"],
+      "date": "2026-11-20",
+      "title": "",
+      "sections": [
+        {
+          "heading": "Added - cc CLI 0.166.158: DMM-09 independent business acceptance drill (candidate, 2026-11-20)",
+          "body": "- Add a deterministic native SQLite business acceptance drill that refuses incomplete outcomes, records independent completion evidence, survives process reopen and replays the same request idempotently.\n- Include the drill in the CLI release package and exact-source CI evidence.\n- Pair VS Code 0.37.194 and JetBrains 0.4.209 only after the CLI OIDC publication, public readback and complete IDE gates."
+        }
+      ]
+    },
+    {
+      "productVersion": null,
       "cliVersion": "0.166.157",
       "cliVersions": ["0.166.157"],
       "date": "2026-11-19",

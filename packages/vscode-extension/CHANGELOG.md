@@ -1,5 +1,10 @@
 # Changelog — ChainlessChain IDE Bridge (VS Code)
 
+## [0.37.194] - CLI 0.166.158 pairing (candidate, 2026-11-20)
+
+- Pair the DMM-09 business acceptance drill with CLI `0.166.158`.
+- Publish only after the exact CLI release gates, VS Code host matrix and Open VSX readback pass.
+
 ## [0.37.193] - CLI 0.166.157 pairing (2026-11-20)
 
 - Pair with public CLI `0.166.157` after its verified public npm release.

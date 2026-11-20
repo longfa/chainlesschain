@@ -318,9 +318,9 @@ See the [verified publication evidence](https://github.com/longfa/chainlesschain
 
 ## Release compatibility
 
-Plugin **0.4.208** is the current public release, approved, listed and downloadable. It recommends `chainlesschain@0.166.157`; Marketplace upload and public ZIP verification passed. [Release scope](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-19-157.md).
+Plugin **0.4.209** is the current release candidate and has not been publicly verified. It recommends `chainlesschain@0.166.158`; publish only after the exact CLI release gates, JetBrains host matrix and Marketplace upload/readback pass.
 
-Install the paired public CLI with `npm i -g chainlesschain@0.166.157 --registry https://registry.npmjs.org`, restart the chat host, and run `cc --version` and `cc doctor`. Goal transfer and native Graph features require matching desktop support and explicit native authorization. Model-task improvement and automatic promotion remain unverified.
+Install the paired candidate CLI with `npm i -g chainlesschain@0.166.158 --registry https://registry.npmjs.org` only after its OIDC publication and public readback. Goal transfer and native Graph features require matching desktop support and explicit native authorization. Model-task improvement and automatic promotion remain unverified.
 
 ## Previous candidates and development notes
 
