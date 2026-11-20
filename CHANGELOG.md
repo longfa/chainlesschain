@@ -11,12 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added - cc CLI 0.166.158: DMM-09 independent business acceptance drill (candidate, 2026-11-20)
+
+- Add a deterministic native SQLite business acceptance drill that refuses incomplete outcomes, records independent completion evidence, survives process reopen and replays the same request idempotently.
+- Include the drill in the CLI release package and exact-source CI evidence.
+- Pair VS Code 0.37.194 and JetBrains 0.4.209 only after the CLI OIDC publication, public readback and complete IDE gates.
+
 ### Added - cc CLI 0.166.157: governed evolution storage audit (candidate, 2026-11-19)
 
 - Add a read-only audit binding the original evolution journal, witnesses, manifest chain, retained segments and artifact inventory to one verified head.
 - Expose it only through authenticated deployment factories; copied objects, missing components, changed files and interrupted WAL state remain HOLD.
 - Publication requires the exact commit's CLI CI, Strict Sandbox, OIDC and public registry readback.
-
 
 ### Fixed - cc CLI 0.166.156: LK release delivery from longfa (candidate, 2026-11-18)
 
