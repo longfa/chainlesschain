@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "verifiedAt": "2026-11-19T23:37:00.022Z",
+  "repository": "longfa/chainlesschain",
+  "sha": "0ad9968f0498fce77e538f6e5e64bba35db184c8",
+  "gates": [
+    {
+      "workflow": "cli-ci.yml",
+      "name": "CLI CI",
+      "sha": "0ad9968f0498fce77e538f6e5e64bba35db184c8",
+      "runId": 44531389743,
+      "runUrl": "https://github.com/longfa/chainlesschain/actions/runs/44531389743",
+      "conclusion": "success",
+      "platforms": ["linux", "macos", "windows"]
+    },
+    {
+      "workflow": "cli-strict-sandbox.yml",
+      "name": "CLI Strict Sandbox",
+      "sha": "0ad9968f0498fce77e538f6e5e64bba35db184c8",
+      "runId": 44531389591,
+      "runUrl": "https://github.com/longfa/chainlesschain/actions/runs/44531389591",
+      "conclusion": "success",
+      "platforms": ["linux", "macos", "windows"]
+    }
+  ]
+}

@@ -1,14 +1,12 @@
 # chainlesschain CLI
 
-Documentation checked 2026-11-19 against source `bfc3c849093d67aebfc1cc92843cf8a9229b24d6`; CLI candidate is **0.166.157**, paired with public Open VSX **0.37.192** and JetBrains **0.4.207**. Historical PC/mobile .145 download URLs currently return 404. [Current installation and limits](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-19-156.html).
+Documentation checked 2026-11-20 against release source `0ad9968f0498fce77e538f6e5e64bba35db184c8`; public CLI is **0.166.157**, paired with existing public Open VSX **0.37.192** and JetBrains **0.4.207**. Both IDEs still recommend CLI **0.166.156** because this CLI-only release did not republish IDE extensions. Historical PC/mobile .145 download URLs remain unavailable. [Current installation and limits](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-19-157.html).
 
 Command-line interface for installing, configuring, and managing [ChainlessChain](https://www.chainlesschain.com), including the coding agent, governed tools, sessions, memory, and IDE integrations.
 
-## CLI 0.166.157 candidate (2026-11-19)
+## Public CLI 0.166.157 (2026-11-20)
 
-CLI **0.166.157** is a candidate and is not public. Exact source `bfc3c849093d67aebfc1cc92843cf8a9229b24d6` passed all 75 CLI CI jobs and all 6 Strict Sandbox jobs before Actions OIDC publication and registry readback. See [CLI CI](https://github.com/longfa/chainlesschain/actions/runs/44222103058), [Strict Sandbox](https://github.com/longfa/chainlesschain/actions/runs/44222103031), and [Actions OIDC publication](https://github.com/longfa/chainlesschain/actions/runs/44222103142). The candidate contains the governed evolution storage audit and the current 202-entry LK catalog, including 86 chat models, with `gpt-6.1-sol` at `https://api.vv666.ai/v1` and backup `https://api.lk666.ai`.
-
-Child npm versions remain unchanged. The new pairing is a candidate and is not public Open VSX **0.37.192**, verified byte-for-byte against its immutable candidate; JetBrains **0.4.207** is approved, listed and publicly verified, with both candidate JAR payloads preserved. Until publication, install `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org` then restart IDE hosts, then run `cc --version`. Native installers and media task execution are outside this release. [Release scope](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-156.md).
+CLI **0.166.157** is public on npm from exact source `0ad9968f0498fce77e538f6e5e64bba35db184c8`. The GitHub Actions OIDC release workflow passed the exact SHA gate, all required CLI CI and Strict Sandbox gates, immutable tarball verification, signed npm provenance and public registry readback. Install `npm i -g chainlesschain@0.166.157 --registry https://registry.npmjs.org`, restart IDE hosts, then run `cc --version`. The release adds the governed evolution storage audit; it does not republish IDE extensions or native clients. [Publication evidence](../../docs/research/cli/evidence/release157-public/chainlesschain-release.json) · [npm provenance](../../docs/research/cli/evidence/release157-public/chainlesschain-npm-provenance.json) · [public registry readback](../../docs/research/cli/evidence/release157-public/chainlesschain-npm-readback.json).
 
 ## Historical CLI 0.166.150 / IDE pairing (2026-11-15)
 
