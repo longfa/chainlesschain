@@ -188,10 +188,10 @@ Codex 0.171 默认启用 TUI Workspace，支持可搜索文档预览、图片预
 | Remote / Scheduled Execution | 已完成（代码 + CI）      | [Remote Control 命令](../../../../packages/cli/src/commands/remote-control.js)、[MCP 任务恢复文档](../../../cli/mcp-tasks.md)                                                                                                     | IDE Safety、Context/Permission、Session Host 和 MCP Interop 已验证本机/远程边界、配对、断线、停止和恢复                |
 | Workspace UX                 | 已完成（代码 + CI）      | [公开 IDE 能力清单](../../../cli/PUBLIC_IDE_CAPABILITY_MANIFEST.generated.json)、[模型输入 IDE 记录](../implementation/cli-ide-model-input-ide-progress-2026-11-08.md)                                                            | Native Validation、IDE Safety、Context/Permission、CLI CI 已覆盖三系统长输出、附件/输入恢复、权限提示和宿主重启路径    |
 
-**本轮完成边界：** 上表 8 个工程任务包已在当前代码 HEAD `17c1cd38f716b666ecb0ee07bbf54940f6914f00` 完成实现并通过对应本地/Actions 门禁。真实账号计费、外部 Marketplace、生产远程服务和人工用户旅程仍属于独立发布准入，不再作为本轮工程实现的未完成项。
+**本轮完成边界：** 上表 8 个工程任务包已在当前代码 HEAD `8dcb83eadb84036a7511905c812354670976b869` 完成实现并通过对应本地/Actions 门禁。真实账号计费、外部 Marketplace、生产远程服务和人工用户旅程仍属于独立发布准入，不再作为本轮工程实现的未完成项。
 
 
-2026-11-21 继续验收：修复 native/macOS 工作流的仓库身份硬编码后，CLI macOS MCP Launcher `44868844839` 的 x64/arm64 unsigned contract 通过；IDE Host Recovery `44868659224` 通过。Codex 冷首次扫描 `44868660178` 仍在多个版本/系统复现上游升序漏线程，保留为 blocked 外部边界，不把 repair/full scan 误记为 cold acceptance。
+2026-11-21 继续验收：修复 native/macOS 工作流的仓库身份硬编码后，CLI macOS MCP Launcher `44869479808` 的 x64/arm64 unsigned contract 通过；IDE Host Recovery `44868659224` 通过。Codex 冷首次扫描 `44868660178` 仍在多个版本/系统复现上游升序漏线程，保留为 blocked 外部边界，不把 repair/full scan 误记为 cold acceptance。
 
 ## 本轮验证回执（2026-11-20）
 

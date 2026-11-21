@@ -8,13 +8,13 @@
 
 ## 2026-11-21 继续验收与可关闭任务
 
-当前主线为 `17c1cd38f716b666ecb0ee07bbf54940f6914f00`。本轮发现并修复了发布门禁中的仓库身份错误：macOS MCP Launcher 与 native release 工作流原先硬编码 `chainlesschain/chainlesschain`，实际 GitHub 仓库为 `longfa/chainlesschain`，现统一改为 `${{ github.repository }}`。修复后的 CLI macOS MCP Launcher 工作流 `44868844839` 在 x64/arm64 unsigned contract 均成功。IDE Roadmap Host Recovery `44868659224` 成功。
+当前主线为 `8dcb83eadb84036a7511905c812354670976b869`。本轮发现并修复了发布门禁中的仓库身份错误：macOS MCP Launcher 与 native release 工作流原先硬编码 `chainlesschain/chainlesschain`，实际 GitHub 仓库为 `longfa/chainlesschain`，现统一改为 `${{ github.repository }}`。修复后的 CLI macOS MCP Launcher 工作流 `44869479808` 在 x64/arm64 unsigned contract 均成功。IDE Roadmap Host Recovery `44868659224` 成功。
 
 Codex App Server Cold History `44868660178` 在 Windows/macOS 的 0.160/0.164/0.167 冷首次 rollout scan 仍复现“升序第一页只返回 1/2 线程”的上游分页/发现缺陷；该探针继续保留失败证据，不能把后续 full scan repair 记为首次冷扫描通过。稳定的 `recency_at + useStateDbOnly` 数据库路径仍是当前可用边界，生产准入和上游修复继续保持 HOLD。
 
 | 当前可关闭项 | 证据 | 结论 |
 | --- | --- | --- |
-| Native release workflow repository identity | `17c1cd38f7`；`44868844839` | 已修复并通过 macOS x64/arm64 contract |
+| Native release workflow repository identity | `17c1cd38f7`；`44869479808` | 已修复并通过 macOS x64/arm64 contract |
 | IDE host recovery | `44868659224` | 已通过 WSL/devcontainer 宿主恢复矩阵 |
 | Codex cold first scan | `44868660178` | 未完成；上游冷发现/分页缺陷，保留 `blocked` 证据 |
 

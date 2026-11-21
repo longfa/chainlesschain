@@ -7,7 +7,7 @@
 DMM-09 演练修复包括推进 fixture 时钟、从持久化记录计算拒绝/误完成/成功计数，以及异常路径关闭 SQLite；本地回归 `dmm-business-acceptance-drill` 与 changelog parity 共 **2 文件 / 3 测试通过**。本次发布不宣称生产灰度、安装迁移或数据库降级回退已完成。
 
 
-2026-11-21 继续验收：修复 native/macOS 发布工作流中硬编码错误仓库名，统一使用 `${{ github.repository }}`；CLI macOS MCP Launcher `44868844839` 的 x64/arm64 contract 已成功，IDE Host Recovery `44868659224` 已成功。Codex 冷首次扫描 `44868660178` 仍复现上游升序漏线程，保留为 blocked 证据，不把 full scan repair 计为完成。
+2026-11-21 继续验收：修复 native/macOS 发布工作流中硬编码错误仓库名，统一使用 `${{ github.repository }}`；CLI macOS MCP Launcher `44869479808` 的 x64/arm64 contract 已成功，IDE Host Recovery `44868659224` 已成功。Codex 冷首次扫描 `44868660178` 仍复现上游升序漏线程，保留为 blocked 证据，不把 full scan repair 计为完成。
 
 ## 当前状态（截至 2026-11-21）
 
