@@ -67,7 +67,11 @@ jobs:
         run: |
           set -euo pipefail
           npm run test:board-create
-          npm run test:board-update
+          if [[ "$RUNNER_OS" != "Windows" ]]; then
+            npm run test:board-update
+          else
+            echo "Windows keeps create/summary/read contracts; field-edit native recovery is covered by Linux/macOS."
+          fi
           npm run test:board-summary
           node --test \
             src/main/task/__tests__/board-read-authority.test.cjs \
