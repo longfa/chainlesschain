@@ -12,12 +12,13 @@
 
 Codex App Server Cold History `44868660178` 在 Windows/macOS 的 0.160/0.164/0.167 冷首次 rollout scan 仍复现“升序第一页只返回 1/2 线程”的上游分页/发现缺陷；该探针继续保留失败证据，不能把后续 full scan repair 记为首次冷扫描通过。稳定的 `recency_at + useStateDbOnly` 数据库路径仍是当前可用边界，生产准入和上游修复继续保持 HOLD。
 
-| 当前可关闭项 | 证据 | 结论 |
-| --- | --- | --- |
-| Native release workflow repository identity | `17c1cd38f7`；`44869479808` | 已修复并通过 macOS x64/arm64 contract |
-| IDE host recovery | `44868659224` | 已通过 WSL/devcontainer 宿主恢复矩阵 |
-| Codex cold first scan | `44868660178` | 未完成；上游冷发现/分页缺陷，保留 `blocked` 证据 |
+2026-11-21 CLI/IDE 优先状态：当前主分支为 `aeda6694714bcd5b3ce09a2535baf25652aee50e`；CLI `0.166.159`、VS Code `0.37.194` 已公开回读，JetBrains `0.4.209` 已上传但等待 Marketplace listing。CLI macOS MCP Launcher `44869479808` 与 IDE Host Recovery `44868659224` 已成功。新增运行时代码仍必须从自身准确提交重新通过 CLI CI、Strict Sandbox、Native Validation 和对应 IDE 矩阵，不能复用历史 release tag。
 
+| 当前可关闭项                                | 证据                        | 结论                                             |
+| ------------------------------------------- | --------------------------- | ------------------------------------------------ |
+| Native release workflow repository identity | `17c1cd38f7`；`44869479808` | 已修复并通过 macOS x64/arm64 contract            |
+| IDE host recovery                           | `44868659224`               | 已通过 WSL/devcontainer 宿主恢复矩阵             |
+| Codex cold first scan                       | `44868660178`               | 未完成；上游冷发现/分页缺陷，保留 `blocked` 证据 |
 
 ## 当前状态（截至 2026-11-20）
 

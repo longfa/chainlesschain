@@ -190,8 +190,15 @@ Codex 0.171 默认启用 TUI Workspace，支持可搜索文档预览、图片预
 
 **本轮完成边界：** 上表 8 个工程任务包已在当前代码 HEAD `8dcb83eadb84036a7511905c812354670976b869` 完成实现并通过对应本地/Actions 门禁。真实账号计费、外部 Marketplace、生产远程服务和人工用户旅程仍属于独立发布准入，不再作为本轮工程实现的未完成项。
 
+2026-11-21 CLI/IDE 优先续作：主分支已推进到 `aeda6694714bcd5b3ce09a2535baf25652aee50e`。CLI macOS MCP Launcher `44869479808` 的 x64/arm64 unsigned contract 通过；IDE Host Recovery `44868659224` 通过。Codex 冷首次扫描 `44868660178` 仍在多个版本/系统复现上游升序漏线程，保留为 blocked 外部边界，不把 repair/full scan 误记为 cold acceptance。
 
-2026-11-21 继续验收：修复 native/macOS 工作流的仓库身份硬编码后，CLI macOS MCP Launcher `44869479808` 的 x64/arm64 unsigned contract 通过；IDE Host Recovery `44868659224` 通过。Codex 冷首次扫描 `44868660178` 仍在多个版本/系统复现上游升序漏线程，保留为 blocked 外部边界，不把 repair/full scan 误记为 cold acceptance。
+| CLI / IDE 优先项     | 当前结果               | 证据与下一步                                                                                                                                                      |
+| -------------------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CLI 发布与回读       | 已完成                 | npm CLI `0.166.159` 已由 Actions OIDC 发布并公开回读；准确标签 `v-npm-0-166-159`。后续代码变更必须重新通过 CLI CI、Strict Sandbox、Native Validation 后才能升版。 |
+| VS Code 插件         | 已完成                 | Open VSX `0.37.194` 已公开回读；标签 `ide-vscode-v0.37.194`。插件与 CLI 配对版本、安装命令和限制已同步到 README/网站。                                            |
+| JetBrains 插件       | 构建上传完成           | `0.4.209` 六宿主矩阵与上传已成功；Marketplace 公开 listing 仍由平台审核决定，不能用上传结果替代公开可安装回读。                                                   |
+| CLI/IDE 新增工程代码 | 当前无待合并运行时代码 | 主分支新增提交为 CI/文档和发布身份修复；若新增 CLI、VS Code 或 JetBrains 运行时代码，必须从新准确提交重新跑完整矩阵，不能复用旧标签门禁。                         |
+| Codex 冷首次扫描     | 保持阻塞               | `44868660178` 暴露上游升序发现/分页漏线程；继续使用 `recency_at + useStateDbOnly` 稳定路径，等待上游修复后再解除 HOLD。                                           |
 
 ## 本轮验证回执（2026-11-20）
 
@@ -213,6 +220,16 @@ Codex 0.171 默认启用 TUI Workspace，支持可搜索文档预览、图片预
 ## 发布回读（2026-11-20）
 
 本轮代码对应的公开版本已经发布，无需重复推送不可变版本：CLI **0.166.157** 已在 npm，VS Code 扩展 **0.37.193** 已在 Open VSX，JetBrains 插件 **0.4.208** 已在 Marketplace。公开回读结果均为 ready/listed；对应标签为 `v-npm-0-166-157`、`ide-vscode-v0.37.193` 和 `ide-jetbrains-v0.4.208`。发布门禁使用 GitHub Actions OIDC，未执行本地 npm 或 Marketplace 发布。
+
+### 当前公开版本（2026-11-21）
+
+| 包        | 版本        | 公开状态                   | 精确标签/回读                                                 |
+| --------- | ----------- | -------------------------- | ------------------------------------------------------------- |
+| CLI npm   | `0.166.159` | npm 已公开                 | `v-npm-0-166-159`；Actions OIDC 发布后 registry 回读一致      |
+| VS Code   | `0.37.194`  | Open VSX 已公开            | `ide-vscode-v0.37.194`；公开 API 可下载                       |
+| JetBrains | `0.4.209`   | 已上传，listing 待平台审核 | `ide-jetbrains-v0.4.209`；Marketplace 公开 API 尚未列出该版本 |
+
+157/193/208 记录保留为历史发行回执，不与当前版本重复计算；新的运行时代码必须绑定新的准确提交和完整门禁。
 
 ## 分支合并完成情况（2026-11-20）
 

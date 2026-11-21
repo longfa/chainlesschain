@@ -1,0 +1,117 @@
+name: Palantir gap validation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "desktop-app-vue/src/main/task/**"
+      - "desktop-app-vue/src/main/enterprise/low-code/**"
+      - "desktop-app-vue/src/main/enterprise/scim-sync.js"
+      - "desktop-app-vue/src/main/database/**"
+      - "packages/cli/src/lib/automation-engine.js"
+      - "packages/cli/src/lib/audit-*.js"
+      - "packages/personal-data-hub/lib/**"
+      - "docs/research/palantir/**"
+      - ".github/workflows/palantir-gap-validation.yml"
+      - ".github/actions/setup-node-deps/**"
+  pull_request:
+    paths:
+      - "desktop-app-vue/src/main/task/**"
+      - "desktop-app-vue/src/main/enterprise/low-code/**"
+      - "desktop-app-vue/src/main/enterprise/scim-sync.js"
+      - "desktop-app-vue/src/main/database/**"
+      - "packages/cli/src/lib/automation-engine.js"
+      - "packages/cli/src/lib/audit-*.js"
+      - "packages/personal-data-hub/lib/**"
+      - "docs/research/palantir/**"
+      - ".github/workflows/palantir-gap-validation.yml"
+      - ".github/actions/setup-node-deps/**"
+  workflow_dispatch:
+
+concurrency:
+  group: palantir-gap-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  governed-local-contracts:
+    name: Governed local contracts (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Setup Node 22
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22.x
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            desktop-app-vue/package-lock.json
+      - name: Install dependencies
+        uses: ./.github/actions/setup-node-deps
+        with:
+          install-command: npm ci --legacy-peer-deps --ignore-scripts
+          install-desktop-app-vue: "true"
+      - name: Run Palantir board contracts
+        working-directory: desktop-app-vue
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run test:board-create
+          npm run test:board-update
+          npm run test:board-summary
+          npm run test:goal-model-drafts
+          node --test \
+            src/main/task/__tests__/board-read-authority.test.cjs \
+            src/main/task/__tests__/board-attachments.test.cjs \
+            src/main/organization/__tests__/organization-role-write-authority.test.cjs \
+            src/main/notification/__tests__/legacy-notification-filter.test.cjs \
+            src/main/database/__tests__/database-transfer-boundary.test.cjs
+          node scripts/verify-canonical-task-adjunct-ipc.cjs
+      - name: Run desktop low-code and SCIM contract tests
+        working-directory: desktop-app-vue
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx vitest run \
+            tests/unit/enterprise/low-code/app-builder.test.js \
+            tests/unit/enterprise/scim-sync.test.js
+
+  cli-and-pdh-contracts:
+    name: CLI and PDH contracts (ubuntu)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Setup Node 22
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22.x
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Install dependencies
+        uses: ./.github/actions/setup-node-deps
+        with:
+          install-command: npm ci --legacy-peer-deps --ignore-scripts
+      - name: Run CLI governance contracts
+        working-directory: packages/cli
+        run: |
+          npx vitest run \
+            __tests__/unit/automation-engine.test.js \
+            __tests__/unit/audit-logger.test.js \
+            __tests__/unit/audit-sanitization.test.js \
+            __tests__/unit/project-risk-lineage-audit.test.js
+      - name: Run PDH derivation and citation contracts
+        working-directory: packages/personal-data-hub
+        run: |
+          npx vitest run \
+            __tests__/bridges-cc-rag.test.js \
+            __tests__/rag-derive.test.js \
+            __tests__/citation-evidence.node.test.cjs \
+            __tests__/prompt-builder.test.js
