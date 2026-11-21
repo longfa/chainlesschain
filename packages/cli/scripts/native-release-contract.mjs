@@ -1,5 +1,5 @@
 export const TRUSTED_NATIVE_RELEASE_REPOSITORY =
-  "chainlesschain/chainlesschain";
+  "longfa/chainlesschain";
 
 export const WINGET_PACKAGE_IDENTIFIER = "ChainlessChain.ChainlessChainCLI";
 export const WINGET_MANIFEST_VERSION = "1.9.0";

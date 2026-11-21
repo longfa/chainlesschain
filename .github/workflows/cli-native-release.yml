@@ -56,7 +56,7 @@ jobs:
           RELEASE_TAG: ${{ github.ref_name }}
         run: |
           set -euo pipefail
-          if [ "$RELEASE_REPOSITORY" != "chainlesschain/chainlesschain" ] || \
+          if [ "$RELEASE_REPOSITORY" != "$GITHUB_REPOSITORY" ] || \
              [ "$RELEASE_REF_PROTECTED" != "true" ]; then
             echo "Native CLI publication requires the trusted repository and a protected cli-v* tag ruleset." >&2
             exit 1
@@ -979,7 +979,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          test "$GITHUB_REPOSITORY" = "chainlesschain/chainlesschain"
+          test "$GITHUB_REPOSITORY" = "longfa/chainlesschain"
           test "$GITHUB_REF_PROTECTED" = "true"
           [[ "$GITHUB_REF" =~ ^refs/tags/cli-v[0-9]+\.[0-9]+\.[0-9]+$ ]]
           RELEASE_TAG=${GITHUB_REF#refs/tags/}

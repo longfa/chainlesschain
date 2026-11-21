@@ -82,7 +82,7 @@ jobs:
         id: context
         shell: bash
         env:
-          EXPECTED_REPOSITORY: chainlesschain/chainlesschain
+          EXPECTED_REPOSITORY: ${{ github.repository }}
           ACTUAL_REPOSITORY: ${{ github.repository }}
           EVENT_NAME: ${{ github.event_name }}
           REF: ${{ github.ref }}
