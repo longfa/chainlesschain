@@ -4,39 +4,35 @@ ChainlessChain agent workspace for VS Code-compatible editors with streaming cha
 
 ## Current public pairing
 
-Version **0.37.193** recommends CLI **`0.166.157`** and pairs with JetBrains **0.4.208**.
+Version **0.37.194** recommends CLI **`0.166.159`** and pairs with JetBrains **0.4.209** (Marketplace listing pending).
 
-Public Open VSX **0.37.193** pairs with CLI **0.166.157** for corrected LK model IDs, protocol-filtered selection and authenticated price/billing queries. The complete tag workflow passed, and the public VSIX matches the immutable candidate byte for byte. JetBrains **0.4.208** is also approved, listed and publicly verified with the same CLI pairing. Older public releases below are historical pairings.
+Public Open VSX **0.37.194** pairs with public CLI **0.166.159**. Workflow [`44852489617`](https://github.com/chainlesschain/chainlesschain/actions/runs/44852489617) passed the exact VS Code host, browser, Remote SSH, packaging and Open VSX gates, and public API readback confirms the downloadable verified extension. JetBrains **0.4.209** passed all host/build/publish gates and was uploaded; Marketplace approval/listing is still pending. Older releases below are historical pairings.
 
-Install `npm i -g chainlesschain@0.166.157 --registry https://registry.npmjs.org`, restart the IDE, and verify `cc --version`. See [release scope](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-19-157.md). No new PC/mobile installer is included.
-
-## Next release candidate
-
-Source candidate **0.37.194** recommends CLI **0.166.159**. The extension has not been published. Publish only after the CLI 0.166.159 public release and the exact VS Code host, browser, Remote SSH, packaging and Open VSX gates pass.
+Install `npm i -g chainlesschain@0.166.159 --registry https://registry.npmjs.org`, restart the IDE, and verify `cc --version`. No new PC/mobile installer is included.
 
 ## Current release
 
+The current public Open VSX release is **0.37.194** paired with CLI **0.166.159**. The immutable tag is `ide-vscode-v0.37.194`.
+
 <!-- release156-status -->
 
-Open VSX version **0.37.193** pairs with public CLI `0.166.157`.
+Open VSX version **0.37.194** pairs with public CLI `0.166.159`.
 
 | Component                 | Current public status                                       |
 | ------------------------- | ----------------------------------------------------------- |
-| VS Code extension         | **0.37.193**; verified public Open VSX release              |
-| Recommended CLI           | **`chainlesschain@0.166.157`**; verified public npm package |
+| VS Code extension         | **0.37.194**; verified public Open VSX release              |
+| Recommended CLI           | **`chainlesschain@0.166.159`**; verified public npm package |
 | Base bridge compatibility | `cc >= 0.162.190`; newer features require the paired CLI    |
 
-The [complete tag workflow](https://github.com/longfa/chainlesschain/actions/runs/44666583403) passed all Linux, Windows, macOS, browser and Remote SSH gates for source `ba729d1022826ae57cc2e20177f9228f70a13033`. The public VSIX SHA-256 is `9aab2dba0e2f03f82e6347a7c55a5645f2afed23ed63e43cd46f4d6727c3a944`, identical to the immutable candidate. CLI `0.166.157` is the recommended public CLI; Using `@0.166.157` selects this verified pairing.
+Workflow [`44852489617`](https://github.com/chainlesschain/chainlesschain/actions/runs/44852489617) passed all Linux, Windows, macOS, browser and Remote SSH gates. CLI `0.166.159` is the recommended public CLI; using `@0.166.159` selects this verified pairing.
 
-The immutable extension tag is `ide-vscode-v0.37.193`.
-
-[Download chainlesschain-ide-0.37.193.vsix](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.193/file/chainlesschain.chainlesschain-ide-0.37.193.vsix). JetBrains **0.4.208** is approved, listed and its public ZIP was verified. Microsoft Marketplace is not published by this tag workflow.
+The immutable extension tag for the previous pairing was `ide-vscode-v0.37.193`; it remains a historical release. The current downloadable artifact is [Open VSX 0.37.194](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.194/file/chainlesschain.chainlesschain-ide-0.37.194.vsix). Microsoft Marketplace is not published by this tag workflow.
 
 Open **Configure LLM** to select LK, protocol, endpoint and model, restore a saved channel, or refresh the saved LK account. The current directory has 202 entries, including 86 chat models, and uses `gpt-6.1-sol` for the LK OpenAI default. Prices and actual bills use 算力; Token estimates are separate. Media task submission and polling are not implemented in these settings.
 
-Install `npm i -g chainlesschain@0.166.157 --registry https://registry.npmjs.org`, restart the host, then run `cc --version` and `cc doctor`.
+Install `npm i -g chainlesschain@0.166.159 --registry https://registry.npmjs.org`, restart the host, then run `cc --version` and `cc doctor`.
 
-[Setup and limits](../../docs/configuration/lk-api-channel.md) · [Publication evidence](../../docs/research/cli/evidence/release157-public/ide-public.json).
+[Setup and limits](../../docs/configuration/lk-api-channel.md) · [Publication evidence](https://github.com/chainlesschain/chainlesschain/actions/runs/44852489617).
 
 ### Previous verified release (0.37.188)
 

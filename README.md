@@ -1,10 +1,10 @@
 # ChainlessChain - 基于U盘和SIMKey的个人移动AI管理系统
 
-## 当前公开版本（2026-11-20）
+## 当前公开版本（2026-11-21）
 
-CLI **0.166.157** 已通过 GitHub Actions OIDC 发布到 npm，准确源码提交为 `0ad9968f0498fce77e538f6e5e64bba35db184c8`。CLI CI、Strict Sandbox、不可变 tarball、npm provenance 和公开 registry 回读均已通过。安装：`npm i -g chainlesschain@0.166.157 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`。本轮 CLI 与 IDE 已公开发布：Open VSX **0.37.193**、JetBrains **0.4.208** 均推荐 CLI **0.166.157**；PC/mobile 原生客户端不在本轮范围。
+CLI **0.166.159** 已通过 GitHub Actions OIDC 发布到 npm，准确源码提交为 `2aa00100a73f9b170b719c7f79e986470643485f`。CLI CI、Strict Sandbox、不可变 tarball、npm provenance 和公开 registry 回读均已通过。安装：`npm i -g chainlesschain@0.166.159 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`。本轮 CLI 与 IDE 已公开发布：Open VSX **0.37.194**、JetBrains **0.4.209（已上传，等待 Marketplace 上架）** 均推荐 CLI **0.166.159**；PC/mobile 原生客户端不在本轮范围。
 
-[发布证据](docs/research/cli/evidence/release157-public/chainlesschain-release.json) · [IDE 回读](docs/research/cli/evidence/release157-public/ide-public.json) · [npm 回读](docs/research/cli/evidence/release157-public/chainlesschain-npm-readback.json)
+[发布证据](https://github.com/chainlesschain/chainlesschain/actions/runs/44845885665) · [IDE 回读](https://github.com/chainlesschain/chainlesschain/actions/runs/44852489617) · [npm 回读](https://github.com/chainlesschain/chainlesschain/actions/runs/44845885665)
 
 ## 2026-11-19 文档与网站同步
 

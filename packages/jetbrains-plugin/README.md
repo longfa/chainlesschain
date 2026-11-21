@@ -1,12 +1,12 @@
 # ChainlessChain IDE Bridge (JetBrains)
 
-Public JetBrains **0.4.208** pairs with CLI **0.166.157** for the corrected LK model IDs, protocol-filtered selection and authenticated price/billing queries. The exact host gates, Marketplace upload, approval, listing and public ZIP readback passed.
+JetBrains **0.4.209** was uploaded successfully and pairs with public CLI **0.166.159**. Workflow [`44852489659`](https://github.com/chainlesschain/chainlesschain/actions/runs/44852489659) passed all Ubuntu, Windows and macOS host matrices, browser/build gates and the publish job. Marketplace approval/listing is pending; the public updates API has not listed 0.4.209 yet.
 
-Install `npm i -g chainlesschain@0.166.157 --registry https://registry.npmjs.org`, restart the IDE, and verify `cc --version`. See [release scope](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-19-157.md). No new PC/mobile installer is included.
+Install `npm i -g chainlesschain@0.166.159 --registry https://registry.npmjs.org`, restart the IDE, and verify `cc --version`. No new PC/mobile installer is included.
 
-## Current public release 0.4.208 / CLI 0.166.157
+## Current uploaded release 0.4.209 / CLI 0.166.159 (Marketplace pending)
 
-The exact tag workflow passed the immutable Linux, Windows and macOS host, browser, unit, build and compatibility gates. Marketplace upload and public verification completed; plugin **0.4.208** recommends CLI **0.166.157**.
+The immutable tag is `ide-jetbrains-v0.4.209`. The plugin artifact is uploaded and awaiting Marketplace approval/listing; public JetBrains **0.4.208** remains the latest listed release until approval completes.
 
 ## Previous release 0.4.204 / CLI 0.166.150
 
@@ -318,9 +318,9 @@ See the [verified publication evidence](https://github.com/longfa/chainlesschain
 
 ## Release compatibility
 
-Plugin **0.4.209** is the current release candidate and has not been publicly verified. It recommends `chainlesschain@0.166.159`; publish only after the exact CLI release gates, JetBrains host matrix and Marketplace upload/readback pass.
+Plugin **0.4.209** is the uploaded release and recommends `chainlesschain@0.166.159`; all release gates and upload passed, while Marketplace approval/listing remains pending.
 
-Install the paired candidate CLI with `npm i -g chainlesschain@0.166.159 --registry https://registry.npmjs.org` only after its OIDC publication and public readback. Goal transfer and native Graph features require matching desktop support and explicit native authorization. Model-task improvement and automatic promotion remain unverified.
+Install the paired public CLI with `npm i -g chainlesschain@0.166.159 --registry https://registry.npmjs.org`. Goal transfer and native Graph features require matching desktop support and explicit native authorization. Model-task improvement and automatic promotion remain unverified.
 
 ## Previous candidates and development notes
 

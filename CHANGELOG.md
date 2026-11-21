@@ -5,18 +5,18 @@ All notable changes to ChainlessChain will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-> Public release scope checked 2026-11-14: CLI **0.166.149** is public from source `168a3d561b5a16e9d27b060944c63b2264c99df0`, with **76/76 CLI CI**, **6/6 Strict Sandbox**, Actions OIDC publication, official provenance verification and independent public archive byte equality. Open VSX **0.37.188** is public and byte-verified, recommending CLI **0.166.149**. JetBrains **0.4.203** has been uploaded and awaits Marketplace approval and public download verification; verified public JetBrains **0.4.202** retains CLI **0.166.148** pairing. See [publication evidence](docs/research/cli/evidence/release149-public/publication.json).
+> Public release scope checked 2026-11-21: CLI **0.166.159** is public from exact source `2aa00100a73f9b170b719c7f79e986470643485f`; Actions OIDC workflow `44845885665` passed the required CLI CI and Strict Sandbox gates and npm readback is `0.166.159`. Open VSX **0.37.194** is public and verified by workflow `44852489617`. JetBrains **0.4.209** uploaded successfully through workflow `44852489659` and is pending Marketplace approval/listing; **0.4.208** remains the latest listed release. See the release workflow records for publication evidence.
 >
 > `Unreleased` is a rolling source-development log retaining historical candidate labels, not a publication ledger. Engineering checks add no model-task acceptance. Full runtime producer/storage graphs, independent installer/pins, A/B/C evaluation and automatic promotion remain incomplete. **NOT_PAID_READY / NOT_ADMITTED / HOLD** remain. Microsoft Marketplace is deferred; public PC/mobile clients remain **v5.0.3.145**.
 
 ## [Unreleased]
 
-### Fixed - cc CLI 0.166.159: restore supported macOS release gates (candidate, 2026-11-21)
+### Released - cc CLI 0.166.159 and IDE pairing (2026-11-21)
 
 - Restore macOS 15 for the complete CLI CI and Strict Sandbox matrices. GitHub rejected macOS 14 ARM64 before assigning a runner; earlier macOS 15 attempts were cancelled by superseding branch runs.
-- Carry the DMM-09 native SQLite acceptance drill from unpublished candidate 0.166.158. Preserve its immutable tag and require a new exact-source three-platform validation for this candidate.
+- Carry the DMM-09 native SQLite acceptance drill from unpublished candidate 0.166.158. Preserve its immutable failed tag while releasing the corrected exact-source build.
 - Advance the fixture clock with completed task timestamps so independent verification does not correctly reject a future source. Count rejected and falsely completed checks from stored records, and close SQLite on failure.
-- Pair Open VSX 0.37.194 and JetBrains 0.4.209 with CLI 0.166.159 only after Actions OIDC publication and public npm readback. Child npm versions remain unchanged.
+- Pair public Open VSX 0.37.194 and uploaded JetBrains 0.4.209 with public CLI 0.166.159 after Actions OIDC publication and public readback. JetBrains Marketplace listing remains pending; child npm versions remain unchanged.
 
 ### Added - cc CLI 0.166.158: DMM-09 independent business acceptance drill (candidate, 2026-11-20)
 

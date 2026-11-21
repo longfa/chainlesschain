@@ -1,16 +1,12 @@
 # chainlesschain CLI
 
-Documentation checked 2026-11-20 against release source `0ad9968f0498fce77e538f6e5e64bba35db184c8`; public CLI is **0.166.157**, paired with public Open VSX **0.37.193** and JetBrains **0.4.208**, both recommending CLI **0.166.157**. Historical PC/mobile .145 download URLs remain unavailable. [Current installation and limits](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-19-157.html).
+Documentation checked 2026-11-21 against release source `2aa00100a73f9b170b719c7f79e986470643485f`; public CLI is **0.166.159**, paired with public Open VSX **0.37.194** and JetBrains **0.4.209** upload (Marketplace listing pending). [Current installation and limits](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-19-157.html).
 
 Command-line interface for installing, configuring, and managing [ChainlessChain](https://www.chainlesschain.com), including the coding agent, governed tools, sessions, memory, and IDE integrations.
 
-## Next release candidate: CLI 0.166.159 (2026-11-21)
+## Public CLI 0.166.159 (2026-11-21)
 
-CLI **0.166.159** is a source candidate and is not public yet. It restores supported macOS 15 release runners and fixes the DMM-09 native SQLite business acceptance drill from unpublished candidate .158. The drill uses a consistent fixture clock, derives acceptance counts from stored records, closes SQLite after errors, and checks incomplete-outcome refusal, durable completion evidence, database-reopen recovery and idempotent replay. Publish only after the exact CLI CI and Strict Sandbox matrices pass, then use Actions OIDC and public npm readback. The paired IDE candidates are Open VSX **0.37.194** and JetBrains **0.4.209**; native clients remain outside this release. The immutable .158 tag is retained as a failed candidate.
-
-## Public CLI 0.166.157 (2026-11-20)
-
-CLI **0.166.157** is public on npm from exact source `0ad9968f0498fce77e538f6e5e64bba35db184c8`. The GitHub Actions OIDC release workflow passed the exact SHA gate, all required CLI CI and Strict Sandbox gates, immutable tarball verification, signed npm provenance and public registry readback. Install `npm i -g chainlesschain@0.166.157 --registry https://registry.npmjs.org`, restart IDE hosts, then run `cc --version`. The release adds the governed evolution storage audit and is paired with the public IDE releases **0.37.193** and **0.4.208**; native clients remain outside this release. [Publication evidence](../../docs/research/cli/evidence/release157-public/chainlesschain-release.json) · [npm provenance](../../docs/research/cli/evidence/release157-public/chainlesschain-npm-provenance.json) · [public registry readback](../../docs/research/cli/evidence/release157-public/chainlesschain-npm-readback.json).
+CLI **0.166.159** is public on npm from exact source `2aa00100a73f9b170b719c7f79e986470643485f`. GitHub Actions workflow [`44845885665`](https://github.com/chainlesschain/chainlesschain/actions/runs/44845885665) passed the exact-SHA gate, Linux/Windows/macOS CLI CI and Strict Sandbox gates, child-package order, OIDC publication and public npm readback (`0.166.159`). Install `npm i -g chainlesschain@0.166.159 --registry https://registry.npmjs.org`, restart IDE hosts, then run `cc --version`. Open VSX **0.37.194** is public; JetBrains **0.4.209** was uploaded successfully and remains pending Marketplace approval/listing. Native clients remain outside this release. The immutable failed candidate tag `.158` is retained.
 
 ## Historical CLI 0.166.150 / IDE pairing (2026-11-15)
 

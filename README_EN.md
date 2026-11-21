@@ -1,8 +1,8 @@
 # ChainlessChain - Personal Mobile AI Management System Based on USB Key and SIMKey
 
-## Current public release (2026-11-20)
+## Current public release (2026-11-21)
 
-CLI **0.166.157** is public on npm from exact source `0ad9968f0498fce77e538f6e5e64bba35db184c8`. The Actions OIDC workflow passed the exact SHA gate, CLI CI, Strict Sandbox, immutable tarball verification, signed npm provenance and public registry readback. Install `npm i -g chainlesschain@0.166.157 --registry https://registry.npmjs.org`, restart the host and check `cc --version`. This release also publishes Open VSX **0.37.193** and JetBrains **0.4.208**, both recommending CLI **0.166.157**. Native clients are outside this release. [Publication evidence](docs/research/cli/evidence/release157-public/chainlesschain-release.json) · [IDE readback](docs/research/cli/evidence/release157-public/ide-public.json) · [npm readback](docs/research/cli/evidence/release157-public/chainlesschain-npm-readback.json).
+CLI **0.166.159** is public on npm from exact source `2aa00100a73f9b170b719c7f79e986470643485f`. The Actions OIDC workflow passed the exact SHA gate, CLI CI, Strict Sandbox, immutable tarball verification, signed npm provenance and public registry readback. Install `npm i -g chainlesschain@0.166.159 --registry https://registry.npmjs.org`, restart the host and check `cc --version`. This release also publishes Open VSX **0.37.194** and JetBrains **0.4.209 (uploaded; Marketplace listing pending)**, both recommending CLI **0.166.159**. Native clients are outside this release. [Publication evidence](https://github.com/chainlesschain/chainlesschain/actions/runs/44845885665) · [IDE readback](https://github.com/chainlesschain/chainlesschain/actions/runs/44852489617) · [npm readback](https://github.com/chainlesschain/chainlesschain/actions/runs/44845885665).
 
 ## Previous public CLI 0.166.156 / IDE update (2026-11-18)
 
