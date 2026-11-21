@@ -318,7 +318,7 @@ See the [verified publication evidence](https://github.com/longfa/chainlesschain
 
 ## Release compatibility
 
-Plugin **0.4.209** is the uploaded release and recommends `chainlesschain@0.166.159`; all release gates and upload passed, while Marketplace approval/listing remains pending.
+Plugin **0.4.209** is the current release candidate and recommends `chainlesschain@0.166.159`; all release gates and upload passed, while Marketplace approval/listing remains pending.
 
 Install the paired public CLI with `npm i -g chainlesschain@0.166.159 --registry https://registry.npmjs.org`. Goal transfer and native Graph features require matching desktop support and explicit native authorization. Model-task improvement and automatic promotion remain unverified.
 
