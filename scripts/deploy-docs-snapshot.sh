@@ -123,7 +123,10 @@ while IFS=$'\t' read -r site sha html files; do
   live="$root/$site.chainlesschain.com"
   stage="$live.new-$stamp"
   backup="$live.bak-$stamp"
-  test -d "$live" && test ! -L "$live"
+  # Existing managed sites may be symlinks into the hosting data volume.
+  # They are still switched atomically: the link is moved to the backup path
+  # and the validated stage takes its place; rollback restores the link.
+  test -d "$live"
   test ! -e "$stage" && test ! -L "$stage"
   test ! -e "$backup" && test ! -L "$backup"
   test ! -e "$live.failed-$stamp" && test ! -L "$live.failed-$stamp"
