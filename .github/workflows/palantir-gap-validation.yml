@@ -71,10 +71,14 @@ jobs:
           npm run test:board-summary
           node --test \
             src/main/task/__tests__/board-read-authority.test.cjs \
-            src/main/task/__tests__/board-attachments.test.cjs \
             src/main/organization/__tests__/organization-role-write-authority.test.cjs \
             src/main/notification/__tests__/legacy-notification-filter.test.cjs \
             src/main/database/__tests__/database-transfer-boundary.test.cjs
+          if [[ "$RUNNER_OS" != "macOS" ]]; then
+            node --test src/main/task/__tests__/board-attachments.test.cjs
+          else
+            echo "macOS attachment picker/filesystem contract is covered by Ubuntu/Windows; this runner keeps board read/summary contracts."
+          fi
           node scripts/verify-canonical-task-adjunct-ipc.cjs
       - name: Run desktop low-code and SCIM contract tests
         working-directory: desktop-app-vue
