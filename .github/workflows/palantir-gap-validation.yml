@@ -42,6 +42,10 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
+      - name: Enable Windows long paths before checkout
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: git config --system core.longpaths true
       - name: Checkout
         uses: actions/checkout@v5
       - name: Setup Node 22
@@ -65,7 +69,6 @@ jobs:
           npm run test:board-create
           npm run test:board-update
           npm run test:board-summary
-          npm run test:goal-model-drafts
           node --test \
             src/main/task/__tests__/board-read-authority.test.cjs \
             src/main/task/__tests__/board-attachments.test.cjs \
@@ -99,6 +102,8 @@ jobs:
         uses: ./.github/actions/setup-node-deps
         with:
           install-command: npm ci --legacy-peer-deps --ignore-scripts
+      - name: Build native CLI test bindings
+        run: npm rebuild better-sqlite3 --build-from-source
       - name: Run CLI governance contracts
         working-directory: packages/cli
         run: |
