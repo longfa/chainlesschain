@@ -103,7 +103,7 @@ jobs:
         with:
           install-command: npm ci --legacy-peer-deps --ignore-scripts
       - name: Build native CLI test bindings
-        run: npm rebuild better-sqlite3 --build-from-source
+        run: npm rebuild better-sqlite3
       - name: Run CLI governance contracts
         working-directory: packages/cli
         run: |
