@@ -7,7 +7,7 @@ const CLI_VERSION = releaseStatus.recommendedCliVersion;
 const VSCODE_VERSION = releaseStatus.openVsxVersion;
 const JETBRAINS_VERSION = releaseStatus.jetBrainsMarketplaceVersion;
 const VSCODE_CLI_VERSION = releaseStatus.openVsxRecommendedCliVersion;
-const JETBRAINS_CLI_VERSION = releaseStatus.jetBrainsRecommendedCliVersion;
+const JETBRAINS_CLI_VERSION = releaseStatus.jetBrainsPublicRecommendedCliVersion;
 const OPEN_VSX_DOWNLOADS = releaseStatus.openVsxDownloadsDisplayZh;
 const JETBRAINS_CANDIDATE = releaseStatus.jetBrainsCandidateVersion;
 const JETBRAINS_PENDING = ["pending-review", "pending-approval", "published-unverified", "uploaded_public_listing_pending", "uploaded-pending-review"].includes(
@@ -101,7 +101,7 @@ const VSCODE_VSIX_URL = `https://open-vsx.org/api/chainlesschain/chainlesschain-
           <strong class="text-ink">{JETBRAINS_VERSION}</strong>{" "}
           已批准并公开上架，内置推荐 CLI{" "}
           <strong class="text-ink">
-            {releaseStatus.jetBrainsRecommendedCliVersion}
+            {releaseStatus.jetBrainsPublicRecommendedCliVersion}
           </strong>
           。npm latest CLI 为 {CLI_VERSION}；微软 VS Code Marketplace
           版本仍未发布。
@@ -111,7 +111,7 @@ const VSCODE_VSIX_URL = `https://open-vsx.org/api/chainlesschain/chainlesschain-
             releaseStatus.openVsxRecommendedCliVersion
           }；操作期间延后周期刷新，并按面板丢弃过期投影。商店已批准 JetBrains {
             JETBRAINS_VERSION
-          } 推荐 CLI {releaseStatus.jetBrainsRecommendedCliVersion}。
+          } 推荐 CLI {releaseStatus.jetBrainsPublicRecommendedCliVersion}。
           {
             JETBRAINS_PENDING && (
               <>

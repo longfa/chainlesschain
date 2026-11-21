@@ -1,11 +1,12 @@
 # 简介
 
-> **2026-11-19 当前入口**：公开 CLI **0.166.156**、Open VSX **0.37.192**、JetBrains **0.4.207**，两款 IDE 推荐 CLI **0.166.156**。最后已核验的历史客户端为 **v5.0.3.145**，旧安装包下载源当前返回 **404**，暂不可下载。可先使用 CLI、`cc ui` 浏览器工作台及 IDE；本次不发布新客户端，不新增模型任务验收，**NOT_PAID_READY / NOT_ADMITTED / HOLD** 保留。[当前升级指南](../chainlesschain/cli-ide-update-2026-11-19-156) · [当前源码仓库](https://github.com/longfa/chainlesschain)。
+> **2026-11-19 当前入口**：公开 CLI **0.166.159**、Open VSX **0.37.194**、JetBrains **0.4.208**，两款 IDE 推荐 CLI **0.166.159**。最后已核验的历史客户端为 **v5.0.3.145**，旧安装包下载源当前返回 **404**，暂不可下载。可先使用 CLI、`cc ui` 浏览器工作台及 IDE；本次不发布新客户端，不新增模型任务验收，**NOT_PAID_READY / NOT_ADMITTED / HOLD** 保留。[当前升级指南](../chainlesschain/cli-ide-update-2026-11-21-159) · [当前源码仓库](https://github.com/longfa/chainlesschain)。
+JetBrains **0.4.209** 已上传并等待 Marketplace 审批/上架；公开列表仍为 **0.4.208**。
 
 当前推荐安装入口：
 
 ```bash
-npm install -g chainlesschain@0.166.156 --registry https://registry.npmjs.org
+npm install -g chainlesschain@0.166.159 --registry https://registry.npmjs.org
 cc setup --skip-download --skip-services
 cc ui
 ```

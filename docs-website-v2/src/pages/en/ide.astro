@@ -7,7 +7,7 @@ const CLI_VERSION = releaseStatus.recommendedCliVersion;
 const VSCODE_VERSION = releaseStatus.openVsxVersion;
 const JETBRAINS_VERSION = releaseStatus.jetBrainsMarketplaceVersion;
 const VSCODE_CLI_VERSION = releaseStatus.openVsxRecommendedCliVersion;
-const JETBRAINS_CLI_VERSION = releaseStatus.jetBrainsRecommendedCliVersion;
+const JETBRAINS_CLI_VERSION = releaseStatus.jetBrainsPublicRecommendedCliVersion;
 const OPEN_VSX_DOWNLOADS = releaseStatus.openVsxDownloadsDisplayEn;
 const JETBRAINS_CANDIDATE = releaseStatus.jetBrainsCandidateVersion;
 const JETBRAINS_PENDING = ["pending-review", "pending-approval", "published-unverified", "uploaded_public_listing_pending", "uploaded-pending-review"].includes(
@@ -105,7 +105,7 @@ const VSCODE_VSIX_URL = `https://open-vsx.org/api/chainlesschain/chainlesschain-
           . JetBrains Marketplace{" "}
           <strong class="text-ink">{JETBRAINS_VERSION}</strong> is approved and publicly
           listed, and recommends CLI{" "}
-          {releaseStatus.jetBrainsRecommendedCliVersion}. npm latest CLI is{" "}
+          {releaseStatus.jetBrainsPublicRecommendedCliVersion}. npm latest CLI is{" "}
           {CLI_VERSION}. No Microsoft VS Code Marketplace build is published.
         </p>
         <p class="mt-3 text-sm text-muted">
@@ -113,7 +113,7 @@ const VSCODE_VSIX_URL = `https://open-vsx.org/api/chainlesschain/chainlesschain-
           {releaseStatus.openVsxRecommendedCliVersion}. It defers periodic reads
           during actions and discards stale projections per panel. Marketplace-approved
           JetBrains {JETBRAINS_VERSION} recommends CLI
-          {releaseStatus.jetBrainsRecommendedCliVersion}.
+          {releaseStatus.jetBrainsPublicRecommendedCliVersion}.
           {
             JETBRAINS_PENDING && (
               <>

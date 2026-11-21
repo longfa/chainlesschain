@@ -4,7 +4,7 @@ layout: home
 hero:
   name: ChainlessChain
   text: 去中心化个人 AI 管理平台
-  tagline: "CLI 0.166.156 / Open VSX 0.37.192 已公开；JetBrains .207 已公开核验，历史客户端 v5.0.3.145 下载源暂不可用"
+  tagline: "CLI 0.166.159 / Open VSX 0.37.194 / JetBrains 0.4.208 已公开；0.4.209 已上传等待 Marketplace 上架；历史客户端 v5.0.3.145 下载源暂不可用"
   image:
     src: /logo.png
     alt: ChainlessChain Logo
@@ -23,7 +23,7 @@ features:
   - icon: ⚠️
     title: LK 渠道、动态账单与凭证保留
     details: "CLI .156 / Open VSX .192 已公开核验；JetBrains .207 已公开核验。LK 真实模型 ID、202 项目录与 86 项对话模型、动态算力价格和真实 API 账单，火山等各渠道 Key 切换后保留。"
-    link: /chainlesschain/cli-ide-update-2026-11-19-156
+    link: /chainlesschain/cli-ide-update-2026-11-21-159
   - icon: 🔗
     title: CLI / IDE 与桌面目标草稿
     details: "CLI .140 修复损坏工具参数恢复与可信摘要；桌面目标草稿互通仍需匹配客户端构建、显式授权及原生确认，CLI 或插件发布不能替代产品验收。"
@@ -87,6 +87,8 @@ features:
     details: "CLI 与 IDE 的精确提交门禁、公共制品回读、模型任务验收具有不同证据范围。客户端公开版仍为 .145，.146 的 Android bundle 对齐与整体发行仍待完成；完整 native review 保持 NOT_ADMITTED。"
 ---
 
+JetBrains **0.4.209** 已上传，Marketplace 审批/上架待完成；公开列表仍为 **0.4.208**。
+
 ## 开发者微信群
 
 欢迎开发者加入 **「免费测评企业 AI 落地」** 微信交流群，交流 ChainlessChain 的使用、二次开发、插件/IDE 接入、问题排查和企业 AI 落地实践。请扫码入群：
@@ -100,15 +102,16 @@ features:
   </div>
 </div>
 
-## 当前公开版本与源码核对（2026-11-19）
+## 当前公开版本与源码核对（2026-11-21）
 
-已验证公开 **CLI 0.166.156 / Open VSX 0.37.192 / JetBrains 0.4.207**，两款 IDE 推荐 CLI .156；JetBrains 已审核公开，公开安装包已与正式候选核对。安装 `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`、`cc doctor`。
+已验证公开 **CLI 0.166.159 / Open VSX 0.37.194 / JetBrains 0.4.208**，两款 IDE 推荐 CLI .156；JetBrains 已审核公开，公开安装包已与正式候选核对。安装 `npm i -g chainlesschain@0.166.159 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`、`cc doctor`。
+JetBrains **0.4.209** 已上传并等待 Marketplace 审批/上架；公开列表仍为 **0.4.208**。
 
 LK 使用 `https://api.vv666.ai` 主地址和 `https://api.lk666.ai` 手动备用地址；OpenAI 兼容连接为 `/v1`、默认 `gpt-6.1-sol`。目录为 **202 项 / 86 项对话模型**，聊天下拉按协议筛选；余额、动态分组价格与实际 API 账单通过已保存的 LK 连接读取，金额单位为算力，与本地 Token 统计分开。
 
-文档核对源码 `8c937cbe9bc4b82f87479c124375401fa2fb3a72`；不可变发行来源 `a8cae89288d3a6119b152e04b750e10d726a5c5f`。Git 标题中的“1.5.6”不代表可安装版本号，CLI 包的真实版本为 **0.166.156**。本轮不新增模型任务验收，**NOT_PAID_READY / NOT_ADMITTED / HOLD** 保留。最后已核验历史客户端为 **v5.0.3.145**，旧安装包源目前返回 404，不能视为当前可下载；本轮不发布 PC/mobile 安装包。
+文档核对源码 `8c937cbe9bc4b82f87479c124375401fa2fb3a72`；不可变发行来源 `a8cae89288d3a6119b152e04b750e10d726a5c5f`。Git 标题中的“1.5.6”不代表可安装版本号，CLI 包的真实版本为 **0.166.159**。本轮不新增模型任务验收，**NOT_PAID_READY / NOT_ADMITTED / HOLD** 保留。最后已核验历史客户端为 **v5.0.3.145**，旧安装包源目前返回 404，不能视为当前可下载；本轮不发布 PC/mobile 安装包。
 
-[本轮安装与故障排查](/chainlesschain/cli-ide-update-2026-11-19-156) · [设计与发行边界](https://design.chainlesschain.com/release-runtime-update-2026-11-19-156.html)。后续带日期记录保留各自历史范围。
+[本轮安装与故障排查](/chainlesschain/cli-ide-update-2026-11-21-159) · [设计与发行边界](https://design.chainlesschain.com/release-runtime-update-2026-11-21-159.html)。后续带日期记录保留各自历史范围。
 
 ## 历史：2026-11-10 当前公开发行
 

@@ -1,6 +1,7 @@
 # ChainlessChain 安装部署
 
-> **2026-11-19 当前安装入口**：公开 CLI **0.166.156**、Open VSX **0.37.192**、JetBrains **0.4.207**；两款 IDE 推荐 CLI **0.166.156**。最后已核验的历史客户端为 **v5.0.3.145**，旧安装包下载源当前返回 **404**，暂不可下载。CLI、Web 与 IDE 可使用；本次不发行新客户端，**NOT_PAID_READY / NOT_ADMITTED / HOLD** 保留。[当前升级指南](./cli-ide-update-2026-11-19-156) · [当前源码仓库](https://github.com/longfa/chainlesschain)。
+> **2026-11-19 当前安装入口**：公开 CLI **0.166.159**、Open VSX **0.37.194**、JetBrains **0.4.208**；两款 IDE 推荐 CLI **0.166.159**。最后已核验的历史客户端为 **v5.0.3.145**，旧安装包下载源当前返回 **404**，暂不可下载。CLI、Web 与 IDE 可使用；本次不发行新客户端，**NOT_PAID_READY / NOT_ADMITTED / HOLD** 保留。[当前升级指南](./cli-ide-update-2026-11-21-159) · [当前源码仓库](https://github.com/longfa/chainlesschain)。
+JetBrains **0.4.209** 已上传并等待 Marketplace 审批/上架；公开列表仍为 **0.4.208**。
 
 > **2026-11-09 历史核对**：当时公开组合为 CLI **0.166.145**、Open VSX **0.37.181**、JetBrains **0.4.198**，两款 IDE 推荐 CLI .145；产品 **v5.0.3.145** 独立发行。以下 .145 文件名、系统要求与旧门禁记录保留历史范围，不证明当前旧下载源仍可用。
 
@@ -8,7 +9,7 @@
 
 先选择需要的入口：终端 Agent 安装 npm CLI；浏览器工作台由 `cc ui` 启动；IDE 插件另外安装并连接 CLI。桌面与移动客户端需要独立安装包，当前旧下载源不可用，可使用已有且已核验的本地资产或按源码开发说明构建。仅使用 CLI 和云端模型时，不需要先部署整套 Docker 后端。
 
-[系统概述](./overview) · [本轮升级指南](./cli-ide-update-2026-11-19-156) · [配置说明](./configuration)
+[系统概述](./overview) · [本轮升级指南](./cli-ide-update-2026-11-21-159) · [配置说明](./configuration)
 
 ## 核心特性
 
@@ -49,11 +50,11 @@ Android / iOS 要求按历史产品 .145 的发行源码核对，不能从源码
 ```bash
 node --version
 npm --version
-npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org
+npm i -g chainlesschain@0.166.159 --registry https://registry.npmjs.org
 cc --version
 ```
 
-安装后应显示 `0.166.156`。若 `cc` 指向系统 C 编译器或另一个工具，使用完整命令 `chainlesschain --version`，并核对 npm 全局可执行目录是否在当前终端的 PATH 中。
+安装后应显示 `0.166.159`。若 `cc` 指向系统 C 编译器或另一个工具，使用完整命令 `chainlesschain --version`，并核对 npm 全局可执行目录是否在当前终端的 PATH 中。
 
 ### 2. 初始化 CLI
 
@@ -111,10 +112,10 @@ sudo apt install ./chainlesschain-desktop-vue_5.0.3-alpha.145_amd64.deb
 
 | IDE                | 当前公开插件          | 安装与配对                                                                                                                                                                                                                          |
 | ------------------ | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| VS Code 兼容编辑器 | Open VSX **0.37.192** | [商店页面](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide)，或[下载 VSIX](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.192/file/chainlesschain.chainlesschain-ide-0.37.192.vsix)后从 VSIX 安装 |
-| JetBrains          | **0.4.207**           | [Marketplace](https://plugins.jetbrains.com/plugin/32208-chainlesschain-ide-bridge)，按 IDE 兼容范围安装                                                                                                                            |
+| VS Code 兼容编辑器 | Open VSX **0.37.194** | [商店页面](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide)，或[下载 VSIX](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.194/file/chainlesschain.chainlesschain-ide-0.37.194.vsix)后从 VSIX 安装 |
+| JetBrains          | **0.4.208**           | [Marketplace](https://plugins.jetbrains.com/plugin/32208-chainlesschain-ide-bridge)，按 IDE 兼容范围安装                                                                                                                            |
 
-两款插件均推荐 CLI **0.166.156**。安装/升级后重启旧聊天宿主，通过 Doctor 核对实际 CLI 路径。Microsoft Marketplace 尚未发行；VS Code 用户可使用公开 VSIX。详细操作见 [IDE 指南](./ide-plugin)。
+两款插件均推荐 CLI **0.166.159**。安装/升级后重启旧聊天宿主，通过 Doctor 核对实际 CLI 路径。Microsoft Marketplace 尚未发行；VS Code 用户可使用公开 VSIX。详细操作见 [IDE 指南](./ide-plugin)。
 
 ## 移动端安装
 
@@ -176,7 +177,7 @@ CLI 默认配置在 `~/.chainlesschain/config.json`；桌面端还存在 Electro
 ### 更新到本页核对的公开组合
 
 ```bash
-npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org
+npm i -g chainlesschain@0.166.159 --registry https://registry.npmjs.org
 chainlesschain --version
 chainlesschain doctor
 ```

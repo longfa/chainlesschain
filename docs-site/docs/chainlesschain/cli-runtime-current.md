@@ -2,13 +2,14 @@
 
 ## 当前公开版本与源码核对（2026-11-19）
 
-已验证公开 **CLI 0.166.156 / Open VSX 0.37.192 / JetBrains 0.4.207**，两款 IDE 推荐 CLI .156；JetBrains 已审核公开，公开安装包已与正式候选核对。安装 `npm i -g chainlesschain@0.166.156 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`、`cc doctor`。
+已验证公开 **CLI 0.166.159 / Open VSX 0.37.194 / JetBrains 0.4.208**，两款 IDE 推荐 CLI .156；JetBrains 已审核公开，公开安装包已与正式候选核对。安装 `npm i -g chainlesschain@0.166.159 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`、`cc doctor`。
+JetBrains **0.4.209** 已上传并等待 Marketplace 审批/上架；公开列表仍为 **0.4.208**。
 
 LK 使用 `https://api.vv666.ai` 主地址和 `https://api.lk666.ai` 手动备用地址；OpenAI 兼容连接为 `/v1`、默认 `gpt-6.1-sol`。目录为 **202 项 / 86 项对话模型**，聊天下拉按协议筛选；余额、动态分组价格与实际 API 账单通过已保存的 LK 连接读取，金额单位为算力，与本地 Token 统计分开。
 
-文档核对源码 `8c937cbe9bc4b82f87479c124375401fa2fb3a72`；不可变发行来源 `a8cae89288d3a6119b152e04b750e10d726a5c5f`。Git 标题中的“1.5.6”不代表可安装版本号，CLI 包的真实版本为 **0.166.156**。本轮不新增模型任务验收，**NOT_PAID_READY / NOT_ADMITTED / HOLD** 保留。最后已核验历史客户端为 **v5.0.3.145**，旧安装包源目前返回 404，不能视为当前可下载；本轮不发布 PC/mobile 安装包。
+文档核对源码 `8c937cbe9bc4b82f87479c124375401fa2fb3a72`；不可变发行来源 `a8cae89288d3a6119b152e04b750e10d726a5c5f`。Git 标题中的“1.5.6”不代表可安装版本号，CLI 包的真实版本为 **0.166.159**。本轮不新增模型任务验收，**NOT_PAID_READY / NOT_ADMITTED / HOLD** 保留。最后已核验历史客户端为 **v5.0.3.145**，旧安装包源目前返回 404，不能视为当前可下载；本轮不发布 PC/mobile 安装包。
 
-[本轮安装与故障排查](./cli-ide-update-2026-11-19-156) · [设计与发行边界](https://design.chainlesschain.com/release-runtime-update-2026-11-19-156.html)。后续带日期记录保留各自历史范围。
+[本轮安装与故障排查](./cli-ide-update-2026-11-21-159) · [设计与发行边界](https://design.chainlesschain.com/release-runtime-update-2026-11-21-159.html)。后续带日期记录保留各自历史范围。
 
 CLI **0.166.146**、Protocol **0.1.13**、Agent SDK **0.2.18** 和 Memory Kernel **0.1.12** 已通过 [GitHub Actions OIDC 发布](https://github.com/chainlesschain/chainlesschain/actions/runs/42758119265)，公开 npm 版本已核验。发行源码为 `daafda2cf7790580467dae8ce006ceaa1285d3b4`；官方工作流已完成准确源码门禁、公开字节与来源验证、仅 registry 的子包依赖安装。Session Core 保持 **0.3.27**。
 

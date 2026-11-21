@@ -2,13 +2,14 @@
 
 ## LK 渠道与账户查询（2026-11-19）
 
-CLI **0.166.156**、Open VSX **0.37.192** 和 JetBrains **0.4.207** 均已公开核验，两款插件推荐 CLI .156。升级并重启宿主，运行 `cc --version`、`cc doctor`。
+CLI **0.166.159**、Open VSX **0.37.194** 和 JetBrains **0.4.208** 均已公开核验，两款插件推荐 CLI .156。升级并重启宿主，运行 `cc --version`、`cc doctor`。
+JetBrains **0.4.209** 已上传并等待 Marketplace 审批/上架；公开列表仍为 **0.4.208**。
 
 通过 `cc setup --skip-download --skip-services`、`cc ui` 的 LLM 配置或 IDE「配置大模型 / Configure LLM」选择 LK，再选择协议、端点和模型。主地址为 `https://api.vv666.ai`，备用为 `https://api.lk666.ai`，主备手动切换；LK 三种对话协议可恢复已保存的 LK Key。OpenAI 兼容连接使用 `https://api.vv666.ai/v1` 和 `gpt-6.1-sol`，不要填写具体 `/chat/completions` 请求路径。
 
 当前目录 **202 项**：86 对话、26 图片、82 视频、8 音频。聊天下拉仅显示所选协议兼容的对话模型；目录条目不保证当前 Key 权限或真实生成质量，媒体任务提交与轮询不在聊天配置内。旧别名 `tt-6.1-sol`、`tt-6-luna`、`fb-5-2`、`gem-3.8-flash` 分别迁移为 `gpt-6.1-sol`、`gpt-6-luna`、`claude-fable-5-2`、`gemini-3.8-flash`，未知自定义名称保留。
 
-各渠道（含火山）的 Key 独立保存。恢复已保存连接时可留空 Key；首次配置其他服务必须提供该服务自己的凭证，不能复用 LK Key。[协议、地址与迁移指南](./cli-ide-update-2026-11-19-156)列出完整配置。
+各渠道（含火山）的 Key 独立保存。恢复已保存连接时可留空 Key；首次配置其他服务必须提供该服务自己的凭证，不能复用 LK Key。[协议、地址与迁移指南](./cli-ide-update-2026-11-21-159)列出完整配置。
 
 `cc llm account` 查询动态分组价格、余额、Key 额度、用量与实际 API 账单；`cc llm account --days 7 --scope user --limit 20 --offset 0 --json` 读取全部 Key 的 API 用量并分页。Web 和 IDE 账户刷新复用已保存的 LK 连接。账单单位为平台算力，没有 Token 数；本地 Token 估算单独显示，退款计入净额，Key 限额 0 表示不限额。
 

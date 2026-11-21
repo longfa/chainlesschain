@@ -1,0 +1,71 @@
+# CLI 0.166.159 / IDE 公开发行与 LK 运行时边界
+
+## 1. 源码、发布与部署身份
+
+本轮 CLI 公开版本为 **0.166.159**，不可变发行源码为 `2aa00100a73f9b170b719c7f79e986470643485f`，标签为 `v-npm-0-166-159`。CLI/npm 工作流 `44845885665`、VS Code/Open VSX 工作流 `44852489617` 和 JetBrains 工作流 `44852489659` 均成功。
+
+Open VSX **0.37.194** 已公开、verified 且可下载，推荐 CLI **0.166.159**。JetBrains **0.4.209** 已通过六个真实宿主矩阵并上传，Marketplace 审批/上架仍待完成；当前公开列表为 **0.4.208**。PC/mobile 客户端没有发布。
+
+本轮部署监控以 npm/Open VSX 公共 API 和 JetBrains updates API 为准；不把上传成功误记为 Marketplace 已上架，也不把文档发布当作 native 客户端发布。
+
+## 2. LK 渠道与协议分离
+
+LK 是渠道身份，OpenAI、Anthropic、Gemini 是请求协议。共享定义位于 [llm-channel-presets.js](../../packages/cli/src/lib/llm-channel-presets.js)。主地址为 `https://api.vv666.ai`，备用地址为 `https://api.lk666.ai`；主备切换由用户选择，不承诺自动故障转移。平台文档和价格页面使用 `chainlesschain.net/apidoc`、`chainlesschain.net/api/pricing`，不把网站域名当作模型请求 Base URL。
+
+| LK 协议选择    | CLI / IDE provider | Base URL 路径 | 新连接默认模型    |
+| -------------- | ------------------ | ------------- | ----------------- |
+| OpenAI 兼容    | `custom`           | `/v1`         | `gpt-6.1-sol`     |
+| Anthropic 兼容 | `anthropic`        | `/v1`         | `claude-opus-5-5` |
+| Gemini 兼容    | `gemini`           | `/v1beta`     | `gemini-4-carbon` |
+
+保存时校验协议与 Base URL 路径，已知模型必须为 `chat` 且支持所选协议。目录外的新 ID 允许显式输入，但不因此获得兼容性或账户可用性证明。Desktop Anthropic adapter 自行追加 `/v1/messages`，其连接解析使用 origin，不能直接照搬 CLI 的完整路径。媒体生成、编辑与任务状态端点是接口目录，不表示聊天选择器已实现媒体任务提交及轮询。
+
+旧配置在 LK 连接保存、请求解析与账户价格查询中按精确别名迁移：
+
+| 旧别名          | 规范模型 ID        |
+| --------------- | ------------------ |
+| `tt-6.1-sol`    | `gpt-6.1-sol`      |
+| `tt-6-luna`     | `gpt-6-luna`       |
+| `fb-5-2`        | `claude-fable-5-2` |
+| `gem-3.8-flash` | `gemini-3.8-flash` |
+
+映射通过 `Object.hasOwn` 限定为自身条目；未列出的名称不会按前缀猜测或升级到另一模型。新连接默认值与旧模型别名迁移是不同操作：`fb-5-2` 不迁移为新默认 Opus，Luna 也不迁移为 Sol。模型保存与运行时解析见 [连接配置](../../packages/cli/src/lib/llm-connection-config.js)、[连接解析](../../packages/cli/src/lib/llm-connection-resolution.js)；价格查询使用同一组规范 ID，见 [账户适配器](../../packages/cli/src/lib/lk-account-api.cjs)。
+
+## 3. 目录来源与信任边界
+
+当前 [LK 目录快照](../../packages/cli/src/lib/lk-model-catalog.json) 含 **202** 项：对话 **86**、图片 **26**、视频 **82**、音频 **8**。这是所核对源码中的快照数量，不是永久固定的服务端模型总量。聊天选择器仅使用按兼容协议筛选的 86 项对话集合，不把 202 项全部列为可聊天模型。
+
+[目录同步脚本](../../packages/cli/scripts/sync-lk-model-catalog.mjs) 从 `/v1/skills/models` 读取模型身份；在线同步要求显式 `LK_API_KEY`，也可通过 `--input` 使用已有响应。脚本验证模型名称唯一性、类型和协议，投影为 `id / label / type / protocol / compatibleProtocols`，保留来源 URL 与原响应 SHA-256。生成目录不持久化原始账户响应、Key、额度、白名单或余额。来源摘要用于追踪输入，不是账户授权或平台签名证明。
+
+目录显式保留 `runtimeVerified: false` 与 `accountVerified: false`。模型被列出、协议字段匹配、配置保存或目录同步成功，都不能替代该账户的实际权限检查与真实请求验证。[跨端同步脚本](../../packages/cli/scripts/sync-lk-ide-presets.mjs) 将 CLI 渠道/目录投影到 Web、VS Code 和 JetBrains，并同步 Desktop 账户适配器；这些生成副本复用定义，不获得独立授权权威。
+
+入口排序也不等于模型质量排序。Web 新连接默认 LK / OpenAI，JetBrains 将 LK 放在 provider 列表首项；共享手动 provider 目录先列本地 OpenAI 兼容平台，再列 Ollama，见 [onboarding 目录](../../packages/cli/src/lib/llm-onboarding-catalog.json)。CLI `cc setup` 的实现仍在 provider 列表后追加 LK 入口，不能将“所有入口均 LK 第一”作为当前行为。已有连接应按保存状态恢复，而不是因新默认值自动改换模型。
+
+## 4. 凭证与账户查询
+
+LK 主备地址及兼容协议共享 `channel:lk` 连接身份，同一个 LK Key 可随该渠道恢复。其它渠道使用 `provider + 规范 Base URL` 隔离保存；切回火山等已保存渠道时恢复其自身凭证。新目的地缺少所需 Key 时拒绝保存，不将刚才渠道的 Key 借给新目的地。[saveLlmConnection](../../packages/cli/src/lib/llm-connection-config.js) 在同一个锁和原子写入中更新端点与凭证引用；UI 只接收连接字段及 `hasKey`，不通过配置投影取得密钥明文。
+
+这项隔离描述的是保存配置与恢复路径。显式命令参数、环境变量和 key helper 仍按 [运行时连接解析](../../packages/cli/src/lib/llm-connection-resolution.js) 的优先级处理，不能据此宣称所有请求都忽略环境变量。只读账户入口则显式使用已保存 LK 连接、以 `env: {}` 解析，避免借用通用 provider 环境 Key，见 [queryLkAccount](../../packages/cli/src/lib/lk-account.js)。
+
+账户查询使用当前保存的 LK Key 请求 `/v1/skills/balance`、`/v1/skills/usage`、带 `detail=1` 的用量明细，以及 `/v1/skills/models/{model}/pricing`。仅允许官方主备 HTTPS origin 与 `/v1` 或 `/v1beta` 基路径；每次请求限时 12 秒、拒绝重定向、解码响应最多 2 MiB。接口响应经显式字段白名单投影，不落账户磁盘缓存。四部分独立查询，部分失败显示 `partial` 及对应错误，不能把未知余额或失败价格显示成零。
+
+金额口径必须分开：
+
+- 余额、Key 额度、用量与账单使用平台 **算力**。Key 限额 `0` 表示不限额，不是无可用额度。
+- 动态价格按路由分组展示。按 Token 计费时单位是 **算力 / 百万 Token**，其它计费方式使用基础价；当前折扣、分组启用状态、Key 白名单及排除状态影响可用性。
+- 真实 API 账单含任务、模型、分组、状态、实扣及退款信息，**没有 Token 数**。运行中记录可能仍是预扣；当前可用分组或价格不是某次调用最终路由的证明。
+- 模型响应 Token 用量、本地美元估算与平台账单算力是不同数据源。不能由余额差额、估算值或时间相近自动认领单次请求账单，也不自动将算力折算为充值现金成本。小额显示为 `0` 不代表免费。
+
+## 5. 重复输出恢复与治理边界
+
+当前 [ReadFileLoopGuard](../../packages/cli/src/lib/read-file-loop-guard.js) 对 `run_code / run_shell / check_shell` 的 `output / stdout / stderr` 统一识别大输出重复。宿主拥有的原始输出身份可携带完整长度与摘要，短预览不能冒充完整内容。JSON 克隆后的短预览失去宿主身份：当可见输出小于 8000 字符且没有对应的大输出宿主身份时，将本批标为有进展，清除继承的重复批次计数；这不授予原始输出 fingerprint，也不证明完整文件已被阅读。
+
+真正重复的大输出仍计入守卫，合成的 `CC_TOOL_RECOVERY_PAUSED` 不反过来累加自己的重复次数，恢复控制帧与真实工具观察分离。本次逐文件对比确认该守卫及 LK 连接配置、请求解析在 `8c937cbe9` 与发行 `a8cae8928` 中相同；不能仅依据当前分支提交顺序将其称作发行后的新功能或新模型任务成绩。
+
+上述运行时恢复与 IDE 操作授权分开。JetBrains Workbench 操作仍需 [freshPreview](../../packages/jetbrains-plugin/src/main/java/com/chainlesschain/ide/intellij/SessionsWorkbenchToolWindowFactory.java) 重新获取并校验当前动作预览；旧 UI 状态、旧 receipt、重复输出恢复或新渠道配置均不赋予 resume、审批、执行或 promotion 权限。
+
+## 6. 验证与保留项
+
+发行门绑定不可变提交 `2aa00100a73f9b170b719c7f79e986470643485f` 和标签 `v-npm-0-166-159`。GitHub Actions [CLI OIDC 发布 run 44845885665](https://github.com/chainlesschain/chainlesschain/actions/runs/44845885665) 已完成：子包按依赖顺序发布，CLI tarball SHA-256 为 `39bffc0029726c44483309362525893be8056f0acd6f361a4ecf28dd1f3eb639`，npm provenance 审计为 invalid=0、missing=0，公开 registry 回读版本为 **0.166.159**。CLI CI 与 Strict Sandbox 门禁、VS Code/Open VSX 和 JetBrains 工作流均以准确提交通过；native 客户端未发布。
+
+本说明与网站部署没有新增付费模型任务验收，也不将目录条数、测试数量、源码组合、历史任务或发行成功转换成产品效果成绩。**NOT_PAID_READY / NOT_ADMITTED / HOLD** 保留。Module 112 的 candidate、独立 Eval、review、promotion、release authority、部署签名与 RRSI 局部证明范围不变，见 [受治理 Skill 演进设计](modules/112-governed-skill-evolution-design.md)。Desktop 源码有 LK 配置和账户能力不等于历史 `v5.0.3.145` 安装包已包含本轮代码；原生功能、新安装包与目标生产部署仍需各自独立证据。
