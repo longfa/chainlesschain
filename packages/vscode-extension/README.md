@@ -17,6 +17,7 @@ The current public Open VSX release is **0.37.194** paired with CLI **0.166.159*
 <!-- release156-status -->
 
 Open VSX version **0.37.194** pairs with public CLI `0.166.159`.
+Immutable tag `ide-vscode-v0.37.194` identifies this verified pairing.
 
 | Component                 | Current public status                                       |
 | ------------------------- | ----------------------------------------------------------- |
@@ -24,9 +25,9 @@ Open VSX version **0.37.194** pairs with public CLI `0.166.159`.
 | Recommended CLI           | **`chainlesschain@0.166.159`**; verified public npm package |
 | Base bridge compatibility | `cc >= 0.162.190`; newer features require the paired CLI    |
 
-Workflow [`44852489617`](https://github.com/chainlesschain/chainlesschain/actions/runs/44852489617) passed all Linux, Windows, macOS, browser and Remote SSH gates. CLI `0.166.159` is the recommended public CLI; using `@0.166.159` selects this verified pairing.
+Workflow [`44852489617`](https://github.com/chainlesschain/chainlesschain/actions/runs/44852489617) passed all Linux, Windows, macOS, browser and Remote SSH gates. CLI `0.166.159` is the recommended public CLI. Using `@0.166.159` selects this verified pairing.
 
-The immutable extension tag for the previous pairing was `ide-vscode-v0.37.193`; it remains a historical release. The current downloadable artifact is [Open VSX 0.37.194](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.194/file/chainlesschain.chainlesschain-ide-0.37.194.vsix). Microsoft Marketplace is not published by this tag workflow.
+The current downloadable artifact is [Open VSX 0.37.194](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.194/file/chainlesschain.chainlesschain-ide-0.37.194.vsix). Microsoft Marketplace is not published by this tag workflow.
 
 Open **Configure LLM** to select LK, protocol, endpoint and model, restore a saved channel, or refresh the saved LK account. The current directory has 202 entries, including 86 chat models, and uses `gpt-6.1-sol` for the LK OpenAI default. Prices and actual bills use 算力; Token estimates are separate. Media task submission and polling are not implemented in these settings.
 
@@ -35,6 +36,8 @@ Install `npm i -g chainlesschain@0.166.159 --registry https://registry.npmjs.org
 [Setup and limits](../../docs/configuration/lk-api-channel.md) · [Publication evidence](https://github.com/chainlesschain/chainlesschain/actions/runs/44852489617).
 
 ### Previous verified release (0.37.188)
+
+The immutable extension tag for the previous pairing was `ide-vscode-v0.37.193`; it remains a historical release.
 
 <!-- release188-status -->
 
