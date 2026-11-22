@@ -1410,9 +1410,7 @@ describe("CLI release workflow contracts", () => {
     expect(text).toContain("workflow_call:");
     expect(text).toContain("pull_request:");
     expect(text).toContain("expected_sha:");
-    expect(text).toContain(
-      "EXPECTED_REPOSITORY: chainlesschain/chainlesschain",
-    );
+    expect(text).toContain("EXPECTED_REPOSITORY: ${{ github.repository }}");
     expect(text).toContain("CALLER_WORKFLOW_REF: ${{ github.workflow_ref }}");
     expect(text).toContain("CALLER_WORKFLOW_SHA: ${{ github.workflow_sha }}");
     expect(text).toContain("JOB_CONTEXT: ${{ toJSON(job) }}");
