@@ -1,5 +1,12 @@
 # 更新日志
 
+## 2026-11-22 CLI 0.166.160 与 IDE 发行
+
+- CLI 新增统一的 `cc tasks --json`、停止回执、结构化插件安装结果和 MCP 输入 Schema 校验。
+- Open VSX **0.37.195** 已公开，推荐 CLI **0.166.160**，并增加会话分叉及工作流地图命令。
+- JetBrains **0.4.209** 已公开并推荐 CLI **0.166.159**。候选 **0.4.210** 的 macOS 宿主门禁失败，未上传。
+- 准确发行源码为 `1dd4f2c6cc7128995312be08738ae5d6d692ad25`。[安装与发布状态](/chainlesschain/cli-ide-update-2026-11-22-160) · [设计与证据](https://design.chainlesschain.com/release-runtime-update-2026-11-22-160.html)
+
 ## 2026-11-19：CLI .156 / IDE .192 / .207 与文档同步
 
 - CLI **0.166.159**、Open VSX **0.37.194**、已审核 JetBrains **0.4.208** 全部公开核验；两款 IDE 推荐同一 CLI。

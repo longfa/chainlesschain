@@ -14,6 +14,9 @@ CLAUDE.local.md
 docs/claude/CLAUDE-activeContext.md
 参考资料/
 
+# Local standards and meeting materials
+/标准/
+
 # Build outputs
 dist/
 build/
@@ -295,3 +298,6 @@ android-app/app/src/main/assets/frida/frida-inject-arm64
 # pytest 缓存与本地 CI 失败证据临时目录（不入库）
 .pytest_cache/
 .tmp-jetbrains-failure/
+
+# Local presentation files
+/docs/presentations/

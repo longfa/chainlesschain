@@ -1,12 +1,12 @@
 # ChainlessChain IDE Bridge (JetBrains)
 
-Plugin **0.4.211** is the release candidate and pairs with CLI **0.166.161**. Public JetBrains **0.4.209** recommends CLI **0.166.159**. Marketplace publication requires the exact host and build gates.
+JetBrains **0.4.209** is approved, listed, and publicly downloadable. It recommends CLI **0.166.159**, as verified in the published ZIP. [Download 0.4.209](https://plugins.jetbrains.com/files/32208/1225644/chainlesschain-ide-bridge-0.4.209.zip)
 
-Install the CLI recommended by your installed plugin. Restart the IDE and verify `cc --version`.
+Install its recommended CLI with `npm i -g chainlesschain@0.166.159 --registry https://registry.npmjs.org`, restart the IDE, and verify `cc --version`.
 
-## Current uploaded release 0.4.209 / CLI 0.166.159 (Marketplace pending)
+## Release candidate 0.4.210 / CLI 0.166.160
 
-The immutable tag is `ide-jetbrains-v0.4.209`. The plugin artifact is uploaded and awaiting Marketplace approval/listing; public JetBrains **0.4.208** remains the latest listed release until approval completes.
+The immutable candidate tag is `ide-jetbrains-v0.4.210`. Its macOS IntelliJ 2025.2 host gate failed before upload. The candidate recommends public CLI **0.166.160**. [Release workflow](https://github.com/longfa/chainlesschain/actions/runs/45020514604)
 
 ## Previous release 0.4.204 / CLI 0.166.150
 

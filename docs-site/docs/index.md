@@ -4,7 +4,7 @@ layout: home
 hero:
   name: ChainlessChain
   text: 去中心化个人 AI 管理平台
-  tagline: "CLI 0.166.159 / Open VSX 0.37.194 / JetBrains 0.4.208 已公开；0.4.209 已上传等待 Marketplace 上架；历史客户端 v5.0.3.145 下载源暂不可用"
+  tagline: "CLI 0.166.160、Open VSX 0.37.195 和 JetBrains 0.4.209 已公开"
   image:
     src: /logo.png
     alt: ChainlessChain Logo
@@ -73,9 +73,9 @@ features:
     details: 模型、Volcengine 与 Secure Storage IPC 绑定主进程身份和固定用途；密钥文件原子提交、认证恢复并执行有界备份保留。
     link: /chainlesschain/desktop-model-governance
   - icon: 🧑‍💻
-    title: IDE Bridge 当前公开配对
-    details: "Open VSX .192 推荐 CLI .156；JetBrains .207 已公开核验并推荐同一 CLI。Microsoft Marketplace 未由本批标签发布。"
-    link: /chainlesschain/ide-plugin
+    title: CLI 和 IDE 配套版本
+    details: "Open VSX 0.37.195 推荐 CLI 0.166.160；JetBrains 公开版 0.4.209 推荐 CLI 0.166.159。"
+    link: /chainlesschain/cli-ide-update-2026-11-22-160
   - icon: 🔐
     title: 安全优先
     details: 本地优先、权限控制、会话恢复、Process Broker、跨平台沙箱与加密配置清单共同保护 Agent 执行边界。
@@ -86,8 +86,6 @@ features:
     title: 发布证据分层
     details: "CLI 与 IDE 的精确提交门禁、公共制品回读、模型任务验收具有不同证据范围。客户端公开版仍为 .145，.146 的 Android bundle 对齐与整体发行仍待完成；完整 native review 保持 NOT_ADMITTED。"
 ---
-
-JetBrains **0.4.209** 已上传，Marketplace 审批/上架待完成；公开列表仍为 **0.4.208**。
 
 ## 开发者微信群
 
@@ -102,7 +100,11 @@ JetBrains **0.4.209** 已上传，Marketplace 审批/上架待完成；公开列
   </div>
 </div>
 
-## 当前公开版本与源码核对（2026-11-21）
+## 当前公开版本（2026-11-22）
+
+CLI **0.166.160** 已通过 npm 公开安装、归档完整性和签名来源校验。运行 `npm i -g chainlesschain@0.166.160 --registry https://registry.npmjs.org` 安装，重启宿主后运行 `cc --version` 和 `cc doctor`。[升级指南与商店状态](/chainlesschain/cli-ide-update-2026-11-22-160)
+
+## 历史发行与源码核对（2026-11-21）
 
 已验证公开 **CLI 0.166.159 / Open VSX 0.37.194 / JetBrains 0.4.208**，两款 IDE 推荐 CLI .156；JetBrains 已审核公开，公开安装包已与正式候选核对。安装 `npm i -g chainlesschain@0.166.159 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`、`cc doctor`。
 JetBrains **0.4.209** 已上传并等待 Marketplace 审批/上架；公开列表仍为 **0.4.208**。
