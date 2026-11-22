@@ -265,6 +265,12 @@ Claude 2.1.330 让子代理的模型回退（fallback）**传导**给它派生�
 - `cc setup`、`cc llm models --provider lk --json`、Web、VS Code、JetBrains 和桌面设置按需获取公开目录。设置页可手动刷新，平台暂时不可达时使用内置目录。目录请求无需 LK Key。真实模型调用和账户权限待按账户验证。
 - 本机 CLI 以 `source: "live"` 读取到 205 个模型及两个 GPT-6.2 ID。CLI、Web、VS Code、JetBrains 与桌面本地测试覆盖离线回退、协议筛选、配置草稿及凭据边界。VS Code 设置页浏览器 smoke 通过。
 
+### LK 目录发布候选 0.166.161
+
+- CLI 发布源码为 `9438b5c91eabb7b4f494eb3457dc41bd2cc67dec`。四条旧流式测试已改为注入会话计划管理器。本地流式与计划套件共 95 项通过。原生验证汇总核对了同一提交在 Linux、Windows 和 macOS 上的六个 x64 与 ARM64 目标。[原生验证](https://github.com/longfa/chainlesschain/actions/runs/45047591088)
+- 发布候选使用完整 CLI CI 与 Strict Sandbox 矩阵。npm OIDC 发布在精确提交通过两个门禁后触发。已发布的 13 个上游子包均下载校验成功，子包源码和版本保持一致。[CLI CI](https://github.com/longfa/chainlesschain/actions/runs/45047479777) · [Strict Sandbox](https://github.com/longfa/chainlesschain/actions/runs/45047484157)
+- IDE 精确源码为 `f7abc5e74e87238e4673bb6eda3e409833fe18a6`，Open VSX 候选 `0.37.196` 与 JetBrains 候选 `0.4.211` 均配对 CLI `0.166.161`。移动与桌面候选 `v5.0.3.147` 等待上述公开包验收。[IDE Extensions](https://github.com/longfa/chainlesschain/actions/runs/45047153828) · [IDE ARM64 Host Validation](https://github.com/longfa/chainlesschain/actions/runs/45047153787)
+
 ### 发布验证进度
 
 已发布 CLI 和 Open VSX 的准确源码提交为 `1dd4f2c6cc7128995312be08738ae5d6d692ad25`。
