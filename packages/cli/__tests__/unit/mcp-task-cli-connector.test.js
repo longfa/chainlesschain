@@ -13,7 +13,9 @@ import { join } from "node:path";
 import { randomUUID } from "node:crypto";
 import { Command } from "commander";
 
-const root = mkdtempSync(join(tmpdir(), "cc-task-cli-connector-"));
+const root = vi.hoisted(() =>
+  mkdtempSync(join(tmpdir(), "cc-task-cli-connector-")),
+);
 const controls = vi.hoisted(() => ({
   databaseAvailable: true,
   configured: true,
