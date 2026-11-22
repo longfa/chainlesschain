@@ -267,8 +267,8 @@ Claude 2.1.330 让子代理的模型回退（fallback）**传导**给它派生�
 
 ### LK 目录发布候选 0.166.161
 
-- CLI 发布源码为 `9438b5c91eabb7b4f494eb3457dc41bd2cc67dec`。四条旧流式测试已改为注入会话计划管理器。本地流式与计划套件共 95 项通过。原生验证汇总核对了同一提交在 Linux、Windows 和 macOS 上的六个 x64 与 ARM64 目标。[原生验证](https://github.com/longfa/chainlesschain/actions/runs/45047591088)
-- 发布候选使用完整 CLI CI 与 Strict Sandbox 矩阵。npm OIDC 发布在精确提交通过两个门禁后触发。已发布的 13 个上游子包均下载校验成功，子包源码和版本保持一致。[CLI CI](https://github.com/longfa/chainlesschain/actions/runs/45047479777) · [Strict Sandbox](https://github.com/longfa/chainlesschain/actions/runs/45047484157)
+- 上一候选 `9438b5c91eabb7b4f494eb3457dc41bd2cc67dec` 的 Strict Sandbox 和六目标原生验证通过。本地流式与计划套件 95 项通过。CLI CI 在三个系统上均发现同一个过期的 `EACCES` 断言。[上一轮 CLI CI](https://github.com/longfa/chainlesschain/actions/runs/45047479777) · [上一轮原生验证](https://github.com/longfa/chainlesschain/actions/runs/45047591088)
+- `v-npm-0-166-161` 固定到 `22f4dfea080546d586f75652fd5075671019ffb8`。持久化测试覆盖 `EPERM` 和 `EACCES` 的不可重试结果，本地相关套件 19 项通过。用户界面、运行时和子包源码保持一致。OIDC 流程等待同一提交通过 CLI CI 与 Strict Sandbox。已发布的 13 个上游子包均下载校验成功。[CLI CI](https://github.com/longfa/chainlesschain/actions/runs/45084571018) · [Strict Sandbox](https://github.com/longfa/chainlesschain/actions/runs/45084574812) · [原生验证](https://github.com/longfa/chainlesschain/actions/runs/45084580552) · [npm OIDC 发布](https://github.com/longfa/chainlesschain/actions/runs/45084688787)
 - IDE 精确源码为 `f7abc5e74e87238e4673bb6eda3e409833fe18a6`，Open VSX 候选 `0.37.196` 与 JetBrains 候选 `0.4.211` 均配对 CLI `0.166.161`。移动与桌面候选 `v5.0.3.147` 等待上述公开包验收。[IDE Extensions](https://github.com/longfa/chainlesschain/actions/runs/45047153828) · [IDE ARM64 Host Validation](https://github.com/longfa/chainlesschain/actions/runs/45047153787)
 
 ### 发布验证进度
