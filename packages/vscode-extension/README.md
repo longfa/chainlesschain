@@ -2,9 +2,9 @@
 
 ChainlessChain agent workspace for VS Code-compatible editors with streaming chat, inline assistance, governed review, sessions, automation, and a localhost MCP bridge.
 
-## Release candidate 0.37.196
+## Next release candidate
 
-Open VSX **0.37.196** pairs with CLI **0.166.161**. Configure LLM fetches the latest LK model catalog and includes GPT-6.2 Sol and GPT-6.2 Astra offline. The public pairing below remains available until the new release passes its publication gates.
+Source candidate **0.37.196** recommends CLI **0.166.161**. The extension has not been published. Configure LLM fetches the latest LK model catalog and includes GPT-6.2 Sol and GPT-6.2 Astra offline.
 
 ## Current release
 
