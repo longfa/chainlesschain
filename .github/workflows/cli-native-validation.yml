@@ -161,7 +161,12 @@ jobs:
           set -euo pipefail
           set --
           if [ "$RUNNER_OS" = "Linux" ]; then
-            set -- --skip-web-panel-build
+            # Both tracked index files are placeholders rewritten by the build.
+            # Refuse any other tracked changes before admitting the generated assets.
+            git diff HEAD --exit-code -- . \
+              ':(exclude)packages/cli/src/assets/web-panel/index.html' \
+              ':(exclude)packages/web-panel/dist/index.html'
+            set -- --skip-web-panel-build --allow-dirty
           fi
           node packages/cli/bin/chainlesschain.js pack \
             --cwd packages/cli \
