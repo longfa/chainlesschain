@@ -62,14 +62,44 @@ export const _deps = {
   killProcessTree: defaultKillProcessTree,
 };
 
-function getTasksDir() {
-  const dir = join(getHomeDir(), "tasks");
-  if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
-  return dir;
+function queuePath() {
+  return join(getHomeDir(), "tasks", "queue.jsonl");
 }
 
-function queuePath() {
-  return join(getTasksDir(), "queue.jsonl");
+function readQueueSnapshots() {
+  const latest = new Map();
+  const filePath = queuePath();
+  if (!existsSync(filePath)) return latest;
+  for (const line of readFileSync(filePath, "utf-8").split("\n")) {
+    if (!line.trim()) continue;
+    try {
+      const entry = JSON.parse(line);
+      const task = entry?.kind === "task_snapshot" ? entry.task : entry;
+      if (typeof task?.id !== "string" || !task.id) continue;
+      if (entry.eventType === "cleaned-up") latest.delete(task.id);
+      else latest.set(task.id, task);
+    } catch {
+      // A partial or malformed line cannot replace the prior snapshot.
+    }
+  }
+  return latest;
+}
+
+export function listPersistedBackgroundShellTasks() {
+  return [...readQueueSnapshots().values()]
+    .filter((task) => task.type === "shell")
+    .map((task) => ({
+      id: task.id,
+      state: task.stopContract?.confirmed ? "cancelled" : task.status,
+      createdAt: task.createdAt,
+      lastEventAt:
+        (Array.isArray(task.history) ? task.history.at(-1)?.timestamp : null) ??
+        task.completedAt ??
+        task.startedAt,
+      label: "Background shell",
+      stopPath: null,
+      orphanRisk: task.stopContract?.orphanRisk,
+    }));
 }
 
 export const TaskStatus = {
@@ -423,6 +453,7 @@ export class BackgroundTaskManager extends EventEmitter {
           confirmedAt: task.stopConfirmedAt,
           exitCode: code,
         });
+        this._persistTask(task, "stop_confirmed");
       }
       if (task.status === TaskStatus.RUNNING) {
         if (code === 0) {
@@ -552,7 +583,10 @@ export class BackgroundTaskManager extends EventEmitter {
   stop(taskId) {
     const task = this.tasks.get(taskId);
     if (!task) return { requested: false, confirmed: false, orphanRisk: false };
+    if (task.stopContract?.requested) return { ...task.stopContract };
     const child = this.processes.get(taskId);
+    if (!child && !RECOVERABLE_TASK_STATUSES.has(task.status))
+      return { requested: false, confirmed: false, orphanRisk: false };
     const requestedAt = Date.now();
     task.stopRequestedAt = task.stopRequestedAt || requestedAt;
     task.stopContract = {
@@ -579,6 +613,7 @@ export class BackgroundTaskManager extends EventEmitter {
             requestedAt: task.stopRequestedAt,
             orphanRisk: true,
           });
+          this._persistTask(task, "stop_timeout");
         }
       }, this.killGraceMs);
       if (killTimer && typeof killTimer.unref === "function") killTimer.unref();
@@ -587,7 +622,14 @@ export class BackgroundTaskManager extends EventEmitter {
         child.once("exit", () => this._clearKillTimer(taskId));
       }
     }
-    if (!child) {
+    if (!child && task.status === TaskStatus.RUNNING) {
+      task.stopContract.confirmed = false;
+      task.stopContract.orphanRisk = true;
+      this._recordHistory(task, "stop_timeout", {
+        requestedAt,
+        orphanRisk: true,
+      });
+    } else if (!child) {
       task.stopConfirmedAt = Date.now();
       task.stopContract.confirmed = true;
       this._recordHistory(task, "stop_confirmed", {
@@ -596,6 +638,14 @@ export class BackgroundTaskManager extends EventEmitter {
       });
     }
     this._complete(taskId, TaskStatus.FAILED, null, "Stopped by user");
+    this._persistTask(
+      task,
+      task.stopContract.confirmed
+        ? "stop_confirmed"
+        : task.stopContract.orphanRisk
+          ? "stop_timeout"
+          : "stop_requested",
+    );
     return { ...task.stopContract };
   }
 
@@ -667,6 +717,8 @@ export class BackgroundTaskManager extends EventEmitter {
         (task.status === TaskStatus.COMPLETED ||
           task.status === TaskStatus.FAILED ||
           task.status === TaskStatus.TIMEOUT) &&
+        !this.processes.has(id) &&
+        task.stopContract?.orphanRisk !== true &&
         task.completedAt &&
         task.completedAt < cutoff
       ) {
@@ -742,6 +794,7 @@ export class BackgroundTaskManager extends EventEmitter {
 
   _persistTask(task, eventType = "snapshot", meta = {}) {
     try {
+      mkdirSync(join(getHomeDir(), "tasks"), { recursive: true });
       const line =
         JSON.stringify({
           kind: "task_snapshot",
@@ -771,22 +824,9 @@ export class BackgroundTaskManager extends EventEmitter {
   }
 
   _loadPersistedTasks(options = {}) {
-    const filePath = queuePath();
-    if (!existsSync(filePath)) return;
-
     try {
-      const content = readFileSync(filePath, "utf-8");
-      for (const line of content.split("\n")) {
-        if (!line.trim()) continue;
-        let parsed;
-        try {
-          parsed = JSON.parse(line);
-        } catch {
-          continue;
-        }
-
-        const task = this._normalizePersistedTask(parsed);
-        if (!task?.id) continue;
+      for (const snapshot of readQueueSnapshots().values()) {
+        const task = this._normalizePersistedTask(snapshot);
         this.tasks.set(task.id, task);
       }
 
@@ -798,14 +838,7 @@ export class BackgroundTaskManager extends EventEmitter {
     }
   }
 
-  _normalizePersistedTask(entry) {
-    const task =
-      entry?.kind === "task_snapshot" && entry.task ? entry.task : entry;
-
-    if (!task || typeof task !== "object") {
-      return null;
-    }
-
+  _normalizePersistedTask(task) {
     const normalized = {
       ...task,
       history: Array.isArray(task.history) ? [...task.history] : [],

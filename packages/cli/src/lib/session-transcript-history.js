@@ -248,6 +248,34 @@ export function createSessionTranscriptHistoryProjection(
     if (ordinal !== count || source !== physical)
       throw new Error("Transcript history replay did not match its selection");
   }
+
+  function forkMessages(authority) {
+    const messages = [];
+    let bytes = 0;
+    let found = false;
+    visitSelected(authority, (message, event, index) => {
+      if (found) return;
+      const selected =
+        branch.afterMessage === `${sessionId}:${event.hash}:${index}`;
+      const reply =
+        message.role === "assistant" &&
+        transcriptTextParts(message.content).some((part) => part.trim());
+      if (selected && !reply)
+        throw new Error("A fork boundary must be an assistant reply");
+      if (message.role === "user" || reply) {
+        const copy = { role: message.role, content: message.content };
+        bytes += Buffer.byteLength(JSON.stringify(copy), "utf8");
+        if (bytes > 8 * 1024 * 1024 || messages.length >= 32768)
+          throw new Error("The selected history prefix exceeds the fork limit");
+        messages.push(copy);
+      }
+      found = selected;
+    });
+    if (!found)
+      throw new Error("The selected reply is unavailable in verified history");
+    return branch.consume(messages);
+  }
+
   return {
     accept(event) {
       if (!HASH.test(event.hash))
@@ -329,6 +357,7 @@ export function createSessionTranscriptHistoryProjection(
     },
     finish(authority) {
       branchImport.finish();
+      if (branch?.afterMessage) return forkMessages(authority);
       if (branch) {
         const prefix = origins.branchPrefix(
           branch.messages,
@@ -467,5 +496,24 @@ export function createSessionTranscriptBranchProjection(
 export function readSessionTranscriptHistory(sessionId, options = {}) {
   return readVerifiedProjection(sessionId, () =>
     createSessionTranscriptHistoryProjection(sessionId, options),
+  );
+}
+
+export function withTranscriptForkMessages(sessionId, messageId, consume) {
+  const prefix = `${sessionId}:`;
+  if (
+    typeof messageId !== "string" ||
+    !messageId.startsWith(prefix) ||
+    !/^[a-f0-9]{64}:[0-9]{1,8}$/u.test(messageId.slice(prefix.length)) ||
+    typeof consume !== "function" ||
+    consume.constructor?.name === "AsyncFunction"
+  )
+    throw new Error("A verified transcript message id is required");
+  return readVerifiedProjection(sessionId, () =>
+    createSessionTranscriptHistoryProjection(
+      sessionId,
+      {},
+      { afterMessage: messageId, consume },
+    ),
   );
 }

@@ -6,6 +6,7 @@ import {
   readSecurityStore,
 } from "./durable-security-store.js";
 import { canonicalJson } from "./scheduler-kernel/contract.js";
+import { RunnerLifecycleMetrics } from "./runner-lifecycle-metrics.js";
 
 export const EXECUTION_LOCATION_RUNNER_LIFECYCLE_SCHEMA =
   "cc-execution-location-runner-lifecycle/v1";
@@ -185,6 +186,7 @@ function validateState(value, expected = {}) {
       "drain",
       "leases",
       "updatedAt",
+      ...(Object.hasOwn(value ?? {}, "startup") ? ["startup"] : []),
     ],
     "runner lifecycle state",
   );
@@ -237,6 +239,23 @@ function validateState(value, expected = {}) {
     ["id", "revision"],
     "runner proxy authority",
   );
+  if (input.startup) {
+    const startup = exactObject(
+      input.startup,
+      ["orderedAt", "registeredAt", "firstSessionAt"],
+      "runner startup",
+    );
+    const date = (value, label) => Date.parse(safeTimestamp(value, label));
+    const registered = date(startup.registeredAt, "runner registeredAt");
+    if (
+      (startup.orderedAt !== null &&
+        date(startup.orderedAt, "runner orderedAt") > registered) ||
+      (startup.firstSessionAt !== null &&
+        date(startup.firstSessionAt, "first admitted session") < registered)
+    )
+      throw new Error("runner startup timeline is out of order");
+  } else if (Object.hasOwn(input, "startup"))
+    throw new TypeError("runner startup is invalid");
   return {
     ...input,
     runnerId,
@@ -272,6 +291,15 @@ function project(state) {
   const activeLeaseCount = state.leases.filter(
     (lease) => lease.status === "active",
   ).length;
+  const startup = new RunnerLifecycleMetrics();
+  for (const [stage, value] of [
+    ["ordered", state.startup?.orderedAt],
+    ["registered", state.startup?.registeredAt],
+    ["first-session", state.startup?.firstSessionAt],
+  ]) {
+    if (value) startup.mark(stage, Date.parse(value));
+  }
+  const timing = startup.snapshot();
   return Object.freeze({
     schema: state.schema,
     runnerId: state.runnerId,
@@ -294,6 +322,15 @@ function project(state) {
       (lease) => lease.status === "settled",
     ).length,
     updatedAt: state.updatedAt,
+    startup: Object.freeze({
+      orderedAt: state.startup?.orderedAt ?? null,
+      registeredAt: state.startup?.registeredAt ?? null,
+      firstSessionAdmittedAt: state.startup?.firstSessionAt ?? null,
+      order_to_registered_seconds: timing.order_to_registered_seconds,
+      order_to_first_session_seconds: timing.order_to_first_session_seconds,
+      registered_to_first_session_seconds:
+        timing.registered_to_first_session_seconds,
+    }),
   });
 }
 
@@ -341,6 +378,7 @@ export class ExecutionLocationRunnerLifecycle {
     runtimeFs = fs,
     preflightBaseDir = preflightWritableDirectory,
     normalizeBaseDir = path.resolve,
+    hookConcurrency = 4,
     lockOptions,
   } = {}) {
     if (!path.isAbsolute(String(filePath || ""))) {
@@ -375,10 +413,16 @@ export class ExecutionLocationRunnerLifecycle {
     }
     this._preflightBaseDir = preflightBaseDir;
     this._lockOptions = lockOptions;
+    this._hooks = new RunnerLifecycleMetrics({ now, hookConcurrency });
   }
 
-  initialize() {
+  initialize({ orderedAt = null } = {}) {
     const now = new Date(this._now()).toISOString();
+    if (
+      orderedAt !== null &&
+      Date.parse(safeTimestamp(orderedAt, "runner orderedAt")) > Date.parse(now)
+    )
+      throw new Error("runner order cannot follow registration");
     mutateSecurityStore(
       this.filePath,
       STORE_LABEL,
@@ -401,6 +445,7 @@ export class ExecutionLocationRunnerLifecycle {
           drain: null,
           leases: [],
           updatedAt: now,
+          startup: { orderedAt, registeredAt: now, firstSessionAt: null },
         });
       },
       this._lockOptions,
@@ -413,7 +458,15 @@ export class ExecutionLocationRunnerLifecycle {
   }
 
   snapshot() {
-    return project(this._read());
+    const { hookConcurrency, activeHooks, queueDepth } = this._hooks.snapshot();
+    return Object.freeze({
+      ...project(this._read()),
+      hookScheduling: Object.freeze({
+        hookConcurrency,
+        activeHooks,
+        queueDepth,
+      }),
+    });
   }
 
   acquireLease({
@@ -485,6 +538,16 @@ export class ExecutionLocationRunnerLifecycle {
             revision: normalizedProxy.revision,
           },
           leases: [...state.leases.slice(-(MAX_RETAINED_LEASES - 1)), lease],
+          ...(state.startup && !state.startup.firstSessionAt
+            ? {
+                startup: {
+                  ...state.startup,
+                  firstSessionAt: new Date(
+                    Math.max(nowMs, Date.parse(state.startup.registeredAt)),
+                  ).toISOString(),
+                },
+              }
+            : {}),
           updatedAt: now,
         });
       },
@@ -911,6 +974,22 @@ export class ExecutionLocationRunnerLifecycle {
     );
     return Object.freeze(receipt);
   }
+
+  runPostSessionHook(authority, hook) {
+    if (typeof hook !== "function")
+      throw new TypeError("runner hook is required");
+    return this._hooks.runHook(() =>
+      hook(this.authorizePostSessionHook(authority)),
+    );
+  }
+}
+
+export function readExecutionLocationRunnerStatus(filePath) {
+  const absolute = path.resolve(filePath);
+  const info = fs.statSync(absolute);
+  if (!info.isFile() || info.size > 2 * 1024 * 1024)
+    throw new Error("Runner state must be a bounded regular file");
+  return project(validateState(readSecurityStore(absolute, STORE_LABEL)));
 }
 
 export function lifecycleProfileFromLease(leaseReceipt) {

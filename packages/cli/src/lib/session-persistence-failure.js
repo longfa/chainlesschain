@@ -5,7 +5,13 @@ export const SESSION_PERSISTENCE_FAILURE_CODE = "CC_SESSION_PERSISTENCE_FAILED";
 // EIO is a common fsync/FlushFileBuffers failure. Once the append bytes have
 // been issued its outcome is unknown, so it belongs in the same bounded,
 // content-free persistence error domain as ENOSPC/EROFS.
-const STORAGE_FAILURE_CODES = new Set(["ENOSPC", "EROFS", "EIO"]);
+const STORAGE_FAILURE_CODES = new Set([
+  "ENOSPC",
+  "EROFS",
+  "EIO",
+  "EPERM",
+  "EACCES",
+]);
 const COMMIT_STATES = new Set(["not-committed", "unknown", "committed"]);
 const OPERATIONS = new Set([
   "append-event",

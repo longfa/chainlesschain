@@ -14,15 +14,19 @@ export class McpServerHandle {
     this.holders = new Set();
     this.events = [];
     this.closed = false;
+    this.closing = false;
     this._shutdown = typeof shutdown === "function" ? shutdown : async () => {};
   }
 
   acquire(taskId) {
-    if (this.closed) throw new Error(`MCP server "${this.name}" is closed`);
+    if (this.closed || this.closing)
+      throw new Error(`MCP server "${this.name}" is shutting down or closed`);
     if (!taskId || typeof taskId !== "string")
       throw new TypeError("MCP server holder taskId is required");
-    this.holders.add(taskId);
-    this.events.push({ type: "acquired", taskId, at: Date.now() });
+    if (!this.holders.has(taskId)) {
+      this.holders.add(taskId);
+      this._record("acquired", taskId);
+    }
     return this;
   }
 
@@ -35,13 +39,23 @@ export class McpServerHandle {
       };
     }
     this.holders.delete(taskId);
-    this.events.push({ type: "released", taskId, at: Date.now() });
+    this._record("released", taskId);
     if (this.holders.size > 0 || this.closed)
       return { released: true, closed: false, holders: this.holders.size };
-    await this._shutdown();
-    this.closed = true;
-    this.events.push({ type: "shutdown", at: Date.now() });
+    this.closing = true;
+    try {
+      await this._shutdown();
+      this.closed = true;
+      this._record("shutdown");
+    } finally {
+      this.closing = false;
+    }
     return { released: true, closed: true, holders: 0 };
+  }
+
+  _record(type, taskId) {
+    this.events.push({ type, ...(taskId ? { taskId } : {}), at: Date.now() });
+    if (this.events.length > 256) this.events.shift();
   }
 
   snapshot() {
@@ -49,6 +63,7 @@ export class McpServerHandle {
       name: this.name,
       holders: [...this.holders],
       holderCount: this.holders.size,
+      closing: this.closing,
       closed: this.closed,
       events: this.events.map((event) => ({ ...event })),
     };
@@ -78,7 +93,8 @@ export class McpServerHandleRegistry {
     const handle = this.handles.get(name);
     if (!handle) return { released: false, closed: false, holders: 0 };
     const result = await handle.release(taskId);
-    if (result.closed) this.handles.delete(name);
+    if (result.closed && this.handles.get(name) === handle)
+      this.handles.delete(name);
     return result;
   }
 

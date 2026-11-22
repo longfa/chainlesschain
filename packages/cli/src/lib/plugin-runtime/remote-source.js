@@ -72,6 +72,7 @@ const DEFAULT_TIMEOUT_MS = 15_000;
 export const MAX_REGISTRY_DOCUMENT_BYTES = 4 * 1024 * 1024;
 export const MAX_REGISTRY_CACHE_CANDIDATES = 64;
 const SHA256_RE = /^[a-f0-9]{64}$/;
+// eslint-disable-next-line no-control-regex -- Registry sources reject ASCII control characters.
 const CONTROL_RE = /[\u0000-\u001f\u007f]/u;
 const MAX_REGISTRY_SOURCE_CHARS = 4096;
 const MAX_REGISTRY_REF_CHARS = 256;
@@ -767,7 +768,9 @@ export function authorizeRegistryPluginEntry(
       payloadSha256: null,
       documentSha256: fetched.documentSha256,
       commandMode:
-        normalized.sourceType === "command" ? normalized.commandSpec.mode : null,
+        normalized.sourceType === "command"
+          ? normalized.commandSpec.mode
+          : null,
       marketplaceRequestHeaders: fetched.marketplaceRequestHeaders,
     }),
   );
@@ -998,10 +1001,10 @@ export async function resolveRegistryEntrySource(url, entry, opts = {}) {
         mode: inspected.commandSpec.mode,
       },
       {
-      platform: opts.platform,
-      spawn: opts.commandSpawn,
-      spawnSync: opts.commandSpawnSync,
-      kill: opts.commandKill,
+        platform: opts.platform,
+        spawn: opts.commandSpawn,
+        spawnSync: opts.commandSpawnSync,
+        kill: opts.commandKill,
       },
     );
     const materializedAuthority = Object.freeze({});
@@ -1019,6 +1022,7 @@ export async function resolveRegistryEntrySource(url, entry, opts = {}) {
     return {
       ...inspected,
       source: command.source,
+      installCommand: command.installCommand,
       commandAuthority: Object.freeze({
         schemaVersion: "cc-plugin-marketplace-command-source/v1",
         status: "descriptor-executed-and-verified",

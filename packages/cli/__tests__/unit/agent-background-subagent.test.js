@@ -74,6 +74,7 @@ vi.mock("../../src/lib/sub-agent-context.js", () => {
 
 import { agentLoop, executeTool } from "../helpers/test-model-egress.js";
 import { _subState } from "../../src/lib/sub-agent-context.js";
+import { makeFallbackChatFn } from "../../src/runtime/fallback-model.js";
 
 const RESULT = {
   summary: "bg summary: found 3 issues",
@@ -102,6 +103,59 @@ async function drive(chatFn, options = {}) {
   for await (const e of gen) events.push(e);
   return { events, messages };
 }
+
+it("hands a successful fallback model and its decision to an actual delegated child", async () => {
+  _subState.created.length = 0;
+  _subState.autoResolve = (child) => child._resolveRun(RESULT);
+  const decisions = [];
+  const base = vi.fn(async (_messages, { model }) => {
+    if (model === "primary")
+      throw Object.assign(new Error("overloaded"), { status: 503 });
+    return {
+      message: {
+        role: "assistant",
+        content: null,
+        tool_calls:
+          base.mock.calls.length === 2
+            ? [spawnCall({ role: "review", task: "Inspect the local fixture" })]
+            : [],
+      },
+    };
+  });
+  try {
+    const fallback = makeFallbackChatFn({
+      fallbackModels: ["backup"],
+      baseChatFn: base,
+    });
+    await drive(
+      (messages, { evolutionIngress: _fixtureIngress, ...request }) =>
+        fallback(messages, request),
+      {
+        provider: "ollama",
+        model: "primary",
+        sessionId: "fallback-parent",
+        onModelDecision: (event) => decisions.push(event),
+      },
+    );
+    const child = _subState.created[0];
+    expect(child.opts.llmOptions).toMatchObject({
+      model: "backup",
+      modelDecision: {
+        requestedModel: "primary",
+        actualModel: "backup",
+        fallbackReason: "configured-fallback",
+      },
+    });
+    expect(decisions).toMatchObject([
+      {
+        taskId: "fallback-parent",
+        modelDecision: { actualModel: "backup" },
+      },
+    ]);
+  } finally {
+    _subState.autoResolve = null;
+  }
+});
 
 async function captureRejection(promise) {
   try {

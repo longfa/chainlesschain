@@ -98,6 +98,7 @@ public final class SessionsWorkbenchToolWindowFactory implements ToolWindowFacto
         private final JLabel note = new JLabel(" ");
         private final Alarm alarm;
         private final AtomicBoolean inFlight = new AtomicBoolean(false);
+        private boolean refreshAfterAction;
         private final AtomicBoolean deliveryInFlight = new AtomicBoolean(false);
         private final DeliveryWorkflowController deliveryController;
         private final JTextArea deliveryText = new JTextArea(7, 80);
@@ -307,7 +308,14 @@ public final class SessionsWorkbenchToolWindowFactory implements ToolWindowFacto
 
         /** Read the one CLI-owned projection; failures clear all stale actions. */
         private void load() {
-            if (!inFlight.compareAndSet(false, true)) return;
+            load(false);
+        }
+
+        private void load(boolean actionCompleted) {
+            if (!inFlight.compareAndSet(false, true)) {
+                refreshAfterAction |= actionCompleted;
+                return;
+            }
             final File cwd = project.getBasePath() != null
                     ? new File(project.getBasePath()) : null;
             ApplicationManager.getApplication().executeOnPooledThread(() -> {
@@ -334,6 +342,10 @@ public final class SessionsWorkbenchToolWindowFactory implements ToolWindowFacto
                         }
                     } finally {
                         inFlight.set(false);
+                        if (refreshAfterAction) {
+                            refreshAfterAction = false;
+                            load();
+                        }
                     }
                 });
             });
@@ -915,7 +927,7 @@ public final class SessionsWorkbenchToolWindowFactory implements ToolWindowFacto
         private void afterAction(String result) {
             ApplicationManager.getApplication().invokeLater(() -> {
                 note.setText(result);
-                load();
+                load(true);
             });
         }
 

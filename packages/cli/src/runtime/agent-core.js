@@ -276,6 +276,11 @@ import {
 } from "../lib/provider-http-error.js";
 import { buildPermissionDecision } from "../lib/permission-decision.js";
 import { permissionProfileDigest } from "../lib/permission-profile.js";
+import {
+  modelDecisionTaskEvent,
+  normalizeModelDecision,
+  readModelFallback,
+} from "../lib/model-decision.js";
 import { resolveSandboxPolicyPath } from "../lib/agent-sandbox.js";
 import {
   beginManagedToolCheckpoint,
@@ -11510,6 +11515,8 @@ async function _executeSpawnSubAgent(args, ctx) {
       ? { evolutionIngress: ctx.evolutionIngress }
       : {}),
     model: mdModel || parentLlm.model || undefined,
+    modelDecision: mdModel ? null : parentLlm.modelDecision,
+    decisionParentTaskId: parentLlm.decisionTaskId || parentSessionId,
     // Preserve the host's optional event channel across every nesting level.
     // It is observational only: child hooks/tools must never depend on a
     // headless consumer being connected.
@@ -15533,6 +15540,9 @@ export async function* agentLoop(messages, options) {
       model: options.model || null,
       baseUrl: options.baseUrl || null,
       apiKey: options.apiKey || null,
+      modelDecision: options.modelDecision || null,
+      onModelDecision: options.onModelDecision,
+      decisionTaskId: options.agentId || options.sessionId || runId,
       ...(typeof options.onUsageBoundary === "function"
         ? { onUsageBoundary: options.onUsageBoundary }
         : {}),
@@ -15719,6 +15729,31 @@ export async function* agentLoop(messages, options) {
   // as unknown. A workflow-bound request does the same: a hidden fallback
   // would be a second physical provider attempt under one durable effect.
   // Legacy sessions keep the existing self-healing behavior.
+  const configuredToolLlm = toolContext.llmOptions;
+  const hasCustomCompaction =
+    typeof options.compactionLlmQuery === "function" ||
+    Object.hasOwn(options, "_autoCompactor");
+  let compactionOptions = options;
+  let lastModelDecision = null;
+  const reportModelDecision = (decision) => {
+    if (typeof options.onModelDecision !== "function" || !decision) return;
+    const fingerprint = JSON.stringify(decision);
+    if (lastModelDecision === fingerprint) return;
+    lastModelDecision = fingerprint;
+    try {
+      options.onModelDecision(
+        modelDecisionTaskEvent(
+          options.agentId || options.sessionId || runId,
+          decision,
+          options.parentAgentId,
+        ),
+      );
+    } catch {
+      // A model decision receipt is observational.
+    }
+  };
+  reportModelDecision(options.modelDecision);
+
   if (
     options.runnableProviderFallback !== false &&
     options.strictUsageTelemetry !== true &&
@@ -16079,10 +16114,10 @@ export async function* agentLoop(messages, options) {
       let compactionUsageCall = null;
       let compactionObserverFailure = null;
       try {
-        const compactor = await _getAutoCompactor(options);
+        const compactor = await _getAutoCompactor(compactionOptions);
         if (compactor && compactor.shouldAutoCompact(messages)) {
           options.onBeforeCompaction?.();
-          compactionUsageState = _autoCompactionUsageState(options);
+          compactionUsageState = _autoCompactionUsageState(compactionOptions);
           compactionUsageState.calls = [];
           compactionUsageState.callSequence = budget.consumed;
           // This is the canonical pre-provider authority snapshot. A local
@@ -17305,6 +17340,50 @@ export async function* agentLoop(messages, options) {
       );
       error.code = "CC_MODEL_TERMINATION_INCOMPLETE";
       throw error;
+    }
+
+    const fallback = readModelFallback(result);
+    toolContext.llmOptions = fallback
+      ? {
+          ...configuredToolLlm,
+          ...fallback.route,
+          modelDecision: fallback.decision,
+        }
+      : configuredToolLlm;
+    if (fallback) {
+      reportModelDecision(fallback.decision);
+      const needsCompactionRoute =
+        compactionOptions === options ||
+        Object.entries(fallback.route).some(
+          ([key, value]) => compactionOptions[key] !== value,
+        );
+      if (
+        !hasCustomCompaction &&
+        needsCompactionRoute &&
+        (!configuredChatFn ||
+          (await import("./fallback-model.js")).isCanonicalFallbackChatFn(
+            configuredChatFn,
+          ))
+      ) {
+        compactionOptions = {
+          ...options,
+          ...fallback.route,
+          chatFn: undefined,
+        };
+        delete compactionOptions._autoCompactor;
+      }
+    } else {
+      if (compactionOptions !== options || lastModelDecision !== null) {
+        reportModelDecision(
+          configuredToolLlm.modelDecision ||
+            normalizeModelDecision({
+              requestedModel: options.model,
+              actualModel: result?.model || options.model,
+              provider: options.provider,
+            }),
+        );
+      }
+      compactionOptions = options;
     }
 
     if (result?.finishReason === "length") {

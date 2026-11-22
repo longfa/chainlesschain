@@ -109,6 +109,45 @@ describe("MCPClient list_changed refresh", () => {
     mod._deps.spawn = () => proc;
   });
 
+  it("rejects malformed replacement schemas while retaining the admitted inventory", async () => {
+    const client = new MCPClient();
+    await client.connect("srv", { command: "fake-mcp" });
+    try {
+      const errors = [];
+      client.on("server-error", (event) => errors.push(event));
+      state.tools = [
+        {
+          name: "bad",
+          inputSchema: {
+            type: "object",
+            properties: {
+              text: {
+                type: "broken",
+                description: "private fixture".repeat(1000),
+              },
+            },
+          },
+        },
+      ];
+      await fromServer(proc, {
+        jsonrpc: "2.0",
+        method: "notifications/tools/list_changed",
+      });
+      expect(client.listTools("srv").map((tool) => tool.name)).toEqual([
+        "alpha",
+      ]);
+      expect(errors).toMatchObject([
+        {
+          code: "CC_MCP_INPUT_SCHEMA_INVALID",
+          error: expect.stringContaining('$.properties."text".type'),
+        },
+      ]);
+      expect(JSON.stringify(errors)).not.toContain("private fixture");
+    } finally {
+      await client.disconnectAll();
+    }
+  });
+
   it("refetches tools on notifications/tools/list_changed", async () => {
     const client = new MCPClient();
     await client.connect("srv", { command: "fake-mcp" });
@@ -204,7 +243,9 @@ describe("MCPClient list_changed refresh", () => {
     ]);
     const currentBudget = client._toolMetadataBytes;
 
-    resolveList({ tools: [{ name: "stale", inputSchema: { type: "object" } }] });
+    resolveList({
+      tools: [{ name: "stale", inputSchema: { type: "object" } }],
+    });
     await pending;
 
     expect(calls).toBe(1);

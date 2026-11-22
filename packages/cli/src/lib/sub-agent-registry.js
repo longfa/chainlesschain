@@ -104,6 +104,7 @@ export class SubAgentRegistry {
       id: subCtx.id,
       parentId: subCtx.parentId,
       role: subCtx.role,
+      ...(subCtx.modelDecision ? { modelDecision: subCtx.modelDecision } : {}),
       task: subCtx.task,
       status: subCtx.status,
       summary: result?.summary || "(no summary)",

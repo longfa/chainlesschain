@@ -200,7 +200,11 @@ import {
   transcriptMessageEventId,
   transcriptResultReferences,
 } from "../lib/session-transcript-reference.js";
-import { getPlanModeManager } from "../lib/plan-mode.js";
+import { PlanModeManager } from "../lib/plan-mode.js";
+import {
+  openSessionPlan,
+  recordSessionPlanApproval,
+} from "../lib/session-plan-approval.js";
 import {
   SESSION_SLASH_COMMANDS,
   executeSessionSlashCommand,
@@ -1004,11 +1008,12 @@ async function runTurn(
         // echoes the same id so UIs can pair calls without adjacency.
         const toolUseId =
           event.tool_use_id || (nextToolUseId ? nextToolUseId() : undefined);
-        const pm = getPlanModeManager();
+        const pm = loopOptions.planManager;
         const planItem = pm.startPlanItemForTool(event.tool, {
           toolUseId,
           turn: turnNumber,
         });
+        if (planItem?.error) throw new Error(planItem.error);
         toolCalls.push({
           id: toolUseId,
           tool: event.tool,
@@ -1115,14 +1120,14 @@ async function runTurn(
           });
         }
         if (lastCall) toolStartedAt.delete(lastCall.id);
-        const pm = getPlanModeManager();
+        const pm = loopOptions.planManager;
         const settledItem = lastCall?.planItemId
           ? pm.settlePlanItem(lastCall.planItemId, {
               success: !err,
-              error: err,
-              result: event.result,
+              error: err ? "Tool execution failed" : null,
             })
           : null;
+        if (settledItem?.error) throw new Error(settledItem.error);
         emit({
           type: "tool_result",
           ...(event.tool_use_id || lastCall?.id
@@ -2245,6 +2250,23 @@ async function runAgentHeadlessStreamInWorkspace(
   const runSessionSlashCommand =
     deps.executeSessionSlashCommand || executeSessionSlashCommand;
   let turns = 0;
+  const commitPlanApproval = (manager) => {
+    if (manager.memoryOnly) return true;
+    try {
+      recordSessionPlanApproval(manager);
+      return true;
+    } catch {
+      emit({
+        type: "result",
+        subtype: "error",
+        code: "CC_SESSION_PLAN_APPROVAL_UNAVAILABLE",
+        is_error: true,
+        result: "The plan approval receipt could not be persisted.",
+        session_id: sessionId,
+      });
+      return false;
+    }
+  };
 
   streamCleanup.setSessionEnd(async (reason) => {
     updateWorklog((log) => log.record({ type: "session-end", reason }));
@@ -2266,6 +2288,31 @@ async function runAgentHeadlessStreamInWorkspace(
       const m = await import("../lib/session-core-singletons.js");
       return m.getApprovalGate();
     });
+
+  let pm = deps.planManager || new PlanModeManager();
+  let restoredPlanMode = false;
+  if (persist && !hasInjectedSessionStore && !deps.planManager) {
+    try {
+      const plan = openSessionPlan(sessionId, options.permissionMode);
+      pm = plan.manager;
+      restoredPlanMode =
+        options.permissionMode == null &&
+        plan.permissionMode != null &&
+        plan.permissionMode !== "default";
+      options = { ...options, permissionMode: plan.permissionMode };
+    } catch {
+      emit({
+        type: "result",
+        subtype: "error",
+        is_error: true,
+        code: "CC_SESSION_PLAN_APPROVAL_UNAVAILABLE",
+        result:
+          "Cannot verify the approved plan and permission mode for this session.",
+        session_id: sessionId,
+      });
+      return { exitCode: 1, turns: 0 };
+    }
+  }
 
   if (managedSettings) {
     const { assertManagedPermissionMode } =
@@ -3955,6 +4002,10 @@ async function runAgentHeadlessStreamInWorkspace(
       })
     : options.onModelInputDiagnostic;
   const loopOptionsBase = {
+    planManager: pm,
+    onModelDecision: persist
+      ? (event) => store.appendEvent(sessionId, "model_decision", event)
+      : undefined,
     onModelInputDiagnostic,
     contextMemoryModelWindowTokens: options.contextMemoryModelWindowTokens,
     ...(evolutionIngress === null ? {} : { evolutionIngress }),
@@ -5144,7 +5195,6 @@ async function runAgentHeadlessStreamInWorkspace(
     // approve unlocks them and IMMEDIATELY runs a continuation turn, reject
     // exits plan mode. Every control answers with a `plan_update` event.
     if (parsed.plan) {
-      const pm = getPlanModeManager();
       const reviewMessage = [
         "approve",
         "reject",
@@ -5158,7 +5208,17 @@ async function runAgentHeadlessStreamInWorkspace(
       }
       if (parsed.plan === "enter") {
         if (!pm.isActive()) {
-          pm.enterPlanMode({ title: "Agent Plan" });
+          const entered = pm.enterPlanMode({ title: "Agent Plan" });
+          if (entered?.error) {
+            emit({
+              type: "plan_update",
+              ...planSnapshot(pm),
+              session_id: sessionId,
+              note: entered.error,
+            });
+            sawError = true;
+            break;
+          }
           messages.push({
             role: "system",
             content:
@@ -5177,12 +5237,19 @@ async function runAgentHeadlessStreamInWorkspace(
         continue;
       }
       if (parsed.plan === "reject") {
-        if (pm.isActive()) pm.rejectPlan("User rejected");
+        const hadApproval = Boolean(pm.getExecutionLock());
+        const rejected = pm.isActive() ? pm.rejectPlan("User rejected") : null;
+        if (hadApproval && !rejected?.error && !commitPlanApproval(pm)) {
+          sawError = true;
+          break;
+        }
         emit({
           type: "plan_update",
           ...planSnapshot(pm),
           session_id: sessionId,
+          ...(rejected?.error ? { note: rejected.error } : {}),
         });
+        if (restoredPlanMode) break;
         continue;
       }
       if (parsed.plan === "revise" || parsed.plan === "regenerate") {
@@ -5195,6 +5262,7 @@ async function runAgentHeadlessStreamInWorkspace(
           });
           continue;
         }
+        const hadApproval = Boolean(pm.getExecutionLock());
         const revision = pm.beginPlanRevision({
           reason: parsed.plan,
         });
@@ -5206,6 +5274,18 @@ async function runAgentHeadlessStreamInWorkspace(
             note: revision.error,
           });
           continue;
+        }
+        if (hadApproval && !commitPlanApproval(pm)) {
+          sawError = true;
+          break;
+        }
+        if (restoredPlanMode) {
+          emit({
+            type: "plan_update",
+            ...planSnapshot(pm),
+            session_id: sessionId,
+          });
+          break;
         }
         messages.push({
           role: "system",
@@ -5238,6 +5318,19 @@ async function runAgentHeadlessStreamInWorkspace(
         const approval = pm.approvePlan({
           permissionMode: options.permissionMode || "default",
         });
+        if (approval.error) {
+          emit({
+            type: "plan_update",
+            ...planSnapshot(pm),
+            session_id: sessionId,
+            note: approval.error,
+          });
+          continue;
+        }
+        if (!commitPlanApproval(pm)) {
+          sawError = true;
+          break;
+        }
         const executionLock = approval.executionLock;
         messages.push({
           role: "system",
@@ -6131,7 +6224,6 @@ async function runAgentHeadlessStreamInWorkspace(
     // While planning, blocked tool calls grew the plan during this turn —
     // push the fresh snapshot so the panel's plan card stays live.
     {
-      const pm = getPlanModeManager();
       if (pm.isActive()) {
         emit({
           type: "plan_update",

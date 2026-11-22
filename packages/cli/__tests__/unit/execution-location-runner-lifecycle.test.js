@@ -2,12 +2,16 @@ import { createHash } from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
 import {
   ExecutionLocationRunnerLifecycle,
   assertExecutionLocationRunnerLeaseAuthority,
   lifecycleProfileFromLease,
+  readExecutionLocationRunnerStatus,
 } from "../../src/lib/execution-location-runner-lifecycle.js";
+import { RunnerLifecycleMetrics } from "../../src/lib/runner-lifecycle-metrics.js";
 
 const roots = [];
 const HOOK_DIGEST = `sha256:${"a".repeat(64)}`;
@@ -63,7 +67,71 @@ afterEach(() => {
 });
 
 describe("execution location runner lifecycle", () => {
-  it("fences a graceful SIGTERM drain, result return, hook, and reclaim", () => {
+  it("persists ordered, registered, and first lease admission timestamps", () => {
+    const runtime = fixture();
+    const orderedAt = new Date(runtime.nowMs - 3000).toISOString();
+    runtime.lifecycle.initialize({ orderedAt });
+    runtime.advance(2000);
+    runtime.lifecycle.acquireLease({
+      sessionId: "session-1",
+      expectedGeneration: 1,
+      proxyAuthority: authority(runtime.nowMs, 1),
+    });
+    runtime.advance(5000);
+    runtime.lifecycle.acquireLease({
+      sessionId: "session-2",
+      expectedGeneration: 1,
+      proxyAuthority: authority(runtime.nowMs, 1),
+    });
+    const startup = readExecutionLocationRunnerStatus(
+      runtime.lifecycle.filePath,
+    ).startup;
+    expect(startup).toMatchObject({
+      orderedAt,
+      order_to_registered_seconds: 3,
+      order_to_first_session_seconds: 5,
+      registered_to_first_session_seconds: 2,
+    });
+    const cli = spawnSync(
+      process.execPath,
+      [
+        fileURLToPath(new URL("../../src/index.js", import.meta.url)),
+        "status",
+        "--json",
+        "--runner-state",
+        runtime.lifecycle.filePath,
+      ],
+      { encoding: "utf8", timeout: 30_000 },
+    );
+    expect(cli.status, cli.stderr).toBe(0);
+    expect(JSON.parse(cli.stdout).runner.startup).toEqual(startup);
+  });
+
+  it("hands the next queued hook the released slot after an earlier hook fails", async () => {
+    const metrics = new RunnerLifecycleMetrics({ hookConcurrency: 1 });
+    const gate = Promise.withResolvers();
+    const executed = [];
+    const first = metrics.runHook(async () => {
+      executed.push("first");
+      await gate.promise;
+      throw new Error("startup fixture failed");
+    });
+    const second = metrics.runHook(() => {
+      executed.push("second");
+    });
+    const third = metrics.runHook(() => {
+      executed.push("third");
+    });
+    expect(executed).toEqual(["first"]);
+    expect(metrics.snapshot()).toMatchObject({ activeHooks: 1, queueDepth: 2 });
+    const failure = expect(first).rejects.toThrow("startup fixture failed");
+    gate.resolve();
+    await Promise.all([failure, second, third]);
+    expect(executed).toEqual(["first", "second", "third"]);
+    expect(metrics.snapshot()).toMatchObject({ activeHooks: 0, queueDepth: 0 });
+  });
+
+  it("fences a graceful SIGTERM drain, result return, hook, and reclaim", async () => {
     const runtime = fixture();
     const initial = runtime.lifecycle.initialize();
     expect(initial).toMatchObject({
@@ -147,13 +215,19 @@ describe("execution location runner lifecycle", () => {
       activeLeaseCount: 0,
       settledLeaseCount: 1,
     });
-    const hookReceipt = runtime.lifecycle.authorizePostSessionHook({
-      expectedRunnerGeneration: 3,
-      leaseId: lease.lease.id,
-      leaseGeneration: 1,
-      resultDigest: RESULT_DIGEST,
-      hookDigest: HOOK_DIGEST,
-    });
+    const hookReceipt = await runtime.lifecycle.runPostSessionHook(
+      {
+        expectedRunnerGeneration: 3,
+        leaseId: lease.lease.id,
+        leaseGeneration: 1,
+        resultDigest: RESULT_DIGEST,
+        hookDigest: HOOK_DIGEST,
+      },
+      (receipt) => {
+        expect(runtime.lifecycle.snapshot().hookScheduling.activeHooks).toBe(1);
+        return receipt;
+      },
+    );
     expect(hookReceipt.receiptDigest).toMatch(/^sha256:[a-f0-9]{64}$/u);
     expect(() =>
       runtime.lifecycle.authorizePostSessionHook({

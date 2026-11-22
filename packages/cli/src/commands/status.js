@@ -30,6 +30,10 @@ export function registerStatusCommand(program) {
     .description("Show status of ChainlessChain app and services")
     .option("--json", "Output as machine-readable JSON")
     .option("--deep", "Include Docker Compose service inspection")
+    .option(
+      "--runner-state <file>",
+      "Read timing from an execution-location runner state file",
+    )
     .action(async (options) => {
       try {
         const report = options.deep
@@ -53,6 +57,13 @@ export function registerStatusCommand(program) {
         report.observability = {
           otlp: collectOtlpStatus(observabilityRuntime),
         };
+        if (options.runnerState) {
+          const { readExecutionLocationRunnerStatus } =
+            await import("../lib/execution-location-runner-lifecycle.js");
+          report.runner = readExecutionLocationRunnerStatus(
+            options.runnerState,
+          );
+        }
 
         if (options.json) {
           console.log(JSON.stringify(report, null, 2));
@@ -61,6 +72,14 @@ export function registerStatusCommand(program) {
 
         // App status
         logger.log(chalk.bold("\n  App Status\n"));
+        if (report.runner) {
+          logger.log(
+            `  Runner ${report.runner.runnerId} (${report.runner.target}): ${report.runner.state}`,
+          );
+          logger.log(
+            `  First session admitted: ${report.runner.startup.firstSessionAdmittedAt || "pending"}`,
+          );
+        }
         if (report.app.running) {
           logger.log(
             `  ${chalk.green("●")} Desktop app running (PID: ${report.app.pid})`,

@@ -1586,6 +1586,22 @@ async function runAgentHeadlessInWorkspace(
   }
 
   // ── Permission + tool resolution ──────────────────────────────────────
+  let planManager = null;
+  if (persist && !hasInjectedSessionStore && !hermeticExecution) {
+    try {
+      const { openSessionPlan } =
+        await import("../lib/session-plan-approval.js");
+      const plan = openSessionPlan(sessionId, options.permissionMode);
+      planManager = plan.manager;
+      options = { ...options, permissionMode: plan.permissionMode };
+    } catch {
+      const message =
+        "Cannot verify the approved plan and permission mode for this session.";
+      emitHeadlessError(message);
+      disposePendingHookEvents();
+      return { exitCode: 1, result: message, isError: true };
+    }
+  }
   if (managedSettings) {
     const { assertManagedPermissionMode } =
       await import("../lib/settings-loader.cjs");
@@ -2985,6 +3001,10 @@ async function runAgentHeadlessInWorkspace(
     managedCheckpointStateDir: options.managedCheckpointStateDir || null,
     managedCheckpointExclusions: options.managedCheckpointExclusions || [],
     hookDb: hermeticExecution ? null : db,
+    planManager,
+    onModelDecision: persist
+      ? (event) => store.appendEvent(sessionId, "model_decision", event)
+      : undefined,
     approvalGate: hermeticExecution ? null : approvalGate,
     permissionRules: hermeticExecution ? null : permissionRules,
     permissionRulesProvider: hermeticExecution ? null : permissionRulesProvider,
@@ -3739,6 +3759,7 @@ async function runAgentHeadlessInWorkspace(
 
   let loopFailureOutcome = null;
   let cleanupFailure = null;
+  const activePlanItems = new Map();
   try {
     if (goalSetupFailure) throw goalSetupFailure;
     while (true) {
@@ -3793,6 +3814,11 @@ async function runAgentHeadlessInWorkspace(
           }
           case "tool-executing": {
             const telemetryToolId = runtimeToolCallId(event.tool_use_id);
+            const planItem = planManager?.startPlanItemForTool(event.tool, {
+              toolUseId: telemetryToolId,
+            });
+            if (planItem?.error) throw new Error(planItem.error);
+            if (planItem?.id) activePlanItems.set(telemetryToolId, planItem.id);
             const line = `  [${event.tool}] ${formatToolArgs(event.tool, event.args)}`;
             if (isText) writeErr(line + "\n");
             emitStream({
@@ -3935,6 +3961,15 @@ async function runAgentHeadlessInWorkspace(
               if (policyEvent) emitStream(policyEvent);
             }
             if (settledCall) {
+              const planItem = activePlanItems.get(settledCall.id);
+              if (planItem) {
+                const settlement = planManager.settlePlanItem(planItem, {
+                  success: !err,
+                  error: err ? "Tool execution failed" : null,
+                });
+                if (settlement?.error) throw new Error(settlement.error);
+                activePlanItems.delete(settledCall.id);
+              }
               await goalEvidence?.settled(
                 settledCall,
                 event.result,

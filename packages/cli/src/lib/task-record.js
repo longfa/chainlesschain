@@ -6,6 +6,7 @@
  */
 import { listBackgroundShellTasks } from "../runtime/agent-core.js";
 import { AgentScheduleStore } from "./agent-schedule-store.js";
+import { SubAgentRegistry } from "./sub-agent-registry.js";
 
 export const TASK_SOURCES = Object.freeze([
   "background-shell",
@@ -48,6 +49,12 @@ function normalizeState(value, fallback = "unknown") {
     .trim()
     .toLowerCase();
   if (TASK_STATES.includes(state)) return state;
+  if (["needs_input", "awaiting_input"].includes(state))
+    return "input_required";
+  if (["blocked", "waiting_permission"].includes(state)) return "waiting";
+  if (["aborted", "canceled", "stopped"].includes(state)) return "cancelled";
+  if (["created", "queued", "scheduled", "prepared"].includes(state))
+    return "pending";
   if (
     [
       "active",
@@ -72,18 +79,19 @@ function normalizeState(value, fallback = "unknown") {
     ].includes(state)
   )
     return "completed";
-  if (["error", "timeout"].includes(state)) return "failed";
+  if (["error", "timeout", "lost"].includes(state)) return "failed";
   return fallback;
 }
 
 function timestamp(value) {
-  if (value == null) return null;
-  if (value instanceof Date) return value.toISOString();
-  if (typeof value === "number" && Number.isFinite(value))
-    return new Date(value).toISOString();
-  if (typeof value === "string" && Number.isFinite(Date.parse(value)))
-    return new Date(value).toISOString();
-  return null;
+  if (
+    !(value instanceof Date) &&
+    typeof value !== "number" &&
+    typeof value !== "string"
+  )
+    return null;
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isFinite(date.getTime()) ? date.toISOString() : null;
 }
 
 function stableId(value, fallback) {
@@ -107,23 +115,35 @@ export function toTaskRecord(value, source = "unknown", options = {}) {
       ? "running"
       : "unknown",
   );
-  const createdAt = timestamp(input.createdAt ?? input.created_at);
+  const createdAt = timestamp(
+    input.createdAt ?? input.created_at ?? input.startedAt,
+  );
   const lastEventAt = timestamp(
     input.lastEventAt ??
       input.lastUpdatedAt ??
       input.updatedAt ??
+      input.endedAt ??
       input.lastHeartbeat ??
       createdAt,
   );
   const endsAt = timestamp(input.endsAt ?? input.expiresAt ?? input.expiryAt);
+  const taskId = stableId(
+    input,
+    options.fallbackId || `${normalizedSource}-unknown`,
+  );
+  let stopPath = input.cancelPath ?? input.stop ?? null;
+  if (Object.hasOwn(input, "stopPath")) stopPath = input.stopPath;
+  else if (!stopPath && !TERMINAL.has(state)) {
+    if (normalizedSource === "background-shell")
+      stopPath = `check_shell --kill ${taskId}`;
+    if (normalizedSource === "schedule")
+      stopPath = `cc agenda cancel ${taskId}`;
+  }
   const record = {
-    taskId: stableId(
-      input,
-      options.fallbackId || `${normalizedSource}-unknown`,
-    ),
+    taskId,
     // Legacy aliases keep existing `/tasks` callers working while new
     // consumers use the explicit canonical names below.
-    id: stableId(input, options.fallbackId || `${normalizedSource}-unknown`),
+    id: taskId,
     parentTaskId: first(input.parentTaskId ?? input.parentId, null),
     permissionProfileDigest: first(input.permissionProfileDigest, null),
     modelDecision: first(input.modelDecision, null),
@@ -137,29 +157,23 @@ export function toTaskRecord(value, source = "unknown", options = {}) {
         input.waitingFor ??
         (state === "input_required"
           ? "input"
-          : state === "waiting"
+          : input.status === "waiting_permission"
             ? "approval"
             : null),
       null,
     ),
-    stopPath: first(
-      input.stopPath ??
-        input.cancelPath ??
-        input.stop ??
-        (normalizedSource === "background-shell"
-          ? `check_shell --kill ${stableId(input, "unknown")}`
-          : normalizedSource === "schedule"
-            ? `cc agenda cancel ${stableId(input, "unknown")}`
-            : null),
-      null,
-    ),
+    stopPath: stopPath ?? null,
     label: first(
       input.label ?? input.description ?? input.command ?? input.prompt,
       null,
     ),
     createdAt,
     nextRunAt: timestamp(input.nextRunAt ?? input.nextAt ?? input.dueAt),
-    expiresAction: first(input.expiresAction ?? input.onExpire ?? null, null),
+    expiresAction:
+      input.expiresAction ??
+      input.onExpire ??
+      (normalizedSource === "schedule" && endsAt ? "retire" : null),
+    ...(input.orphanRisk === true ? { orphanRisk: true } : {}),
     terminal: TERMINAL.has(state),
     rawSource: normalizedSource === "unknown" ? input : undefined,
   };
@@ -214,11 +228,25 @@ export function collectTaskRecords(options = {}) {
     options.sources && typeof options.sources === "object"
       ? options.sources
       : {};
+  const agentTasks = options.agentTasks ?? sourceRows.agent;
+  const agents = agentTasks ?? read("agent", undefined);
+  const registry = SubAgentRegistry.getInstance();
+  const subAgents = [...registry.getActive(), ...registry.getHistory()].map(
+    (agent) => ({
+      id: agent.id,
+      parentTaskId: agent.parentId,
+      status: agent.status,
+      createdAt: agent.createdAt,
+      endedAt: agent.completedAt,
+      modelDecision: agent.modelDecision,
+      label: agent.role,
+    }),
+  );
   const rows = [
     ...mapList(background, "background-shell", options),
     ...mapList(read("mcp", options.mcpTasks ?? sourceRows.mcp), "mcp", options),
     ...mapList(
-      read("agent", options.agentTasks ?? sourceRows.agent),
+      [...(Array.isArray(agents) ? agents : []), ...subAgents],
       "agent",
       options,
     ),
@@ -242,7 +270,14 @@ export function collectTaskRecords(options = {}) {
   }
   const records = rows.map((record) => {
     if (record.endsAt && Date.parse(record.endsAt) <= now && !record.terminal) {
-      return Object.freeze({ ...record, state: "expired", terminal: true });
+      return Object.freeze({
+        ...record,
+        state: "expired",
+        status: "expired",
+        waitingOn: null,
+        stopPath: null,
+        terminal: true,
+      });
     }
     return record;
   });

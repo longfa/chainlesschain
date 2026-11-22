@@ -8,13 +8,27 @@ import "../helpers/test-model-egress.js";
  * plus a live plan_update after every turn while planning. Uses the real
  * process-global PlanModeManager (reset around each test).
  */
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { spawnSync } from "node:child_process";
+import {
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  unlinkSync,
+  writeFileSync,
+} from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import {
   runAgentHeadlessStream,
   parseInputEvent,
   planSnapshot,
 } from "../../src/runtime/headless-stream.js";
 import { getPlanModeManager } from "../../src/lib/plan-mode.js";
+import { openSessionPlan } from "../../src/lib/session-plan-approval.js";
+import { planSnapshotPath } from "../../src/lib/plan-persistence.js";
+import { startSession } from "../../src/harness/jsonl-session-store.js";
+import { runAgentHeadless } from "../helpers/test-model-egress.js";
 
 function resetPlan() {
   const pm = getPlanModeManager();
@@ -46,6 +60,7 @@ function harness({ inputObjs, agentLoop } = {}) {
     writeOut: (s) => lines.push(s),
     writeErr: () => {},
     agentLoop: loop,
+    planManager: getPlanModeManager(),
     input: input(),
   };
   return {
@@ -59,6 +74,125 @@ function harness({ inputObjs, agentLoop } = {}) {
     seenTurns,
   };
 }
+
+it("restores the approved mode and tool lock from a fresh process", async () => {
+  const root = mkdtempSync(join(tmpdir(), "cc-plan-approval-restart-"));
+  vi.stubEnv("CHAINLESSCHAIN_HOME", join(root, "config"));
+  vi.stubEnv("CHAINLESSCHAIN_DATA_DIR", join(root, "data"));
+  vi.stubEnv("CHAINLESSCHAIN_SECURITY_ANCHOR_HOME", join(root, "authority"));
+  const sessionId = "session-plan-restart";
+  const moduleUrl = new URL(
+    "../../src/lib/session-plan-approval.js",
+    import.meta.url,
+  );
+  const freshHost = (mode) =>
+    spawnSync(
+      process.execPath,
+      [
+        "--input-type=module",
+        "-e",
+        `import { openSessionPlan } from ${JSON.stringify(moduleUrl.href)};
+     const opened = openSessionPlan(process.argv[1], process.argv[2]);
+     console.log(JSON.stringify({
+       mode: opened.permissionMode,
+       lock: opened.manager.getExecutionLock(),
+     }));`,
+        sessionId,
+        ...(mode ? [mode] : []),
+      ],
+      { encoding: "utf8", timeout: 30_000 },
+    );
+  try {
+    startSession(sessionId, { provider: "ollama", model: "fixture" });
+    const { manager } = openSessionPlan(sessionId);
+    manager.enterPlanMode({ title: "Restart fixture" });
+    manager.addPlanItem({
+      title: "Approved edit",
+      tool: "write_file",
+      params: { path: "fixture.txt" },
+    });
+    const rows = [];
+    const stream = await runAgentHeadlessStream(
+      { sessionId, permissionMode: "acceptEdits", useRegisteredMcp: false },
+      {
+        input: (async function* () {
+          yield '{"type":"plan","action":"approve"}\n';
+        })(),
+        bootstrap: async () => ({ db: null }),
+        getApprovalGate: async () => null,
+        writeOut: (value) => rows.push(value),
+        writeErr: () => {},
+        agentLoop: async function* () {
+          yield { type: "response-complete", content: "fixture" };
+          yield { type: "run-ended", reason: "complete" };
+        },
+      },
+    );
+    expect(stream.exitCode, rows.join("")).toBe(0);
+    const restored = freshHost();
+    expect(restored.status, restored.stderr).toBe(0);
+    expect(JSON.parse(restored.stdout)).toMatchObject({
+      mode: "acceptEdits",
+      lock: {
+        permissionMode: "acceptEdits",
+        allowedTools: expect.arrayContaining(["write_file"]),
+      },
+    });
+    expect(freshHost("bypassPermissions").status).toBe(1);
+    const singleRows = [];
+    const single = await runAgentHeadless(
+      {
+        prompt: "Continue the plan",
+        resume: sessionId,
+        outputFormat: "stream-json",
+        useRegisteredMcp: false,
+      },
+      {
+        bootstrap: async () => ({ db: null }),
+        getApprovalGate: async () => null,
+        writeOut: (value) => singleRows.push(value),
+        writeErr: () => {},
+        agentLoop: async function* (_messages, options) {
+          expect(options.planManager.getExecutionLock().permissionMode).toBe(
+            "acceptEdits",
+          );
+          yield {
+            type: "tool-executing",
+            tool: "write_file",
+            tool_use_id: "tool-fixture",
+            args: { path: "fixture.txt" },
+          };
+          yield {
+            type: "tool-result",
+            tool: "write_file",
+            tool_use_id: "tool-fixture",
+            result: { note: "tool output is private" },
+          };
+          yield { type: "response-complete", content: "fixture" };
+          yield { type: "run-ended", reason: "complete" };
+        },
+      },
+    );
+    expect(single.exitCode, singleRows.join("")).toBe(0);
+    expect(singleRows.join("")).toContain('"permission_mode":"acceptEdits"');
+    const persisted = openSessionPlan(sessionId).manager.currentPlan.items[0];
+    expect(persisted).toMatchObject({ status: "completed", result: null });
+    const snapshotPath = planSnapshotPath(sessionId);
+    const snapshot = JSON.parse(readFileSync(snapshotPath, "utf8"));
+    snapshot.state.currentPlan.items[0].params.path = "different.txt";
+    writeFileSync(snapshotPath, JSON.stringify(snapshot));
+    expect(freshHost().stderr).toContain(
+      "no matching session approval receipt",
+    );
+    unlinkSync(planSnapshotPath(sessionId));
+    const missing = freshHost();
+    expect(missing.status).toBe(1);
+    expect(missing.stderr).toContain("no matching session approval receipt");
+  } finally {
+    vi.unstubAllEnvs();
+    rmSync(root, { recursive: true, force: true });
+  }
+});
 
 describe("parseInputEvent — plan controls", () => {
   it("parses plan actions and ignores empty ones", () => {

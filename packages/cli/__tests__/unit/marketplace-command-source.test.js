@@ -167,7 +167,7 @@ describe("Marketplace command descriptors", () => {
       descriptor({
         args: [
           "-e",
-          "process.stdout.write(JSON.stringify({source:process.argv[1]}))",
+          "process.stderr.write('fixture diagnostic'); process.stdout.write(JSON.stringify({source:process.argv[1]}))",
           plugin,
         ],
       }),
@@ -176,13 +176,47 @@ describe("Marketplace command descriptors", () => {
       source: fs.realpathSync.native(plugin),
       mode: "copy",
       fileCount: 1,
+      installCommand: {
+        ran: true,
+        exitCode: 0,
+        timedOut: false,
+        signaled: false,
+        printedToStderr: true,
+        stderrDigest: expect.stringMatching(/^[a-f0-9]{64}$/),
+      },
     });
+    expect(JSON.stringify(source.installCommand)).not.toContain(
+      "fixture diagnostic",
+    );
     await expect(
       runMarketplaceCommandSource(descriptor({ mode: "link" }), {
         platform: "win32",
       }),
     ).rejects.toMatchObject({
       code: MARKETPLACE_COMMAND_DESCRIPTOR_ERROR.LINK_UNSUPPORTED,
+    });
+  });
+
+  it("preserves the real exit code and stderr receipt on command failure", async () => {
+    await expect(
+      runMarketplaceCommandSource(
+        descriptor({
+          args: [
+            "-e",
+            "process.stderr.write('fixture failure'); process.exitCode = 17",
+          ],
+        }),
+      ),
+    ).rejects.toMatchObject({
+      code: "CC_MARKETPLACE_COMMAND_SOURCE_PROCESS_FAILED",
+      installCommand: {
+        ran: true,
+        exitCode: 17,
+        timedOut: false,
+        signaled: false,
+        printedToStderr: true,
+        stderrDigest: expect.stringMatching(/^[a-f0-9]{64}$/),
+      },
     });
   });
 });

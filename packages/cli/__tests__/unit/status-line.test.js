@@ -52,6 +52,24 @@ describe("loadStatusLineConfig", () => {
 });
 
 describe("renderStatusLine", () => {
+  it("shows pending approvals and schedule expiry while hiding token usage below the threshold", () => {
+    settingsLayers = [{ statusLine: { contextUsageThreshold: 20 } }];
+    const scheduleEndsAt = "2026-11-22T15:00:00.000Z";
+    const context = buildContext({
+      model: "fixture",
+      usedTokens: 123,
+      contextWindow: 1000,
+      contextUsageThreshold: sl.loadStatusLineContextThreshold(),
+      taskState: "waiting",
+      approvalsPending: 1,
+      scheduleEndsAt,
+    });
+    expect(context.context.visible).toBe(false);
+    expect(sl.renderDefaultStatusLine(context)).toContain("approvals 1");
+    expect(sl.renderDefaultStatusLine(context)).toContain(scheduleEndsAt);
+    expect(sl.renderDefaultStatusLine(context)).not.toContain("123");
+  });
+
   it("returns the first stdout line, trimmed", () => {
     _deps.runProcess = vi.fn(() => ({
       status: 0,

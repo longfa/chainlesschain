@@ -308,6 +308,20 @@ export function runMarketplaceProcessDescriptor(descriptor, options = {}) {
     let state = "running";
     let stdout = "";
     let totalOutputBytes = 0;
+    let printedToStderr = false;
+    const stderrHash = crypto.createHash("sha256");
+    const receipt = ({ code = null, signal = null, timedOut = false } = {}) =>
+      Object.freeze({
+        ran:
+          (Number.isInteger(child.pid) && child.pid > 0) ||
+          code !== null ||
+          signal !== null,
+        exitCode: code,
+        timedOut,
+        signaled: signal !== null,
+        printedToStderr,
+        stderrDigest: stderrHash.digest("hex"),
+      });
     const settle = (callback, value) => {
       if (state === "settled") return;
       state = "settled";
@@ -323,12 +337,29 @@ export function runMarketplaceProcessDescriptor(descriptor, options = {}) {
         kill: options.kill,
         spawnSync: options.spawnSync,
       });
-      settle(reject, error);
+      settle(
+        reject,
+        kind === "source"
+          ? Object.assign(error, {
+              installCommand: receipt({
+                timedOut:
+                  error.code ===
+                  MARKETPLACE_COMMAND_SOURCE_ERROR.PROCESS_TIMEOUT,
+              }),
+            })
+          : error,
+      );
     };
     const appendOutput = (chunk, keep) => {
       const buffer = Buffer.isBuffer(chunk)
         ? chunk
         : Buffer.from(String(chunk), "utf8");
+      if (!keep && buffer.length > 0) {
+        printedToStderr = true;
+        stderrHash.update(
+          buffer.subarray(0, plan.maxOutputBytes - totalOutputBytes),
+        );
+      }
       totalOutputBytes += buffer.byteLength;
       if (totalOutputBytes > plan.maxOutputBytes) {
         fail(
@@ -372,16 +403,21 @@ export function runMarketplaceProcessDescriptor(descriptor, options = {}) {
     child.once("close", (code, signal) => {
       if (state !== "running") return;
       if (code !== 0) {
-        fail(
-          outputError(
-            kind,
-            "PROCESS_FAILED",
-            `Marketplace command process exited unsuccessfully (code ${code ?? "null"}, signal ${signal || "none"})`,
-          ),
+        const error = outputError(
+          kind,
+          "PROCESS_FAILED",
+          `Marketplace command process exited unsuccessfully (code ${code ?? "null"}, signal ${signal || "none"})`,
         );
+        if (kind === "source") error.installCommand = receipt({ code, signal });
+        settle(reject, error);
         return;
       }
-      settle(resolve, stdout);
+      settle(
+        resolve,
+        options.includeInstallReceipt === true
+          ? { stdout, installCommand: receipt({ code, signal }) }
+          : stdout,
+      );
     });
   });
 }
@@ -459,10 +495,14 @@ export async function runMarketplaceCommandSource(descriptor, options = {}) {
     allowType: options.allowType === true,
     label: "Marketplace command source descriptor",
   });
-  const stdout = await runMarketplaceProcessDescriptor(plan, {
-    ...options,
-    kind: "source",
-  });
+  const { stdout, installCommand } = await runMarketplaceProcessDescriptor(
+    plan,
+    {
+      ...options,
+      kind: "source",
+      includeInstallReceipt: true,
+    },
+  );
   let parsed;
   try {
     parsed = JSON.parse(stdout.trim());
@@ -500,6 +540,7 @@ export async function runMarketplaceCommandSource(descriptor, options = {}) {
     payloadSha256: payload.digest,
     fileCount: payload.fileCount,
     totalBytes: payload.totalBytes,
+    installCommand,
   });
 }
 

@@ -6,6 +6,8 @@
 
 ## 结论摘要
 
+本节记录初审发现。当前实现和仍需验收的路径见“继续实施与本地验收”。
+
 上游 2026-11-20 这一批发布的重心已从"新增能力"转向**生命周期边界的补洞**：任务停止能不能真停住、共享资源最后一个使用者退出时才关闭、安装副作用能不能被程序读到、非交互场景无人应答时默认拒绝、失败必须体现在退出码。Codex 0.171 则继续把 TUI 工作区、子代理转录和远程执行收进同一控制面。
 
 结合本项目复核，四个**已证实**的缺口最值得优先做：
@@ -22,9 +24,11 @@
 | Codex CLI   | **0.171.0**（2026-11-20） | TUI Workspace 默认启用；子代理转录、文档/图片预览；GPT-6.2 Sol/Astra 模型目录；`codex exec --remote`；工作区切换保留未跟踪文件                                                                                                                                                                                                                                                                                                       | [ChatGPT & Codex Changelog](https://learn.chatgpt.com/docs/changelog) |
 | Claude Code | **2.1.330**（2026-11-20） | 子代理场景的 MCP server 共享生命周期；任务并发更新不丢依赖/元数据；后台会话恢复后不回到旧权限档；无人应答时破坏性命令直接拒绝；`plugin install --json` 增加 `commandPrinted`/`commandFailed`；`/loop` 类计划任务延长到 30 天并声明结束时间；self-hosted runner 新增 order→registered→first-session 指标与 spawn-runner hook 并发上限；VS Code 新增 `/fork`、`/workflows`、`contextUsageThreshold`；`claude -p` 落盘失败时改为 exit 1 | [Claude Code Changelog](https://code.claude.com/docs/en/changelog)    |
 
-版本是上游工具版本，不能与仓库 CLI `0.166.159` 按数字比较。仓库自身的准确发布身份见下方"当前公开版本"。
+上游工具与 ChainlessChain 各自维护版本序列。仓库发布身份见下方“当前公开版本”。
 
 ## 值得借鉴的机制与本仓库证据
+
+以下证据记录实施前的基线。当前入口与验收结果见后文。
 
 每条格式为：上游做了什么 → 本项目现状（含取证方式）→ 应学到什么。
 
@@ -221,65 +225,63 @@ Claude 2.1.330 让子代理的模型回退（fallback）**传导**给它派生�
 4. `lib/agent-team/` + `lib/background-task-manager.js` 接入统一 `stop()`。
 5. `packages/vscode-extension/package.json` + 对应 provider 增加 fork / workflow map 命令，复用既有 webview 通道。
 
-## 本轮落地记录（2026-11-22）
+## 继续实施与本地验收
 
-本轮已把上述缺口中可由仓库本地实现和验证的部分接入运行时代码。
+提交 `75976d2790` 建立了统一任务字段。下表记录继续实施后的工作树，发布记录对应已归档的发行提交。
 
-- **统一任务投影**：新增 [`packages/cli/src/lib/task-record.js`](../../../../packages/cli/src/lib/task-record.js) 和 [`packages/cli/src/commands/tasks.js`](../../../../packages/cli/src/commands/tasks.js)。`cc tasks --json` 现在聚合后台 shell、MCP、agent、schedule、cowork 与未知来源，统一输出 `taskId`、`parentTaskId`、`source`、`state`、`lastEventAt`、`endsAt`、`waitingOn`、`stopPath`、`permissionProfileDigest`，到期任务会投影为 `expired`。旧 [`lib/task-list.js`](../../../../packages/cli/src/lib/task-list.js) 返回的计数字段保持兼容。
-- **停止契约**：后台任务管理器记录 `stop_requested`、`stop_confirmed`、`stop_timeout` 事件，并返回 `{ requested, confirmed, orphanRisk }`。进程未能在升级终止后退出时保留 `orphanRisk`。
-- **安装结果**：插件 legacy install、unified add 和 upgrade 的 JSON 结果均包含 `installCommand`，字段为 `ran`、`exitCode`、`timedOut`、`signaled`、`printedToStderr`、`stderrDigest`。审计开关仍独立保留。
-- **无人应答策略**：新增 `resolveAssentDecision()` 投影，将既有 fail-closed 结果明确标成 `interactive-assent`、`policy-allow` 或 `no-answer`，不改变旧 `{ allow, reason }` 返回值。
-- **共享 MCP 资源**：新增 [`lib/mcp-server-handle.js`](../../../../packages/cli/src/lib/mcp-server-handle.js)，以 `holders: Set<taskId>` 管理引用，最后一个持有者释放后才执行 shutdown。
-- **状态栏**：状态栏上下文可携带任务状态、待审批数、MCP 错误数和上下文阈值。默认上下文结构保持兼容，设置阈值后才增加可见性字段。
-- **权限、模型和 runner 契约**：新增 permission profile digest、父子模型决策继承和 runner 生命周期计时/钩子并发上限的纯运行时模块，供 journal、子代理和远程执行接入。
-- **协议健壮性**：`mcp-stateless-protocol.js` 新增外部 `inputSchema` 的大小、深度、类型和字段校验，MCP 工具目录在转发前拒绝非法 schema，并返回工具名、路径和修复信息。
-- **VS Code**：新增会话分叉、工作流地图命令，并增加 `chainlesschain.chat.contextUsageThreshold` 配置。分叉路径使用 CLI 的 `--fork-session`，工作流地图复用既有 Sessions Workbench。
+| 任务包                | 当前证据                                                                                                                                                                                                                                         | 剩余验收                                                                                      |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| 统一任务投影          | 独立运行 `cc tasks --json` 可读持久化后台 shell、MCP 日志、后台 Agent、计划任务和项目内 Cowork 工作流。跨进程测试同时读回 shell、MCP 和计划任务。MCP 默认扫描最近 100 个 canonical 会话，`--session <id>` 可指定会话。REPL 可读同进程子代理。    | 即时 `run_shell` 命令的内存状态仍由所属运行时读取。跨宿主长期并发验收待补。                   |
+| 停止与诊断            | 重复停止复用回执，`stop_requested`、`stop_timeout` 和后续 `stop_confirmed` 可持久化读回。无法确认停止时，`cc tasks --json` 输出 `orphanRisk`，Doctor 的后台检查会提示。                                                                          | 两级子代理和真实孤儿进程的宿主验收待补。                                                      |
+| 插件安装结果          | 显式 Marketplace command source 的 add / upgrade JSON 携带 `installCommand`。实际 Node 子进程测试验证 stderr 摘要、成功退出 0、失败退出 17。回执保存摘要和进程结果。                                                                             | 完整 CLI registry 安装旅程待补。Git 获取、`cc skill install` 和 `cc mcp add` 的统一回执待补。 |
+| 无人应答拒绝          | 无人应答策略和破坏性 Git 负向通过。真实 Agent 循环的 mock-provider 回归验证删除请求被拒绝，隔离目录内文件保留。                                                                                                                                  | 顶层 CLI 的专用非零退出码仍需验证。                                                           |
+| MCP 共享生命周期      | 活跃子代理持有同一 MCPClient 的 transport。宿主请求关闭时等待最后一个持有者释放。MCPClient 回归验证第一次释放后连接仍在，最后一次释放仅执行一次断开。                                                                                            | 跨客户端共享和真实双子代理宿主贯通待补。                                                      |
+| 计划任务与状态栏      | 到期时统一 `state` 和兼容别名，清理等待与停止提示。REPL 状态栏接入会话 MCP 等待、审批提示、待审批数和最近未到期计划。`statusLine.contextUsageThreshold` 的测试验证低于阈值时隐藏上下文读数。                                                     | 真实交互审批和调度宿主截图待补。                                                              |
+| 权限档位与旧审批      | 流式批准写入会话日志，流式重开和单次 headless 续跑恢复同一执行锁。新进程和旧审批所有权回归通过。                                                                                                                                                 | 真实后台宿主重启和交互 REPL 的权限档位复验待补。                                              |
+| Headless 交付失败     | `ENOSPC`、`EROFS`、`EPERM` 和 `EACCES` 的目标回归覆盖非零退出与可解析 JSON 回执。                                                                                                                                                                | 实际满盘、只读卷和各平台 stdout 重定向仍需复验。                                              |
+| VS Code 分叉与地图    | `cc session fork <id> --json` 可分叉完整会话，`--after-message <id>` 可选取已验证的历史回复。VS Code 提供分页回复选择器。跨进程回归验证历史边界、独立回复和 MCP 活动账本隔离。Workflow Map 读取 `cc tasks --json --active-only` 的 Cowork 记录。 | 真实 VS Code 宿主双会话和地图对照仍待验收。                                                   |
+| MCP Schema 与 LSP     | 首次发现、发现缓存及 `list_changed` 刷新共用 schema 准入。非法替换保留已接纳的工具目录，诊断含工具名和字段路径，回归验证大段描述未进入诊断。                                                                                                     | 会话文件大小断言与真实语言服务器冷启动验收待补。                                              |
+| Runner 指标与模型传播 | `cc status --runner-state` 可读 Runner 的首会话租约时间和三段耗时。模型回退结果接入子代理、内置自动压缩和会话日志。                                                                                                                              | 外部 provisioning、真实远程目标进程启动、真实供应商链路的端到端证据待补。                     |
 
-本轮本地验证包括 `node --check` 覆盖新增和修改的 JavaScript 文件、`cc tasks --json` 的真实命令输出、CLI command manifest 检查，以及 VS Code `package.json` 和本地化文件 JSON 解析。发布前仍需在准确提交上重跑仓库规定的 CLI CI、Strict Sandbox、Native Validation 和 IDE 完整矩阵。
+### 可复现的本地验证
 
-## 当前实际完成情况（代码与验证核对）
+- CLI 跨进程、MCP、任务管理器和状态栏目标套件通过 148 项。覆盖多源任务读回、分叉后的独立回复、停止回执、MCP 引用释放和 Schema 刷新拒绝。跨进程场景由 `packages/cli/__tests__/integration/task-lifecycle-projection.test.js` 固化。
+- 会话历史目标套件通过 41 项，包含独立 CLI 进程从所选历史回复处分叉。Shell 审批、破坏性删除和状态栏目标套件通过 28 项。
+- Headless 持久化目标套件通过 18 项。实际 Marketplace command source 子进程与运行边界套件通过 11 项。
+- VS Code 扩展通过 358 项 Node 测试。匹配版本的 Chromium Headless Shell 下，`npm run test:settings-ui` 通过三个面板的浏览器 smoke。
+- CLI command manifest、help index、四项 startup SLO 和源码出站分类检查均通过。
+- JetBrains 修复了动作完成时与在途轮询竞争而丢失刷新请求的问题。Windows 本地 Gradle `test` 成功，1,041 项通过、3 项跳过。真实 macOS 宿主的等待输入可见性仍需重新测量。
 
-下表记录当前工作树对应的真实状态。状态为“部分完成”的任务已经有代码入口，但仍缺少计划中要求的端到端故障注入或真实平台证据，不能按完全验收处理。
+### 2026-11-23 续验
 
-| 任务包                        | 当前状态                 | 已落地内容                                                                                                               | 当前证据                                                                                                                  | 仍需补齐                                                                 |
-| ----------------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| 统一 TaskRecord 投影          | **已完成本地实现**       | 新增 `lib/task-record.js`、`commands/tasks.js`，聚合 background shell、MCP、agent、schedule、cowork 和未知来源           | `node src/index.js tasks --json` 已输出 `taskId/source/state/endsAt/waitingOn/stopPath`，CLI startup 与 manifest 检查通过 | 多来源同时运行的长时集成场景                                             |
-| 停止语义                      | **部分完成**             | 后台任务记录 `stop_requested`、`stop_confirmed`、`stop_timeout`，返回 `requested/confirmed/orphanRisk`                   | `background-task-manager.js` 语法检查通过，停止分支已覆盖子进程与超时路径                                                 | 两级子代理、孤儿进程和 doctor 可见性的真实验收                           |
-| 插件安装结果字段              | **部分完成**             | legacy install、unified add、upgrade 的 JSON 结果加入 `installCommand` 字段                                              | `normalizeInstallCommandResult()` 已覆盖 `exitCode/timedOut/signaled/printedToStderr/stderrDigest`                        | 执行 stderr 插件和失败安装的端到端用例                                   |
-| 无人应答拒绝                  | **部分完成**             | 新增 `resolveAssentDecision()`，明确 `interactive-assent/policy-allow/no-answer`                                         | 既有 unattended policy 保持 fail-closed，新增模块语法检查通过                                                             | 非交互 `rm` 负向用例及非零退出码记录                                     |
-| MCP server 引用计数           | **部分完成**             | 新增 `McpServerHandle`、`McpServerHandleRegistry`，MCP durable runtime 注册任务来源                                      | 两个 holder 的手动验证显示首个释放不 shutdown，最后释放才 shutdown                                                        | 将句柄接入所有实际 MCPClient transport 的共享生命周期                    |
-| 计划任务 `endsAt` 与到期处理  | **已完成本地投影**       | schedule adapter 映射 `expiresAt/nextAt`，过期任务投影为 `expired`                                                       | `cc tasks --json` 实际读回了 `schedule/expired/endsAt` 记录                                                               | 状态栏真实 UI 截图或完整调度回归矩阵                                     |
-| 审批后权限档位随会话恢复      | **部分完成**             | 新增 permission profile digest，并将 digest 加入 agent approval authority snapshot                                       | `permission-profile.js` 与 agent-core 语法检查通过                                                                        | journal 持久化、恢复和旧 turn 拒绝的完整回归                             |
-| headless 落盘失败退出码       | **已有实现，待本轮复验** | 现有 headless runner 已将 persistence failure 映射为非零退出码并保持 JSON envelope                                       | 源码已有 `persistenceFailure/sessionPersistenceCode` 分支                                                                 | 满盘、只读目录、EPERM 故障注入                                           |
-| 状态栏任务字段                | **已完成本地实现**       | 状态栏支持任务状态、审批数、MCP 错误数和上下文阈值                                                                       | status-line 手动验证确认默认上下文结构兼容，阈值低于设定值时隐藏上下文读数                                                | REPL 真实等待审批场景                                                    |
-| VS Code 会话分叉与工作流地图  | **部分完成**             | 新增 `sessions.fork`、`workflows.map` 命令和 `contextUsageThreshold` 配置                                                | VS Code package JSON、NLS、扩展语法和 39 项 Node 测试通过                                                                 | 真实会话分叉互不覆盖及 workflow map 与 CLI 投影一致性                    |
-| runner 生命周期指标           | **部分完成**             | 新增 `RunnerLifecycleMetrics`，提供 order→registered→first-session 计时和钩子并发上限                                    | 模块手动验证返回两段耗时和 queue 状态                                                                                     | 接入 remote/self-hosted runner 与 `cc status --json`                     |
-| MCP inputSchema 与 LSP 健壮性 | **部分完成**             | 新增 schema 大小、深度、类型和字段校验，MCP 工具目录发现阶段提前拒绝非法 schema；LSP 已复用现有并发启动与 readiness 等待 | 合法/非法 schema 手动验证通过，MCP client 语法检查通过                                                                    | 会话文件大小不增长、LSP 冷启动排队的故障注入                             |
-| 模型回退向子代理传导          | **部分完成**             | 新增父子 `modelDecision` 继承和事件结构，TaskRecord 可携带决策                                                           | `model-decision.js` 语法检查通过                                                                                          | 接入 task journal、task-model-selector、子代理和 compaction 的同源决策链 |
+- 流式 headless 逐会话创建 `PlanModeManager`。批准时把档位、工具白名单和已批准事项摘要写入会话日志。单次 headless 续跑采用同一执行锁。新进程回归验证了档位恢复和事项结算，并验证显式档位冲突、快照篡改和快照丢失会拒绝启动。
+- `cc status --json --runner-state <file>` 可读取执行位置 Runner 的接单、注册和首个会话租约获准时间及三段耗时。接单时间由调用方提供。已授权的 post-session hook 走 FIFO 并发队列，前一项失败后会释放槽位。实际远程目标进程启动时间和 provisioning 钩子仍需远程宿主提供证据。
+- 配置回退和可运行供应商回退都使用成功请求的模型决策。子代理继承实际模型和连接，声明的子代理模型可覆盖继承结果。内置自动压缩可沿用同一连接，持久会话的决策事件仅保存模型、供应商和端点来源摘要。严格计量路径继续遵守现有的每次物理请求结算边界。
+- 本轮目标套件通过 222 项。计划与旧审批 30 项，模型回退与子代理 96 项，Runner 与目标执行位置 60 项，压缩与计量 36 项。`headless-stream-plan.test.js` 包含新进程读取、单次 headless 续跑和篡改拒绝。`execution-location-runner-lifecycle.test.js` 通过独立的 CLI 进程验证 JSON 输出。命令清单、启动 SLO 和源码出站分类检查通过。
 
-### 验证结果汇总
+### 发布验证进度
 
-| 验证项                       | 结果       | 说明                                                                               |
-| ---------------------------- | ---------- | ---------------------------------------------------------------------------------- |
-| CLI command manifest         | **通过**   | `npm run commands:manifest:check`                                                  |
-| CLI startup SLO              | **通过**   | `npm run startup:check` 的 version、root-help、command-help、quick-status 均通过   |
-| CLI/扩展 JavaScript 语法     | **通过**   | 新增和修改文件全部 `node --check` 通过                                             |
-| VS Code 扩展 Node 测试       | **通过**   | 39 个测试通过                                                                      |
-| Playwright settings UI smoke | **未完成** | 本机缺少 Chromium 浏览器可执行文件                                                 |
-| CLI Vitest 全量矩阵          | **未完成** | 当前环境没有可用的 Vitest 二进制，需在 CI 依赖环境执行                             |
-| 发布门禁                     | **未完成** | 必须在最终发布提交上通过 CLI CI、CLI Strict Sandbox、Native Validation 和 IDE 矩阵 |
+已发布 CLI 和 Open VSX 的准确源码提交为 `1dd4f2c6cc7128995312be08738ae5d6d692ad25`。
 
-## 当前公开版本与既有边界（沿用 11-21 回执，未重新发布）
+| 项目                     | 结果                                                                                                     | 验证依据                                                                                                                                                         |
+| ------------------------ | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CLI CI                   | Linux、Windows、macOS 门禁通过，Windows PDH 复跑通过                                                     | [GitHub Actions](https://github.com/longfa/chainlesschain/actions/runs/45007170952/attempts/2)                                                                   |
+| CLI Strict Sandbox       | 通过                                                                                                     | [GitHub Actions](https://github.com/longfa/chainlesschain/actions/runs/45007170928)                                                                              |
+| CLI Native Validation    | 六个平台与汇总通过                                                                                       | [GitHub Actions](https://github.com/longfa/chainlesschain/actions/runs/45007199839)                                                                              |
+| IDE Extensions 与 ARM64  | 手动触发的 IDE 验证与 ARM64 宿主验证均通过                                                               | [IDE Extensions](https://github.com/longfa/chainlesschain/actions/runs/45011424891) · [ARM64](https://github.com/longfa/chainlesschain/actions/runs/45011532658) |
+| npm OIDC 发布            | 上游 13 个子包经核验后发布 CLI                                                                           | [GitHub Actions](https://github.com/longfa/chainlesschain/actions/runs/45018972099)                                                                              |
+| Open VSX 发布            | 配套版本已公开                                                                                           | [GitHub Actions](https://github.com/longfa/chainlesschain/actions/runs/45020514156)                                                                              |
+| JetBrains 候选 `0.4.210` | macOS Intel IntelliJ 2025.2 的 `needs_input` 可见性 P95 为 2,706 ms，门槛为低于 2,000 ms。上传作业已跳过 | [失败作业](https://github.com/longfa/chainlesschain/actions/runs/45020514604/job/137202314448)                                                                   |
 
-| 包        | 版本        | 公开状态                   | 精确标签                 |
-| --------- | ----------- | -------------------------- | ------------------------ |
-| CLI npm   | `0.166.159` | npm 已公开                 | `v-npm-0-166-159`        |
-| VS Code   | `0.37.194`  | Open VSX 已公开            | `ide-vscode-v0.37.194`   |
-| JetBrains | `0.4.209`   | 已上传，listing 待平台审核 | `ide-jetbrains-v0.4.209` |
+## 当前公开版本
 
-随 11-22 文档一起变更的是文档本身，未改动运行时代码；若按本文落地 P0 任务包，必须从新的准确提交重新跑 CLI CI、Strict Sandbox、Native Validation 后再升版。
+| 渠道                  | 版本        | 公开读回                                                                                                  | 精确标签                 |
+| --------------------- | ----------- | --------------------------------------------------------------------------------------------------------- | ------------------------ |
+| npm                   | `0.166.160` | [npm 包](https://www.npmjs.com/package/chainlesschain/v/0.166.160)                                        | `v-npm-0-166-160`        |
+| Open VSX              | `0.37.195`  | [公开扩展与 VSIX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide/0.37.195)              | `ide-vscode-v0.37.195`   |
+| JetBrains Marketplace | `0.4.209`   | [公开 ZIP](https://plugins.jetbrains.com/plugin/download?rel=true&updateId=1225644)，推荐 CLI `0.166.159` | `ide-jetbrains-v0.4.209` |
 
-**仍在阻塞的外部项**：Codex 冷首次扫描（上游升序发现/分页漏线程）继续使用 `recency_at + useStateDbOnly` 稳定路径，等待上游修复后解除 HOLD；JetBrains Marketplace 公开 listing 由平台审核决定，不能用上传结果替代公开可安装回读。
+继续实施后的改动仍需在新提交上通过相应发布矩阵。Codex 冷首次扫描继续使用 `recency_at + useStateDbOnly`，上游修复验证后再解除 HOLD。
 
 ## 不建议直接照搬的部分
 

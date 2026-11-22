@@ -20,10 +20,40 @@ function fail(reason) {
   throw error;
 }
 
-export function readMcpTaskJournal(sessionId) {
+export function readMcpTaskJournal(sessionId, options) {
   assertMcpTaskJournalSessionId(sessionId);
   return readVerifiedProjection(sessionId, () =>
-    createMcpTaskJournalProjection(sessionId),
+    createMcpTaskJournalProjection(sessionId, options),
+  );
+}
+
+/** Read task status without retaining result bodies from the transcript. */
+export function listMcpTaskRecords(sessionId) {
+  return readMcpTaskJournal(sessionId, { retainResults: false }).records.map(
+    (record) => {
+      const task = record.task;
+      const terminal = ["completed", "failed", "cancelled"].includes(
+        task?.status,
+      );
+      const settled = record.phase === "result_saved";
+      return {
+        taskId: `${sessionId}:${record.localId}`,
+        parentTaskId: sessionId,
+        state:
+          settled && !terminal ? "completed" : (task?.status ?? record.phase),
+        createdAt: task?.createdAt ?? record.at,
+        lastEventAt: record.updatedAt ?? record.at,
+        endsAt:
+          task?.ttl == null ? null : Date.parse(task.createdAt) + task.ttl,
+        waitingOn:
+          !settled && task?.status === "input_required" ? "mcp-input" : null,
+        stopPath:
+          task && !terminal && !settled
+            ? `cc mcp tasks cancel ${record.localId} --session ${sessionId}`
+            : null,
+        label: `${record.serverName}/${record.toolName}`,
+      };
+    },
   );
 }
 

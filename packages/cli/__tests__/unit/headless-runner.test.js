@@ -2328,44 +2328,47 @@ describe("headless-runner — session resume + persistence", () => {
     expect(out.join("")).not.toContain("private path");
   });
 
-  it("marks a completed model turn failed when assistant persistence is unknown", async () => {
-    const store = makeStore();
-    const { deps, out } = makeDeps(replyText("answer survives"));
-    Object.assign(deps, store.deps);
-    deps.agentLoop = capturingLoop({}, "answer survives");
-    deps.appendAssistantMessage = () => {
-      throw Object.assign(new Error("private path"), { code: "ENOSPC" });
-    };
+  it.each(["ENOSPC", "EPERM", "EACCES"])(
+    "marks a completed model turn failed when assistant persistence is unknown (%s)",
+    async (fsCode) => {
+      const store = makeStore();
+      const { deps, out } = makeDeps(replyText("answer survives"));
+      Object.assign(deps, store.deps);
+      deps.agentLoop = capturingLoop({}, "answer survives");
+      deps.appendAssistantMessage = () => {
+        throw Object.assign(new Error("private path"), { code: fsCode });
+      };
 
-    const outcome = await runAgentHeadless(
-      { prompt: "new task", resume: "disk-full", outputFormat: "json" },
-      deps,
-    );
+      const outcome = await runAgentHeadless(
+        { prompt: "new task", resume: "disk-full", outputFormat: "json" },
+        deps,
+      );
 
-    expect(outcome).toMatchObject({
-      exitCode: 1,
-      result: "answer survives",
-      isError: true,
-      persistence: {
-        fs_code: "ENOSPC",
-        phase: "after-model",
-        commit_state: "unknown",
-        retryable: false,
-      },
-    });
-    expect(JSON.parse(out.join(""))).toMatchObject({
-      subtype: "error_persistence",
-      is_error: true,
-      result: "answer survives",
-      persistence: {
-        code: "CC_SESSION_PERSISTENCE_FAILED",
-        fs_code: "ENOSPC",
-        commit_state: "unknown",
-        retryable: false,
-      },
-    });
-    expect(out.join("")).not.toContain("private path");
-  });
+      expect(outcome).toMatchObject({
+        exitCode: 1,
+        result: "answer survives",
+        isError: true,
+        persistence: {
+          fs_code: fsCode,
+          phase: "after-model",
+          commit_state: "unknown",
+          retryable: false,
+        },
+      });
+      expect(JSON.parse(out.join(""))).toMatchObject({
+        subtype: "error_persistence",
+        is_error: true,
+        result: "answer survives",
+        persistence: {
+          code: "CC_SESSION_PERSISTENCE_FAILED",
+          fs_code: fsCode,
+          commit_state: "unknown",
+          retryable: false,
+        },
+      });
+      expect(out.join("")).not.toContain("private path");
+    },
+  );
 
   it("does not re-seed the header when resuming an existing session", async () => {
     const store = makeStore({ "sess-A": [] });

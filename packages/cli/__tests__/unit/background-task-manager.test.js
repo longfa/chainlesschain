@@ -18,8 +18,12 @@ vi.mock("../../src/lib/paths.js", () => ({
   getHomeDir: () => testDir,
 }));
 
-const { _deps, BackgroundTaskManager, TaskStatus } =
-  await import("../../src/lib/background-task-manager.js");
+const {
+  _deps,
+  BackgroundTaskManager,
+  TaskStatus,
+  listPersistedBackgroundShellTasks,
+} = await import("../../src/harness/background-task-manager.js");
 const originalSpawn = _deps.spawn;
 const originalPlatform = _deps.platform;
 const originalKillProcessTree = _deps.killProcessTree;
@@ -589,7 +593,7 @@ describe("BackgroundTaskManager", () => {
       processKill.mockRestore();
     });
 
-    it("replaces a prior escalation timer when stop is requested twice", () => {
+    it("keeps one stop request and persists the timeout and later exit", () => {
       vi.useFakeTimers();
       const child = new EventEmitter();
       child.pid = 5513;
@@ -600,14 +604,33 @@ describe("BackgroundTaskManager", () => {
       manager.killGraceMs = 100;
       const task = manager.run({ command: "echo" });
 
-      manager.stop(task.id);
-      manager.stop(task.id);
+      const stop = manager.stop(task.id);
+      expect(stop).toEqual({
+        requested: true,
+        confirmed: false,
+        orphanRisk: false,
+      });
+      expect(manager.stop(task.id)).toEqual(stop);
       vi.advanceTimersByTime(100);
 
-      expect(_deps.killProcessTree).toHaveBeenCalledTimes(3);
+      expect(_deps.killProcessTree).toHaveBeenCalledTimes(2);
       expect(_deps.killProcessTree).toHaveBeenLastCalledWith(child, "SIGKILL");
+      expect(listPersistedBackgroundShellTasks()).toMatchObject([
+        { id: task.id, orphanRisk: true },
+      ]);
       child.exitCode = 1;
       child.emit("exit", 1);
+      expect(manager.stop(task.id)).toEqual({
+        requested: true,
+        confirmed: true,
+        orphanRisk: false,
+      });
+      expect(listPersistedBackgroundShellTasks()).toMatchObject([
+        { id: task.id, state: "cancelled", orphanRisk: false },
+      ]);
+      expect(
+        task.history.filter(({ event }) => event === "stop_requested"),
+      ).toHaveLength(1);
       vi.useRealTimers();
     });
   });

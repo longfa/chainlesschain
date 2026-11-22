@@ -29,6 +29,7 @@ import {
   isMcpToolMetadataError,
 } from "../lib/mcp-tool-metadata.js";
 import { admitMcpToolResult } from "../lib/mcp-tool-result.js";
+import { McpServerHandle } from "../lib/mcp-server-handle.js";
 import {
   mcpTaskError,
   mcpTaskId,
@@ -3333,25 +3334,7 @@ export class MCPClient extends EventEmitter {
             "tools/list",
             {},
           );
-          const discoveredTools = toolsResult?.tools || [];
-          for (const tool of discoveredTools) {
-            if (!tool?.inputSchema) continue;
-            const schemaCheck = validateMcpInputSchema(tool.inputSchema, {
-              toolName: tool.name || "unknown",
-            });
-            if (!schemaCheck.valid) {
-              const error = new Error(
-                `MCP tool inputSchema rejected for ${tool.name || "unknown"}: ${schemaCheck.errors
-                  .map((item) => `${item.path} ${item.message}`)
-                  .join("; ")}`,
-              );
-              error.code = "CC_MCP_INPUT_SCHEMA_INVALID";
-              error.toolName = tool.name || null;
-              error.schemaErrors = schemaCheck.errors;
-              throw error;
-            }
-          }
-          this._replaceToolInventory(name, entry, discoveredTools);
+          this._replaceToolInventory(name, entry, toolsResult?.tools || []);
         } catch (err) {
           if (isMcpFatalDiscoveryError(err)) throw err;
           entry._toolInventoryReady = true;
@@ -3731,10 +3714,47 @@ export class MCPClient extends EventEmitter {
     return disconnecting;
   }
 
-  /**
-   * Disconnect from all servers.
-   */
+  _getSharedTransport() {
+    if (!this._sharedTransport) {
+      const transport = { shutdown: null };
+      transport.handle = new McpServerHandle("MCP client transports", {
+        shutdown: async () => {
+          try {
+            await this._disconnectAllTransports();
+            transport.shutdown.resolve();
+          } catch (error) {
+            transport.shutdown.reject(error);
+          } finally {
+            this._sharedTransport = null;
+          }
+        },
+      });
+      transport.handle.acquire("host");
+      this._sharedTransport = transport;
+    }
+    return this._sharedTransport;
+  }
+
+  /** Retain the host-owned transports for a running subagent. */
+  retainSubagentTransport() {
+    const { handle, shutdown } = this._getSharedTransport();
+    if (shutdown) throw new Error("The MCP client is shutting down");
+    const id = randomUUID();
+    handle.acquire(id);
+    return () => handle.release(id);
+  }
+
+  /** Disconnect once the last subagent has released the shared client. */
   async disconnectAll() {
+    const transport = this._getSharedTransport();
+    if (!transport.shutdown) {
+      transport.shutdown = Promise.withResolvers();
+      void transport.handle.release("host");
+    }
+    return transport.shutdown.promise;
+  }
+
+  async _disconnectAllTransports() {
     const names = new Set([
       ...this.servers.keys(),
       ...this._lifecycleAttempts.keys(),
@@ -3762,6 +3782,25 @@ export class MCPClient extends EventEmitter {
     const admitted = admitMcpToolList(serverName, tools, entry?.config, {
       clientBytesUsed,
     });
+    for (const tool of admitted.tools) {
+      if (tool.inputSchema === undefined) continue;
+      const schema = validateMcpInputSchema(tool.inputSchema, {
+        toolName: tool.name,
+      });
+      const issue = schema.errors[0];
+      if (issue) {
+        throw Object.assign(
+          new Error(
+            `MCP tool ${tool.name} inputSchema at ${issue.path}: ${issue.message}`,
+          ),
+          {
+            code: "CC_MCP_INPUT_SCHEMA_INVALID",
+            toolName: tool.name,
+            schemaErrors: schema.errors,
+          },
+        );
+      }
+    }
     entry.tools = admitted.tools;
     entry._toolInventoryReady = true;
     entry._toolMetadataBytes = admitted.metadataBytes;

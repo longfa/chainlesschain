@@ -1027,19 +1027,73 @@ async function activate(context) {
         }
         const { runCliResult } = require("./chat/introspect-commands.js");
         const command = chatProvider._cliCommand?.() || "cc";
+        const cwd = vscode.workspace.workspaceFolders?.[0]?.uri?.fsPath;
+        let cursor = null;
+        let boundary;
+        do {
+          const pageArgs = ["session", "show", "--history", "--json"];
+          if (cursor) pageArgs.push("--before", cursor);
+          pageArgs.push("--", sessionId);
+          const history = await runCliResult({
+            command,
+            args: pageArgs,
+            cwd,
+            maxBufferBytes: 2 * 1024 * 1024,
+          });
+          let page;
+          try {
+            page = history.ok ? JSON.parse(history.stdout) : null;
+          } catch {
+            page = null;
+          }
+          if (page?.sessionId !== sessionId || !Array.isArray(page.messages)) {
+            vscode.window.showErrorMessage(
+              "ChainlessChain: verified transcript is unavailable",
+            );
+            return;
+          }
+          const replies = page.messages
+            .filter(
+              (row) =>
+                row?.role === "assistant" &&
+                typeof row.id === "string" &&
+                typeof row.text === "string" &&
+                row.text.trim(),
+            )
+            .reverse()
+            .map((row) => ({
+              label: row.text.replace(/\s+/g, " ").trim().slice(0, 120),
+              description: `Message ${row.ordinal + 1}`,
+              messageId: row.id,
+            }));
+          const items = [
+            { label: "Fork entire session", messageId: null },
+            ...replies,
+          ];
+          if (
+            typeof page.nextCursor === "string" &&
+            page.nextCursor &&
+            page.nextCursor !== cursor
+          )
+            items.push({
+              label: "Earlier replies",
+              nextCursor: page.nextCursor,
+            });
+          boundary = await vscode.window.showQuickPick(items, {
+            title: "ChainlessChain Fork Session",
+            placeHolder: "Choose where the new conversation ends",
+          });
+          if (!boundary) return;
+          cursor = boundary.nextCursor;
+        } while (cursor);
+        const args = ["session", "fork", "--json"];
+        if (boundary.messageId)
+          args.push("--after-message", boundary.messageId);
+        args.push("--", sessionId);
         const result = await runCliResult({
           command,
-          args: [
-            "agent",
-            "--resume",
-            String(sessionId),
-            "--fork-session",
-            "--print",
-            "",
-            "--output-format",
-            "json",
-          ],
-          cwd: vscode.workspace.workspaceFolders?.[0]?.uri?.fsPath,
+          args,
+          cwd,
           timeoutMs: 60000,
         });
         if (!result.ok) {
@@ -1050,9 +1104,14 @@ async function activate(context) {
         }
         try {
           const envelope = JSON.parse(result.stdout);
-          const forkedId = envelope.session_id || envelope.sessionId;
-          if (forkedId) {
-            chatProvider.resumeSessionId(forkedId);
+          const forkedId = envelope.sessionId;
+          if (
+            envelope.forkedFrom === sessionId &&
+            typeof forkedId === "string" &&
+            /^session-fork-[a-f0-9]{32}$/.test(forkedId)
+          ) {
+            if (chatProvider.activeSessionId() === sessionId)
+              chatProvider.resumeSessionId(forkedId);
             vscode.window.showInformationMessage(
               `ChainlessChain: forked session ${forkedId}`,
             );
@@ -1066,9 +1125,54 @@ async function activate(context) {
         );
       },
     ),
-    vscode.commands.registerCommand("chainlesschain.workflows.map", () => {
-      openSessionsWorkbenchPanel();
-    }),
+    vscode.commands.registerCommand(
+      "chainlesschain.workflows.map",
+      async () => {
+        const { runCliResult } = require("./chat/introspect-commands.js");
+        const cwd = vscode.workspace.workspaceFolders?.[0]?.uri?.fsPath;
+        const result = await runCliResult({
+          command: chatProvider._cliCommand(),
+          args: ["tasks", "--json", "--active-only"],
+          cwd,
+        });
+        let tasks;
+        try {
+          tasks = result.ok ? JSON.parse(result.stdout).tasks : null;
+        } catch {
+          tasks = null;
+        }
+        if (!Array.isArray(tasks)) {
+          vscode.window.showErrorMessage(
+            "ChainlessChain: workflow tasks are unavailable",
+          );
+          return;
+        }
+        const items = tasks
+          .filter(
+            (task) =>
+              task?.source === "cowork" && typeof task.taskId === "string",
+          )
+          .map((task) => ({
+            label: task.label || task.taskId,
+            description: task.state,
+            detail: [task.taskId, task.parentTaskId, task.waitingOn]
+              .filter(Boolean)
+              .join(" · "),
+          }));
+        if (items.length === 0) {
+          vscode.window.showInformationMessage(
+            "ChainlessChain: no active Cowork workflows",
+          );
+          return;
+        }
+        const selected = await vscode.window.showQuickPick(items, {
+          title: "ChainlessChain Workflow Map",
+          placeHolder: "Select a workflow to open Sessions Workbench",
+          matchOnDetail: true,
+        });
+        if (selected) openSessionsWorkbenchPanel();
+      },
+    ),
     vscode.commands.registerCommand(
       "chainlesschain.evolution.workbench",
       async () => {

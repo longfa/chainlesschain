@@ -41,7 +41,7 @@ export function validateMcpInputSchema(
       message: "inputSchema is not JSON-serializable",
     });
   }
-  if (encoded.length > maxBytes)
+  if (Buffer.byteLength(encoded, "utf8") > maxBytes)
     errors.push({
       tool: toolName,
       path: "$",
@@ -49,6 +49,7 @@ export function validateMcpInputSchema(
       message: `inputSchema exceeds ${maxBytes} bytes`,
     });
   const visit = (value, path = "$", depth = 0) => {
+    if (errors.length >= 4) return;
     if (depth > 32) {
       errors.push({
         tool: toolName,
@@ -58,7 +59,8 @@ export function validateMcpInputSchema(
       });
       return;
     }
-    if (!value || typeof value !== "object" || Array.isArray(value)) {
+    if (depth > 0 && typeof value === "boolean") return;
+    if (!object(value)) {
       errors.push({
         tool: toolName,
         path,
@@ -67,12 +69,17 @@ export function validateMcpInputSchema(
       });
       return;
     }
-    if (value.type !== undefined && typeof value.type !== "string")
+    const types = Array.isArray(value.type) ? value.type : [value.type];
+    if (
+      value.type !== undefined &&
+      (!types.length || types.some((type) => !SCHEMA_TYPES.has(type)))
+    )
       errors.push({
         tool: toolName,
         path: `${path}.type`,
         code: "SCHEMA_TYPE_INVALID",
-        message: "type must be a string",
+        message:
+          "type must name a JSON Schema type or a nonempty array of types",
       });
     if (value.properties !== undefined) {
       if (
@@ -88,7 +95,14 @@ export function validateMcpInputSchema(
         });
       else
         for (const [key, child] of Object.entries(value.properties))
-          visit(child, `${path}.properties.${key}`, depth + 1);
+          visit(
+            child,
+            `${path}.properties.${JSON.stringify(key.slice(0, 80))}`.slice(
+              0,
+              240,
+            ),
+            depth + 1,
+          );
     }
     if (
       value.required !== undefined &&
@@ -101,9 +115,14 @@ export function validateMcpInputSchema(
         code: "SCHEMA_REQUIRED_INVALID",
         message: "required must be an array of strings",
       });
-    for (const key of ["items", "additionalProperties", "contains", "not"])
-      if (value[key] && typeof value[key] === "object")
-        visit(value[key], `${path}.${key}`, depth + 1);
+    for (const key of ["items", "additionalProperties", "contains", "not"]) {
+      if (!Object.hasOwn(value, key)) continue;
+      if (key === "items" && Array.isArray(value.items))
+        value.items.forEach((child, index) =>
+          visit(child, `${path}.items[${index}]`, depth + 1),
+        );
+      else visit(value[key], `${path}.${key}`, depth + 1);
+    }
     for (const key of ["allOf", "anyOf", "oneOf", "prefixItems"])
       if (Array.isArray(value[key]))
         value[key].forEach((child, index) =>
@@ -117,6 +136,16 @@ export function validateMcpInputSchema(
     errors: Object.freeze(errors),
   });
 }
+
+const SCHEMA_TYPES = new Set([
+  "array",
+  "boolean",
+  "integer",
+  "null",
+  "number",
+  "object",
+  "string",
+]);
 
 /** Only the explicit task API advertises Tasks. Ordinary calls cannot silently
  * create an untracked background operation, and no input/sampling authority is

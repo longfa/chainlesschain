@@ -59,6 +59,19 @@ function loadStatusLineConfig({ cwd = process.cwd(), settingsFile } = {}) {
   return cfg && cfg.command ? cfg : null;
 }
 
+function loadStatusLineContextThreshold({
+  cwd = process.cwd(),
+  settingsFile,
+} = {}) {
+  let threshold;
+  for (const data of _deps.readSettings(cwd, settingsFile)) {
+    const value = data?.statusLine?.contextUsageThreshold;
+    if (typeof value === "number" && value >= 0 && value <= 100)
+      threshold = value;
+  }
+  return threshold;
+}
+
 /**
  * Build the JSON context handed to the status-line command on stdin (and used
  * by the built-in renderer). Carries context-window usage so a custom command —
@@ -77,12 +90,16 @@ function buildContext({
   taskState = null,
   approvalsPending = 0,
   mcpErrors = 0,
+  scheduleEndsAt,
   contextUsageThreshold,
 } = {}) {
   const used = Math.max(0, Number(usedTokens) || 0);
   const window = Math.max(0, Number(contextWindow) || 0);
   const pct = window > 0 ? Math.min(100, Math.round((used / window) * 100)) : 0;
-  const threshold = Math.max(0, Math.min(100, Number(contextUsageThreshold) || 0));
+  const threshold = Math.max(
+    0,
+    Math.min(100, Number(contextUsageThreshold) || 0),
+  );
   const context = { used_tokens: used, window, pct };
   if (contextUsageThreshold !== undefined) {
     context.visible = window > 0 && pct >= threshold;
@@ -101,11 +118,17 @@ function buildContext({
     context,
     turn: Math.max(0, Number(turn) || 0),
   };
-  if (taskState || Number(approvalsPending) > 0 || Number(mcpErrors) > 0) {
+  if (
+    taskState ||
+    Number(approvalsPending) > 0 ||
+    Number(mcpErrors) > 0 ||
+    scheduleEndsAt
+  ) {
     result.task = {
       state: taskState || null,
       approvals_pending: Math.max(0, Number(approvalsPending) || 0),
       mcp_errors: Math.max(0, Number(mcpErrors) || 0),
+      ...(scheduleEndsAt ? { schedule_ends_at: scheduleEndsAt } : {}),
     };
   }
   return result;
@@ -169,7 +192,7 @@ function renderDefaultStatusLine(context = {}) {
     parts.push(
       `⛁ ${formatTokens(c.used_tokens)}/${formatTokens(c.window)} (${c.pct}%)`,
     );
-  } else if (c.used_tokens > 0) {
+  } else if (c.visible !== false && c.used_tokens > 0) {
     parts.push(`⛁ ${formatTokens(c.used_tokens)}`);
   }
   const task = context.task || {};
@@ -177,6 +200,8 @@ function renderDefaultStatusLine(context = {}) {
   if (task.approvals_pending > 0)
     parts.push(`approvals ${task.approvals_pending}`);
   if (task.mcp_errors > 0) parts.push(`mcp errors ${task.mcp_errors}`);
+  if (task.schedule_ends_at)
+    parts.push(`schedule ends ${task.schedule_ends_at}`);
   if (context.cwd) parts.push(shortenPath(context.cwd));
   if (context.turn) parts.push(`turn ${context.turn}`);
   return parts.join("  ·  ");
@@ -283,6 +308,7 @@ function getStatusLine({
 
 module.exports = {
   loadStatusLineConfig,
+  loadStatusLineContextThreshold,
   buildContext,
   renderStatusLine,
   getStatusLine,

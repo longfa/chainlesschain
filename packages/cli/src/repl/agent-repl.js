@@ -3756,6 +3756,7 @@ async function startAgentReplInWorkspaceOwned(
   // a readline confirm prompt. agent-core's run_shell branch gates
   // MEDIUM/HIGH-risk commands against the session's policy tier
   // (strict / trusted / autopilot).
+  let _renderStatus = null;
   try {
     const { getApprovalGate } =
       await import("../lib/session-core-singletons.js");
@@ -3802,6 +3803,11 @@ async function startAgentReplInWorkspaceOwned(
         const q = (p) => new Promise((res) => rlConfirm.question(p, res));
         const cmd = args?.command ? ` ${args.command}` : "";
         const promise = (async () => {
+          const status = _renderStatus?.({
+            taskState: "waiting",
+            approvalsPending: 1,
+          });
+          if (status) process.stdout.write(status + "\n");
           const res = await questionWithIdleTimeout(
             q,
             chalk.yellow(
@@ -5801,15 +5807,17 @@ async function startAgentReplInWorkspaceOwned(
   let _ctxRequestWindow = null;
   let _turnCount = 0;
   const _costStore = newCostStore(); // running token spend for `/cost`
-  let _renderStatus = null;
   try {
     const slm = await import("../lib/status-line.js");
     const _sl = slm.default || slm;
     const _slCfg = _sl.loadStatusLineConfig({ cwd: process.cwd() });
+    const _statusThreshold = _sl.loadStatusLineContextThreshold({
+      cwd: process.cwd(),
+    });
     _customStatus = !!_slCfg;
     const _slDisabled = _sl.isStatusLineDisabled({ cwd: process.cwd() });
     if (_slDisabled) _statusLineEnabled = false;
-    _renderStatus = () => {
+    _renderStatus = (taskStatus = {}) => {
       if (!_statusLineEnabled) return null;
       try {
         const context = _sl.buildContext({
@@ -5821,6 +5829,8 @@ async function startAgentReplInWorkspaceOwned(
           contextWindow:
             _ctxRequestWindow ?? getContextWindow(_curModel, provider, options),
           turn: _turnCount,
+          contextUsageThreshold: _statusThreshold,
+          ...taskStatus,
         });
         // Custom command wins; otherwise the built-in context-usage render.
         if (_slCfg) {
@@ -10165,6 +10175,10 @@ async function startAgentReplInWorkspaceOwned(
         sideEffects: _replSideEffects,
         denialLog: _recentDenials,
         persistRecentDenials: true,
+        onModelDecision:
+          useJsonl && sessionId
+            ? (event) => appendEvent(sessionId, "model_decision", event)
+            : undefined,
         permissionMode: _sessionTier,
         // Seed the subagent-contract CEILING with the interactive session's
         // CURRENT approval tier (mapped back to a permission mode) so a spawned

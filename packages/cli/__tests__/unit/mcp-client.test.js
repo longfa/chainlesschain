@@ -77,6 +77,29 @@ describe("MCP Client", () => {
       expect(client.servers.size).toBe(0);
     });
 
+    it("keeps shared transports connected until both subagents release", async () => {
+      const kill = vi.fn();
+      client.servers.set("shared", {
+        state: ServerState.CONNECTED,
+        process: { kill },
+      });
+      const releaseFirst = client.retainSubagentTransport();
+      const releaseLast = client.retainSubagentTransport();
+      const shutdown = client.disconnectAll();
+      const repeatedShutdown = client.disconnectAll();
+
+      await releaseFirst();
+      await releaseFirst();
+      expect(client.servers.has("shared")).toBe(true);
+      expect(kill).not.toHaveBeenCalled();
+      expect(() => client.retainSubagentTransport()).toThrow(/shutting down/);
+
+      await releaseLast();
+      await Promise.all([shutdown, repeatedShutdown]);
+      expect(client.servers.size).toBe(0);
+      expect(kill).toHaveBeenCalledTimes(1);
+    });
+
     it("should handle _handleMessage for response", () => {
       client.servers.set("test", {
         state: ServerState.CONNECTED,

@@ -36,6 +36,7 @@ import { BUILT_IN_PROVIDERS } from "../lib/llm-providers.js";
 import { throwIfAborted } from "../lib/abort-utils.js";
 import { isTerminalModelFailure } from "../lib/model-failure-policy.js";
 import { captureAgentEvolutionIngress } from "../lib/evolution/agent-evolution-ingress.js";
+import { rememberModelFallback } from "../lib/model-decision.js";
 
 // Only this module can register a canonical transport. Function properties,
 // wrappers and proxies cannot confer this authority.
@@ -51,6 +52,10 @@ export function captureCanonicalFallbackChatFn(value, evolutionIngress) {
     );
   }
   return owned.ingress === ingress ? value : owned.bind(ingress);
+}
+
+export function isCanonicalFallbackChatFn(value) {
+  return CANONICAL_FALLBACKS.has(value);
 }
 
 // Claude Code caps the fallback chain at 3 backups; mirror that here so a
@@ -397,7 +402,12 @@ export function makeFallbackChatFn(opts = {}) {
             : { ...options, model: target.model };
           try {
             throwIfAborted(signal);
-            return await baseChatFn(messages, hopOptions);
+            return rememberModelFallback(
+              await baseChatFn(messages, hopOptions),
+              options,
+              hopOptions,
+              "configured-fallback",
+            );
           } catch (nextErr) {
             err = nextErr;
           }

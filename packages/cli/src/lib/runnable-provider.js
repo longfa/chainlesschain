@@ -16,6 +16,7 @@
 import { BUILT_IN_PROVIDERS } from "./llm-providers.js";
 import { selectModelForTask, TaskType } from "./task-model-selector.js";
 import { isTerminalModelFailure } from "./model-failure-policy.js";
+import { rememberModelFallback } from "./model-decision.js";
 
 function nonEmpty(v) {
   return typeof v === "string" && v.trim().length > 0;
@@ -194,6 +195,15 @@ export function makeRunnableProviderFallback(
   const stickyFrom = new Set();
 
   return async function runnableProviderFallback(messages, options = {}) {
+    const requested = options;
+    let modelReason = null;
+    const run = async (resolved, reason = modelReason) =>
+      rememberModelFallback(
+        await chatFn(messages, resolved),
+        requested,
+        resolved,
+        reason,
+      );
     // PROACTIVE heal #1 — a FOREIGN MODEL on an otherwise-correct provider: a
     // corrupted config left e.g. model:"haiku" on provider:"volcengine", which
     // the ark API 404s ("model not found"). Keep the provider + key + baseUrl;
@@ -213,6 +223,7 @@ export function makeRunnableProviderFallback(
           toModel: def,
         });
         options = { ...options, model: def };
+        modelReason = "model-mismatch";
       }
     }
     // PROACTIVE heal #2 — a MISLABELED config (provider disagrees with the
@@ -230,7 +241,7 @@ export function makeRunnableProviderFallback(
       if (pre && pre.reason === "baseurl-mismatch") {
         stickyFrom.add(options.provider);
         notify({ from: options.provider, to: pre.to, reason: pre.reason });
-        return await chatFn(messages, { ...options, ...pre.override });
+        return await run({ ...options, ...pre.override }, pre.reason);
       }
     }
     // Known-bad provider: skip the wasted failed attempt and route directly.
@@ -238,19 +249,19 @@ export function makeRunnableProviderFallback(
       const fb = computeFallback(options);
       if (fb) {
         notify({ from: options.provider, to: fb.to, reason: fb.reason });
-        return await chatFn(messages, { ...options, ...fb.override });
+        return await run({ ...options, ...fb.override }, fb.reason);
       }
       // Resolution no longer available — fall through to a normal attempt.
     }
     try {
-      return await chatFn(messages, options);
+      return await run(options);
     } catch (err) {
       if (!isAuthError(err)) throw err;
       const fb = computeFallback(options);
       if (!fb) throw err; // nowhere runnable — surface the clear error
       stickyFrom.add(options.provider);
       notify({ from: options.provider, to: fb.to, reason: fb.reason });
-      return await chatFn(messages, { ...options, ...fb.override });
+      return await run({ ...options, ...fb.override }, fb.reason);
     }
   };
 }

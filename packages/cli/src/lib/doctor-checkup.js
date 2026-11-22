@@ -774,6 +774,27 @@ async function backgroundSection(_opts, deps) {
   } catch (err) {
     checks.push(failedCheck("bg-lost", "Background agents", err));
   }
+  try {
+    const { listPersistedBackgroundShellTasks } =
+      await import("../harness/background-task-manager.js");
+    const unresolved = listPersistedBackgroundShellTasks().filter(
+      (task) => task.orphanRisk,
+    );
+    if (unresolved.length > 0) {
+      checks.push(
+        check(
+          "bg-shell-stop-unconfirmed",
+          "Background shell stops",
+          CHECK_LEVELS.WARN,
+          `${unresolved.length} task(s) have an unconfirmed stop; see orphanRisk in cc tasks --json`,
+        ),
+      );
+    }
+  } catch (err) {
+    checks.push(
+      failedCheck("bg-shell-stop-unconfirmed", "Background shell stops", err),
+    );
+  }
   return { id: "background", title: "Background agents", checks };
 }
 

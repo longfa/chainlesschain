@@ -297,6 +297,7 @@ export class SubAgentContext {
 
     // LLM options for chatWithTools
     this._llmOptions = options.llmOptions || {};
+    this.modelDecision = this._llmOptions.modelDecision || null;
 
     // Optional progress callback for streaming events to consumers
     this._onProgress = options.onProgress || null;
@@ -448,7 +449,12 @@ export class SubAgentContext {
     }
 
     this._running = true;
+    const releaseTransports = [];
     try {
+      for (const client of new Set([this._mcpHostClient, this._mcpClient])) {
+        if (typeof client?.retainSubagentTransport === "function")
+          releaseTransports.push(client.retainSubagentTransport());
+      }
       this._activateAbortLinks(loopOptions.signal || null);
 
       // If worktree isolation is enabled, wrap execution in isolated worktree.
@@ -477,6 +483,7 @@ export class SubAgentContext {
       this._running = false;
       this._deactivateAbortLinks();
       this._releaseSessionBudget();
+      await Promise.all(releaseTransports.map((release) => release()));
     }
   }
 
@@ -690,6 +697,14 @@ export class SubAgentContext {
     if (Array.isArray(toolSelection.enabledToolNames))
       options.exactToolNames = true;
     options.subAgentContract = this.subAgentContract;
+    options.agentId = this.id;
+    options.parentAgentId =
+      this._llmOptions.decisionParentTaskId || this.parentId || null;
+    const onModelDecision = options.onModelDecision;
+    options.onModelDecision = (event) => {
+      this.modelDecision = event.modelDecision;
+      onModelDecision?.(event);
+    };
     if (!this._memoryEnabled || this.subAgentContract?.memory === false) {
       // Apply the same tighten-only contract to canonical recall after overrides.
       options.contextMemoryRecall = false;
@@ -1599,6 +1614,7 @@ export class SubAgentContext {
       iterationCount: this._iterationCount,
       createdAt: this.createdAt,
       completedAt: this.completedAt,
+      ...(this.modelDecision ? { modelDecision: this.modelDecision } : {}),
       recoveryBinding: this.recoveryBinding(),
       worktree: this._worktreePath
         ? { path: this._worktreePath, branch: this._worktreeBranch }

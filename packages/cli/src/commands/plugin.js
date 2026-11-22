@@ -1883,6 +1883,7 @@ export function registerPluginCommand(program) {
       let remoteArtifacts = null;
       let archiveSourceAuthority = null;
       let commandSourceAuthority = null;
+      let installCommand = null;
       let registryResolutionAuthority = null;
       const registryUrls = normalizeRegistryUrls(options.registry);
       const { isRemoteSource, resolveRemoteSource } =
@@ -2019,6 +2020,7 @@ export function registerPluginCommand(program) {
             marketplacePreflight,
           );
           installSource = resolved.source;
+          installCommand = resolved.installCommand || null;
           archiveSourceAuthority = resolved.archiveAuthority || null;
           commandSourceAuthority = resolved.commandAuthority || null;
           registryResolutionAuthority =
@@ -2063,6 +2065,16 @@ export function registerPluginCommand(program) {
           }
         } catch (err) {
           logger.error(`Registry resolution failed: ${err.message}`);
+          if (options.json && (err.installCommand || installCommand)) {
+            console.log(
+              JSON.stringify({
+                error: { code: err.code || "CC_PLUGIN_INSTALL_FAILED" },
+                installCommand: normalizeInstallCommandResult(
+                  err.installCommand || installCommand,
+                ),
+              }),
+            );
+          }
           process.exitCode = 1;
           return;
         }
@@ -2226,7 +2238,7 @@ export function registerPluginCommand(program) {
                 marketplaceImpact,
                 marketplaceAuthorityPersisted,
                 installCommand: normalizeInstallCommandResult(
-                  res.installCommand,
+                  res.installCommand || installCommand,
                 ),
                 marketplaceCleanupPending: lifecycleCleanupPending,
                 cleanupPending:
@@ -2304,6 +2316,16 @@ export function registerPluginCommand(program) {
           }
         }
         logger.error(`Install failed: ${err.message}${recoveryNote}`);
+        if (options.json && (err.installCommand || installCommand)) {
+          console.log(
+            JSON.stringify({
+              error: { code: err.code || "CC_PLUGIN_INSTALL_FAILED" },
+              installCommand: normalizeInstallCommandResult(
+                err.installCommand || installCommand,
+              ),
+            }),
+          );
+        }
         process.exitCode = 1;
       } finally {
         cleanupRegistryRemoteArtifacts(remoteArtifacts);
@@ -3661,6 +3683,7 @@ export function registerPluginCommand(program) {
       let remoteArtifacts = null;
       let archiveSourceAuthority = null;
       let commandSourceAuthority = null;
+      let installCommand = null;
       let registryResolutionAuthority = null;
       const registryUrls = normalizeRegistryUrls(options.registry);
       const { isRemoteSource, resolveRemoteSource } =
@@ -3813,6 +3836,7 @@ export function registerPluginCommand(program) {
             marketplacePreflight,
           );
           installSource = resolved.source;
+          installCommand = resolved.installCommand || null;
           archiveSourceAuthority = resolved.archiveAuthority || null;
           commandSourceAuthority = resolved.commandAuthority || null;
           registryResolutionAuthority =
@@ -3857,6 +3881,16 @@ export function registerPluginCommand(program) {
           }
         } catch (err) {
           logger.error(`Registry resolution failed: ${err.message}`);
+          if (options.json && (err.installCommand || installCommand)) {
+            console.log(
+              JSON.stringify({
+                error: { code: err.code || "CC_PLUGIN_UPGRADE_FAILED" },
+                installCommand: normalizeInstallCommandResult(
+                  err.installCommand || installCommand,
+                ),
+              }),
+            );
+          }
           process.exitCode = 1;
           return;
         }
@@ -4055,7 +4089,7 @@ export function registerPluginCommand(program) {
                 marketplaceImpact,
                 marketplaceAuthorityPersisted,
                 installCommand: normalizeInstallCommandResult(
-                  res.installCommand,
+                  res.installCommand || installCommand,
                 ),
                 capabilities: upgradeNotice,
                 capabilitiesGranted,
@@ -4133,6 +4167,16 @@ export function registerPluginCommand(program) {
           }
         }
         logger.error(`Upgrade failed: ${err.message}${recoveryNote}`);
+        if (options.json && (err.installCommand || installCommand)) {
+          console.log(
+            JSON.stringify({
+              error: { code: err.code || "CC_PLUGIN_UPGRADE_FAILED" },
+              installCommand: normalizeInstallCommandResult(
+                err.installCommand || installCommand,
+              ),
+            }),
+          );
+        }
         process.exitCode = 1;
       } finally {
         cleanupRegistryRemoteArtifacts(remoteArtifacts);
