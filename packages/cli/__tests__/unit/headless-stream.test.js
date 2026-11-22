@@ -20,7 +20,7 @@ import { TURN_BINDING_EVENT } from "../../src/lib/turn-binding-store.js";
 import { currentHostHooksV2WorkspaceRoot } from "../../src/lib/hooks-v2-workspace-context.js";
 import { HostResourceBudget } from "../../src/lib/host-resource-budget.js";
 import { createPermissionRulesProvider } from "../../src/lib/permission-authority.js";
-import { getPlanModeManager } from "../../src/lib/plan-mode.js";
+import { PlanModeManager } from "../../src/lib/plan-mode.js";
 import { prepareCanonicalProviderContext } from "../../src/lib/context-memory-kernel/provider-context.js";
 import { SideEffectLedger } from "../../src/lib/side-effect-ledger.js";
 import {
@@ -1969,7 +1969,7 @@ describe("runAgentHeadlessStream — custom slash-command macros (panel parity)"
       const ledgerEvents = [];
       const effectSnapshots = [];
       const effects = new SideEffectLedger();
-      const manager = getPlanModeManager();
+      const manager = new PlanModeManager();
       const startPlan = vi
         .spyOn(manager, "startPlanItemForTool")
         .mockImplementation((_tool, context) => ({
@@ -2029,6 +2029,7 @@ describe("runAgentHeadlessStream — custom slash-command macros (panel parity)"
         yield { type: "run-ended", reason: "complete" };
       };
       const deps = baseDeps({
+        planManager: manager,
         agentLoop,
         input: input({ type: "user", text: "go" }),
         sessionExists: () => false,
