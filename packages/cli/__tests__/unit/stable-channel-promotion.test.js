@@ -69,13 +69,13 @@ describe("stable native CLI channel promotion", () => {
     const candidate = manifest("1.2.4", newCommit);
 
     expect(resolveStableManifestSigningIdentity(current)).toEqual({
-      repository: "chainlesschain/chainlesschain",
+      repository: "longfa/chainlesschain",
       version: "1.2.3",
       tag: "cli-v1.2.3",
       ref: "refs/tags/cli-v1.2.3",
       commit: oldCommit,
       identity:
-        "https://github.com/chainlesschain/chainlesschain/.github/workflows/cli-native-release.yml@refs/tags/cli-v1.2.3",
+        "https://github.com/longfa/chainlesschain/.github/workflows/cli-native-release.yml@refs/tags/cli-v1.2.3",
     });
     expect(resolveStableManifestSigningIdentity(candidate)).toMatchObject({
       tag: "cli-v1.2.4",

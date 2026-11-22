@@ -18,7 +18,7 @@ import {
 } from "../../scripts/verify-native-release-readback.mjs";
 
 const directories = [];
-const REPOSITORY = "chainlesschain/chainlesschain";
+const REPOSITORY = "longfa/chainlesschain";
 const VERSION = "1.2.3";
 const TAG = `cli-v${VERSION}`;
 const COMMIT = "0123456789abcdef0123456789abcdef01234567";
