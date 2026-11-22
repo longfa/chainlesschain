@@ -82,10 +82,30 @@ describe("session persistence failure", () => {
     });
 
     const unrelated = Object.assign(new Error("permission"), {
-      code: "EACCES",
+      code: "CC_PERMISSION_DENIED",
     });
     expect(createSessionPersistenceFailure(unrelated)).toBe(unrelated);
   });
+
+  it.each(["EPERM", "EACCES"])(
+    "classifies %s as a non-retryable storage failure",
+    (code) => {
+      const cause = Object.assign(new Error("private storage path"), { code });
+      const error = createSessionPersistenceFailure(cause, {
+        operation: "transcript-append",
+      });
+
+      expect(projectSessionPersistenceFailure(error)).toMatchObject({
+        fs_code: code,
+        operation: "transcript-append",
+        commit_state: "unknown",
+        retryable: false,
+      });
+      expect(
+        JSON.stringify(projectSessionPersistenceFailure(error)),
+      ).not.toContain(cause.message);
+    },
+  );
 
   it("finds a storage code through a bounded domain cause chain", () => {
     const disk = Object.assign(new Error("private disk detail"), {
