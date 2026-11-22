@@ -1,8 +1,8 @@
 # ChainlessChain IDE Bridge (JetBrains)
 
-JetBrains **0.4.210** is the release candidate and pairs with candidate CLI **0.166.160**. Public baseline remains JetBrains **0.4.209** with CLI **0.166.159**. Marketplace publication occurs only after the exact host, build and publish gates pass.
+Plugin **0.4.211** is the release candidate and pairs with CLI **0.166.161**. Public JetBrains **0.4.209** recommends CLI **0.166.159**. Marketplace publication requires the exact host and build gates.
 
-Install the candidate CLI with `npm i -g chainlesschain@0.166.160 --registry https://registry.npmjs.org` after its OIDC publication, restart the IDE, and verify `cc --version`. No new PC/mobile installer is included.
+Install the CLI recommended by your installed plugin. Restart the IDE and verify `cc --version`.
 
 ## Current uploaded release 0.4.209 / CLI 0.166.159 (Marketplace pending)
 
@@ -318,9 +318,9 @@ See the [verified publication evidence](https://github.com/longfa/chainlesschain
 
 ## Release compatibility
 
-Plugin **0.4.210** is the current release candidate and recommends `chainlesschain@0.166.160`; publication waits for the exact host and build gates.
+Plugin **0.4.211** is the current release candidate and recommends `chainlesschain@0.166.161`. The model menu reads the online LK catalog through this CLI. It includes GPT-6.2 Sol and GPT-6.2 Astra in its offline catalog.
 
-Install the paired CLI with `npm i -g chainlesschain@0.166.160 --registry https://registry.npmjs.org`. Goal transfer and native Graph features require matching desktop support and explicit native authorization. Model-task improvement and automatic promotion remain unverified.
+Once the paired CLI is public, install it with `npm i -g chainlesschain@0.166.161 --registry https://registry.npmjs.org`. Goal transfer and native Graph features require matching desktop support and explicit native authorization.
 
 ## Previous candidates and development notes
 
