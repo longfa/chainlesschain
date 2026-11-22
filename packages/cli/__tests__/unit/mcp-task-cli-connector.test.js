@@ -36,6 +36,9 @@ vi.mock("../../src/runtime/bootstrap.js", () => ({
 }));
 vi.mock("../../src/lib/settings-loader.cjs", () => ({
   loadManagedSettings: () => ({ settings: {}, file: null }),
+  default: {
+    loadManagedSettings: () => ({ settings: {}, file: null }),
+  },
 }));
 vi.mock("../../src/lib/project-root.cjs", () => ({
   findGitProjectRoot: () => root,
