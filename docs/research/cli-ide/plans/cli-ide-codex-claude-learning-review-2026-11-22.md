@@ -237,6 +237,38 @@ Claude 2.1.330 让子代理的模型回退（fallback）**传导**给它派生�
 
 本轮本地验证包括 `node --check` 覆盖新增和修改的 JavaScript 文件、`cc tasks --json` 的真实命令输出、CLI command manifest 检查，以及 VS Code `package.json` 和本地化文件 JSON 解析。发布前仍需在准确提交上重跑仓库规定的 CLI CI、Strict Sandbox、Native Validation 和 IDE 完整矩阵。
 
+## 当前实际完成情况（代码与验证核对）
+
+下表记录当前工作树对应的真实状态。状态为“部分完成”的任务已经有代码入口，但仍缺少计划中要求的端到端故障注入或真实平台证据，不能按完全验收处理。
+
+| 任务包                        | 当前状态                 | 已落地内容                                                                                                               | 当前证据                                                                                                                  | 仍需补齐                                                                 |
+| ----------------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| 统一 TaskRecord 投影          | **已完成本地实现**       | 新增 `lib/task-record.js`、`commands/tasks.js`，聚合 background shell、MCP、agent、schedule、cowork 和未知来源           | `node src/index.js tasks --json` 已输出 `taskId/source/state/endsAt/waitingOn/stopPath`，CLI startup 与 manifest 检查通过 | 多来源同时运行的长时集成场景                                             |
+| 停止语义                      | **部分完成**             | 后台任务记录 `stop_requested`、`stop_confirmed`、`stop_timeout`，返回 `requested/confirmed/orphanRisk`                   | `background-task-manager.js` 语法检查通过，停止分支已覆盖子进程与超时路径                                                 | 两级子代理、孤儿进程和 doctor 可见性的真实验收                           |
+| 插件安装结果字段              | **部分完成**             | legacy install、unified add、upgrade 的 JSON 结果加入 `installCommand` 字段                                              | `normalizeInstallCommandResult()` 已覆盖 `exitCode/timedOut/signaled/printedToStderr/stderrDigest`                        | 执行 stderr 插件和失败安装的端到端用例                                   |
+| 无人应答拒绝                  | **部分完成**             | 新增 `resolveAssentDecision()`，明确 `interactive-assent/policy-allow/no-answer`                                         | 既有 unattended policy 保持 fail-closed，新增模块语法检查通过                                                             | 非交互 `rm` 负向用例及非零退出码记录                                     |
+| MCP server 引用计数           | **部分完成**             | 新增 `McpServerHandle`、`McpServerHandleRegistry`，MCP durable runtime 注册任务来源                                      | 两个 holder 的手动验证显示首个释放不 shutdown，最后释放才 shutdown                                                        | 将句柄接入所有实际 MCPClient transport 的共享生命周期                    |
+| 计划任务 `endsAt` 与到期处理  | **已完成本地投影**       | schedule adapter 映射 `expiresAt/nextAt`，过期任务投影为 `expired`                                                       | `cc tasks --json` 实际读回了 `schedule/expired/endsAt` 记录                                                               | 状态栏真实 UI 截图或完整调度回归矩阵                                     |
+| 审批后权限档位随会话恢复      | **部分完成**             | 新增 permission profile digest，并将 digest 加入 agent approval authority snapshot                                       | `permission-profile.js` 与 agent-core 语法检查通过                                                                        | journal 持久化、恢复和旧 turn 拒绝的完整回归                             |
+| headless 落盘失败退出码       | **已有实现，待本轮复验** | 现有 headless runner 已将 persistence failure 映射为非零退出码并保持 JSON envelope                                       | 源码已有 `persistenceFailure/sessionPersistenceCode` 分支                                                                 | 满盘、只读目录、EPERM 故障注入                                           |
+| 状态栏任务字段                | **已完成本地实现**       | 状态栏支持任务状态、审批数、MCP 错误数和上下文阈值                                                                       | status-line 手动验证确认默认上下文结构兼容，阈值低于设定值时隐藏上下文读数                                                | REPL 真实等待审批场景                                                    |
+| VS Code 会话分叉与工作流地图  | **部分完成**             | 新增 `sessions.fork`、`workflows.map` 命令和 `contextUsageThreshold` 配置                                                | VS Code package JSON、NLS、扩展语法和 39 项 Node 测试通过                                                                 | 真实会话分叉互不覆盖及 workflow map 与 CLI 投影一致性                    |
+| runner 生命周期指标           | **部分完成**             | 新增 `RunnerLifecycleMetrics`，提供 order→registered→first-session 计时和钩子并发上限                                    | 模块手动验证返回两段耗时和 queue 状态                                                                                     | 接入 remote/self-hosted runner 与 `cc status --json`                     |
+| MCP inputSchema 与 LSP 健壮性 | **部分完成**             | 新增 schema 大小、深度、类型和字段校验，MCP 工具目录发现阶段提前拒绝非法 schema；LSP 已复用现有并发启动与 readiness 等待 | 合法/非法 schema 手动验证通过，MCP client 语法检查通过                                                                    | 会话文件大小不增长、LSP 冷启动排队的故障注入                             |
+| 模型回退向子代理传导          | **部分完成**             | 新增父子 `modelDecision` 继承和事件结构，TaskRecord 可携带决策                                                           | `model-decision.js` 语法检查通过                                                                                          | 接入 task journal、task-model-selector、子代理和 compaction 的同源决策链 |
+
+### 验证结果汇总
+
+| 验证项                       | 结果       | 说明                                                                               |
+| ---------------------------- | ---------- | ---------------------------------------------------------------------------------- |
+| CLI command manifest         | **通过**   | `npm run commands:manifest:check`                                                  |
+| CLI startup SLO              | **通过**   | `npm run startup:check` 的 version、root-help、command-help、quick-status 均通过   |
+| CLI/扩展 JavaScript 语法     | **通过**   | 新增和修改文件全部 `node --check` 通过                                             |
+| VS Code 扩展 Node 测试       | **通过**   | 39 个测试通过                                                                      |
+| Playwright settings UI smoke | **未完成** | 本机缺少 Chromium 浏览器可执行文件                                                 |
+| CLI Vitest 全量矩阵          | **未完成** | 当前环境没有可用的 Vitest 二进制，需在 CI 依赖环境执行                             |
+| 发布门禁                     | **未完成** | 必须在最终发布提交上通过 CLI CI、CLI Strict Sandbox、Native Validation 和 IDE 矩阵 |
+
 ## 当前公开版本与既有边界（沿用 11-21 回执，未重新发布）
 
 | 包        | 版本        | 公开状态                   | 精确标签                 |
