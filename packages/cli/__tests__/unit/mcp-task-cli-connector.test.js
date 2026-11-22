@@ -7,15 +7,16 @@ import {
   it,
   vi,
 } from "vitest";
-import { mkdtempSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { randomUUID } from "node:crypto";
 import { Command } from "commander";
 
-const root = vi.hoisted(() =>
-  mkdtempSync(join(tmpdir(), "cc-task-cli-connector-")),
+const root = vi.hoisted(
+  () =>
+    `${process.env.TMPDIR || process.env.TEMP || process.env.TMP || "/tmp"}/cc-task-cli-connector-${Date.now()}-${Math.random().toString(16).slice(2)}`,
 );
+mkdirSync(root, { recursive: true });
 const controls = vi.hoisted(() => ({
   databaseAvailable: true,
   configured: true,
