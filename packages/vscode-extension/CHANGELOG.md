@@ -1,5 +1,11 @@
 # Changelog — ChainlessChain IDE Bridge (VS Code)
 
+## [0.37.195] - CLI 0.166.160 pairing (candidate, 2026-11-22)
+
+- Add session fork and workflow-map commands backed by the existing session workbench.
+- Add configurable context usage thresholding and pair the extension with CLI `0.166.160`.
+- Publish only after the exact VS Code host, browser, Remote SSH, packaging and Open VSX gates pass.
+
 ## [0.37.194] - CLI 0.166.159 pairing (candidate, 2026-11-21)
 
 - Pair the DMM-09 business acceptance drill with CLI `0.166.159`.

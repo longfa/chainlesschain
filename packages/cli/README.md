@@ -1,8 +1,12 @@
 # chainlesschain CLI
 
-Documentation checked 2026-11-21 against release source `2aa00100a73f9b170b719c7f79e986470643485f`; public CLI is **0.166.159**, paired with public Open VSX **0.37.194** and JetBrains **0.4.209** upload (Marketplace listing pending). [Current installation and limits](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-19-157.html).
+Documentation checked 2026-11-22 against the release candidate source; candidate CLI is **0.166.160**, paired with candidate Open VSX **0.37.195** and JetBrains **0.4.210**. Public baseline remains CLI **0.166.159**, Open VSX **0.37.194** and JetBrains **0.4.209** pending Marketplace listing. [Current installation and limits](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-19-157.html).
 
 Command-line interface for installing, configuring, and managing [ChainlessChain](https://www.chainlesschain.com), including the coding agent, governed tools, sessions, memory, and IDE integrations.
+
+## Release candidate CLI 0.166.160 (2026-11-22)
+
+CLI **0.166.160** contains the unified task lifecycle and CLI/IDE review implementation. It is unpublished until the exact-source CLI CI, Strict Sandbox, Native Validation and OIDC publication workflows pass. The paired IDE candidates are Open VSX **0.37.195** and JetBrains **0.4.210**.
 
 ## Public CLI 0.166.159 (2026-11-21)
 

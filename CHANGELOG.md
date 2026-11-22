@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added - cc CLI 0.166.160 and IDE pairing (candidate, 2026-11-22)
+
+- Add the unified task projection, lifecycle stop receipts, structured plugin installation outcomes, MCP schema admission and status-line task fields from the 2026-11-22 Codex / Claude Code review.
+- Add VS Code session fork and workflow-map commands with the 0.37.195 pairing, and update JetBrains to 0.4.210.
+- Publish only after the exact commit passes CLI CI, CLI Strict Sandbox, Native Validation, VS Code host/browser/Remote SSH and JetBrains host/build gates.
+
 ### Released - cc CLI 0.166.159 and IDE pairing (2026-11-21)
 
 - Restore macOS 15 for the complete CLI CI and Strict Sandbox matrices. GitHub rejected macOS 14 ARM64 before assigning a runner; earlier macOS 15 attempts were cancelled by superseding branch runs.

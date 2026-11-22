@@ -4,7 +4,11 @@ ChainlessChain agent workspace for VS Code-compatible editors with streaming cha
 
 ## Current public pairing
 
-Version **0.37.194** recommends CLI **`0.166.159`** and pairs with JetBrains **0.4.209** (Marketplace listing pending).
+Candidate version **0.37.195** recommends CLI **`0.166.160`** and pairs with JetBrains **0.4.210**. Public baseline remains VS Code **0.37.194** with CLI **0.166.159**.
+
+## Next release candidate
+
+Source candidate **0.37.195** recommends CLI **0.166.160**. The extension has not been published; CLI 0.166.160 is not yet public.
 
 Public Open VSX **0.37.194** pairs with public CLI **0.166.159**. Workflow [`44852489617`](https://github.com/chainlesschain/chainlesschain/actions/runs/44852489617) passed the exact VS Code host, browser, Remote SSH, packaging and Open VSX gates, and public API readback confirms the downloadable verified extension. JetBrains **0.4.209** passed all host/build/publish gates and was uploaded; Marketplace approval/listing is still pending. Older releases below are historical pairings.
 

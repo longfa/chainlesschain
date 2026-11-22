@@ -1,8 +1,8 @@
 # ChainlessChain IDE Bridge (JetBrains)
 
-JetBrains **0.4.209** was uploaded successfully and pairs with public CLI **0.166.159**. Workflow [`44852489659`](https://github.com/chainlesschain/chainlesschain/actions/runs/44852489659) passed all Ubuntu, Windows and macOS host matrices, browser/build gates and the publish job. Marketplace approval/listing is pending; the public updates API has not listed 0.4.209 yet.
+JetBrains **0.4.210** is the release candidate and pairs with candidate CLI **0.166.160**. Public baseline remains JetBrains **0.4.209** with CLI **0.166.159**. Marketplace publication occurs only after the exact host, build and publish gates pass.
 
-Install `npm i -g chainlesschain@0.166.159 --registry https://registry.npmjs.org`, restart the IDE, and verify `cc --version`. No new PC/mobile installer is included.
+Install the candidate CLI with `npm i -g chainlesschain@0.166.160 --registry https://registry.npmjs.org` after its OIDC publication, restart the IDE, and verify `cc --version`. No new PC/mobile installer is included.
 
 ## Current uploaded release 0.4.209 / CLI 0.166.159 (Marketplace pending)
 
@@ -318,9 +318,9 @@ See the [verified publication evidence](https://github.com/longfa/chainlesschain
 
 ## Release compatibility
 
-Plugin **0.4.209** is the current release candidate and recommends `chainlesschain@0.166.159`; all release gates and upload passed, while Marketplace approval/listing remains pending.
+Plugin **0.4.210** is the current release candidate and recommends `chainlesschain@0.166.160`; publication waits for the exact host and build gates.
 
-Install the paired public CLI with `npm i -g chainlesschain@0.166.159 --registry https://registry.npmjs.org`. Goal transfer and native Graph features require matching desktop support and explicit native authorization. Model-task improvement and automatic promotion remain unverified.
+Install the paired CLI with `npm i -g chainlesschain@0.166.160 --registry https://registry.npmjs.org`. Goal transfer and native Graph features require matching desktop support and explicit native authorization. Model-task improvement and automatic promotion remain unverified.
 
 ## Previous candidates and development notes
 
