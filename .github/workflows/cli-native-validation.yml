@@ -159,14 +159,14 @@ jobs:
           TMP: ${{ runner.temp }}
         run: |
           set -euo pipefail
-          web_panel_args=()
+          set --
           if [ "$RUNNER_OS" = "Linux" ]; then
-            web_panel_args+=(--skip-web-panel-build)
+            set -- --skip-web-panel-build
           fi
           node packages/cli/bin/chainlesschain.js pack \
             --cwd packages/cli \
             --no-project \
-            "${web_panel_args[@]}" \
+            "$@" \
             --targets "${{ matrix.target }}" \
             --output "native-dist/chainlesschain-${{ matrix.target }}" \
             --update-manifest-url "https://validation.invalid/chainlesschain-update.json" \
