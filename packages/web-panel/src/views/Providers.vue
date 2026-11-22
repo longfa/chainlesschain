@@ -270,6 +270,12 @@
                 :disabled="configSaving || configLoading"
                 :options="lkModelOptions"
               />
+              <a-button :loading="lkCatalogLoading" @click="refreshLkModels"
+                >刷新模型</a-button
+              >
+              <small>{{
+                lkCatalogSource === "live" ? "平台最新目录" : "内置离线目录"
+              }}</small>
             </a-form-item>
             <!-- Provider -->
             <a-form-item v-if="channel !== 'lk'" label="Provider（提供商）">
@@ -456,6 +462,9 @@ const {
   showRestartHint,
   channel,
   lkProtocol,
+  lkCatalogSource,
+  lkCatalogLoading,
+  refreshLkModels,
   lkAddress,
   lkChannel,
   lkModelOptions,

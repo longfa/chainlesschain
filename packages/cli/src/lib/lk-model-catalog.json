@@ -1,7 +1,7 @@
 {
   "schema": "chainlesschain.lk-model-catalog/v1",
-  "sourceUrl": "https://api.vv666.ai/v1/skills/models",
-  "sourceSha256": "2e7a4147fdabbaa90cb5ccc7d74cb6b255c94064d92c3a635628f28330e4a459",
+  "sourceUrl": "https://api.cc888.ai/gongkai/apidoc/moxing-liebiao?domain=chainlesschain.net",
+  "sourceSha256": "4134b79d19600c513b593b2031d2dc3515532a89c942e58ed6a3e8f2f6a75f40",
   "runtimeVerified": false,
   "accountVerified": false,
   "models": [
@@ -34,6 +34,20 @@
       "compatibleProtocols": ["gemini"]
     },
     {
+      "id": "gpt-6.2-astra",
+      "label": "GPT-6.2 astra",
+      "type": "chat",
+      "protocol": "openai",
+      "compatibleProtocols": ["openai", "openai_responses"]
+    },
+    {
+      "id": "gemini-4-neon",
+      "label": "Gemini 4 neon",
+      "type": "chat",
+      "protocol": "gemini",
+      "compatibleProtocols": ["gemini"]
+    },
+    {
       "id": "qwen4-max",
       "label": "Qwen 4 Max",
       "type": "chat",
@@ -46,6 +60,13 @@
       "type": "chat",
       "protocol": "openai",
       "compatibleProtocols": ["openai"]
+    },
+    {
+      "id": "gpt-6.2-sol",
+      "label": "GPT-6.2 sol",
+      "type": "chat",
+      "protocol": "openai",
+      "compatibleProtocols": ["openai", "openai_responses"]
     },
     {
       "id": "gemini-3.8-flash",
@@ -853,6 +874,13 @@
       "compatibleProtocols": ["media"]
     },
     {
+      "id": "kling-v4-flash",
+      "label": "Kling-V4-flash",
+      "type": "video",
+      "protocol": "media",
+      "compatibleProtocols": ["media"]
+    },
+    {
       "id": "wand-vega-video-1.0",
       "label": "Vega Video 1.0",
       "type": "video",
@@ -1385,6 +1413,13 @@
       "compatibleProtocols": ["media"]
     },
     {
+      "id": "gemini-3.8-flash-tts",
+      "label": "Gemini-3.8-TTS",
+      "type": "audio",
+      "protocol": "media",
+      "compatibleProtocols": ["media"]
+    },
+    {
       "id": "music-2.5+",
       "label": "Hailuo Music Generation 2.5+",
       "type": "audio",
@@ -1399,22 +1434,8 @@
       "compatibleProtocols": ["media"]
     },
     {
-      "id": "gemini-3.1-flash-tts-preview",
-      "label": "Gemini-3.1-TTS",
-      "type": "audio",
-      "protocol": "media",
-      "compatibleProtocols": ["media"]
-    },
-    {
       "id": "music-2.5",
       "label": "Hailuo Music Generation 2.5",
-      "type": "audio",
-      "protocol": "media",
-      "compatibleProtocols": ["media"]
-    },
-    {
-      "id": "gemini-2.5-pro-preview-tts",
-      "label": "Gemini-2.5-TTS",
       "type": "audio",
       "protocol": "media",
       "compatibleProtocols": ["media"]

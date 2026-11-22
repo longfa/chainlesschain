@@ -1,5 +1,5 @@
 {
-  "sourceSha256": "9386f80dd0fe1b0e55f735e7a1d93ec92e1d80e2b753540f83aff170283baf45",
+  "sourceSha256": "962500f4173b35171a12d05f1dbbcca07e910b014ec90db4719eb7682c90f03d",
   "channel": {
     "id": "lk",
     "name": "LK API",
@@ -79,6 +79,20 @@
       "compatibleProtocols": ["gemini"]
     },
     {
+      "id": "gpt-6.2-astra",
+      "label": "GPT-6.2 astra",
+      "type": "chat",
+      "protocol": "openai",
+      "compatibleProtocols": ["openai", "openai_responses"]
+    },
+    {
+      "id": "gemini-4-neon",
+      "label": "Gemini 4 neon",
+      "type": "chat",
+      "protocol": "gemini",
+      "compatibleProtocols": ["gemini"]
+    },
+    {
       "id": "qwen4-max",
       "label": "Qwen 4 Max",
       "type": "chat",
@@ -91,6 +105,13 @@
       "type": "chat",
       "protocol": "openai",
       "compatibleProtocols": ["openai"]
+    },
+    {
+      "id": "gpt-6.2-sol",
+      "label": "GPT-6.2 sol",
+      "type": "chat",
+      "protocol": "openai",
+      "compatibleProtocols": ["openai", "openai_responses"]
     },
     {
       "id": "gemini-3.8-flash",
@@ -898,6 +919,13 @@
       "compatibleProtocols": ["media"]
     },
     {
+      "id": "kling-v4-flash",
+      "label": "Kling-V4-flash",
+      "type": "video",
+      "protocol": "media",
+      "compatibleProtocols": ["media"]
+    },
+    {
       "id": "wand-vega-video-1.0",
       "label": "Vega Video 1.0",
       "type": "video",
@@ -1430,6 +1458,13 @@
       "compatibleProtocols": ["media"]
     },
     {
+      "id": "gemini-3.8-flash-tts",
+      "label": "Gemini-3.8-TTS",
+      "type": "audio",
+      "protocol": "media",
+      "compatibleProtocols": ["media"]
+    },
+    {
       "id": "music-2.5+",
       "label": "Hailuo Music Generation 2.5+",
       "type": "audio",
@@ -1444,22 +1479,8 @@
       "compatibleProtocols": ["media"]
     },
     {
-      "id": "gemini-3.1-flash-tts-preview",
-      "label": "Gemini-3.1-TTS",
-      "type": "audio",
-      "protocol": "media",
-      "compatibleProtocols": ["media"]
-    },
-    {
       "id": "music-2.5",
       "label": "Hailuo Music Generation 2.5",
-      "type": "audio",
-      "protocol": "media",
-      "compatibleProtocols": ["media"]
-    },
-    {
-      "id": "gemini-2.5-pro-preview-tts",
-      "label": "Gemini-2.5-TTS",
       "type": "audio",
       "protocol": "media",
       "compatibleProtocols": ["media"]

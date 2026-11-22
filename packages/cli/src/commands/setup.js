@@ -28,11 +28,8 @@ import {
   llmConnectionIdentity,
   readLlmConnection,
 } from "../lib/llm-connection-config.js";
-import {
-  LK_CHANNEL,
-  LK_MODELS,
-  resolveLkConnection,
-} from "../lib/llm-channel-presets.js";
+import { LK_CHANNEL, resolveLkConnection } from "../lib/llm-channel-presets.js";
+import { refreshLkCatalog } from "../lib/lk-catalog.js";
 import {
   assessEvolutionDeploymentReadiness,
   getEvolutionDeploymentStatus,
@@ -175,22 +172,34 @@ async function runSetup(options) {
         value: id,
       })),
     );
-    const selectedModel = await askSelect("Select LK model:", [
-      ...LK_MODELS.filter(
-        (entry) =>
-          entry.type === "chat" && entry.compatibleProtocols.includes(protocol),
-      ).map((entry) => ({
-        name: `${entry.label} (${entry.id})`,
-        value: entry.id,
-      })),
-      { name: "Other model (enter exact ID)", value: "__custom__" },
-    ]);
+    const { source, models } = await refreshLkCatalog();
+    const selectedModel = await askSelect(
+      source === "live"
+        ? "Select LK model:"
+        : "Select LK model (offline catalog):",
+      [
+        ...models
+          .filter(
+            (entry) =>
+              entry.type === "chat" &&
+              entry.compatibleProtocols.includes(protocol),
+          )
+          .map((entry) => ({
+            name: `${entry.label} (${entry.id})`,
+            value: entry.id,
+          })),
+        { name: "Other model (enter exact ID)", value: "__custom__" },
+      ],
+    );
     const model =
       selectedModel === "__custom__"
         ? await askInput("Enter LK model name:")
         : selectedModel;
     if (!model?.trim()) throw new Error("An LK model name is required");
-    channelConnection = resolveLkConnection(protocol, address, { model });
+    channelConnection = resolveLkConnection(protocol, address, {
+      model,
+      models,
+    });
     provider = channelConnection.provider;
   }
   const providerInfo = LLM_PROVIDERS[provider];

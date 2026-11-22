@@ -249,6 +249,11 @@ export function createWsMessageDispatcher(server) {
         "llm-config-get": () => handleLlmConnection(server, id, ws, message),
         "llm-configure": () => handleLlmConnection(server, id, ws, message),
         "llm-account": () => handleLlmAccount(server, id, ws, message),
+        "llm-lk-models": async () => {
+          const { refreshLkCatalog } = await import("../../lib/lk-catalog.js");
+          const catalog = await refreshLkCatalog();
+          server._send(ws, { id, type: "llm-lk-models-result", ...catalog });
+        },
         "slash-command": () => server._handleSlashCommand(id, ws, message),
         "session-answer": () => server._handleSessionAnswer(id, ws, message),
         "approval-grants-list": () =>

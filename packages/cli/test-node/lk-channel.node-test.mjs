@@ -11,6 +11,7 @@ import {
   resolveLkConnection,
 } from "../src/lib/llm-channel-presets.js";
 import { geminiGenerateContentUrl } from "../src/lib/provider-protocol.js";
+import publicCatalog from "../src/lib/lk-public-catalog.cjs";
 
 test("IDE catalogs remain synchronized with the CLI source", () => {
   const output = execFileSync(
@@ -41,6 +42,64 @@ test("catalog preserves exact platform aliases, types and protocols", () => {
     LK_MODELS.find((model) => model.id === "gpt-6.1-sol").compatibleProtocols,
     ["openai", "openai_responses"],
   );
+  for (const id of ["gpt-6.2-sol", "gpt-6.2-astra"])
+    assert.deepEqual(
+      LK_MODELS.find((model) => model.id === id)?.compatibleProtocols,
+      ["openai", "openai_responses"],
+    );
+});
+
+test("LK refresh exposes new models from the public endpoint without a key", async () => {
+  const row = {
+    mingcheng: "gpt-next",
+    zhanshi_mingcheng: "GPT Next",
+    api_xieyi: "openai",
+    jianrong_xieyi: ["openai", "openai_responses"],
+    unrelated_field: "omitted",
+  };
+  const data = { chat: [row], image: [], video: [], audio: [] };
+  const { loadLkCatalog, SOURCE_URL } = publicCatalog;
+  const live = await loadLkCatalog(LK_MODELS, async (url, options) => {
+    assert.equal(url, SOURCE_URL);
+    assert.deepEqual(options.headers, { Accept: "application/json" });
+    assert.equal(options.credentials, "omit");
+    assert.equal(options.redirect, "error");
+    return Response.json({ code: 200, data });
+  });
+  assert.deepEqual(live, {
+    source: "live",
+    models: [
+      {
+        id: "gpt-next",
+        label: "GPT Next",
+        type: "chat",
+        protocol: "openai",
+        compatibleProtocols: ["openai", "openai_responses"],
+      },
+    ],
+  });
+  assert.equal(
+    resolveLkConnection("openai", "primary", {
+      model: "gpt-next",
+      models: live.models,
+    }).model,
+    "gpt-next",
+  );
+  assert.throws(() =>
+    resolveLkConnection("anthropic", "primary", {
+      model: "gpt-next",
+      models: live.models,
+    }),
+  );
+
+  for (const response of [
+    () => new Response("", { status: 503 }),
+    () => Response.json({ code: 200, data: { ...data, chat: [row, row] } }),
+  ]) {
+    const fallback = await loadLkCatalog(LK_MODELS, response);
+    assert.equal(fallback.source, "bundled");
+    assert.equal(fallback.models, LK_MODELS);
+  }
 });
 
 for (const address of ["primary", "backup"]) {

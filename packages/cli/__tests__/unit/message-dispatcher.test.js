@@ -36,6 +36,44 @@ function createServerStub() {
 }
 
 describe("ws message dispatcher", () => {
+  it("returns the LK directory only after WebSocket authentication", async () => {
+    const server = createServerStub();
+    server.token = "fixture-token";
+    server.clients.set("client-1", { authenticated: false });
+    const dispatcher = createWsMessageDispatcher(server);
+    const ws = {};
+    const frame = { type: "llm-lk-models", id: "lk-models" };
+    const fetcher = vi.fn(async () => new Response(null, { status: 503 }));
+    vi.stubGlobal("fetch", fetcher);
+    try {
+      await dispatcher.dispatch("client-1", ws, frame);
+      expect(fetcher).not.toHaveBeenCalled();
+      expect(server._send).toHaveBeenLastCalledWith(
+        ws,
+        expect.objectContaining({
+          id: frame.id,
+          code: "AUTH_REQUIRED",
+        }),
+      );
+      server.clients.set("client-1", { authenticated: true });
+      await dispatcher.dispatch("client-1", ws, frame);
+      expect(fetcher).toHaveBeenCalledOnce();
+      expect(server._send).toHaveBeenLastCalledWith(
+        ws,
+        expect.objectContaining({
+          id: frame.id,
+          type: "llm-lk-models-result",
+          source: "bundled",
+          models: expect.arrayContaining([
+            expect.objectContaining({ id: "gpt-6.2-sol" }),
+          ]),
+        }),
+      );
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
   it("requires authentication before reading or saving an LLM connection", async () => {
     const server = createServerStub();
     server.token = "fixture-token";

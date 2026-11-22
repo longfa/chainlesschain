@@ -110,12 +110,54 @@ describe("LLM core IPC failure privacy", () => {
     expect(JSON.stringify(status)).not.toContain(secret);
   });
 
+  it("refreshes LK models over the fixed public endpoint without a credential", async () => {
+    const fetcher = vi.fn(async () =>
+      Response.json({
+        code: 200,
+        data: {
+          chat: [
+            {
+              mingcheng: "next-model",
+              api_xieyi: "openai",
+              other: "private-field",
+            },
+          ],
+          image: [],
+          video: [],
+          audio: [],
+        },
+      }),
+    );
+    vi.stubGlobal("fetch", fetcher);
+    try {
+      const result = await handlers["llm:lk-models"](null, {
+        baseUrl: "https://foreign.example",
+        apiKey: "draft-key",
+      });
+      expect(fetcher).toHaveBeenCalledOnce();
+      const [url, options] = fetcher.mock.calls[0];
+      expect(url).toMatch(/^https:\/\/api\.cc888\.ai\/gongkai\/apidoc\//);
+      expect(options.headers).toEqual({ Accept: "application/json" });
+      expect(result).toMatchObject({
+        source: "live",
+        models: [{ id: "next-model" }],
+      });
+      expect(JSON.stringify(result)).not.toContain("private-field");
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
   it("queries LK billing with the desktop saved credential and never returns it", async () => {
     const apiKey = "fixture-desktop-account-key";
     getLLMConfig.mockReturnValue({
       getAll: () => ({
         provider: "anthropic",
-        anthropic: { baseURL: "https://api.lk666.ai", model: "claude-opus-5-5", apiKey },
+        anthropic: {
+          baseURL: "https://api.lk666.ai",
+          model: "claude-opus-5-5",
+          apiKey,
+        },
       }),
     });
     const fetcher = vi.fn(

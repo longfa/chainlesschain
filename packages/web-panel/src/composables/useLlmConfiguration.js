@@ -29,6 +29,9 @@ export function useLlmConfiguration(ws, providersStore, message) {
   const channel = ref("lk"),
     lkProtocol = ref("openai"),
     lkAddress = ref("primary");
+  const lkCatalogSource = ref("bundled");
+  const lkCatalogLoading = ref(false);
+  const catalogModels = ref(lkModels);
   const configForm = reactive({
     provider: undefined,
     model: "",
@@ -40,7 +43,7 @@ export function useLlmConfiguration(ws, providersStore, message) {
     allowHttp: false,
   });
   const lkModelOptions = computed(() =>
-    lkModels
+    catalogModels.value
       .filter(
         (model) =>
           model.type === "chat" &&
@@ -122,7 +125,14 @@ export function useLlmConfiguration(ws, providersStore, message) {
       lkProtocol.value,
       lkAddress.value,
       keepModel ? configForm.model : undefined,
+      catalogModels.value,
     );
+    if (
+      !keepModel &&
+      lkModelOptions.value.length &&
+      !lkModelOptions.value.some(({ value }) => value === connection.model)
+    )
+      connection.model = lkModelOptions.value[0].value;
     Object.assign(configForm, connection, {
       apiKey: "",
       visionModel: "",
@@ -170,11 +180,31 @@ export function useLlmConfiguration(ws, providersStore, message) {
       showSnapshot(await readLlmConnection(ws));
       configReady.value = true;
       message.success("配置已加载");
+      void refreshLkModels();
     } catch (error) {
       configReady.value = false;
       message.error(`加载配置失败: ${error.message}`);
     } finally {
       configLoading.value = false;
+    }
+  }
+
+  async function refreshLkModels() {
+    if (lkCatalogLoading.value) return;
+    lkCatalogLoading.value = true;
+    try {
+      const result = await ws.sendRaw({ type: "llm-lk-models" }, 7000);
+      const live =
+        result?.type === "llm-lk-models-result" &&
+        result.source === "live" &&
+        Array.isArray(result.models);
+      catalogModels.value = live ? result.models : lkModels;
+      lkCatalogSource.value = live ? "live" : "bundled";
+    } catch {
+      catalogModels.value = lkModels;
+      lkCatalogSource.value = "bundled";
+    } finally {
+      lkCatalogLoading.value = false;
     }
   }
 
@@ -265,6 +295,9 @@ export function useLlmConfiguration(ws, providersStore, message) {
     showRestartHint,
     channel,
     lkProtocol,
+    lkCatalogSource,
+    lkCatalogLoading,
+    refreshLkModels,
     lkAddress,
     lkChannel,
     lkModelOptions,

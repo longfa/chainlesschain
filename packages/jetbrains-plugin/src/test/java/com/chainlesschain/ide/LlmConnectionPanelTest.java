@@ -7,6 +7,26 @@ import java.awt.Container;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LlmConnectionPanelTest {
+    @Test void lkRefreshPreservesDraftAndReplacesCatalogOptions() throws Exception {
+        SwingUtilities.invokeAndWait(() -> {
+            LlmConnectionPanel panel = new LlmConnectionPanel(key -> key);
+            panel.load(new LlmConfig.Connection("custom", "saved-model", "https://api.vv666.ai/v1", "", true));
+            ((JTextField) find(panel, "llm.model")).setText("draft-model");
+            ((JPasswordField) find(panel, "llm.apiKey")).setText("draft-key");
+            JComboBox<?> models = (JComboBox<?>) find(panel, "llm.lkModel");
+            panel.setLiveLkModels(java.util.List.of(new LkChannelCatalog.Model("next", "Next", "chat", "openai")));
+            assertEquals("draft-model", panel.connection().model);
+            assertEquals("draft-key", panel.apiKey());
+            assertEquals(1, models.getItemCount());
+            assertEquals(-1, models.getSelectedIndex());
+            models.setSelectedIndex(0);
+            assertEquals("next", panel.connection().model);
+            panel.setLiveLkModels(java.util.List.of());
+            assertTrue(models.getItemCount() > 1);
+            assertEquals("next", panel.connection().model);
+        });
+    }
+
     @Test void lkCatalogRoutesExactAliasesAndRetainsSavedCustomAliases() throws Exception {
         SwingUtilities.invokeAndWait(() -> {
             LlmConnectionPanel panel = new LlmConnectionPanel(key -> key);

@@ -2,6 +2,7 @@ package com.chainlesschain.ide.intellij;
 
 import com.chainlesschain.ide.LlmConfig;
 import com.chainlesschain.ide.LlmConnectionPanel;
+import com.chainlesschain.ide.LkChannelCatalog;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
@@ -32,6 +33,7 @@ public final class ConfigureLlmAction extends AnAction {
             init();
             form.onReload(this::reload); form.onSave(this::save); form.onTest(this::test);
             form.onAccount(this::account);
+            form.onRefreshLkModels(this::refreshLkModels);
             reload();
         }
         @Override protected JComponent createCenterPanel() { return form; }
@@ -56,13 +58,23 @@ public final class ConfigureLlmAction extends AnAction {
             background(CcBundle.message("llm.form.loading"), () -> {
                 LlmConfig.Connection saved = LlmConfig.readConnection();
                 java.util.List<LlmConfig.Connection> profiles = LlmConfig.readSavedConnections();
-                return () -> { form.load(saved); form.setSavedConnections(profiles); };
+                java.util.List<LkChannelCatalog.Model> models = LlmConfig.readLiveLkModels();
+                return () -> { form.load(saved); form.setSavedConnections(profiles); form.setLiveLkModels(models); };
+            });
+        }
+        private void refreshLkModels() {
+            background("正在读取 LK 模型目录…", () -> {
+                java.util.List<LkChannelCatalog.Model> models = LlmConfig.readLiveLkModels();
+                return () -> {
+                    form.setLiveLkModels(models);
+                    form.notice(models.isEmpty() ? "当前使用内置 LK 模型目录" : "已刷新 LK 模型目录");
+                };
             });
         }
         private void save() {
             LlmConfig.Connection submitted = form.connection();
             boolean allowHttp = form.allowHttp();
-            String validation = LlmConfig.validateConnection(submitted, allowHttp);
+            String validation = form.validateConnection();
             if (validation != null) { form.notice(validation); return; }
             if (form.needsNewKey()) { form.notice(CcBundle.message("llm.form.newKeyRequired")); return; }
             String key = form.apiKey();

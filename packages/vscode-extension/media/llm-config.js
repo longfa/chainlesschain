@@ -160,17 +160,23 @@ $("protocol").onchange = () => {
 };
 function fillLkModels(selected) {
   const protocol = $("protocol").value;
-  $("lk-model").replaceChildren();
-  for (const model of lkCatalog.models.filter(
+  const options = $("lk-model");
+  const models = lkCatalog.models.filter(
     (m) => m.type === "chat" && m.compatibleProtocols.includes(protocol),
-  )) {
+  );
+  options.replaceChildren();
+  for (const model of models) {
     const option = document.createElement("option");
     option.value = model.id;
     option.textContent = model.label + " (" + model.id + ")";
-    $("lk-model").append(option);
+    options.append(option);
   }
-  $("lk-model").value =
-    selected || lkCatalog.channel.protocols[protocol].defaultModel;
+  const model = selected || lkCatalog.channel.protocols[protocol].defaultModel;
+  options.value = models.some(({ id }) => id === model)
+    ? model
+    : selected
+      ? ""
+      : models[0]?.id || "";
 }
 function applyLk() {
   const protocol = $("protocol").value;
@@ -178,7 +184,8 @@ function applyLk() {
   $("baseUrl").value =
     lkCatalog.channel.addresses[$("lk-address").value] +
     lkCatalog.channel.protocols[protocol].basePath;
-  $("model").value = $("lk-model").value;
+  $("model").value =
+    $("lk-model").value || lkCatalog.channel.protocols[protocol].defaultModel;
   $("visionModel").value = "";
   $("apiKey").value = "";
   dirty = true;
@@ -214,6 +221,7 @@ $("form").onsubmit = (event) => {
   vscode.postMessage({ type: "save", answers });
 };
 $("reload").onclick = () => vscode.postMessage({ type: "reload" });
+$("lk-model-refresh").onclick = () => vscode.postMessage({ type: "lk-models" });
 $("saved-connection").onchange = () => {
   const index = $("saved-connection").value;
   if (index === "" || !savedConnections[index]) return;
@@ -228,6 +236,13 @@ $("account").onclick = () => {
   vscode.postMessage({ type: "account" });
 };
 window.addEventListener("message", ({ data: m }) => {
+  if (m.type === "lk-catalog" && lkCatalog) {
+    lkCatalog = { ...lkCatalog, ...m.catalog };
+    if ($("preset").value === "lk") fillLkModels($("model").value);
+    $("lk-model-source").textContent =
+      lkCatalog.source === "live" ? "平台最新目录" : "内置离线目录";
+    return;
+  }
   if (m.type === "config") {
     current = m.current;
     presets = m.presets;

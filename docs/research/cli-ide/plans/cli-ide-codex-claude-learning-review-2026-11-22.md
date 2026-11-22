@@ -259,6 +259,12 @@ Claude 2.1.330 让子代理的模型回退（fallback）**传导**给它派生�
 - 配置回退和可运行供应商回退都使用成功请求的模型决策。子代理继承实际模型和连接，声明的子代理模型可覆盖继承结果。内置自动压缩可沿用同一连接，持久会话的决策事件仅保存模型、供应商和端点来源摘要。严格计量路径继续遵守现有的每次物理请求结算边界。
 - 本轮目标套件通过 222 项。计划与旧审批 30 项，模型回退与子代理 96 项，Runner 与目标执行位置 60 项，压缩与计量 36 项。`headless-stream-plan.test.js` 包含新进程读取、单次 headless 续跑和篡改拒绝。`execution-location-runner-lifecycle.test.js` 通过独立的 CLI 进程验证 JSON 输出。命令清单、启动 SLO 和源码出站分类检查通过。
 
+### LK 聚合平台目录
+
+- 平台公开目录已返回 `gpt-6.2-sol` 和 `gpt-6.2-astra`，两者支持 Chat Completions 和 Responses。已同步至内置模型快照。[GPT-6.2 Sol 文档](https://chainlesschain.net/apidoc#model/gpt-6.2-sol) · [GPT-6.2 Astra 文档](https://chainlesschain.net/apidoc#model/gpt-6.2-astra)
+- `cc setup`、`cc llm models --provider lk --json`、Web、VS Code、JetBrains 和桌面设置按需获取公开目录。设置页可手动刷新，平台暂时不可达时使用内置目录。目录请求无需 LK Key。真实模型调用和账户权限待按账户验证。
+- 本机 CLI 以 `source: "live"` 读取到 205 个模型及两个 GPT-6.2 ID。CLI、Web、VS Code、JetBrains 与桌面本地测试覆盖离线回退、协议筛选、配置草稿及凭据边界。VS Code 设置页浏览器 smoke 通过。
+
 ### 发布验证进度
 
 已发布 CLI 和 Open VSX 的准确源码提交为 `1dd4f2c6cc7128995312be08738ae5d6d692ad25`。

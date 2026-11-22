@@ -72,9 +72,9 @@
     },
     {
       "path": "packages/cli/scripts/sync-lk-model-catalog.mjs",
-      "digest": "sha256:53467de002f6ecb5b36e6ca167ef5d7af1ee89921d1b147dafd22dc8a664e9d8",
+      "digest": "sha256:ab6d8cb135bd7aec370d72ed8abeb2766540e95048f6de942e05d20bc58aef09",
       "category": "DISTRIBUTION",
-      "rationale": "Read-only authenticated GET to the fixed LK Skills models endpoint; explicit LK_API_KEY or offline input required. Projects only model identities, labels, types and protocols; does not retain Key permissions or credentials. Rejects redirects. No inference, billing mutations or financial admission."
+      "rationale": "Read-only authenticated GET to the fixed LK Skills models endpoint using explicit LK_API_KEY. Public mode delegates to the credential-free LK documentation catalog reader. Both modes also accept offline input and project only model identities, labels, types and protocols. No inference, billing mutations or financial admission."
     },
     {
       "path": "packages/cli/scripts/verify-release-gates.mjs",
@@ -162,9 +162,9 @@
     },
     {
       "path": "packages/cli/src/commands/llm.js",
-      "digest": "sha256:f23acf5da86548fe0c64c87ae4c38a93afc7c0b96fdcc235c26974ecb6e5afc2",
+      "digest": "sha256:56e47753500f780b6d82721af14a410360d0dda503456ea4f80a7ff972168cb5",
       "category": "SERVICE_API",
-      "rationale": "Direct fetch lists Ollama models with GET /api/tags against a configurable base URL; the default is local, but locality or zero cost is not guaranteed for an overridden endpoint. The separate llm test command delegates inference to probeLlmConnection. Reviewed delta adds advertised maximum input capability display and formatting without changing this direct request or introducing another outbound dispatch. This classification does not attest paid admission. 2026-11-15 inspected delta: connections reads sanitized saved metadata locally; account delegates to the canonical LK account adapter for four authenticated read-only Skills GETs on the saved LK origin. CLI flags control bounded days/scope/model/pagination only, not credentials or destination. Actual platform charges and local Token estimates remain separate. Existing configurable Ollama catalog GET and separate inference probe are unchanged. No generation dispatch or new paid admission is introduced by the account command."
+      "rationale": "Direct fetch lists Ollama models with GET /api/tags against a configurable base URL. LK model listing delegates a single credential-free GET to the public documentation catalog reader. Connections reads saved metadata locally; account delegates authenticated read-only Skills queries to the saved LK origin. The separate llm test command delegates inference to probeLlmConnection. This classification does not attest paid admission."
     },
     {
       "path": "packages/cli/src/commands/mtc.js",
@@ -381,6 +381,12 @@
       "digest": "sha256:92035b79b557b2565a59ff6d4be3165572ae88c7b66bc0312192fab5684eb775",
       "category": "SERVICE_API",
       "rationale": "2026-11-15 source inspection: four fresh parallel authenticated GETs to fixed HTTPS api.lk888.ai or api.lk666.ai Skills paths for balance, aggregate usage, paginated billing records and encoded-model pricing. Validates saved LK base paths and bounded options, uses the saved LK Key only, rejects redirects, applies a 12-second abort and 2 MiB decoded response bound, and projects explicit schemas with generic partial errors. Does not submit inference, media tasks, account mutations or automatic retries. The injected request parameter is named fetchImpl so the existing static scanner records this network site. Desktop receives the identical generated copy. Source review establishes no financial admission or per-request Token-to-invoice correspondence."
+    },
+    {
+      "path": "packages/cli/src/lib/lk-public-catalog.cjs",
+      "digest": "sha256:cbc6759c87e418c2990f2838a484a9f0e4f49db31330735bc8a7ffc97901be25",
+      "category": "DISTRIBUTION",
+      "rationale": "Credential-free GET to the fixed HTTPS LK public documentation model catalog. Rejects redirects, bounds the response to 2 MiB and times out after five seconds. Projects only model identity, label, type and protocol metadata. No inference, account mutation or automatic retry."
     },
     {
       "path": "packages/cli/src/lib/llm-connection-probe.js",

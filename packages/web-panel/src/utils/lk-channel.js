@@ -8,7 +8,7 @@ const normalized = (value) =>
     .trim()
     .replace(/\/+$/, "");
 
-export function lkConnection(protocol, address, model) {
+export function lkConnection(protocol, address, model, models = lkModels) {
   const definition =
     Object.hasOwn(lkChannel.protocols, protocol) &&
     lkChannel.protocols[protocol];
@@ -16,7 +16,7 @@ export function lkConnection(protocol, address, model) {
     Object.hasOwn(lkChannel.addresses, address) && lkChannel.addresses[address];
   if (!definition || !origin) throw new Error("请选择有效的 LK 协议与地址");
   const selected = model || definition.defaultModel;
-  const known = lkModels.find((entry) => entry.id === selected);
+  const known = models.find((entry) => entry.id === selected);
   if (
     known &&
     (known.type !== "chat" || !known.compatibleProtocols.includes(protocol))

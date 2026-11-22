@@ -56,6 +56,7 @@ import {
 import { resolveModelCapabilityProfile } from "../lib/model-capabilities.js";
 import { resolveLlmConnection } from "../lib/llm-connection-resolution.js";
 import { queryLkAccount, formatLkAccount } from "../lib/lk-account.js";
+import { refreshLkCatalog } from "../lib/lk-catalog.js";
 
 /**
  * Resolve the effective `cc llm test` target from CLI flags + persisted config.
@@ -279,6 +280,18 @@ export function registerLlmCommand(program) {
     .option("--base-url <url>", "API base URL", "http://localhost:11434")
     .option("--json", "Output as JSON")
     .action(async (options) => {
+      if (options.provider === "lk") {
+        const catalog = await refreshLkCatalog();
+        if (options.json) console.log(JSON.stringify(catalog, null, 2));
+        else {
+          logger.log(
+            `LK models (${catalog.source}, ${catalog.models.length}):`,
+          );
+          for (const model of catalog.models)
+            logger.log(`  ${model.id} (${model.type}, ${model.protocol})`);
+        }
+        return;
+      }
       const spinner = ora("Fetching models...").start();
       try {
         if (options.provider === "ollama") {

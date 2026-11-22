@@ -50,6 +50,44 @@ function setup(initial = {}) {
 }
 
 describe("LK Web configuration", () => {
+  it("refreshes protocol-filtered models without changing a draft", async () => {
+    const { form, ws } = setup();
+    await form.loadConfig();
+    form.configForm.model = "my-draft-model";
+    form.configForm.apiKey = "my-draft-key";
+    ws.sendRaw.mockResolvedValueOnce({
+      type: "llm-lk-models-result",
+      source: "live",
+      models: [
+        {
+          id: "gpt-next",
+          label: "GPT Next",
+          type: "chat",
+          compatibleProtocols: ["openai"],
+        },
+        {
+          id: "claude-next",
+          label: "Claude Next",
+          type: "chat",
+          compatibleProtocols: ["anthropic"],
+        },
+      ],
+    });
+    await form.refreshLkModels();
+    expect(form.lkCatalogSource.value).toBe("live");
+    expect(form.lkModelOptions.value.map(({ value }) => value)).toEqual([
+      "gpt-next",
+    ]);
+    expect(form.configForm).toMatchObject({
+      model: "my-draft-model",
+      apiKey: "my-draft-key",
+    });
+    await form.refreshLkModels();
+    expect(form.lkCatalogSource.value).toBe("bundled");
+    expect(
+      form.lkModelOptions.value.some(({ value }) => value === "gpt-6.2-sol"),
+    ).toBe(true);
+  });
   it("waits for initial connection or reconnection before configuration frames", async () => {
     for (const action of [readLlmConnection, saveLlmConnection]) {
       let connected;

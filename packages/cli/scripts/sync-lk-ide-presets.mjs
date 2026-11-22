@@ -35,6 +35,16 @@ ${LK_MODELS.map((m) => `        new Model(${[m.id, m.label, m.type, m.protocol].
 }
 `;
 const outputs = [
+  ...[
+    "../../../desktop-app-vue/src/main/llm/lk-public-catalog.cjs",
+    "../../vscode-extension/src/vendor/lk-public-catalog.cjs",
+  ].map((path) => [
+    new URL(path, import.meta.url),
+    readFileSync(
+      new URL("../src/lib/lk-public-catalog.cjs", import.meta.url),
+      "utf8",
+    ),
+  ]),
   [
     new URL(
       "../../../desktop-app-vue/src/main/llm/lk-account-api.js",

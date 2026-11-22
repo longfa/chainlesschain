@@ -190,6 +190,7 @@ describe("LLM core IPC authorization", () => {
         "instinct-update",
         "list-models",
         "lk-account",
+        "lk-models",
         "query",
         "query-stream",
         "pause-stream",

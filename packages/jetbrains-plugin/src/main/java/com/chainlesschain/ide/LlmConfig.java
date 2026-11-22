@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.LinkedHashMap;
@@ -237,6 +238,29 @@ public final class LlmConfig {
         return connections;
     }
 
+    public static List<LkChannelCatalog.Model> readLiveLkModels() {
+        CliResult result = runCli(args("llm", "models", "--provider", "lk", "--json"), null, 10);
+        if (!result.ok) return List.of();
+        try {
+            Map<String, Object> catalog = MiniJson.parseObject(result.output.trim());
+            if (!"live".equals(catalog.get("source")) || !(catalog.get("models") instanceof List<?> rows))
+                return List.of();
+            List<LkChannelCatalog.Model> models = new ArrayList<>();
+            for (Object row : rows) {
+                if (!(row instanceof Map<?, ?> value)) return List.of();
+                String id = cleanConfigValue(value.get("id"));
+                String label = cleanConfigValue(value.get("label"));
+                String type = cleanConfigValue(value.get("type"));
+                String protocol = cleanConfigValue(value.get("protocol"));
+                if (id == null || type == null || protocol == null) return List.of();
+                models.add(new LkChannelCatalog.Model(id, label, type, protocol));
+            }
+            return models;
+        } catch (RuntimeException ignored) {
+            return List.of();
+        }
+    }
+
     static Connection readConnection(CliRunner cli) {
         CliResult result = cli.run(args("config", "list", "--json"), null);
         if (!result.ok) throw new IllegalStateException("Could not read the saved CLI configuration: " + result.failure);
@@ -304,6 +328,10 @@ public final class LlmConfig {
     }
 
     public static String validateConnection(Connection connection, boolean allowHttp) {
+        return validateConnection(connection, allowHttp, Arrays.asList(LkChannelCatalog.MODELS));
+    }
+
+    static String validateConnection(Connection connection, boolean allowHttp, List<LkChannelCatalog.Model> lkModels) {
         boolean supported = false;
         for (Preset preset : PRESETS) if (preset.id.equals(connection.provider.trim())) supported = true;
         if (!supported) return "Choose a supported provider or protocol";
@@ -326,7 +354,7 @@ public final class LlmConfig {
         } catch (Exception e) { return "Enter a valid base URL"; }
         if (LkChannelCatalog.isEndpoint(connection.baseUrl)) {
             String wire = "custom".equals(connection.provider) ? "openai" : connection.provider;
-            for (LkChannelCatalog.Model entry : LkChannelCatalog.MODELS) {
+            for (LkChannelCatalog.Model entry : lkModels) {
                 if (entry.id.equals(connection.model) && (!"chat".equals(entry.type) || !wire.equals(entry.protocol)))
                     return "This LK model does not support the selected chat protocol";
             }

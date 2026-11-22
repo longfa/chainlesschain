@@ -45,18 +45,25 @@
                 v-for="model in lkChatModels"
                 :key="model.id"
                 :value="model.id"
-                >{{ model.label }} ({{ model.id }})</a-select-option
               >
+                {{ model.label }} ({{ model.id }})
+              </a-select-option>
             </a-select>
             <a-select v-model:value="lkAddress" style="width: 265px">
               <a-select-option value="primary">主 api.vv666.ai</a-select-option>
-              <a-select-option value="backup"
-                >备用 api.lk666.ai</a-select-option
-              >
+              <a-select-option value="backup">
+                备用 api.lk666.ai
+              </a-select-option>
             </a-select>
             <a-button @click="applyLkPreset">使用此渠道</a-button>
+            <a-button :loading="lkCatalogLoading" @click="refreshLkModels">
+              刷新模型
+            </a-button>
           </a-space>
           <div class="form-hint">
+            {{
+              lkCatalogSource === "live" ? "平台最新目录。" : "内置离线目录。"
+            }}
             主备地址为同一服务，访问不畅时可手动切换。FB-5.2 使用 Anthropic
             协议。
             <a
@@ -98,8 +105,8 @@
           </details>
         </a-form-item>
         <a-form-item label="LK 价格与实际账单">
-          <a-space wrap
-            ><a-select
+          <a-space wrap>
+            <a-select
               v-model:value="accountDays"
               :options="[
                 { value: 1, label: '最近 1 天' },
@@ -112,10 +119,10 @@
                 { value: 'key', label: '当前 Key API 用量' },
                 { value: 'user', label: '全部 Key API 用量' },
               ]"
-            /><a-button :loading="accountLoading" @click="refreshAccount"
-              >刷新价格与余额</a-button
-            ></a-space
-          >
+            /><a-button :loading="accountLoading" @click="refreshAccount">
+              刷新价格与余额
+            </a-button>
+          </a-space>
           <p>
             查询已保存 LK 连接；修改后请先保存。Token
             统计与平台实扣算力分开展示。
@@ -509,11 +516,13 @@ const refreshAccount = async () => {
       days: accountDays.value,
       scope: accountScope.value,
     });
-    if (generation === accountGeneration)
+    if (generation === accountGeneration) {
       accountText.value = result.formattedText;
+    }
   } catch {
-    if (generation === accountGeneration)
+    if (generation === accountGeneration) {
       accountText.value = "查询失败，请确认已保存 LK 连接及 Key 后重试";
+    }
   } finally {
     accountLoading.value = false;
   }
@@ -525,20 +534,44 @@ import {
 } from "../../../../packages/cli/src/lib/llm-channel-presets.js";
 
 const lkProtocol = ref("openai");
+const lkModels = ref(LK_MODELS);
+const lkCatalogSource = ref("bundled");
+const lkCatalogLoading = ref(false);
+async function refreshLkModels() {
+  if (lkCatalogLoading.value) {
+    return;
+  }
+  lkCatalogLoading.value = true;
+  try {
+    const result = await window.electronAPI.llm.getLkModels();
+    const live = result?.source === "live" && Array.isArray(result.models);
+    lkModels.value = live ? result.models : LK_MODELS;
+    lkCatalogSource.value = live ? "live" : "bundled";
+  } catch {
+    lkModels.value = LK_MODELS;
+    lkCatalogSource.value = "bundled";
+  } finally {
+    lkCatalogLoading.value = false;
+  }
+}
 const lkAddress = ref("primary");
 const lkModel = ref("gpt-6.1-sol");
 const lkChatModels = computed(() =>
-  LK_MODELS.filter(
+  lkModels.value.filter(
     (model) =>
       model.type === "chat" &&
       model.compatibleProtocols.includes(lkProtocol.value),
   ),
 );
 const handleLkProtocolChange = () => {
-  lkModel.value = LK_CHANNEL.protocols[lkProtocol.value].defaultModel;
+  const configuredDefault = LK_CHANNEL.protocols[lkProtocol.value].defaultModel;
+  lkModel.value = lkChatModels.value.some(({ id }) => id === configuredDefault)
+    ? configuredDefault
+    : lkChatModels.value[0]?.id || configuredDefault;
 };
 const applyLkPreset = () => {
   const connection = resolveLkConnection(lkProtocol.value, lkAddress.value, {
+    models: lkModels.value,
     desktop: true,
     model: lkModel.value,
   });
@@ -944,6 +977,7 @@ const formatSize = (bytes) => {
 
 // 组件挂载时
 onMounted(() => {
+  void refreshLkModels();
   loadConfig();
   checkStatus();
 });

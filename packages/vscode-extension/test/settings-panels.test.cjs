@@ -94,7 +94,9 @@ test("evolution capability projection stays fail-closed for IDE clients", () => 
     ],
   );
   assert.deepEqual(
-    evolutionCapabilityRows({ evolutionStatus: { schemaVersion: 2, capabilities: [] } }),
+    evolutionCapabilityRows({
+      evolutionStatus: { schemaVersion: 2, capabilities: [] },
+    }),
     [],
   );
 });
@@ -633,6 +635,7 @@ test("LLM panel never returns an existing or newly submitted key to the webview"
   let savedModel = "model";
   const api = {
     PROVIDER_PRESETS,
+    loadLkCatalog: async (models) => ({ source: "bundled", models }),
     getConfiguredProvider: async () => "openai",
     getConfiguredModel: async () => savedModel,
     getConfiguredBaseUrl: async () => "https://relay.example/v1",
@@ -668,6 +671,7 @@ test("LLM panel reports unconfirmed writes when a successful CLI exit reads back
   let configured = 0;
   const api = {
     PROVIDER_PRESETS,
+    loadLkCatalog: async (models) => ({ source: "bundled", models }),
     getConfiguredProvider: async () => "openai",
     getConfiguredModel: async () => "old-model",
     getConfiguredBaseUrl: async () => "https://relay.example/v1",

@@ -6,6 +6,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -50,10 +51,12 @@ public final class LlmConnectionPanel extends JPanel {
     private final JLabel keyHint = new JLabel(), status = new JLabel(), protocolLabel = new JLabel();
     private final JButton save = new JButton(), test = new JButton(), reload = new JButton();
     private final JButton account = new JButton("刷新价格与余额");
+    private final JButton refreshLkModels = new JButton("刷新模型");
     private final JTextArea accountResult = new JTextArea(9, 65);
     private final JComboBox<String> lkAddress = new JComboBox<>(new String[]{"api.vv666.ai", "api.lk666.ai"});
     private final JComboBox<LkChannelCatalog.Model> lkModel = new JComboBox<>();
     private final JLabel lkAddressLabel = new JLabel("LK 主备地址"), lkModelLabel = new JLabel("LK 模型目录");
+    private List<LkChannelCatalog.Model> lkModels = Arrays.asList(LkChannelCatalog.MODELS);
     private LlmConfig.Connection current;
     private java.util.List<LlmConfig.Connection> savedConnections = java.util.Collections.emptyList();
     private final JComboBox<String> savedConnection = new JComboBox<>();
@@ -89,7 +92,7 @@ public final class LlmConnectionPanel extends JPanel {
             current = active; dirty = true; update();
         });
         lkModel.setPrototypeDisplayValue(new LkChannelCatalog.Model("gpt-6.1-sol", "GPT-6.1 sol", "chat", "openai"));
-        lkModel.setToolTipText("对话模型按协议筛选；媒体目录及定价：https://chainlesschain.net/api/pricing");
+        lkModel.setToolTipText("内置离线目录");
         JPanel body = new JPanel(new BorderLayout());
         body.add(fields, BorderLayout.NORTH);
         accountResult.setEditable(false); accountResult.setLineWrap(true); accountResult.setWrapStyleWord(true);
@@ -104,7 +107,8 @@ public final class LlmConnectionPanel extends JPanel {
         reload.setText(text.apply("llm.form.reload"));
         save.setText(text.apply("llm.form.save"));
         test.setText(text.apply("llm.form.test"));
-        buttons.add(reload); buttons.add(save); buttons.add(test); buttons.add(account);
+        buttons.add(reload); buttons.add(save); buttons.add(test); buttons.add(account); buttons.add(refreshLkModels);
+        refreshLkModels.setName("llm.lkModelRefresh");
         account.setName("llm.account");
         account.setToolTipText("查询已保存 LK 连接：最近 1 天当前 Key API 实扣、动态价格及账户余额；更多范围：cc llm account --help");
         footer.add(buttons, BorderLayout.SOUTH);
@@ -191,13 +195,30 @@ public final class LlmConnectionPanel extends JPanel {
     private void fillLkModels(String selected) {
         lkModel.removeAllItems();
         String wire = protocols[protocol.getSelectedIndex()];
-        for (LkChannelCatalog.Model entry : LkChannelCatalog.MODELS) {
+        for (LkChannelCatalog.Model entry : lkModels) {
             if ("chat".equals(entry.type) && wire.equals(entry.protocol)) {
                 lkModel.addItem(entry);
             }
         }
+        lkModel.setSelectedIndex(-1);
         for (int i = 0; i < lkModel.getItemCount(); i++)
-            if (lkModel.getItemAt(i).id.equals(selected)) lkModel.setSelectedIndex(i);
+            if (lkModel.getItemAt(i).id.equals(selected)) {
+                lkModel.setSelectedIndex(i);
+                break;
+            }
+    }
+
+    public void setLiveLkModels(List<LkChannelCatalog.Model> models) {
+        lkModels = models.isEmpty() ? Arrays.asList(LkChannelCatalog.MODELS) : models;
+        lkModel.setToolTipText(models.isEmpty() ? "内置离线目录" : "平台最新目录");
+        if (!isLk()) return;
+        filling = true;
+        try { fillLkModels(model.getText()); }
+        finally { filling = false; }
+    }
+
+    public String validateConnection() {
+        return LlmConfig.validateConnection(connection(), allowHttp(), lkModels);
     }
 
     private void applyLk(boolean keepModel) {
@@ -205,6 +226,10 @@ public final class LlmConnectionPanel extends JPanel {
         String wire = protocols[protocol.getSelectedIndex()];
         String defaultModel = "anthropic".equals(wire) ? "claude-opus-5-5" : "gemini".equals(wire) ? "gemini-4-carbon" : "gpt-6.1-sol";
         fillLkModels(keepModel ? previous : defaultModel);
+        if (!keepModel && lkModel.getSelectedIndex() < 0 && lkModel.getItemCount() > 0) {
+            lkModel.setSelectedIndex(0);
+            defaultModel = lkModel.getItemAt(0).id;
+        }
         baseUrl.setText(LkChannelCatalog.baseUrl(wire, lkAddress.getSelectedIndex() == 1));
         model.setText(keepModel ? previous : defaultModel);
         vision.setText(""); key.setText(""); allowHttp.setSelected(false);
@@ -223,6 +248,8 @@ public final class LlmConnectionPanel extends JPanel {
         protocol.setVisible(custom || isLk()); protocolLabel.setVisible(custom || isLk());
         lkAddress.setVisible(isLk()); lkAddressLabel.setVisible(isLk());
         lkModel.setVisible(isLk()); lkModelLabel.setVisible(isLk());
+        refreshLkModels.setVisible(isLk());
+        refreshLkModels.setEnabled(!busy);
         boolean same = current != null && providerId().equals(current.provider)
                 && LlmConfig.normalizedBaseUrl(baseUrl.getText()).equals(LlmConfig.normalizedBaseUrl(current.baseUrl));
         keyHint.setText(text.apply("ollama".equals(providerId()) ? "llm.form.keyless"
@@ -315,6 +342,7 @@ public final class LlmConnectionPanel extends JPanel {
     public void onTest(Runnable action) { test.addActionListener(e -> action.run()); }
     public void onReload(Runnable action) { reload.addActionListener(e -> action.run()); }
     public void onAccount(Runnable action) { account.addActionListener(e -> action.run()); }
+    public void onRefreshLkModels(Runnable action) { refreshLkModels.addActionListener(e -> action.run()); }
     public void showAccount(String value) { accountResult.setText(value == null ? "" : value); accountResult.setCaretPosition(0); }
     public void clearSecret() { filling = true; key.setText(""); filling = false; }
 }

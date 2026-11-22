@@ -57,7 +57,7 @@ Runtime audit: brokered: 220, audited-exemption: 47, non-executable: 49, unrevie
 | `packages/cli/src/commands/routine.js` | 44 | `brokered` | file default process seam is wired to ProcessExecutionBroker | `const child = _deps.spawn(` |
 | `packages/cli/src/commands/routine.js` | 95 | `brokered` | file default process seam is wired to ProcessExecutionBroker | `_deps.execFile(` |
 | `packages/cli/src/commands/session.js` | 78 | `brokered` | call targets ProcessExecutionBroker | `execFileSync: (...args) => executionBroker.execFileSync(...args),` |
-| `packages/cli/src/commands/session.js` | 199 | `brokered` | file default process seam is wired to ProcessExecutionBroker | `const out = _deps.execFileSync("gh", args, {` |
+| `packages/cli/src/commands/session.js` | 198 | `brokered` | file default process seam is wired to ProcessExecutionBroker | `const out = _deps.execFileSync("gh", args, {` |
 | `packages/cli/src/commands/team-distributed.js` | 916 | `brokered` | call targets ProcessExecutionBroker | `const output = executionBroker.execFileSync(` |
 | `packages/cli/src/commands/team-distributed.js` | 1341 | `brokered` | call targets ProcessExecutionBroker | `executionBroker.execFileSync("git", args, {` |
 | `packages/cli/src/commands/team.js` | 86 | `brokered` | call targets ProcessExecutionBroker | `spawn: (...args) => executionBroker.spawn(...args),` |

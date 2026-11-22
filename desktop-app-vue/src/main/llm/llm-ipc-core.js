@@ -218,8 +218,9 @@ function registerCoreHandlers(ctx) {
                 currentConversationId = session.conversationId;
                 privacy.event("session-loaded");
               } catch (loadError) {
-                if (loadError.code === "CC_AGENT_EVOLUTION_INGRESS_FAILED")
+                if (loadError.code === "CC_AGENT_EVOLUTION_INGRESS_FAILED") {
                   throw loadError;
+                }
                 privacy.event("session-load-failed");
                 currentSessionId = null;
               }
@@ -259,8 +260,9 @@ function registerCoreHandlers(ctx) {
             integrationResults.sessionUsed = true;
             integrationResults.sessionId = currentSessionId;
           } catch (sessionError) {
-            if (sessionError.code === "CC_AGENT_EVOLUTION_INGRESS_FAILED")
+            if (sessionError.code === "CC_AGENT_EVOLUTION_INGRESS_FAILED") {
               throw sessionError;
+            }
             privacy.event("session-tracking-failed");
             // 不阻塞主流程
           }
@@ -328,15 +330,17 @@ function registerCoreHandlers(ctx) {
                     };
                   }
                 } catch (agentError) {
-                  if (agentError.code === "CC_AGENT_EVOLUTION_INGRESS_FAILED")
+                  if (agentError.code === "CC_AGENT_EVOLUTION_INGRESS_FAILED") {
                     throw agentError;
+                  }
                   privacy.event("agent-execution-failed");
                 }
               }
             }
           } catch (agentCheckError) {
-            if (agentCheckError.code === "CC_AGENT_EVOLUTION_INGRESS_FAILED")
+            if (agentCheckError.code === "CC_AGENT_EVOLUTION_INGRESS_FAILED") {
               throw agentCheckError;
+            }
             privacy.event("agent-route-check-failed");
             // 不阻塞主流程
           }
@@ -393,8 +397,9 @@ function registerCoreHandlers(ctx) {
               };
             }
           } catch (cacheError) {
-            if (cacheError.code === "CC_AGENT_EVOLUTION_INGRESS_FAILED")
+            if (cacheError.code === "CC_AGENT_EVOLUTION_INGRESS_FAILED") {
               throw cacheError;
+            }
             privacy.event("cache-check-failed");
           }
         }
@@ -471,8 +476,9 @@ function registerCoreHandlers(ctx) {
               privacy.event("model-selected");
             }
           } catch (selectError) {
-            if (selectError.code === "CC_AGENT_EVOLUTION_INGRESS_FAILED")
+            if (selectError.code === "CC_AGENT_EVOLUTION_INGRESS_FAILED") {
               throw selectError;
+            }
             privacy.event("model-selection-failed");
           }
         }
@@ -501,8 +507,9 @@ function registerCoreHandlers(ctx) {
               }
             }
           } catch (mcpError) {
-            if (mcpError.code === "CC_AGENT_EVOLUTION_INGRESS_FAILED")
+            if (mcpError.code === "CC_AGENT_EVOLUTION_INGRESS_FAILED") {
               throw mcpError;
+            }
             privacy.event("mcp-discovery-failed");
           }
         }
@@ -563,8 +570,9 @@ function registerCoreHandlers(ctx) {
               }
             }
           } catch (ragError) {
-            if (ragError.code === "CC_AGENT_EVOLUTION_INGRESS_FAILED")
+            if (ragError.code === "CC_AGENT_EVOLUTION_INGRESS_FAILED") {
               throw ragError;
+            }
             privacy.event("rag-retrieval-failed");
           }
         }
@@ -593,8 +601,9 @@ function registerCoreHandlers(ctx) {
               compressionResult = null;
             }
           } catch (compressError) {
-            if (compressError.code === "CC_AGENT_EVOLUTION_INGRESS_FAILED")
+            if (compressError.code === "CC_AGENT_EVOLUTION_INGRESS_FAILED") {
               throw compressError;
+            }
             privacy.event("prompt-compression-failed");
             compressionResult = null;
           }
@@ -645,8 +654,9 @@ function registerCoreHandlers(ctx) {
               };
               usedMCPTools = true;
             } catch (fcError) {
-              if (fcError.code === "CC_AGENT_EVOLUTION_INGRESS_FAILED")
+              if (fcError.code === "CC_AGENT_EVOLUTION_INGRESS_FAILED") {
                 throw fcError;
+              }
               privacy.event("function-calling-failed");
             }
           }
@@ -707,8 +717,11 @@ function registerCoreHandlers(ctx) {
                       content: JSON.stringify(execResult),
                     });
                   } catch (execError) {
-                    if (execError.code === "CC_AGENT_EVOLUTION_INGRESS_FAILED")
+                    if (
+                      execError.code === "CC_AGENT_EVOLUTION_INGRESS_FAILED"
+                    ) {
                       throw execError;
+                    }
                     privacy.event("mcp-tool-execution-failed");
                     toolResults.push({
                       tool_call_id: toolCall.id,
@@ -742,8 +755,9 @@ function registerCoreHandlers(ctx) {
               response = result;
               usedMCPTools = true;
             } catch (fcError) {
-              if (fcError.code === "CC_AGENT_EVOLUTION_INGRESS_FAILED")
+              if (fcError.code === "CC_AGENT_EVOLUTION_INGRESS_FAILED") {
                 throw fcError;
+              }
               privacy.event("function-calling-failed");
             }
           }
@@ -861,8 +875,11 @@ function registerCoreHandlers(ctx) {
               privacy.event("response-recorded");
             }
           } catch (sessionRecordError) {
-            if (sessionRecordError.code === "CC_AGENT_EVOLUTION_INGRESS_FAILED")
+            if (
+              sessionRecordError.code === "CC_AGENT_EVOLUTION_INGRESS_FAILED"
+            ) {
               throw sessionRecordError;
+            }
             privacy.event("response-record-failed");
           }
         }
@@ -887,8 +904,9 @@ function registerCoreHandlers(ctx) {
 
             privacy.event("response-cache-written");
           } catch (cacheError) {
-            if (cacheError.code === "CC_AGENT_EVOLUTION_INGRESS_FAILED")
+            if (cacheError.code === "CC_AGENT_EVOLUTION_INGRESS_FAILED") {
               throw cacheError;
+            }
             privacy.event("cache-write-failed");
           }
         }
@@ -1049,8 +1067,11 @@ function registerCoreHandlers(ctx) {
       const current = config[config.provider] || {};
       const { fetchLkAccount, formatLkAccount } = require("./lk-account-api");
       const options = {};
-      for (const key of ["days", "scope", "limit", "offset"])
-        if (input?.[key] !== undefined) options[key] = input[key];
+      for (const key of ["days", "scope", "limit", "offset"]) {
+        if (input?.[key] !== undefined) {
+          options[key] = input[key];
+        }
+      }
       const baseUrl = String(current.baseURL || "").replace(/\/+$/, "");
       const account = await fetchLkAccount(
         {
@@ -1069,6 +1090,11 @@ function registerCoreHandlers(ctx) {
     }
   });
 
+  authorizedIpcMain.handle("llm:lk-models", async () => {
+    const { loadLkCatalog } = require("./lk-public-catalog.cjs");
+    return loadLkCatalog([]);
+  });
+
   /**
    * 设置 LLM 配置
    * Channel: 'llm:set-config'
@@ -1083,8 +1109,9 @@ function registerCoreHandlers(ctx) {
         llmConfig.set(key, submittedConfig[key]);
       });
 
-      if ((await llmConfig.save()) === false)
+      if ((await llmConfig.save()) === false) {
         throw new Error("Configuration save failed");
+      }
 
       // 🔥 在测试模式下，不重新初始化LLM Manager，保持使用Mock LLM
       const isTestMode =
@@ -1116,14 +1143,16 @@ function registerCoreHandlers(ctx) {
         managerConfig,
       );
       await newManager.initialize();
-      if (managerRef.current !== previousManager)
+      if (managerRef.current !== previousManager) {
         throw new Error("LLM manager changed during configuration update");
+      }
 
       // 更新引用容器
       managerRef.current = newManager;
       _setLLMManagerInstance(newManager);
-      if (newManager.promptCompressor)
+      if (newManager.promptCompressor) {
         newManager.promptCompressor.llmManager = newManager;
+      }
 
       // 如果有 app 实例，也更新 app 上的引用
       if (app) {

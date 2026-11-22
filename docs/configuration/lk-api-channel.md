@@ -1,6 +1,6 @@
 # LK API 聚合渠道
 
-根据 [开发文档](https://chainlesschain.net/apidoc#model/gpt-6.1-sol) 和当前 Skills 模型接口接入。
+平台文档已列出 [GPT-6.2 Sol](https://chainlesschain.net/apidoc#model/gpt-6.2-sol) 和 [GPT-6.2 Astra](https://chainlesschain.net/apidoc#model/gpt-6.2-astra)，两者支持 OpenAI Chat Completions 和 Responses。
 主地址 `https://api.vv666.ai`，备用 `https://api.lk666.ai`，手动切换地址；不会自动重发生成请求。
 
 CLI **0.166.156**、Open VSX **0.37.192** 与 JetBrains **0.4.207** 均已公开验证；两款 IDE 推荐 CLI .156。完整发布顺序与限制见 [更新说明](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-156.md)。
@@ -9,13 +9,15 @@ CLI **0.166.156**、Open VSX **0.37.192** 与 JetBrains **0.4.207** 均已公开
 
 CLI 执行 `cc setup`；Web 执行 `cc ui` 后进入 LLM 配置；IDE 打开 Configure LLM。选择 LK、协议、模型和主备地址，填写 LK 自己的 Key，保存后测试连接。每个平台的 Key 独立保存，LK 主备地址及协议共用 LK 凭据。修改连接后先保存再查询账户。
 
-当前目录由 `/v1/skills/models` 同步，共 202 项：86 对话、26 图片、82 视频、8 音频。下拉框只提供所选协议兼容的对话模型；目录不等同于每个 Key 的模型权限，不代表全部模型已实测。
+当前源码中的 CLI、Web、VS Code、JetBrains 和桌面设置会在打开模型配置时请求平台公开目录。设置界面的「刷新模型」可以重新查询，并保留正在编辑的模型 ID。请求失败时使用安装包内置目录。JetBrains 的在线查询由配套 CLI 提供。
 
-| 协议                    | 当前模型示例      | CLI / IDE Base URL                           | 桌面 Base URL                 |
-| ----------------------- | ----------------- | -------------------------------------------- | ----------------------------- |
-| OpenAI Chat Completions | `gpt-6.1-sol`     | `https://api.vv666.ai/v1`，provider `custom` | `https://api.vv666.ai/v1`     |
-| Anthropic Messages      | `claude-opus-5-5` | `https://api.vv666.ai/v1`                    | `https://api.vv666.ai`        |
-| Gemini                  | `gemini-4-carbon` | `https://api.vv666.ai/v1beta`                | `https://api.vv666.ai/v1beta` |
+用 `cc llm models --provider lk --json` 查看目录，`source` 为 `live` 表示刚从平台取得，为 `bundled` 表示使用内置目录。2026-11-23 的内置快照包含 205 项，其中 89 个对话、26 个图片、83 个视频和 7 个音频模型。下拉框按协议筛选对话模型。账户可用性和推理结果需用自己的 LK Key 验证。
+
+| 协议                    | 当前模型示例                   | CLI / IDE Base URL                           | 桌面 Base URL                 |
+| ----------------------- | ------------------------------ | -------------------------------------------- | ----------------------------- |
+| OpenAI Chat Completions | `gpt-6.2-sol`、`gpt-6.2-astra` | `https://api.vv666.ai/v1`，provider `custom` | `https://api.vv666.ai/v1`     |
+| Anthropic Messages      | `claude-opus-5-5`              | `https://api.vv666.ai/v1`                    | `https://api.vv666.ai`        |
+| Gemini                  | `gemini-4-carbon`              | `https://api.vv666.ai/v1beta`                | `https://api.vv666.ai/v1beta` |
 
 保存的旧别名按相同模型系列迁移：`tt-6.1-sol` → `gpt-6.1-sol`，`tt-6-luna` → `gpt-6-luna`，`fb-5-2` → `claude-fable-5-2`，`gem-3.8-flash` → `gemini-3.8-flash`。未知自定义别名保留，不切换到其他系列。
 
@@ -33,15 +35,15 @@ cc llm account --days 30 --limit 20 --offset 20
 
 ## 目录维护
 
-目录刷新改用文档的 Skills API，避免公开营销目录缺少 GPT/Claude/Gemini 模型。通过进程环境提供 `LK_API_KEY`，不要把 Key 写入脚本或仓库：
+安装包的离线快照可以从开发文档使用的公开目录重新生成。
 
 ```sh
-node packages/cli/scripts/sync-lk-model-catalog.mjs
+node packages/cli/scripts/sync-lk-model-catalog.mjs --public
 node packages/cli/scripts/sync-lk-ide-presets.mjs
 node --test packages/cli/test-node/lk-channel.node-test.mjs
 ```
 
-离线模式：`node packages/cli/scripts/sync-lk-model-catalog.mjs --input path/to/skills-models.json`。脚本只保存模型名称、类型和协议，不保存账户可用性或 Key。未经鉴权的 `/v1/models` 与 `/v1/skills/models` 返回 401。
+省略 `--public` 可继续用 Skills API 生成快照，通过进程环境提供 `LK_API_KEY`，或用 `--input path/to/skills-models.json` 读取已有响应。公开目录和生成快照仅使用模型标识、显示名称、类型与协议。
 
 ## 本轮验证
 

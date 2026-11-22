@@ -1786,6 +1786,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
     chat: (params) => ipcRenderer.invoke("llm:chat", params),
     getConfig: () => ipcRenderer.invoke("llm:get-config"),
     getLkAccount: (options) => ipcRenderer.invoke("llm:lk-account", options),
+    getLkModels: () => ipcRenderer.invoke("llm:lk-models"),
     setConfig: (config) => ipcRenderer.invoke("llm:set-config", config),
     listModels: () => ipcRenderer.invoke("llm:list-models"),
     clearContext: (conversationId) =>

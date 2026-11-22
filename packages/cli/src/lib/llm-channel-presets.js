@@ -81,7 +81,7 @@ export function isLkEndpoint(baseUrl) {
 export function resolveLkConnection(
   protocol = "anthropic",
   address = "primary",
-  { desktop = false, model } = {},
+  { desktop = false, model, models = LK_MODELS } = {},
 ) {
   const definition = Object.hasOwn(LK_CHANNEL.protocols, protocol)
     ? LK_CHANNEL.protocols[protocol]
@@ -93,7 +93,7 @@ export function resolveLkConnection(
   const selectedModel = canonicalLkModel(
     model || definition.defaultModel || "",
   );
-  const knownModel = LK_MODELS.find((entry) => entry.id === selectedModel);
+  const knownModel = models.find((entry) => entry.id === selectedModel);
   if (
     knownModel &&
     (knownModel.type !== "chat" ||
