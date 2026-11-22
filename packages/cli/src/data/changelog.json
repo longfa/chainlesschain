@@ -3,6 +3,19 @@
   "releases": [
     {
       "productVersion": null,
+      "cliVersion": "0.166.161",
+      "cliVersions": ["0.166.161"],
+      "date": "2026-11-23",
+      "title": "",
+      "sections": [
+        {
+          "heading": "Added - cc CLI 0.166.161 and IDE pairing (candidate, 2026-11-23)",
+          "body": "- Refresh the LK model catalog from the platform in CLI setup, Web, VS Code, JetBrains and desktop settings. Add GPT-6.2 Sol and GPT-6.2 Astra to the offline catalog.\n- Carry forward task lifecycle, session recovery and model fallback improvements. Pair with Open VSX 0.37.196 and JetBrains 0.4.211 after the exact release gates pass."
+        }
+      ]
+    },
+    {
+      "productVersion": null,
       "cliVersion": "0.166.160",
       "cliVersions": ["0.166.160"],
       "date": "2026-11-22",

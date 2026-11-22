@@ -1,5 +1,9 @@
 # chainlesschain CLI
 
+## CLI 0.166.161 and IDE pairing
+
+CLI **0.166.161** refreshes the LK model catalog on demand and includes GPT-6.2 Sol and GPT-6.2 Astra in the offline catalog. Install the release after it appears on public npm with `npm i -g chainlesschain@0.166.161 --registry https://registry.npmjs.org`. The paired IDE versions are Open VSX **0.37.196** and JetBrains **0.4.211**. Each outlet has its own publication gate. Account access and model inference depend on the configured LK key. [LK configuration](../../docs/configuration/lk-api-channel.md).
+
 Documentation checked 2026-11-22 against the release candidate source; candidate CLI is **0.166.160**, paired with candidate Open VSX **0.37.195** and JetBrains **0.4.210**. Public baseline remains CLI **0.166.159**, Open VSX **0.37.194** and JetBrains **0.4.209** pending Marketplace listing. [Current installation and limits](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-19-157.html).
 
 Command-line interface for installing, configuring, and managing [ChainlessChain](https://www.chainlesschain.com), including the coding agent, governed tools, sessions, memory, and IDE integrations.

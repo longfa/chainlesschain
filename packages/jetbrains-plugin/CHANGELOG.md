@@ -1,5 +1,10 @@
 # Changelog — ChainlessChain IDE Bridge (JetBrains)
 
+## [0.4.211] - CLI 0.166.161 pairing (candidate, 2026-11-23)
+
+- Refresh the LK model menu using CLI `0.166.161`. The offline list includes GPT-6.2 Sol and GPT-6.2 Astra.
+- Preserve refresh requests made while a Sessions Workbench query is running.
+
 ## [0.4.210] - CLI 0.166.160 pairing (candidate, 2026-11-22)
 
 - Pair the task lifecycle and IDE workflow updates with CLI `0.166.160`.

@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added - cc CLI 0.166.161 and IDE pairing (candidate, 2026-11-23)
+
+- Refresh the LK model catalog from the platform in CLI setup, Web, VS Code, JetBrains and desktop settings. Add GPT-6.2 Sol and GPT-6.2 Astra to the offline catalog.
+- Carry forward task lifecycle, session recovery and model fallback improvements. Pair with Open VSX 0.37.196 and JetBrains 0.4.211 after the exact release gates pass.
+
 ### Added - cc CLI 0.166.160 and IDE pairing (candidate, 2026-11-22)
 
 - Add the unified task projection, lifecycle stop receipts, structured plugin installation outcomes, MCP schema admission and status-line task fields from the 2026-11-22 Codex / Claude Code review.
