@@ -52,6 +52,8 @@ const VSCODE_COMMANDS = [
   "chainlesschain.session.modelInputs",
   "chainlesschain.background.agents",
   "chainlesschain.sessions.workbench",
+  "chainlesschain.sessions.fork",
+  "chainlesschain.workflows.map",
   "chainlesschain.automation.center",
   "chainlesschain.remote.control",
   "chainlesschain.appServerPilot.status",
