@@ -4,7 +4,7 @@ layout: home
 hero:
   name: ChainlessChain
   text: 系统设计文档
-  tagline: "CLI 0.166.159 / Open VSX 0.37.194 / JetBrains 0.4.208 已公开；0.4.209 已上传等待 Marketplace 上架；历史客户端 .145 下载源暂不可用"
+  tagline: "CLI 0.166.160、Open VSX 0.37.195 和 JetBrains 0.4.209 已公开，JetBrains 0.4.210 待通过宿主门禁"
   image:
     src: /logo.png
     alt: ChainlessChain Logo
@@ -21,9 +21,9 @@ hero:
 
 features:
   - icon: 🛡️
-    title: 主线 Runtime 与发行边界
-    details: "CLI .156 / Open VSX .192 / JetBrains .207 已通过正式门禁及公开回读；两款 IDE 均推荐 CLI .156。LK 渠道提供保存连接、动态算力价格和真实 API 账单。生产权限和自动晋升仍不具备。"
-    link: /release-runtime-update-2026-11-21-159
+    title: CLI 与 IDE 任务生命周期
+    details: "CLI 统一读取任务状态、停止路径与到期时间，VS Code 增加会话分叉和工作流地图。"
+    link: /release-runtime-update-2026-11-22-160
   - icon: 🏢
     title: 组织目标、授权记忆与站内通知（主线）
     details: 历史产品 .140 已包含显式巡检、多级审批、独立验收、共享记忆与授权通知；当前 .145 独立发行，记忆不自动注入模型。
@@ -81,8 +81,6 @@ features:
     details: RBAC权限、SOC2合规、SCIM用户配置、DLP数据防泄漏、SIEM安全信息管理
 ---
 
-JetBrains **0.4.209** 已上传，Marketplace 审批/上架待完成；公开列表仍为 **0.4.208**。
-
 ## 开发者微信群
 
 欢迎开发者加入 **「免费测评企业 AI 落地」** 微信交流群，交流系统架构、模块设计、插件/IDE 接入、问题排查和企业 AI 落地实践。请扫码入群：
@@ -96,7 +94,11 @@ JetBrains **0.4.209** 已上传，Marketplace 审批/上架待完成；公开列
   </div>
 </div>
 
-## 当前公开版本与源码核对（2026-11-21）
+## 当前运行时与发行（2026-11-22）
+
+CLI **0.166.160** 和 Open VSX **0.37.195** 从 `1dd4f2c6cc7128995312be08738ae5d6d692ad25` 发布。公开 JetBrains **0.4.209** 推荐 CLI **0.166.159**，候选 **0.4.210** 的 macOS 宿主门禁失败，未上传。[任务生命周期设计与证据](/release-runtime-update-2026-11-22-160)
+
+## 历史发行与源码核对（2026-11-21）
 
 已验证公开 **CLI 0.166.159 / Open VSX 0.37.194 / JetBrains 0.4.208**，两款 IDE 推荐 CLI .156；JetBrains 已审核公开，公开安装包已与正式候选核对。安装 `npm i -g chainlesschain@0.166.159 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`、`cc doctor`。
 

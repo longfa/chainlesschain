@@ -1,12 +1,14 @@
 # chainlesschain CLI
 
-Documentation checked 2026-11-22 against the release candidate source; candidate CLI is **0.166.160**, paired with candidate Open VSX **0.37.195** and JetBrains **0.4.210**. Public baseline remains CLI **0.166.159**, Open VSX **0.37.194** and JetBrains **0.4.209** pending Marketplace listing. [Current installation and limits](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-19-157.html).
+The current public CLI is **0.166.160** and pairs with public Open VSX **0.37.195**. JetBrains **0.4.210** is its candidate pairing. Public JetBrains **0.4.209** recommends CLI **0.166.159**. [Upgrade guide and release limits](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-22-160.md)
 
 Command-line interface for installing, configuring, and managing [ChainlessChain](https://www.chainlesschain.com), including the coding agent, governed tools, sessions, memory, and IDE integrations.
 
-## Release candidate CLI 0.166.160 (2026-11-22)
+## Public CLI 0.166.160 (2026-11-22)
 
-CLI **0.166.160** contains the unified task lifecycle and CLI/IDE review implementation. It is unpublished until the exact-source CLI CI, Strict Sandbox, Native Validation and OIDC publication workflows pass. The paired IDE candidates are Open VSX **0.37.195** and JetBrains **0.4.210**.
+CLI **0.166.160** adds unified task status, stop receipts, structured plugin installation outcomes, and MCP input schema validation. Exact release source `1dd4f2c6cc7128995312be08738ae5d6d692ad25` passed CLI CI, Strict Sandbox and Native Validation on Linux, Windows and macOS. GitHub Actions published the CLI to npm through OIDC after verifying the child packages. Public installation, archive integrity and signed provenance verification passed. [Publication workflow](https://github.com/longfa/chainlesschain/actions/runs/45018972099).
+
+Install `npm i -g chainlesschain@0.166.160 --registry https://registry.npmjs.org`, restart the CLI and IDE hosts, then run `cc --version` and `cc doctor`. Paid readiness `NOT_PAID_READY`, native admission `NOT_ADMITTED`, and automatic promotion `HOLD` retain their existing release gates. This release covers the CLI and paired IDE extensions.
 
 ## Public CLI 0.166.159 (2026-11-21)
 

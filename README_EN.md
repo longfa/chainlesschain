@@ -1,6 +1,12 @@
 # ChainlessChain - Personal Mobile AI Management System Based on USB Key and SIMKey
 
-## Current public release (2026-11-21)
+## Current public release (2026-11-22)
+
+CLI **0.166.160** is public on npm from exact source `1dd4f2c6cc7128995312be08738ae5d6d692ad25`. GitHub Actions published it through OIDC and verified public installation, archive integrity, and signed provenance. Install `npm i -g chainlesschain@0.166.160 --registry https://registry.npmjs.org`, restart the host, and check `cc --version`.
+
+Open VSX **0.37.195** is public and recommends CLI **0.166.160**. Public JetBrains **0.4.209** recommends CLI **0.166.159**. The JetBrains **0.4.210** candidate failed its macOS host gate before upload. The CLI adds unified task listing and stop receipts, and VS Code adds session fork and workflow map commands. [Upgrade guide](docs-site/docs/chainlesschain/cli-ide-update-2026-11-22-160.md) · [Task lifecycle design](docs/design/release-runtime-update-2026-11-22-160.md) · [npm publication evidence](https://github.com/longfa/chainlesschain/actions/runs/45018972099)
+
+## Previous public release (2026-11-21)
 
 CLI **0.166.159** is public on npm from exact source `2aa00100a73f9b170b719c7f79e986470643485f`. The Actions OIDC workflow passed the exact SHA gate, CLI CI, Strict Sandbox, immutable tarball verification, signed npm provenance and public registry readback. Install `npm i -g chainlesschain@0.166.159 --registry https://registry.npmjs.org`, restart the host and check `cc --version`. This release also publishes Open VSX **0.37.194** and JetBrains **0.4.209 (uploaded; Marketplace listing pending)**, both recommending CLI **0.166.159**. Native clients are outside this release. [Publication evidence](https://github.com/chainlesschain/chainlesschain/actions/runs/44845885665) · [IDE readback](https://github.com/chainlesschain/chainlesschain/actions/runs/44852489617) · [npm readback](https://github.com/chainlesschain/chainlesschain/actions/runs/44845885665).
 

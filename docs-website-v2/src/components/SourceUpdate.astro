@@ -4,13 +4,8 @@ const { lang = "zh" } = Astro.props;
 const english = lang === "en";
 const lk = releaseStatus.lkChannel;
 const solCoverage = releaseStatus.solTaskCoverage;
-const jetBrainsPending = [
-  "pending-review",
-  "pending-approval",
-  "published-unverified",
-  "uploaded_public_listing_pending",
-  "uploaded-pending-review",
-].includes(releaseStatus.jetBrainsPublicationStatus);
+const showJetBrainsCandidate =
+  releaseStatus.jetBrainsCandidateVersion !== releaseStatus.jetBrainsMarketplaceVersion;
 const items = english
   ? [["Verified upgrade pairing", `Public CLI ${releaseStatus.recommendedCliVersion} and Open VSX ${releaseStatus.openVsxVersion}; restart the host and run Doctor after upgrading. JetBrains pairing follows its own channel status.`], ["LK model migration", "Use gpt-6.1-sol at https://api.vv666.ai/v1; https://api.lk666.ai is the manual backup. Same-family legacy aliases are normalized. Directory membership does not grant account access."], ["Self-evolution limits", "Complete runtime graphs, independent installer/pins, A/B/C evaluation and business effects remain incomplete. Automatic promotion remains HOLD."]]
   : [["已核对的配套升级", `CLI ${releaseStatus.recommendedCliVersion} 与 Open VSX ${releaseStatus.openVsxVersion} 已公开；升级后重启宿主并运行 Doctor。JetBrains 按自身渠道状态配对。`], ["LK 模型迁移", "使用 https://api.vv666.ai/v1 与 gpt-6.1-sol，https://api.lk666.ai 为手动备用地址。旧别名按同系列迁移，目录不等于账户权限。"], ["自进化边界", "完整运行时图、独立 installer/pins、A/B/C 评测与业务效果仍未完成，自动晋升保持 HOLD。"]];
@@ -26,21 +21,27 @@ const items = english
     </h2>
     <p class="mt-4 text-muted leading-relaxed max-w-4xl">
       {english
-        ? `CLI ${releaseStatus.recommendedCliVersion} is public through Actions OIDC with exact-source gates, official provenance verification and independent byte equality. Open VSX ${releaseStatus.openVsxVersion} recommends CLI ${releaseStatus.openVsxRecommendedCliVersion}; its public VSIX is byte-identical to the official artifact. Public JetBrains ${releaseStatus.jetBrainsMarketplaceVersion} recommends CLI ${releaseStatus.jetBrainsPublicRecommendedCliVersion}. Session Core remains ${releaseStatus.sessionCoreVersion}. ${releaseStatus.productDownloadNoteEn}`
-        : `CLI ${releaseStatus.recommendedCliVersion} 已通过 Actions OIDC 发布、准确提交门禁、官方来源验证和独立字节比较。Open VSX ${releaseStatus.openVsxVersion} 推荐 CLI ${releaseStatus.openVsxRecommendedCliVersion}，公开 VSIX 与正式制品逐字节一致。公开 JetBrains ${releaseStatus.jetBrainsMarketplaceVersion} 推荐 CLI ${releaseStatus.jetBrainsPublicRecommendedCliVersion}。Session Core 保持 ${releaseStatus.sessionCoreVersion}。${releaseStatus.productDownloadNoteZh}`}
+        ? `CLI ${releaseStatus.recommendedCliVersion} is public through Actions OIDC with exact-source gates, official provenance verification and independent byte equality. Open VSX ${releaseStatus.openVsxVersion} recommends CLI ${releaseStatus.openVsxRecommendedCliVersion}; its public VSIX and embedded version metadata were verified. Public JetBrains ${releaseStatus.jetBrainsMarketplaceVersion} recommends CLI ${releaseStatus.jetBrainsPublicRecommendedCliVersion}. Session Core remains ${releaseStatus.sessionCoreVersion}. ${releaseStatus.productDownloadNoteEn}`
+        : `CLI ${releaseStatus.recommendedCliVersion} 已通过 Actions OIDC 发布、准确提交门禁、官方来源验证和独立字节比较。Open VSX ${releaseStatus.openVsxVersion} 推荐 CLI ${releaseStatus.openVsxRecommendedCliVersion}，公开 VSIX 与包内版本已核验。公开 JetBrains ${releaseStatus.jetBrainsMarketplaceVersion} 推荐 CLI ${releaseStatus.jetBrainsPublicRecommendedCliVersion}。Session Core 保持 ${releaseStatus.sessionCoreVersion}。${releaseStatus.productDownloadNoteZh}`}
     </p>
     <p class="mt-3 text-sm text-muted">
       {english ? releaseStatus.productCandidateStatusEn : releaseStatus.productCandidateStatusZh}
       {english ? " New native v6 creation/model drafts require matching newer desktop builds. " : " 新增原生 v6 创建/模型草稿需要匹配的新桌面构建。"}
       <a class="text-ember hover:underline" href={releaseStatus.upgradeGuide}>{english ? "Client download status ↗" : "客户端历史与下载状态 ↗"}</a>
     </p>
-    {jetBrainsPending && (
+    {showJetBrainsCandidate && (
       <p class="mt-3 text-sm text-muted">
         {english
-          ? `JetBrains ${releaseStatus.jetBrainsCandidateVersion} passed its official release workflow and was uploaded; public listing/download verification remains pending. This build recommends CLI ${releaseStatus.jetBrainsCandidateRecommendedCliVersion} and can be sideloaded from official Actions artifacts.`
-          : `JetBrains ${releaseStatus.jetBrainsCandidateVersion} 已通过正式发布工作流并上传，公开上架与下载仍待核验。该构建推荐 CLI ${releaseStatus.jetBrainsCandidateRecommendedCliVersion}，可从正式 Actions 制品手动侧载。`}
+          ? releaseStatus.jetBrainsCandidateStatus
+          : releaseStatus.jetBrainsCandidateStatusZh}
       </p>
     )}
+    <p class="mt-3 text-sm text-muted">
+      {english
+        ? "Run cc tasks --json to see task state, expiry, dependencies, and available stop paths across task sources. The VS Code extension adds session fork and workflow map commands."
+        : "运行 cc tasks --json 可查看不同来源的任务状态、到期时间、等待项与停止路径。VS Code 扩展增加会话分叉和工作流地图命令。"}
+      <a class="text-ember hover:underline" href={releaseStatus.runtimeDesign}>{english ? " Task lifecycle design ↗" : " 任务生命周期设计 ↗"}</a>
+    </p>
     <p class="mt-3 text-sm text-muted">
       {english
         ? "The public CLI includes goal transfer-to-project and signed restore-transfer commands. Native import requires a matching newer desktop build and explicit confirmation; imported goals remain paused. Memory correction and durable continuation retain their existing contracts; native-client acceptance remains separately scoped."

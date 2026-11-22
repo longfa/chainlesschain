@@ -2,8 +2,7 @@
 
 ## LK 渠道与账户查询（2026-11-19）
 
-CLI **0.166.159**、Open VSX **0.37.194** 和 JetBrains **0.4.208** 均已公开核验，两款插件推荐 CLI .156。升级并重启宿主，运行 `cc --version`、`cc doctor`。
-JetBrains **0.4.209** 已上传并等待 Marketplace 审批/上架；公开列表仍为 **0.4.208**。
+CLI **0.166.160** 已在 npm 公开，VS Code 扩展 **0.37.195** 已在 Open VSX 公开。配套 JetBrains 插件为 **0.4.210**。升级后重启宿主，运行 `cc --version` 和 `cc doctor`。[升级指南与商店状态](./cli-ide-update-2026-11-22-160)
 
 通过 `cc setup --skip-download --skip-services`、`cc ui` 的 LLM 配置或 IDE「配置大模型 / Configure LLM」选择 LK，再选择协议、端点和模型。主地址为 `https://api.vv666.ai`，备用为 `https://api.lk666.ai`，主备手动切换；LK 三种对话协议可恢复已保存的 LK Key。OpenAI 兼容连接使用 `https://api.vv666.ai/v1` 和 `gpt-6.1-sol`，不要填写具体 `/chat/completions` 请求路径。
 

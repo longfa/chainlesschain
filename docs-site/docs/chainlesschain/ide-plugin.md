@@ -1,6 +1,10 @@
 # IDE 插件使用指南（VS Code / JetBrains）
 
-## 当前公开版本与源码核对（2026-11-19）
+## 当前公开版本（2026-11-22）
+
+CLI **0.166.160** 已在 npm 公开，VS Code 扩展 **0.37.195** 已在 Open VSX 公开。配套 JetBrains 插件为 **0.4.210**。升级后重启宿主，运行 `cc --version` 和 `cc doctor`。[升级指南与商店状态](./cli-ide-update-2026-11-22-160)
+
+## 历史发行与源码核对（2026-11-21）
 
 已验证公开 **CLI 0.166.159 / Open VSX 0.37.194 / JetBrains 0.4.208**，两款 IDE 推荐 CLI .156；JetBrains 已审核公开，公开安装包已与正式候选核对。安装 `npm i -g chainlesschain@0.166.159 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`、`cc doctor`。
 JetBrains **0.4.209** 已上传并等待 Marketplace 审批/上架；公开列表仍为 **0.4.208**。

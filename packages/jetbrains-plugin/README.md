@@ -1,12 +1,12 @@
 # ChainlessChain IDE Bridge (JetBrains)
 
-JetBrains **0.4.210** is the release candidate and pairs with candidate CLI **0.166.160**. Public baseline remains JetBrains **0.4.209** with CLI **0.166.159**. Marketplace publication occurs only after the exact host, build and publish gates pass.
+JetBrains **0.4.209** is approved, listed, and publicly downloadable. It recommends CLI **0.166.159**, as verified in the published ZIP. [Download 0.4.209](https://plugins.jetbrains.com/files/32208/1225644/chainlesschain-ide-bridge-0.4.209.zip)
 
-Install the candidate CLI with `npm i -g chainlesschain@0.166.160 --registry https://registry.npmjs.org` after its OIDC publication, restart the IDE, and verify `cc --version`. No new PC/mobile installer is included.
+Install its recommended CLI with `npm i -g chainlesschain@0.166.159 --registry https://registry.npmjs.org`, restart the IDE, and verify `cc --version`.
 
-## Current uploaded release 0.4.209 / CLI 0.166.159 (Marketplace pending)
+## Release candidate 0.4.210 / CLI 0.166.160
 
-The immutable tag is `ide-jetbrains-v0.4.209`. The plugin artifact is uploaded and awaiting Marketplace approval/listing; public JetBrains **0.4.208** remains the latest listed release until approval completes.
+The immutable candidate tag is `ide-jetbrains-v0.4.210`. Its macOS IntelliJ 2025.2 host gate failed before upload. The candidate recommends public CLI **0.166.160**. [Release workflow](https://github.com/longfa/chainlesschain/actions/runs/45020514604)
 
 ## Previous release 0.4.204 / CLI 0.166.150
 
@@ -318,9 +318,9 @@ See the [verified publication evidence](https://github.com/longfa/chainlesschain
 
 ## Release compatibility
 
-Plugin **0.4.210** is the current release candidate and recommends `chainlesschain@0.166.160`; publication waits for the exact host and build gates.
+The **0.4.210** candidate recommends `chainlesschain@0.166.160`. The current public plugin **0.4.209** recommends `chainlesschain@0.166.159`.
 
-Install the paired CLI with `npm i -g chainlesschain@0.166.160 --registry https://registry.npmjs.org`. Goal transfer and native Graph features require matching desktop support and explicit native authorization. Model-task improvement and automatic promotion remain unverified.
+Install the CLI recommended by your installed plugin. Goal transfer and native Graph features require matching desktop support and explicit native authorization. Check model-task and automatic promotion status in the [release guide](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-22-160.md).
 
 ## Previous candidates and development notes
 

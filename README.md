@@ -1,6 +1,12 @@
 # ChainlessChain - 基于U盘和SIMKey的个人移动AI管理系统
 
-## 当前公开版本（2026-11-21）
+## 当前公开版本（2026-11-22）
+
+CLI **0.166.160** 已通过 GitHub Actions OIDC 发布到 npm，准确源码提交为 `1dd4f2c6cc7128995312be08738ae5d6d692ad25`。公开安装、归档完整性和签名来源已验证。运行 `npm i -g chainlesschain@0.166.160 --registry https://registry.npmjs.org` 安装，重启宿主后运行 `cc --version`。
+
+Open VSX **0.37.195** 已公开并推荐 CLI **0.166.160**。公开 JetBrains **0.4.209** 推荐 CLI **0.166.159**，候选 **0.4.210** 的 macOS 宿主门禁失败，未上传。本轮新增统一任务列表与停止回执，VS Code 增加会话分叉和工作流地图。[升级指南](docs-site/docs/chainlesschain/cli-ide-update-2026-11-22-160.md) · [任务生命周期设计](docs/design/release-runtime-update-2026-11-22-160.md) · [npm 发布证据](https://github.com/longfa/chainlesschain/actions/runs/45018972099)
+
+## 上一轮公开版本（2026-11-21）
 
 CLI **0.166.159** 已通过 GitHub Actions OIDC 发布到 npm，准确源码提交为 `2aa00100a73f9b170b719c7f79e986470643485f`。CLI CI、Strict Sandbox、不可变 tarball、npm provenance 和公开 registry 回读均已通过。安装：`npm i -g chainlesschain@0.166.159 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`。本轮 CLI 与 IDE 已公开发布：Open VSX **0.37.194**、JetBrains **0.4.209（已上传，等待 Marketplace 上架）** 均推荐 CLI **0.166.159**；PC/mobile 原生客户端不在本轮范围。
 
