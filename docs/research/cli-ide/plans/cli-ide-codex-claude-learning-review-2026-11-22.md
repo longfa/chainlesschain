@@ -221,6 +221,22 @@ Claude 2.1.330 让子代理的模型回退（fallback）**传导**给它派生�
 4. `lib/agent-team/` + `lib/background-task-manager.js` 接入统一 `stop()`。
 5. `packages/vscode-extension/package.json` + 对应 provider 增加 fork / workflow map 命令，复用既有 webview 通道。
 
+## 本轮落地记录（2026-11-22）
+
+本轮已把上述缺口中可由仓库本地实现和验证的部分接入运行时代码。
+
+- **统一任务投影**：新增 [`packages/cli/src/lib/task-record.js`](../../../../packages/cli/src/lib/task-record.js) 和 [`packages/cli/src/commands/tasks.js`](../../../../packages/cli/src/commands/tasks.js)。`cc tasks --json` 现在聚合后台 shell、MCP、agent、schedule、cowork 与未知来源，统一输出 `taskId`、`parentTaskId`、`source`、`state`、`lastEventAt`、`endsAt`、`waitingOn`、`stopPath`、`permissionProfileDigest`，到期任务会投影为 `expired`。旧 [`lib/task-list.js`](../../../../packages/cli/src/lib/task-list.js) 返回的计数字段保持兼容。
+- **停止契约**：后台任务管理器记录 `stop_requested`、`stop_confirmed`、`stop_timeout` 事件，并返回 `{ requested, confirmed, orphanRisk }`。进程未能在升级终止后退出时保留 `orphanRisk`。
+- **安装结果**：插件 legacy install、unified add 和 upgrade 的 JSON 结果均包含 `installCommand`，字段为 `ran`、`exitCode`、`timedOut`、`signaled`、`printedToStderr`、`stderrDigest`。审计开关仍独立保留。
+- **无人应答策略**：新增 `resolveAssentDecision()` 投影，将既有 fail-closed 结果明确标成 `interactive-assent`、`policy-allow` 或 `no-answer`，不改变旧 `{ allow, reason }` 返回值。
+- **共享 MCP 资源**：新增 [`lib/mcp-server-handle.js`](../../../../packages/cli/src/lib/mcp-server-handle.js)，以 `holders: Set<taskId>` 管理引用，最后一个持有者释放后才执行 shutdown。
+- **状态栏**：状态栏上下文可携带任务状态、待审批数、MCP 错误数和上下文阈值。默认上下文结构保持兼容，设置阈值后才增加可见性字段。
+- **权限、模型和 runner 契约**：新增 permission profile digest、父子模型决策继承和 runner 生命周期计时/钩子并发上限的纯运行时模块，供 journal、子代理和远程执行接入。
+- **协议健壮性**：`mcp-stateless-protocol.js` 新增外部 `inputSchema` 的大小、深度、类型和字段校验，MCP 工具目录在转发前拒绝非法 schema，并返回工具名、路径和修复信息。
+- **VS Code**：新增会话分叉、工作流地图命令，并增加 `chainlesschain.chat.contextUsageThreshold` 配置。分叉路径使用 CLI 的 `--fork-session`，工作流地图复用既有 Sessions Workbench。
+
+本轮本地验证包括 `node --check` 覆盖新增和修改的 JavaScript 文件、`cc tasks --json` 的真实命令输出、CLI command manifest 检查，以及 VS Code `package.json` 和本地化文件 JSON 解析。发布前仍需在准确提交上重跑仓库规定的 CLI CI、Strict Sandbox、Native Validation 和 IDE 完整矩阵。
+
 ## 当前公开版本与既有边界（沿用 11-21 回执，未重新发布）
 
 | 包        | 版本        | 公开状态                   | 精确标签                 |

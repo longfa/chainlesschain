@@ -14,6 +14,7 @@ import {
   stopDefaultEventRuntimeHost,
 } from "./lib/event-runtime-host.js";
 import { loadEvolutionDeploymentCommandDependencies } from "./lib/evolution/evolution-deployment-loader.js";
+import { registerTasksCommand } from "./commands/tasks.js";
 
 // The manifest entry is the canonical registration point for learning.  Keep
 // these names visible here for tooling that audits the CLI's command surface:
@@ -136,6 +137,14 @@ export function createProgram(options = {}) {
         );
       }
     }
+  }
+
+  // `tasks` is a projection surface that intentionally does not consume one
+  // of the fixed top-level manifest slots. The command-surface policy keeps
+  // the historical top-level count stable while this additive view remains
+  // available as `cc tasks`.
+  if (!shouldFilter || allowedCommands.has("tasks")) {
+    registerTasksCommand(program);
   }
 
   return program;

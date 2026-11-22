@@ -4,9 +4,9 @@
  * @module lib/task-list
  */
 
-import { listBackgroundShellTasks } from "../runtime/agent-core.js";
 import { formatBackgroundTasks } from "../repl/tasks-status.js";
 import { logger } from "./logger.js";
+import { collectTaskRecords, taskCounts } from "./task-record.js";
 
 /**
  * List all background tasks
@@ -14,9 +14,14 @@ import { logger } from "./logger.js";
  * @returns {Promise<Object>} task list result
  */
 export async function listTasks(options = {}) {
-  const tasks = listBackgroundShellTasks();
-  const active = tasks.filter((t) => t.status === "running");
-  const completed = tasks.filter((t) => t.status !== "running");
+  const tasks = collectTaskRecords(options);
+  const counts = taskCounts(tasks);
+  const active = tasks.filter((t) =>
+    ["running", "pending", "waiting", "input_required", "paused"].includes(
+      t.state,
+    ),
+  );
+  const completed = tasks.filter((t) => t.terminal);
 
   if (tasks.length === 0) {
     logger.info("No background tasks");
@@ -24,7 +29,15 @@ export async function listTasks(options = {}) {
   }
 
   if (!options.quiet) {
-    logger.info(formatBackgroundTasks(tasks));
+    const background = tasks
+      .filter((task) => task.source === "background-shell")
+      .map((task) => ({
+        ...task,
+        id: task.taskId,
+        status: task.state === "completed" ? "exited" : task.state,
+        command: task.label || "",
+      }));
+    if (background.length) logger.info(formatBackgroundTasks(background));
   }
 
   logger.info(
@@ -32,11 +45,13 @@ export async function listTasks(options = {}) {
   );
 
   return {
-    count: tasks.length,
-    active: active.length,
-    completed: completed.length,
+    ...counts,
     tasks,
-    formatted: formatBackgroundTasks(tasks),
+    formatted: formatBackgroundTasks(
+      tasks
+        .filter((task) => task.source === "background-shell")
+        .map((task) => ({ ...task, id: task.taskId, status: task.state })),
+    ),
   };
 }
 
@@ -46,8 +61,8 @@ export async function listTasks(options = {}) {
  * @returns {Object|null}
  */
 export function getTask(taskId) {
-  const tasks = listBackgroundShellTasks();
-  return tasks.find((t) => t.id === taskId) || null;
+  const tasks = collectTaskRecords();
+  return tasks.find((t) => t.taskId === taskId) || null;
 }
 
 export default { listTasks, getTask };

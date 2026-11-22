@@ -24,6 +24,100 @@ const invalid = () =>
     true,
   );
 
+/** Validate an external MCP tool schema before it reaches a provider API. */
+export function validateMcpInputSchema(
+  schema,
+  { toolName = "unknown", maxBytes = 256 * 1024 } = {},
+) {
+  const errors = [];
+  let encoded = "";
+  try {
+    encoded = JSON.stringify(schema) || "";
+  } catch {
+    errors.push({
+      tool: toolName,
+      path: "$",
+      code: "SCHEMA_NOT_SERIALIZABLE",
+      message: "inputSchema is not JSON-serializable",
+    });
+  }
+  if (encoded.length > maxBytes)
+    errors.push({
+      tool: toolName,
+      path: "$",
+      code: "SCHEMA_TOO_LARGE",
+      message: `inputSchema exceeds ${maxBytes} bytes`,
+    });
+  const visit = (value, path = "$", depth = 0) => {
+    if (depth > 32) {
+      errors.push({
+        tool: toolName,
+        path,
+        code: "SCHEMA_TOO_DEEP",
+        message: "inputSchema nesting exceeds 32 levels",
+      });
+      return;
+    }
+    if (!value || typeof value !== "object" || Array.isArray(value)) {
+      errors.push({
+        tool: toolName,
+        path,
+        code: "SCHEMA_NOT_OBJECT",
+        message: "schema nodes must be objects",
+      });
+      return;
+    }
+    if (value.type !== undefined && typeof value.type !== "string")
+      errors.push({
+        tool: toolName,
+        path: `${path}.type`,
+        code: "SCHEMA_TYPE_INVALID",
+        message: "type must be a string",
+      });
+    if (value.properties !== undefined) {
+      if (
+        !value.properties ||
+        typeof value.properties !== "object" ||
+        Array.isArray(value.properties)
+      )
+        errors.push({
+          tool: toolName,
+          path: `${path}.properties`,
+          code: "SCHEMA_PROPERTIES_INVALID",
+          message: "properties must be an object",
+        });
+      else
+        for (const [key, child] of Object.entries(value.properties))
+          visit(child, `${path}.properties.${key}`, depth + 1);
+    }
+    if (
+      value.required !== undefined &&
+      (!Array.isArray(value.required) ||
+        value.required.some((key) => typeof key !== "string"))
+    )
+      errors.push({
+        tool: toolName,
+        path: `${path}.required`,
+        code: "SCHEMA_REQUIRED_INVALID",
+        message: "required must be an array of strings",
+      });
+    for (const key of ["items", "additionalProperties", "contains", "not"])
+      if (value[key] && typeof value[key] === "object")
+        visit(value[key], `${path}.${key}`, depth + 1);
+    for (const key of ["allOf", "anyOf", "oneOf", "prefixItems"])
+      if (Array.isArray(value[key]))
+        value[key].forEach((child, index) =>
+          visit(child, `${path}.${key}[${index}]`, depth + 1),
+        );
+  };
+  if (errors.length === 0) visit(schema);
+  return Object.freeze({
+    valid: errors.length === 0,
+    toolName,
+    errors: Object.freeze(errors),
+  });
+}
+
 /** Only the explicit task API advertises Tasks. Ordinary calls cannot silently
  * create an untracked background operation, and no input/sampling authority is
  * advertised by this polling transport. */

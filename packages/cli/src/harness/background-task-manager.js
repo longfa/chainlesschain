@@ -411,6 +411,19 @@ export class BackgroundTaskManager extends EventEmitter {
     });
 
     child.on("exit", (code) => {
+      if (task.stopRequestedAt) {
+        task.stopConfirmedAt = Date.now();
+        task.stopContract = {
+          requested: true,
+          confirmed: true,
+          orphanRisk: false,
+        };
+        this._recordHistory(task, "stop_confirmed", {
+          requestedAt: task.stopRequestedAt,
+          confirmedAt: task.stopConfirmedAt,
+          exitCode: code,
+        });
+      }
       if (task.status === TaskStatus.RUNNING) {
         if (code === 0) {
           this._complete(
@@ -537,7 +550,17 @@ export class BackgroundTaskManager extends EventEmitter {
   }
 
   stop(taskId) {
+    const task = this.tasks.get(taskId);
+    if (!task) return { requested: false, confirmed: false, orphanRisk: false };
     const child = this.processes.get(taskId);
+    const requestedAt = Date.now();
+    task.stopRequestedAt = task.stopRequestedAt || requestedAt;
+    task.stopContract = {
+      requested: true,
+      confirmed: !child || child.exitCode !== null,
+      orphanRisk: false,
+    };
+    this._recordHistory(task, "stop_requested", { requestedAt });
     if (child) {
       this._clearKillTimer(taskId);
       _deps.killProcessTree(child, "SIGTERM");
@@ -547,6 +570,15 @@ export class BackgroundTaskManager extends EventEmitter {
       const killTimer = setTimeout(() => {
         if (child.exitCode === null) {
           _deps.killProcessTree(child, "SIGKILL");
+          task.stopContract = {
+            requested: true,
+            confirmed: false,
+            orphanRisk: true,
+          };
+          this._recordHistory(task, "stop_timeout", {
+            requestedAt: task.stopRequestedAt,
+            orphanRisk: true,
+          });
         }
       }, this.killGraceMs);
       if (killTimer && typeof killTimer.unref === "function") killTimer.unref();
@@ -555,11 +587,16 @@ export class BackgroundTaskManager extends EventEmitter {
         child.once("exit", () => this._clearKillTimer(taskId));
       }
     }
-    const task = this.tasks.get(taskId);
-    if (task) {
-      this._recordHistory(task, "stop-requested", { requestedBy: "user" });
+    if (!child) {
+      task.stopConfirmedAt = Date.now();
+      task.stopContract.confirmed = true;
+      this._recordHistory(task, "stop_confirmed", {
+        requestedAt: task.stopRequestedAt,
+        confirmedAt: task.stopConfirmedAt,
+      });
     }
     this._complete(taskId, TaskStatus.FAILED, null, "Stopped by user");
+    return { ...task.stopContract };
   }
 
   _stopForBudget(taskId, reason) {

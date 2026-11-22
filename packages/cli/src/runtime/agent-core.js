@@ -275,6 +275,7 @@ import {
   createProviderResponseError,
 } from "../lib/provider-http-error.js";
 import { buildPermissionDecision } from "../lib/permission-decision.js";
+import { permissionProfileDigest } from "../lib/permission-profile.js";
 import { resolveSandboxPolicyPath } from "../lib/agent-sandbox.js";
 import {
   beginManagedToolCheckpoint,
@@ -2675,14 +2676,24 @@ function snapshotApprovalPolicyAuthority(approvalGate, sessionId) {
   if (snapshot && typeof snapshot.then === "function") {
     throw new TypeError("approval policy snapshot must be synchronous");
   }
-  if (snapshot) return snapshot;
-  return {
+  if (snapshot) {
+    return {
+      ...snapshot,
+      permissionProfileDigest:
+        snapshot.permissionProfileDigest || permissionProfileDigest(snapshot),
+    };
+  }
+  const legacy = {
     schema: "chainlesschain.approval-policy-authority/v1",
     kind: "legacy-gate",
     sessionId: sessionId ? String(sessionId) : null,
     policy: approvalGate.getSessionPolicy?.(sessionId) || null,
     hasAuthorizationConsumer:
       approvalGate.hasAuthorizationConsumer?.() === true,
+  };
+  return {
+    ...legacy,
+    permissionProfileDigest: permissionProfileDigest(legacy),
   };
 }
 

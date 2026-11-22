@@ -3806,6 +3806,10 @@ class ChatViewProvider {
       "chainlesschain.chat",
     );
     if (chatCfg.get("contextIndicator") === false) return;
+    const contextUsageThreshold = Math.max(
+      0,
+      Math.min(100, Number(chatCfg.get("contextUsageThreshold")) || 0),
+    );
     const introspect = require("./introspect-commands");
     const { model, provider, baseUrl } = this._conversationLlm(conv, chatCfg);
     const cacheKey = JSON.stringify([provider, model, baseUrl]);
@@ -3814,7 +3818,9 @@ class ChatViewProvider {
       usage,
       usage?.contextWindow,
     );
-    if (requestStatus) {
+    const visible = (status) =>
+      status && Number(status.pct) >= contextUsageThreshold;
+    if (visible(requestStatus)) {
       this._postFrom(
         convId,
         { kind: "ctxStatus", ...requestStatus, source: "provider" },
@@ -3827,7 +3833,7 @@ class ChatViewProvider {
         usage,
         this._ctxWindowCache.window,
       );
-      if (status) {
+      if (visible(status)) {
         this._postFrom(
           convId,
           { kind: "ctxStatus", ...status, source: "provider" },
@@ -3875,6 +3881,7 @@ class ChatViewProvider {
           this._lastCallUsage.get(convId),
           status.window,
         );
+        if (!visible(live || status)) return;
         this._postFrom(
           convId,
           {

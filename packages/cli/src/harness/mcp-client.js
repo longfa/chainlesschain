@@ -38,6 +38,7 @@ import {
   admitMcpTaskResponse,
   MCP_STATELESS_PROTOCOL_VERSION,
 } from "../lib/mcp-tasks.js";
+import { validateMcpInputSchema } from "../lib/mcp-stateless-protocol.js";
 import {
   statelessMcpRequest,
   admitStatelessMcpTask,
@@ -1230,6 +1231,7 @@ const MCP_NON_RETRYABLE_PROTOCOL_ERROR_CODES = new Set([
   "CC_MCP_RPC_MESSAGE_INVALID",
   "CC_MCP_TOOL_CATALOG_STALE",
   "CC_MCP_TOOL_NOT_ADVERTISED",
+  "CC_MCP_INPUT_SCHEMA_INVALID",
 ]);
 
 function isMcpNonRetryableProtocolError(error) {
@@ -3331,7 +3333,25 @@ export class MCPClient extends EventEmitter {
             "tools/list",
             {},
           );
-          this._replaceToolInventory(name, entry, toolsResult?.tools || []);
+          const discoveredTools = toolsResult?.tools || [];
+          for (const tool of discoveredTools) {
+            if (!tool?.inputSchema) continue;
+            const schemaCheck = validateMcpInputSchema(tool.inputSchema, {
+              toolName: tool.name || "unknown",
+            });
+            if (!schemaCheck.valid) {
+              const error = new Error(
+                `MCP tool inputSchema rejected for ${tool.name || "unknown"}: ${schemaCheck.errors
+                  .map((item) => `${item.path} ${item.message}`)
+                  .join("; ")}`,
+              );
+              error.code = "CC_MCP_INPUT_SCHEMA_INVALID";
+              error.toolName = tool.name || null;
+              error.schemaErrors = schemaCheck.errors;
+              throw error;
+            }
+          }
+          this._replaceToolInventory(name, entry, discoveredTools);
         } catch (err) {
           if (isMcpFatalDiscoveryError(err)) throw err;
           entry._toolInventoryReady = true;

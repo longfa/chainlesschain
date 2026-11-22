@@ -74,11 +74,21 @@ function buildContext({
   usedTokens = 0,
   contextWindow = 0,
   turn = 0,
+  taskState = null,
+  approvalsPending = 0,
+  mcpErrors = 0,
+  contextUsageThreshold,
 } = {}) {
   const used = Math.max(0, Number(usedTokens) || 0);
   const window = Math.max(0, Number(contextWindow) || 0);
   const pct = window > 0 ? Math.min(100, Math.round((used / window) * 100)) : 0;
-  return {
+  const threshold = Math.max(0, Math.min(100, Number(contextUsageThreshold) || 0));
+  const context = { used_tokens: used, window, pct };
+  if (contextUsageThreshold !== undefined) {
+    context.visible = window > 0 && pct >= threshold;
+    context.threshold = threshold;
+  }
+  const result = {
     hook_event_name: "Status",
     session_id: sessionId || null,
     model: { id: model || null, display_name: model || null },
@@ -88,9 +98,17 @@ function buildContext({
       project_dir: projectDir || cwd || process.cwd(),
     },
     cwd: cwd || process.cwd(),
-    context: { used_tokens: used, window, pct },
+    context,
     turn: Math.max(0, Number(turn) || 0),
   };
+  if (taskState || Number(approvalsPending) > 0 || Number(mcpErrors) > 0) {
+    result.task = {
+      state: taskState || null,
+      approvals_pending: Math.max(0, Number(approvalsPending) || 0),
+      mcp_errors: Math.max(0, Number(mcpErrors) || 0),
+    };
+  }
+  return result;
 }
 
 /** Compact a token count: 950 → "950", 12345 → "12.3k", 1500000 → "1.5M". */
@@ -147,13 +165,18 @@ function renderDefaultStatusLine(context = {}) {
   const c = context.context || {};
   const parts = [];
   if (context.model && context.model.id) parts.push(context.model.id);
-  if (c.window > 0) {
+  if (c.window > 0 && c.visible !== false) {
     parts.push(
       `⛁ ${formatTokens(c.used_tokens)}/${formatTokens(c.window)} (${c.pct}%)`,
     );
   } else if (c.used_tokens > 0) {
     parts.push(`⛁ ${formatTokens(c.used_tokens)}`);
   }
+  const task = context.task || {};
+  if (task.state) parts.push(`task ${task.state}`);
+  if (task.approvals_pending > 0)
+    parts.push(`approvals ${task.approvals_pending}`);
+  if (task.mcp_errors > 0) parts.push(`mcp errors ${task.mcp_errors}`);
   if (context.cwd) parts.push(shortenPath(context.cwd));
   if (context.turn) parts.push(`turn ${context.turn}`);
   return parts.join("  ·  ");
@@ -231,10 +254,24 @@ function getStatusLine({
   columns,
   rows,
   runProcess,
+  taskState,
+  approvalsPending,
+  mcpErrors,
+  contextUsageThreshold,
 } = {}) {
   const config = loadStatusLineConfig({ cwd, settingsFile });
   if (!config) return null;
-  const context = buildContext({ sessionId, model, provider, cwd, projectDir });
+  const context = buildContext({
+    sessionId,
+    model,
+    provider,
+    cwd,
+    projectDir,
+    taskState,
+    approvalsPending,
+    mcpErrors,
+    contextUsageThreshold,
+  });
   return renderStatusLine(config, context, {
     cwd,
     timeout,

@@ -681,3 +681,19 @@ export function evaluateUnattendedAction(params = {}) {
   }
   return { allow: true, reason: "allowlisted" };
 }
+
+/**
+ * Explain which assent branch produced a policy decision. This additive
+ * projection keeps the historical `{allow, reason}` contract unchanged while
+ * making the no-answer fail-closed branch explicit to event consumers.
+ */
+export function resolveAssentDecision(params = {}) {
+  const verdict = evaluateUnattendedAction(params);
+  const decision =
+    params.attended === true
+      ? "interactive-assent"
+      : verdict.allow
+        ? "policy-allow"
+        : "no-answer";
+  return { ...verdict, decision };
+}

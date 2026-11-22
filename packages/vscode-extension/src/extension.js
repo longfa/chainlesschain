@@ -1016,6 +1016,60 @@ async function activate(context) {
       openSessionsWorkbenchPanel();
     }),
     vscode.commands.registerCommand(
+      "chainlesschain.sessions.fork",
+      async () => {
+        const sessionId = chatProvider.activeSessionId?.();
+        if (!sessionId) {
+          vscode.window.showWarningMessage(
+            "ChainlessChain: no active session to fork",
+          );
+          return;
+        }
+        const { runCliResult } = require("./chat/introspect-commands.js");
+        const command = chatProvider._cliCommand?.() || "cc";
+        const result = await runCliResult({
+          command,
+          args: [
+            "agent",
+            "--resume",
+            String(sessionId),
+            "--fork-session",
+            "--print",
+            "",
+            "--output-format",
+            "json",
+          ],
+          cwd: vscode.workspace.workspaceFolders?.[0]?.uri?.fsPath,
+          timeoutMs: 60000,
+        });
+        if (!result.ok) {
+          vscode.window.showErrorMessage(
+            `ChainlessChain: session fork failed${result.text ? ` — ${result.text}` : ""}`,
+          );
+          return;
+        }
+        try {
+          const envelope = JSON.parse(result.stdout);
+          const forkedId = envelope.session_id || envelope.sessionId;
+          if (forkedId) {
+            chatProvider.resumeSessionId(forkedId);
+            vscode.window.showInformationMessage(
+              `ChainlessChain: forked session ${forkedId}`,
+            );
+            return;
+          }
+        } catch {
+          /* fall through to a structured failure */
+        }
+        vscode.window.showErrorMessage(
+          "ChainlessChain: fork completed without a session id",
+        );
+      },
+    ),
+    vscode.commands.registerCommand("chainlesschain.workflows.map", () => {
+      openSessionsWorkbenchPanel();
+    }),
+    vscode.commands.registerCommand(
       "chainlesschain.evolution.workbench",
       async () => {
         const {

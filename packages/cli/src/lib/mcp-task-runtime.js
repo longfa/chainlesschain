@@ -13,6 +13,7 @@ import {
   appendMcpTaskJournalEvent,
   readMcpTaskJournal,
 } from "./mcp-task-journal.js";
+import { registerTaskSource } from "./task-record.js";
 
 function failure(code, message, details = {}) {
   return Object.assign(new Error(message), { code, ...details });
@@ -112,6 +113,16 @@ export function createDurableMcpTaskRuntime({
     );
   }
   let secrets = secretStore;
+  // Make the session-owned durable tasks visible to the canonical task view
+  // while this runtime is alive. The reader is defensive because a session
+  // lease can be retired before a status-line refresh races with it.
+  registerTaskSource("mcp", () => {
+    try {
+      return listDurableMcpTasks(sessionId).records;
+    } catch {
+      return [];
+    }
+  });
   const vault = () =>
     (secrets ||= createSecretStore({
       service: "com.chainlesschain.mcp-tasks",

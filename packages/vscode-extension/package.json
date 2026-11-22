@@ -109,6 +109,16 @@
         "icon": "$(list-tree)"
       },
       {
+        "command": "chainlesschain.sessions.fork",
+        "title": "%cmd.sessions.fork.title%",
+        "icon": "$(split-horizontal)"
+      },
+      {
+        "command": "chainlesschain.workflows.map",
+        "title": "%cmd.workflows.map.title%",
+        "icon": "$(type-hierarchy-sub)"
+      },
+      {
         "command": "chainlesschain.evolution.workbench",
         "title": "%cmd.evolution.workbench.title%",
         "icon": "$(history)"
@@ -636,6 +646,13 @@
           "type": "boolean",
           "default": true,
           "description": "%config.chat.contextIndicator.description%"
+        },
+        "chainlesschain.chat.contextUsageThreshold": {
+          "type": "number",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 100,
+          "description": "%config.chat.contextUsageThreshold.description%"
         },
         "chainlesschain.chat.leanContext": {
           "type": "boolean",
