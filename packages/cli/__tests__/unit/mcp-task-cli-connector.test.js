@@ -39,6 +39,11 @@ vi.mock("../../src/lib/settings-loader.cjs", () => ({
 }));
 vi.mock("../../src/lib/project-root.cjs", () => ({
   findGitProjectRoot: () => root,
+  projectRootBase: () => root,
+  default: {
+    findGitProjectRoot: () => root,
+    projectRootBase: () => root,
+  },
 }));
 vi.mock("../../src/harness/mcp-client.js", async (importOriginal) => {
   const actual = await importOriginal();
