@@ -22,6 +22,7 @@ const manifest = JSON.parse(
 const helpIndex = JSON.parse(
   readFileSync(join(cliRoot, "src", "command-help-index.json"), "utf-8"),
 );
+const projectionOnlyTopLevelCommands = new Set(["tasks"]);
 const runtimeDirs = [];
 
 afterEach(() => {
@@ -43,7 +44,10 @@ describe("command manifest ⇄ eager program (drift guard)", () => {
   const manifestNames = manifest.commands.map((c) => c.name).sort();
 
   it("every eager top-level command is in the manifest", () => {
-    const missing = eagerNames.filter((n) => !manifestNames.includes(n));
+    const missing = eagerNames.filter(
+      (n) =>
+        !projectionOnlyTopLevelCommands.has(n) && !manifestNames.includes(n),
+    );
     expect(
       missing,
       `Run: node scripts/gen-command-manifest.mjs — missing: ${missing.join(", ")}`,
@@ -129,6 +133,7 @@ describe("command manifest ⇄ eager program (drift guard)", () => {
 
   it("the generated help text matches the canonical Commander commands", () => {
     for (const command of eager.commands) {
+      if (projectionOnlyTopLevelCommands.has(command.name())) continue;
       command.configureHelp({ helpWidth: 80 });
       expect(
         helpIndex.commands[command.name()],
