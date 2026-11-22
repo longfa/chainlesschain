@@ -6,6 +6,13 @@ const lk = releaseStatus.lkChannel;
 const solCoverage = releaseStatus.solTaskCoverage;
 const showJetBrainsCandidate =
   releaseStatus.jetBrainsCandidateVersion !== releaseStatus.jetBrainsMarketplaceVersion;
+const jetBrainsPending = [
+  "pending-review",
+  "pending-approval",
+  "published-unverified",
+  "uploaded_public_listing_pending",
+  "uploaded-pending-review",
+].includes(releaseStatus.jetBrainsPublicationStatus);
 const items = english
   ? [["Verified upgrade pairing", `Public CLI ${releaseStatus.recommendedCliVersion} and Open VSX ${releaseStatus.openVsxVersion}; restart the host and run Doctor after upgrading. JetBrains pairing follows its own channel status.`], ["LK model migration", "Use gpt-6.1-sol at https://api.vv666.ai/v1; https://api.lk666.ai is the manual backup. Same-family legacy aliases are normalized. Directory membership does not grant account access."], ["Self-evolution limits", "Complete runtime graphs, independent installer/pins, A/B/C evaluation and business effects remain incomplete. Automatic promotion remains HOLD."]]
   : [["已核对的配套升级", `CLI ${releaseStatus.recommendedCliVersion} 与 Open VSX ${releaseStatus.openVsxVersion} 已公开；升级后重启宿主并运行 Doctor。JetBrains 按自身渠道状态配对。`], ["LK 模型迁移", "使用 https://api.vv666.ai/v1 与 gpt-6.1-sol，https://api.lk666.ai 为手动备用地址。旧别名按同系列迁移，目录不等于账户权限。"], ["自进化边界", "完整运行时图、独立 installer/pins、A/B/C 评测与业务效果仍未完成，自动晋升保持 HOLD。"]];
