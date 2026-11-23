@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed - cc CLI 0.166.162 and IDE pairing (candidate, 2026-11-23)
+
+- Preserve approved plan permissions across interactive and background resumes. Report headless storage failures and destructive-action denials with nonzero exit codes.
+- Record Git installer outcomes, background stop receipts, and orphan risk. Keep VS Code forks in separate tabs with independent transcripts and side-effect ledgers.
+- Pair with Open VSX 0.37.197 and JetBrains 0.4.212 after the exact-source release gates pass.
+
 ### Added - cc CLI 0.166.161 and IDE pairing (candidate, 2026-11-23)
 
 - Refresh the LK model catalog from the platform in CLI setup, Web, VS Code, JetBrains and desktop settings. Add GPT-6.2 Sol and GPT-6.2 Astra to the offline catalog.

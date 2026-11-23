@@ -1,5 +1,11 @@
 # chainlesschain CLI
 
+## CLI 0.166.162 and IDE pairing
+
+CLI **0.166.162** preserves approved plan permissions across resumes, reports headless persistence failures in JSON, and records Git installation outcomes. Install this version with `npm i -g chainlesschain@0.166.162 --registry https://registry.npmjs.org` after it is available on npm. Restart the CLI and IDE hosts, then run `cc --version` and `cc doctor`. Open VSX **0.37.197** and JetBrains **0.4.212** recommend this CLI version and have their own release gates.
+
+Paid readiness remains `NOT_PAID_READY`, native admission remains `NOT_ADMITTED`, and automatic promotion remains `HOLD`. This pairing covers the CLI and IDE extensions.
+
 ## Public CLI 0.166.161 and IDE pairing
 
 CLI **0.166.161** is public on npm from exact source `22f4dfea080546d586f75652fd5075671019ffb8`. GitHub Actions verified the public archive and signed provenance after CLI CI, Strict Sandbox and the child-package checks passed. Install `npm i -g chainlesschain@0.166.161 --registry https://registry.npmjs.org` and check `cc --version`. [OIDC publication](https://github.com/longfa/chainlesschain/actions/runs/45084688787)

@@ -1,5 +1,10 @@
 # Changelog — ChainlessChain IDE Bridge (VS Code)
 
+## [0.37.197] - CLI 0.166.162 pairing (candidate, 2026-11-23)
+
+- Open a session fork in a separate chat tab so the source conversation remains available.
+- Pair with CLI `0.166.162` for persisted approval profiles and machine-readable failure receipts.
+
 ## [0.37.196] - CLI 0.166.161 pairing (candidate, 2026-11-23)
 
 - Fetch and refresh the latest LK models while preserving edits. The offline list includes GPT-6.2 Sol and GPT-6.2 Astra.

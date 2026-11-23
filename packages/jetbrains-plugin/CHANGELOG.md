@@ -1,5 +1,9 @@
 # Changelog — ChainlessChain IDE Bridge (JetBrains)
 
+## [0.4.212] - CLI 0.166.162 pairing (candidate, 2026-11-23)
+
+- Recommend CLI `0.166.162`, which preserves approved plan permissions across resumed sessions and returns structured headless failure receipts.
+
 ## [0.4.211] - CLI 0.166.161 pairing (candidate, 2026-11-23)
 
 - Refresh the LK model menu using CLI `0.166.161`. The offline list includes GPT-6.2 Sol and GPT-6.2 Astra.
