@@ -128,6 +128,18 @@ cc agenda run --watch 30
 # 或 systemd timer / Windows 计划任务
 ```
 
+### `cc lab ccron` 的进程内截止时间
+
+CLI `0.166.162` 候选支持在注册 Cowork Cron V2 profile 时用 `--ends-at` 指定 ISO 8601 截止时间。以下示例传入已经过去的时间，可以直接观察到期结果。
+
+```bash
+cc lab ccron register-profile-v2 --id review --owner local --expr "0 9 * * *" --ends-at 2000-01-01T00:00:00Z
+```
+
+注册结果是 JSON。此例返回 `status: "archived"`、`state: "expired"`、`expiresAction: "retire"` 和 `nextRunAt: null`。活跃 profile 仅在下一次触发早于 `endsAt` 时返回 `nextRunAt`。处理到期时会取消队列中的 tick，已运行的 tick 可以继续结算。
+
+`cc lab ccron` 的 profile 和 tick 只在当前进程中有效，命令退出后会丢弃。跨进程保存、查询或继续执行调度时，请使用本页的 `cc agenda` 命令。
+
 ## Agent 工具参考
 
 以下两个工具供 Agent 在 turn 内调用（不是顶层 CLI 命令）。

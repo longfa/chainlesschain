@@ -229,7 +229,7 @@ Claude 2.1.330 让子代理的模型回退（fallback）**传导**给它派生�
 
 ## 继续实施与本地验收
 
-提交 `75976d2790` 建立了统一任务字段。以下状态对应 2026-11-24 02:01（北京时间）的实际验证结果。
+提交 `75976d2790` 建立了统一任务字段。以下状态对应 2026-11-24 02:17（北京时间）的实际验证结果。
 
 ### 当前任务实际完成情况
 
@@ -242,6 +242,7 @@ Claude 2.1.330 让子代理的模型回退（fallback）**传导**给它派生�
 | 非交互无人应答拒绝           | 已实现，场景通过         | 单次和多轮 headless 命令均拒绝破坏性操作并以非零退出，保留审计记录和隔离目录文件。多轮输入可继续处理后续合法消息。                                                                                                                                                               | —                                                                           |
 | MCP 共享与释放               | 已实现，场景通过         | 两个活跃子代理共享 transport，后释放的持有者仍可调用。本机 HTTP 连接验证共享释放，Windows 至 Linux 的两个独立会话维持五分钟并分别收到一次 `DELETE`。                                                                                                                             | —                                                                           |
 | 调度到期与状态栏             | 三个入口已实现，本地通过 | `agenda`、`lab ccron` 和 `loop` 输出截止时间、到期动作和下次运行时间。跨进程任务列表验证 `expired` 与空的 `nextRunAt`。回归 324 项通过，1 项 POSIX 用例在 Windows 跳过。                                                                                                         | 新候选三平台发布回归。                                                      |
+| 调度命令参考                 | 文档站本地构建通过       | 已核对 `agenda`、`loop` 及 `lab ccron` 的截止时间说明与渲染结果。最新 VitePress 构建生成 707 页。[调度命令参考](../../../../docs-site/docs/chainlesschain/cli-agenda.md#cc-lab-ccron-的进程内截止时间)                                                                           | 正式发布后更新版本标记。                                                    |
 | 权限档位与旧审批             | 已实现，部分平台待验     | Windows 与 Linux 验证后台会话恢复、批准档位回读、参数变化拒绝和旧审批防重放。流式及交互 REPL 的批准均写入会话日志。当前候选的 Windows REPL 审批跨进程恢复已单独复跑通过。                                                                                                        | macOS 交互恢复复验。                                                        |
 | Headless 失败交付            | 已实现，部分平台待验     | Linux 满盘、只读挂载和 `/dev/full`，以及 Windows 只读会话文件和 stdout 句柄均有实测。单次 JSON 与多轮 NDJSON 失败可解析并退出 1。`EPERM`、`EACCES` 有注入覆盖。                                                                                                                  | macOS stdout 重定向复验。                                                   |
 | VS Code 会话分叉和工作流地图 | 已实现，部分平台待验     | Windows 与 Linux 的 VS Code 1.145.2 已验证两个标签独立完成任务并分别写入副作用账本。Windows 用当前 CI 候选 VSIX `0.37.197` 复跑通过，工作流地图与独立 CLI 的活跃任务读回一致。[候选制品来源](https://github.com/longfa/chainlesschain/actions/runs/45225095657/job/137877503254) | macOS 真实宿主复验。                                                        |
@@ -282,6 +283,7 @@ Claude 2.1.330 让子代理的模型回退（fallback）**传导**给它派生�
 - 文档站已补充任务投影与停止事件、headless 写盘失败和状态栏阈值。另补充插件与 MCP 安装回执、Runner 三段耗时、VS Code 分叉与工作流对照命令。[Agent](../../../../docs-site/docs/chainlesschain/cli-agent.md#任务状态与停止回执) · [插件](../../../../docs-site/docs/chainlesschain/cli-plugin.md#安装命令回执) · [MCP](../../../../docs-site/docs/chainlesschain/cli-mcp.md#add) · [Runner](../../../../docs-site/docs/chainlesschain/cli-status.md#执行位置-runner) · [IDE](../../../../docs-site/docs/chainlesschain/ide-plugin.md#从历史回复分叉并查看工作流)
 - 已通过 CLI 命令清单和公开 IDE 能力清单校验。文档站结构检查覆盖 352 个文件。VitePress 本地构建生成 707 个 HTML 页面，其中五份修改后的命令参考均已核对渲染结果。
 - 本轮更新 `agenda` 和 `loop` 参考页后，文档站结构检查和 VitePress 构建通过。已核对两个页面渲染的截止时间示例、JSON 字段和 `loop_wait` 事件。[Agenda](../../../../docs-site/docs/chainlesschain/cli-agenda.md) · [Loop](../../../../docs-site/docs/chainlesschain/cli-loop.md)
+- 从候选 npm 归档安装后执行 `cc lab ccron register-profile-v2 --ends-at` 示例，JSON 返回 `archived`、`expired`、`retire` 和空的 `nextRunAt`。另一 CLI 进程的 profile 列表为空，与进程内生命周期一致。
 - 公开 IDE 能力清单增加任务投影、状态栏上下文、安装命令回执、headless 持久化错误、Runner 启动时间和会话分叉的字段映射。校验器核对命令注册与指南路径，`cc tasks` 直接注册的命令入口也纳入核对。[能力清单](../../../cli/PUBLIC_IDE_CAPABILITY_MANIFEST.generated.json)
 - `cc skill add --json` 已验证项目创建、全局创建、重复名称和无项目四条路径。成功回执返回技能位置，失败回执返回 `error.message` 和退出码 1。两者共用 `installCommand`，均未启动子进程。技能与插件回执的 13 项进程测试和 6 项能力清单测试通过。新增技能参考和状态栏字段也已在 707 页文档站构建中验证。
 
