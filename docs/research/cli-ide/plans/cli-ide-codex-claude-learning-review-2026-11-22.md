@@ -332,15 +332,15 @@ Windows 本地进程级回归 9 项、任务与 MCP 回归 79 项、流式协议
 
 ### CLI 0.166.162 与配套 IDE 的发布候选
 
-- 候选 `5321e5338e9962f0c0cbe7b31b31888228551498` 将 CLI、Open VSX 和 JetBrains 分别定为 `0.166.162`、`0.37.197` 和 `0.4.212`。两款插件的推荐 CLI 都是 `0.166.162`。核对公开渠道后确认三个候选版本尚未上架。[候选源码](https://github.com/longfa/chainlesschain/commit/5321e5338e9962f0c0cbe7b31b31888228551498)
+- 候选 `89e7bc37cdeb951014e6690953f5805422461ba6` 在 `main` 补齐技能回执和公开能力清单。CLI、Open VSX 和 JetBrains 版本分别为 `0.166.162`、`0.37.197` 和 `0.4.212`。两款插件的推荐 CLI 都是 `0.166.162`。三个候选版本尚未上架。[候选源码](https://github.com/longfa/chainlesschain/commit/89e7bc37cdeb951014e6690953f5805422461ba6)
 - 13 个上游 npm 包沿用已发布版本。已按 npm 的完整性字段下载并校验所有归档，CLI 直接依赖与仓库固定版本相同。OIDC 发布工作流还会比较候选和公开子包归档，并核验签名来源。
 - Windows VS Code 1.145.2 安装 `0.37.197` 候选 VSIX 后复跑了两条会话分叉、各自的文件写入账本及运行中工作流地图对照。候选命令清单、帮助索引、补全、IDE 能力清单和 Marketplace 元数据检查已通过。复审 `agent-core.js` 相对上一发布标签的差异后更新了模型出站审查摘要，88 个源码文件和脚本通过预检。
 - Linux x64 的 12 项 CLI 进程回归通过，覆盖交互审批恢复、后台进程回收、插件安装回执与无人应答拒绝。Windows 通过 `openSync(path, "r")` 将只读文件句柄传给子进程 stdout。正常输出对照成功，单次 JSON 与流式 NDJSON 写入均报告 `EBADF` 并退出 1。
 - Windows 使用真实 Git HTTPS transport，向临时回环代理发起 CONNECT。代理返回 502 时，`cc plugin add --json` 退出 1，Git 回执退出码 128。代理保持连接但不回应时，Git 在约 120 秒后被终止，CLI 退出 1，回执包含 `timedOut: true`、`signaled: true`、`exitCode: null` 和 stderr 摘要。两次均使用测试域名，代理未转发请求。
-- Windows 本地构建并打包 CLI 候选。隔离目录安装该归档后，`cc --version` 输出 `0.166.162`，Web Panel 构建资源随包交付，10 个 CLI 直接依赖的内部 npm 包均解析到公开 npm 上的固定版本。候选 VS Code 扩展的 359 项 Node 测试全部通过。
+- 上一候选 `5321e5338e` 在 Windows 本地构建并打包。隔离目录安装该归档后，`cc --version` 输出 `0.166.162`，Web Panel 构建资源随包交付，10 个 CLI 直接依赖的内部 npm 包均解析到公开 npm 上的固定版本。候选 VS Code 扩展的 359 项 Node 测试全部通过。
 - Linux x64 容器内使用 Xvfb 启动通过官方 SHA-256 校验的 VS Code 1.145.2。真实宿主安装扩展 `0.37.197` 后完成分叉测试。进程退出 0，两条会话的历史和副作用账本独立，运行中的 Cowork 工作流在 IDE 与 CLI 投影一致。另有 41 项本地发布归档、精确提交门禁及来源验证测试通过。[原生宿主测试入口](../../../../packages/vscode-extension/test/extension-host/run-session-fork.cjs)
 - 上一提交的 IDE 预检发现 JetBrains 兼容性章节中的安装命令仍引用上一 CLI 版本。修正示例后，JetBrains 发布元数据、VS Code Marketplace 元数据、公开能力清单、路线图 fixture 校验和 14 项 CLI 依赖门禁测试均在本地通过。[上一轮 IDE 预检](https://github.com/longfa/chainlesschain/actions/runs/45181512001/job/137716210861)
-- 五组验证已按修正后的同一候选 SHA 发起。等待全部适用门禁成功后按顺序发布 CLI，核对公开 npm 归档和来源，再发布并核对两款 IDE 插件。[CLI CI](https://github.com/longfa/chainlesschain/actions/runs/45182636803) · [严格沙箱](https://github.com/longfa/chainlesschain/actions/runs/45182636725) · [原生构建](https://github.com/longfa/chainlesschain/actions/runs/45182636734) · [IDE Extensions](https://github.com/longfa/chainlesschain/actions/runs/45182636709) · [IDE ARM64](https://github.com/longfa/chainlesschain/actions/runs/45182637445)
+- 五组验证已按新的候选 SHA 发起，上一候选的门禁已提交取消请求。全部适用门禁通过后，按顺序发布 CLI，核对公开 npm 归档和来源，再发布并核对两款 IDE 插件。[CLI CI](https://github.com/longfa/chainlesschain/actions/runs/45191381509) · [严格沙箱](https://github.com/longfa/chainlesschain/actions/runs/45191381615) · [原生构建](https://github.com/longfa/chainlesschain/actions/runs/45191426226) · [IDE Extensions](https://github.com/longfa/chainlesschain/actions/runs/45191381375) · [IDE ARM64](https://github.com/longfa/chainlesschain/actions/runs/45191426766)
 - 运行时源码提交 `73286530a5507cf311e165d132399f85f6238d0b` 已通过本地 Linux、Windows、WSL、容器和严格 SSH 的执行位置验证。下载五份制品后用仓库验证器复核了来源、文件摘要、进程生命周期和每个位置 100 次轨迹，共 500 次。第一轮 macOS 作业未获分配宿主即被取消，六个位置的汇总门禁未通过。第二轮已按同一 SHA 重跑完整矩阵。[首轮结果](https://github.com/longfa/chainlesschain/actions/runs/45179047694/attempts/1) · [第二轮验证](https://github.com/longfa/chainlesschain/actions/runs/45179047694/attempts/2)
 
 ### CLI 0.166.160 发布验证记录
