@@ -44,7 +44,7 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
-  IDE_ARM64_RELEASE_COMMIT: ${{ inputs.commit_sha || github.event.pull_request.head.sha || github.sha }}
+  CC_RELEASE_COMMIT: ${{ inputs.commit_sha || github.event.pull_request.head.sha || github.sha }}
 
 jobs:
   docs-scope:
@@ -69,7 +69,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ env.IDE_ARM64_RELEASE_COMMIT }}
+          ref: ${{ env.CC_RELEASE_COMMIT }}
           fetch-depth: 0
       - uses: actions/setup-node@v5
         with:
@@ -79,7 +79,7 @@ jobs:
         working-directory: .
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$IDE_ARM64_RELEASE_COMMIT"
+          test "$(git rev-parse HEAD)" = "$CC_RELEASE_COMMIT"
           test -z "$(git status --porcelain --untracked-files=all)"
       - name: Run release contract tests
         run: npm run test:unit
@@ -93,7 +93,7 @@ jobs:
         id: upload-candidate
         uses: actions/upload-artifact@v6
         with:
-          name: ide-arm64-vscode-candidate-${{ env.IDE_ARM64_RELEASE_COMMIT }}-${{ github.run_attempt }}
+          name: ide-arm64-vscode-candidate-${{ env.CC_RELEASE_COMMIT }}-${{ github.run_attempt }}
           path: |
             packages/vscode-extension/chainlesschain-ide.vsix
             packages/vscode-extension/manifest.json
@@ -127,7 +127,7 @@ jobs:
         run: git config --global core.longpaths true
       - uses: actions/checkout@v5
         with:
-          ref: ${{ env.IDE_ARM64_RELEASE_COMMIT }}
+          ref: ${{ env.CC_RELEASE_COMMIT }}
           fetch-depth: 0
       - uses: actions/setup-node@v5
         with:
@@ -135,7 +135,7 @@ jobs:
       - name: Assert exact clean ARM64 host
         run: >-
           node scripts/verify-ide-arm64-evidence.mjs --assert-host
-          --release-commit ${{ env.IDE_ARM64_RELEASE_COMMIT }}
+          --release-commit ${{ env.CC_RELEASE_COMMIT }}
           --expected-platform ${{ matrix.platform }} --expected-arch arm64
           --repository-root .
       - name: Download immutable VSIX candidate
@@ -170,7 +170,7 @@ jobs:
         run: >-
           xvfb-run --auto-servernum --server-args="-screen 0 1920x1080x24"
           node test/extension-host/run.cjs --vsix chainlesschain-ide.vsix
-          --release-commit ${{ env.IDE_ARM64_RELEASE_COMMIT }}
+          --release-commit ${{ env.CC_RELEASE_COMMIT }}
           --artifact-dir build/ide-arm64-evidence/vscode-${{ matrix.slug }}-stable
       - name: Real-DOM multi-root/multi-window journey (stable, Windows/macOS)
         if: runner.os != 'Linux'
@@ -178,7 +178,7 @@ jobs:
         timeout-minutes: 25
         run: >-
           node test/extension-host/run.cjs --vsix chainlesschain-ide.vsix
-          --release-commit ${{ env.IDE_ARM64_RELEASE_COMMIT }}
+          --release-commit ${{ env.CC_RELEASE_COMMIT }}
           --artifact-dir build/ide-arm64-evidence/vscode-${{ matrix.slug }}-stable
       - name: Real-DOM multi-root/multi-window journey (minimum 1.85.2, Linux)
         if: ${{ always() && runner.os == 'Linux' }}
@@ -188,7 +188,7 @@ jobs:
           xvfb-run --auto-servernum --server-args="-screen 0 1920x1080x24"
           node test/extension-host/run.cjs --vsix chainlesschain-ide.vsix
           --vscode-version 1.85.2
-          --release-commit ${{ env.IDE_ARM64_RELEASE_COMMIT }}
+          --release-commit ${{ env.CC_RELEASE_COMMIT }}
           --artifact-dir build/ide-arm64-evidence/vscode-${{ matrix.slug }}-minimum
       - name: Real-DOM multi-root/multi-window journey (minimum 1.85.2, Windows/macOS)
         if: ${{ always() && runner.os != 'Linux' }}
@@ -197,7 +197,7 @@ jobs:
         run: >-
           node test/extension-host/run.cjs --vsix chainlesschain-ide.vsix
           --vscode-version 1.85.2
-          --release-commit ${{ env.IDE_ARM64_RELEASE_COMMIT }}
+          --release-commit ${{ env.CC_RELEASE_COMMIT }}
           --artifact-dir build/ide-arm64-evidence/vscode-${{ matrix.slug }}-minimum
       - name: Upload ARM64 VS Code journey evidence
         # Keep failed host journeys observable, but a cancelled workflow may
@@ -205,7 +205,7 @@ jobs:
         if: ${{ always() && !cancelled() }}
         uses: actions/upload-artifact@v6
         with:
-          name: ide-arm64-evidence-vscode-${{ matrix.slug }}-${{ env.IDE_ARM64_RELEASE_COMMIT }}-${{ github.run_attempt }}
+          name: ide-arm64-evidence-vscode-${{ matrix.slug }}-${{ env.CC_RELEASE_COMMIT }}-${{ github.run_attempt }}
           path: packages/vscode-extension/build/ide-arm64-evidence/
           if-no-files-found: error
           retention-days: 90
@@ -253,7 +253,7 @@ jobs:
         run: git config --global core.longpaths true
       - uses: actions/checkout@v5
         with:
-          ref: ${{ env.IDE_ARM64_RELEASE_COMMIT }}
+          ref: ${{ env.CC_RELEASE_COMMIT }}
           fetch-depth: 0
       - uses: actions/setup-node@v5
         with:
@@ -263,7 +263,7 @@ jobs:
       - name: Assert exact clean ARM64 host
         run: >-
           node scripts/verify-ide-arm64-evidence.mjs --assert-host
-          --release-commit ${{ env.IDE_ARM64_RELEASE_COMMIT }}
+          --release-commit ${{ env.CC_RELEASE_COMMIT }}
           --expected-platform ${{ matrix.platform }} --expected-arch arm64
           --repository-root .
       # The hosted windows-11-arm image can launch the first-logon privacy
@@ -448,7 +448,7 @@ jobs:
           xvfb-run --auto-servernum --server-args="-screen 0 1920x1080x24"
           node packages/jetbrains-plugin/scripts/run-ui-host-journey.mjs
           --ide-version ${{ matrix.ide_version }}
-          --release-commit ${{ env.IDE_ARM64_RELEASE_COMMIT }}
+          --release-commit ${{ env.CC_RELEASE_COMMIT }}
           --artifact-dir packages/jetbrains-plugin/build/ide-arm64-evidence/jetbrains-${{ matrix.slug }}-${{ matrix.ide_version }}
       - name: Deterministic chat/control/resume journey (Windows/macOS)
         if: runner.os != 'Linux'
@@ -457,7 +457,7 @@ jobs:
         run: >-
           node packages/jetbrains-plugin/scripts/run-ui-host-journey.mjs
           --ide-version ${{ matrix.ide_version }}
-          --release-commit ${{ env.IDE_ARM64_RELEASE_COMMIT }}
+          --release-commit ${{ env.CC_RELEASE_COMMIT }}
           --artifact-dir packages/jetbrains-plugin/build/ide-arm64-evidence/jetbrains-${{ matrix.slug }}-${{ matrix.ide_version }}
       - name: Stop Windows ARM64 GUI watchdog
         if: ${{ always() && runner.os == 'Windows' }}
@@ -488,7 +488,7 @@ jobs:
         if: ${{ always() && !cancelled() }}
         uses: actions/upload-artifact@v6
         with:
-          name: ide-arm64-evidence-jetbrains-${{ matrix.slug }}-${{ matrix.ide_version }}-${{ env.IDE_ARM64_RELEASE_COMMIT }}-${{ github.run_attempt }}
+          name: ide-arm64-evidence-jetbrains-${{ matrix.slug }}-${{ matrix.ide_version }}-${{ env.CC_RELEASE_COMMIT }}-${{ github.run_attempt }}
           path: packages/jetbrains-plugin/build/ide-arm64-evidence/
           if-no-files-found: error
           retention-days: 90
@@ -512,7 +512,7 @@ jobs:
           exit 1
       - uses: actions/checkout@v5
         with:
-          ref: ${{ env.IDE_ARM64_RELEASE_COMMIT }}
+          ref: ${{ env.CC_RELEASE_COMMIT }}
           fetch-depth: 0
       - uses: actions/setup-node@v5
         with:
@@ -523,7 +523,7 @@ jobs:
           # Failed-job reruns keep successful matrix artifacts on their earlier
           # attempt. Download every attempt and let the verifier select the
           # newest evidence for each host cell.
-          pattern: ide-arm64-evidence-*-${{ env.IDE_ARM64_RELEASE_COMMIT }}-*
+          pattern: ide-arm64-evidence-*-${{ env.CC_RELEASE_COMMIT }}-*
           path: ${{ runner.temp }}/ide-arm64-evidence
           merge-multiple: false
       - name: Verify exact SHA, architecture, matrix, and artifact digests
@@ -531,12 +531,12 @@ jobs:
         run: >-
           node scripts/verify-ide-arm64-evidence.mjs
           --evidence-dir "${RUNNER_TEMP}/ide-arm64-evidence"
-          --release-commit "${IDE_ARM64_RELEASE_COMMIT}"
+          --release-commit "${CC_RELEASE_COMMIT}"
           --output "${RUNNER_TEMP}/ide-arm64-validation-aggregate.json"
       - name: Upload immutable aggregate
         uses: actions/upload-artifact@v6
         with:
-          name: ide-arm64-validation-aggregate-${{ env.IDE_ARM64_RELEASE_COMMIT }}-${{ github.run_attempt }}
+          name: ide-arm64-validation-aggregate-${{ env.CC_RELEASE_COMMIT }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/ide-arm64-validation-aggregate.json
           if-no-files-found: error
           retention-days: 90

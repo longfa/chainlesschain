@@ -21,6 +21,15 @@ test("ARM64 host reruns download the successful producer's immutable candidate",
   const download = workflow
     .split("      - name: Download immutable VSIX candidate")[1]
     .split("      - name:")[0];
+  assert.ok(producer.includes("ref: ${{ env.CC_RELEASE_COMMIT }}"));
+  assert.match(
+    producer,
+    /test "\$\(git rev-parse HEAD\)" = "\$CC_RELEASE_COMMIT"/u,
+  );
+  assert.match(
+    producer,
+    /vsix-release-artifact\.mjs create chainlesschain-ide\.vsix manifest\.json/u,
+  );
   assert.ok(
     producer.includes(
       "artifact-id: ${{ steps.upload-candidate.outputs.artifact-id }}",
@@ -336,7 +345,7 @@ test("the ARM64 workflow binds exact hosts, versions, and aggregate evidence", (
   );
   assert.match(
     workflow,
-    /IDE_ARM64_RELEASE_COMMIT: \$\{\{ inputs\.commit_sha \|\| github\.event\.pull_request\.head\.sha \|\| github\.sha \}\}/u,
+    /CC_RELEASE_COMMIT: \$\{\{ inputs\.commit_sha \|\| github\.event\.pull_request\.head\.sha \|\| github\.sha \}\}/u,
   );
   assert.match(
     workflow,
@@ -370,7 +379,7 @@ test("the ARM64 workflow binds exact hosts, versions, and aggregate evidence", (
   assert.match(workflow, /verify-ide-arm64-evidence\.mjs\s+--evidence-dir/u);
   assert.match(
     workflow,
-    /Download every ARM64 journey artifact[\s\S]*?pattern: ide-arm64-evidence-\*-\$\{\{ env\.IDE_ARM64_RELEASE_COMMIT \}\}-\*[\s\S]*?merge-multiple: false/u,
+    /Download every ARM64 journey artifact[\s\S]*?pattern: ide-arm64-evidence-\*-\$\{\{ env\.CC_RELEASE_COMMIT \}\}-\*[\s\S]*?merge-multiple: false/u,
   );
   assert.doesNotMatch(workflow, /continue-on-error/u);
 
