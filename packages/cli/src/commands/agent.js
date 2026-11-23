@@ -65,6 +65,19 @@ import {
   validateClaudeStorageLaunchEnvironment,
 } from "../lib/claude-project-auto-memory.js";
 
+function writeStartupResult(options, failure) {
+  if (!["json", "stream-json"].includes(options.outputFormat)) return false;
+  process.stdout.write(
+    `${JSON.stringify({
+      type: "result",
+      is_error: true,
+      session_id: options.session,
+      ...failure,
+    })}\n`,
+  );
+  return true;
+}
+
 /**
  * Resolve + validate `--add-dir` values into absolute, existing, de-duped
  * directories. Relative paths resolve against the invocation cwd. When the
@@ -1236,22 +1249,15 @@ export function registerAgentCommand(program, dependencies = {}) {
             }),
             { phase: "before-model" },
           );
-          if (!persistence) throw error;
           // Emit after withQuietStdout restores stdout, so a machine client
           // receives the failure even when preparation never reaches a runner.
-          if (["json", "stream-json"].includes(options.outputFormat)) {
-            process.stdout.write(
-              `${JSON.stringify({
-                type: "result",
-                subtype: "error_persistence",
-                is_error: true,
-                code: persistence.code,
-                error: "Canonical session preparation failed",
-                session_id: options.session,
-                persistence,
-              })}\n`,
-            );
-          }
+          writeStartupResult(options, {
+            subtype: persistence ? "error_persistence" : "error_startup",
+            code: persistence?.code || "CC_AGENT_SESSION_PREPARATION_FAILED",
+            error: "Canonical session preparation failed",
+            ...(persistence ? { persistence } : {}),
+          });
+          if (!persistence) throw error;
           process.stderr.write(
             `${persistence.code}: canonical session preparation was refused\n`,
           );
@@ -1399,13 +1405,38 @@ export function registerAgentCommand(program, dependencies = {}) {
           // policy-only sandbox choice into repeated Windows ACL initialization;
           // the normal user-facing audit path remains unchanged.
           if (!formalQualityHermetic) {
-            appendSecurityAuditEvent("sandbox_mode_off", {
-              details: {
-                command: "agent",
-                permissionMode: options.permissionMode || "default",
-                isolation: "policy-only",
-              },
-            });
+            try {
+              appendSecurityAuditEvent("sandbox_mode_off", {
+                details: {
+                  command: "agent",
+                  permissionMode: options.permissionMode || "default",
+                  isolation: "policy-only",
+                },
+              });
+            } catch (error) {
+              const persistence = projectSessionPersistenceFailure(
+                createSessionPersistenceFailure(error, {
+                  sessionId: options.session,
+                  operation: "session-start",
+                }),
+                { phase: "before-model" },
+              );
+              if (
+                !persistence ||
+                !writeStartupResult(options, {
+                  subtype: "error_persistence",
+                  code: persistence.code,
+                  error: "Security audit write failed",
+                  persistence,
+                })
+              ) {
+                throw error;
+              }
+              process.stderr.write(`Error: ${error.message}\n`);
+              await _finishWorktree();
+              process.exitCode = 6;
+              return;
+            }
             process.stderr.write(
               "Warning: sandbox mode is explicitly off; shell commands use policy checks without OS isolation.\n",
             );

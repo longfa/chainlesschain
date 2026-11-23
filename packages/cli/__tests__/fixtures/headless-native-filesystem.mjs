@@ -27,6 +27,9 @@ const mounts = stdoutOnly
       ENOSPC: process.env.CC_CLI_RELIABILITY_DISK_ENOSPC_HOME,
       EROFS: process.env.CC_CLI_RELIABILITY_DISK_EROFS_HOME,
     };
+const uninitializedHome = stdoutOnly
+  ? null
+  : process.env.CC_CLI_RELIABILITY_DISK_UNINITIALIZED_HOME;
 for (const [fsCode, mount] of Object.entries(mounts)) {
   assert.ok(mount, `Configure the ${fsCode} session mount before running`);
   const marker = join(
@@ -66,7 +69,10 @@ const server = createServer(async (request, response) => {
   );
 });
 
-function run(format, { stdoutFd = "pipe", home = t.home, sessionId } = {}) {
+function run(
+  format,
+  { stdoutFd = "pipe", home = t.home, sessionId, sandboxModeOff = true } = {},
+) {
   const stream = format === "stream-json";
   const child = spawn(
     process.execPath,
@@ -84,8 +90,7 @@ function run(format, { stdoutFd = "pipe", home = t.home, sessionId } = {}) {
       "--no-recall-memory",
       "--no-checkpoint",
       "--bare",
-      "--sandbox-mode",
-      "off",
+      ...(sandboxModeOff ? ["--sandbox-mode", "off"] : []),
       "--output-format",
       format,
       ...(stream
@@ -125,10 +130,33 @@ try {
     server.listen(0, "127.0.0.1", resolve);
   });
   for (const format of ["json", "stream-json"]) {
+    if (uninitializedHome) {
+      const startup = await run(format, {
+        home: uninitializedHome,
+        sessionId: `uninitialized-${format}`,
+        sandboxModeOff: false,
+      });
+      assert.equal(startup.code, 1, JSON.stringify(startup));
+      const result = JSON.parse(startup.stdout.trim());
+      assert.equal(result.type, "result");
+      assert.equal(result.subtype, "error_startup");
+      assert.equal(result.is_error, true);
+      assert.equal(result.code, "CC_AGENT_SESSION_PREPARATION_FAILED");
+      assert.equal(calls, 0);
+      console.log(
+        JSON.stringify({
+          case: "uninitialized-home",
+          format,
+          exitCode: startup.code,
+          modelCalls: calls,
+        }),
+      );
+    }
     for (const [fsCode, home] of Object.entries(mounts)) {
       const result = await run(format, {
         home,
         sessionId: `disk-${format}-${fsCode.toLowerCase()}`,
+        sandboxModeOff: false,
       });
       assert.equal(result.code, 1, JSON.stringify(result));
       assert.notEqual(result.stdout.trim(), "", JSON.stringify(result));
@@ -153,6 +181,31 @@ try {
           exitCode: result.code,
           modelCalls: calls,
           persistence: failure.persistence,
+        }),
+      );
+
+      const audit = await run(format, {
+        home,
+        sessionId: `audit-${format}-${fsCode.toLowerCase()}`,
+      });
+      assert.equal(audit.code, 6, JSON.stringify(audit));
+      const auditResult = JSON.parse(audit.stdout.trim());
+      assert.equal(auditResult.type, "result");
+      assert.equal(auditResult.subtype, "error_persistence");
+      assert.equal(auditResult.is_error, true);
+      assert.equal(auditResult.code, "CC_SESSION_PERSISTENCE_FAILED");
+      assert.equal(auditResult.error, "Security audit write failed");
+      assert.equal(auditResult.persistence.fs_code, fsCode);
+      assert.equal(auditResult.persistence.operation, "session-start");
+      assert.equal(auditResult.persistence.phase, "before-model");
+      assert.equal(calls, 0);
+      console.log(
+        JSON.stringify({
+          case: `startup-audit-${fsCode}`,
+          format,
+          exitCode: audit.code,
+          modelCalls: calls,
+          persistence: auditResult.persistence,
         }),
       );
     }
