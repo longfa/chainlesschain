@@ -15,6 +15,7 @@ on:
         options:
           - headless-stdout
           - approval-recovery
+          - long-task-reclaim
 
 permissions:
   contents: read
@@ -51,29 +52,44 @@ jobs:
       - name: Install CLI dependencies
         run: npm ci --workspace packages/cli --include-workspace-root=false --legacy-peer-deps --no-audit --no-fund
 
-      - name: Verify normal stdout and a read-only redirected descriptor
-        if: inputs.check == 'headless-stdout'
+      - name: Run the selected native fixture
+        if: inputs.check != 'approval-recovery'
         shell: bash
+        env:
+          CHECK: ${{ inputs.check }}
         run: |
+          case "$CHECK" in
+            headless-stdout)
+              fixture=headless-native-filesystem
+              receipt=stdout-delivery.ndjson
+              set -- --stdout-only
+              ;;
+            long-task-reclaim)
+              fixture=headless-long-task-reclaim
+              receipt=task-reclaim.ndjson
+              set --
+              ;;
+            *) exit 64 ;;
+          esac
           git fetch --no-tags --depth=1 origin "$GITHUB_SHA"
-          fixture="packages/cli/__tests__/fixtures/headless-native-filesystem"
-          temporary="$fixture-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT.mjs"
+          source="packages/cli/__tests__/fixtures/$fixture"
+          temporary="$source-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT.mjs"
           test ! -e "$temporary"
           trap 'rm -f -- "$temporary"' EXIT
-          # Use the newer test fixture with the exact candidate CLI and helpers.
-          git show "$GITHUB_SHA:$fixture.mjs" > "$temporary"
-          report="$RUNNER_TEMP/headless-stdout-evidence"
+          # Run the selected test fixture against the exact candidate CLI and helpers.
+          git show "$GITHUB_SHA:$source.mjs" > "$temporary"
+          report="$RUNNER_TEMP/$CHECK-evidence"
           mkdir -p "$report"
-          node "$temporary" --stdout-only | tee "$report/stdout-delivery.ndjson"
+          node "$temporary" "$@" | tee "$report/$receipt"
           printf '%s\n' "$CLI_SHA" > "$report/cli-commit.txt"
           printf '%s\n' "$GITHUB_SHA" > "$report/fixture-commit.txt"
 
-      - name: Upload native delivery evidence
-        if: inputs.check == 'headless-stdout'
+      - name: Upload native fixture evidence
+        if: inputs.check != 'approval-recovery'
         uses: actions/upload-artifact@v6
         with:
-          name: cli-headless-stdout-macos-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/headless-stdout-evidence/
+          name: cli-${{ inputs.check }}-macos-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/${{ inputs.check }}-evidence/
           if-no-files-found: error
 
       - name: Verify interactive approval recovery across CLI processes
