@@ -2,30 +2,30 @@
 
 ChainlessChain agent workspace for VS Code-compatible editors with streaming chat, inline assistance, governed review, sessions, automation, and a localhost MCP bridge.
 
-## Next release candidate
+## Release pairing
 
-Source candidate **0.37.196** recommends CLI **0.166.161**. The extension has not been published. Configure LLM fetches the latest LK model catalog and includes GPT-6.2 Sol and GPT-6.2 Astra offline.
+Version **0.37.197** recommends CLI **0.166.162**. Session forks open in a separate chat tab and preserve the source conversation. Configure LLM can refresh the LK catalog and includes GPT-6.2 Sol and GPT-6.2 Astra offline.
 
 ## Current release
 
-<!-- release160-status -->
+<!-- release161-status -->
 
-Open VSX version **0.37.195** pairs with public CLI `0.166.160`.
-Immutable tag `ide-vscode-v0.37.195` identifies this verified pairing.
+Open VSX version **0.37.196** pairs with public CLI `0.166.161`.
+Immutable tag `ide-vscode-v0.37.196` identifies this verified pairing.
 
 | Component                 | Current public status                                       |
 | ------------------------- | ----------------------------------------------------------- |
-| VS Code extension         | **0.37.195**; verified public Open VSX release              |
-| Recommended CLI           | **`chainlesschain@0.166.160`**; verified public npm package |
+| VS Code extension         | **0.37.196**; verified public Open VSX release              |
+| Recommended CLI           | **`chainlesschain@0.166.161`**; verified public npm package |
 | Base bridge compatibility | `cc >= 0.162.190`; newer features require the paired CLI    |
 
-The Linux, Windows, macOS, browser and Remote SSH gates passed. CLI `0.166.160` is the recommended public CLI. Using `@0.166.160` selects this verified pairing. [Open VSX publication workflow](https://github.com/longfa/chainlesschain/actions/runs/45020514156)
+The Linux, Windows, macOS, browser and Remote SSH gates passed. CLI `0.166.161` is the recommended public CLI. Using `@0.166.161` selects this verified pairing. [Open VSX publication workflow](https://github.com/longfa/chainlesschain/actions/runs/45095531533)
 
-The public VSIX contains extension version `0.37.195` and recommends CLI `0.166.160`. [Download the verified VSIX](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.195/file/chainlesschain.chainlesschain-ide-0.37.195.vsix)
+The public VSIX contains extension version `0.37.196` and recommends CLI `0.166.161`. [Download the verified VSIX](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.196/file/chainlesschain.chainlesschain-ide-0.37.196.vsix)
 
-Open **Configure LLM** to select LK, protocol, endpoint and model, restore a saved channel, or refresh the saved LK account. The current directory has 202 entries, including 86 chat models, and uses `gpt-6.1-sol` for the LK OpenAI default. Prices and actual bills use 算力; Token estimates are separate. Media task submission and polling are not implemented in these settings.
+Open **Configure LLM** to select LK, protocol, endpoint and model, restore a saved channel, or refresh the LK catalog and saved account. The offline catalog includes GPT-6.2 Sol and Astra. Prices and actual bills use 算力. Token estimates are separate.
 
-Install `npm i -g chainlesschain@0.166.160 --registry https://registry.npmjs.org`, restart the host, then run `cc --version` and `cc doctor`.
+Install `npm i -g chainlesschain@0.166.161 --registry https://registry.npmjs.org`, restart the host, then run `cc --version` and `cc doctor`.
 
 [Setup and limits](../../docs/configuration/lk-api-channel.md) · [Upgrade guide](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-22-160.md)
 

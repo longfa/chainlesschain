@@ -3,6 +3,19 @@
   "releases": [
     {
       "productVersion": null,
+      "cliVersion": "0.166.162",
+      "cliVersions": ["0.166.162"],
+      "date": "2026-11-23",
+      "title": "",
+      "sections": [
+        {
+          "heading": "Fixed - cc CLI 0.166.162 and IDE pairing (candidate, 2026-11-23)",
+          "body": "- Preserve approved plan permissions across interactive and background resumes. Report headless storage failures and destructive-action denials with nonzero exit codes.\n- Record Git installer outcomes, background stop receipts, and orphan risk. Keep VS Code forks in separate tabs with independent transcripts and side-effect ledgers.\n- Pair with Open VSX 0.37.197 and JetBrains 0.4.212 after the exact-source release gates pass."
+        }
+      ]
+    },
+    {
+      "productVersion": null,
       "cliVersion": "0.166.161",
       "cliVersions": ["0.166.161"],
       "date": "2026-11-23",
