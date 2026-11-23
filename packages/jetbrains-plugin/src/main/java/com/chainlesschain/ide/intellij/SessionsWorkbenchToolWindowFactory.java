@@ -5,6 +5,7 @@ import com.chainlesschain.ide.DeliveryWorkflow;
 import com.chainlesschain.ide.DeliveryWorkflowController;
 import com.chainlesschain.ide.SessionProjection;
 import com.chainlesschain.ide.SessionsWorkbench;
+import com.chainlesschain.ide.UiEventDiagnostics;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileChooser.FileChooser;
@@ -43,11 +44,13 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -899,7 +902,11 @@ public final class SessionsWorkbenchToolWindowFactory implements ToolWindowFacto
             final SessionProjection.Snapshot rendered = projection;
             final File cwd = project.getBasePath() != null
                     ? new File(project.getBasePath()) : null;
+            final Instant acceptedAt = System.getProperty(UiEventDiagnostics.PROPERTY, "").isBlank()
+                    ? null : Instant.now();
+            final long accepted = System.nanoTime();
             ApplicationManager.getApplication().executeOnPooledThread(() -> {
+                long workerStarted = System.nanoTime();
                 SessionProjection.ActionPreview preview =
                         freshPreview(rendered, row, action, cwd);
                 List<String> args = preview == null ? List.of()
@@ -909,17 +916,28 @@ public final class SessionsWorkbenchToolWindowFactory implements ToolWindowFacto
                     afterAction("Session data changed; action was not sent.");
                     return;
                 }
+                long commandStarted = System.nanoTime();
                 String out = AgentChatSession.runCapture(args, cwd, CLI_TIMEOUT_MS);
+                long commandFinished = System.nanoTime();
                 if (showOutput) {
                     final String text = out == null || out.isEmpty()
                             ? "Unavailable" : out;
                     ApplicationManager.getApplication().invokeLater(() ->
                             showTextDialog("Session " + row.sourceId, text));
-                    return;
+                } else {
+                    afterAction(out == null || out.isEmpty()
+                            ? "cc " + String.join(" ", args) + " failed"
+                            : firstLine(out.trim()));
                 }
-                afterAction(out == null || out.isEmpty()
-                        ? "cc " + String.join(" ", args) + " failed"
-                        : firstLine(out.trim()));
+                // Queue the UI update before writing optional host diagnostics.
+                if (acceptedAt != null) {
+                    UiEventDiagnostics.record(UiEventDiagnostics.Stage.WORKBENCH_ACTION_TIMING,
+                            Map.of("type", action, "acceptedAt", acceptedAt,
+                                    "queueMs", TimeUnit.NANOSECONDS.toMillis(workerStarted - accepted),
+                                    "previewMs", TimeUnit.NANOSECONDS.toMillis(commandStarted - workerStarted),
+                                    "commandMs", TimeUnit.NANOSECONDS.toMillis(commandFinished - commandStarted)),
+                            null, null, null);
+                }
             });
         }
 

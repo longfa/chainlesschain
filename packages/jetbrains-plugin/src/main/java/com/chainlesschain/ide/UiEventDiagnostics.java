@@ -22,7 +22,7 @@ public final class UiEventDiagnostics {
         POPUP_HANDOFF_SCHEDULED, POPUP_HANDOFF_ENTERED, POPUP_STALE,
         HISTORY_REQUESTED, HISTORY_READ_RETURNED, HISTORY_READ_FAILED,
         HISTORY_SCHEDULE_FAILED, HISTORY_APPLIED, HISTORY_DEFERRED, HISTORY_STALE,
-        HISTORY_APPLY_FAILED
+        HISTORY_APPLY_FAILED, WORKBENCH_ACTION_TIMING
     }
 
     private UiEventDiagnostics() {}
@@ -54,6 +54,14 @@ public final class UiEventDiagnostics {
                 Object turn = event.get("turn");
                 if (turn instanceof Byte || turn instanceof Short || turn instanceof Integer || turn instanceof Long)
                     record.put("turn", turn);
+                if (stage == Stage.WORKBENCH_ACTION_TIMING) {
+                    if (event.get("acceptedAt") instanceof Instant acceptedAt)
+                        record.put("acceptedAt", acceptedAt.toString());
+                    for (String key : new String[] {"queueMs", "previewMs", "commandMs"}) {
+                        if (event.get(key) instanceof Long duration && duration >= 0)
+                            record.put(key, duration);
+                    }
+                }
                 if (stage.name().startsWith("POPUP_")) {
                     for (String key : new String[] {"selectedIndex", "itemCount"}) {
                         Object value = event.get(key);

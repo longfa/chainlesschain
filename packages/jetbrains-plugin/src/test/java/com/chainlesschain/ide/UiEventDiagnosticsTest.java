@@ -7,6 +7,7 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.AfterEach;
@@ -54,6 +55,32 @@ class UiEventDiagnosticsTest {
         assertEquals("session-1", record.get("session"));
         assertFalse(record.containsKey("command"));
         assertFalse(record.containsKey("permissions"));
+    }
+
+    @Test void workbenchTimingKeepsOnlyTheOptInClockAndDurations() throws Exception {
+        Path output = enable();
+        Instant acceptedAt = Instant.parse("2026-11-23T18:43:14.398Z");
+        Map<String, Object> event = Map.of("type", "dispatch", "acceptedAt", acceptedAt,
+                "queueMs", 18L, "previewMs", 135L, "commandMs", 9L,
+                "prompt", "private user input", "cwd", "private workspace path");
+        UiEventDiagnostics.record(UiEventDiagnostics.Stage.WORKBENCH_ACTION_TIMING,
+                event, null, null, null);
+        UiEventDiagnostics.record(UiEventDiagnostics.Stage.RECEIVED,
+                event, null, null, null);
+
+        var records = Files.readAllLines(output);
+        Map<?, ?> timing = (Map<?, ?>) MiniJson.parse(records.get(0));
+        assertEquals("WORKBENCH_ACTION_TIMING", timing.get("stage"));
+        assertEquals("dispatch", timing.get("type"));
+        assertEquals(acceptedAt.toString(), timing.get("acceptedAt"));
+        assertEquals(18L, ((Number) timing.get("queueMs")).longValue());
+        assertEquals(135L, ((Number) timing.get("previewMs")).longValue());
+        assertEquals(9L, ((Number) timing.get("commandMs")).longValue());
+        assertFalse(timing.containsKey("prompt"));
+        assertFalse(timing.containsKey("cwd"));
+        Map<?, ?> unrelated = (Map<?, ?>) MiniJson.parse(records.get(1));
+        assertFalse(unrelated.containsKey("acceptedAt"));
+        assertFalse(unrelated.containsKey("previewMs"));
     }
 
     @Test void recordsActualFailurePhaseAndRethrowsIdenticalExceptionOnce() throws Exception {
