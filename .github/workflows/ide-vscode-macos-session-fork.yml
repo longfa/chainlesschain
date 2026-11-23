@@ -125,6 +125,10 @@ jobs:
           const executable = await downloadAndUnzipVSCode({ version: process.env.VSCODE_VERSION });
           writeFileSync(path.join(process.env.RUNNER_TEMP, "fork-vscode-executable"), executable);
           NODE
+          git fetch --no-tags --depth=1 origin "$GITHUB_SHA"
+          for fixture in test/extension-host/run-session-fork.cjs test/extension-host/driver/session-fork.cjs; do
+            git show "$GITHUB_SHA:packages/vscode-extension/$fixture" > "$fixture"
+          done
           # VS Code's profile socket must fit Darwin's 103-byte path limit.
           short_tmp="$(node -p 'require("node:fs").realpathSync("/tmp")')"
           TMPDIR="$short_tmp" node test/extension-host/run-session-fork.cjs \
@@ -136,7 +140,7 @@ jobs:
           import assert from "node:assert/strict";
           import { readFileSync, writeFileSync } from "node:fs";
           import path from "node:path";
-          const { RUNNER_TEMP, VSCODE_VERSION, CLI_SHA, IDE_SHA, VSIX_RUN_ID } = process.env;
+          const { RUNNER_TEMP, VSCODE_VERSION, CLI_SHA, IDE_SHA, VSIX_RUN_ID, GITHUB_SHA } = process.env;
           const candidate = path.join(RUNNER_TEMP, "fork-candidate");
           const report = path.join(RUNNER_TEMP, "fork-evidence");
           const log = path.join(report, "session-fork.log");
@@ -155,7 +159,7 @@ jobs:
           assert.equal(receipt.extension, manifest.version);
           assert.equal(receipt.independentTranscripts, true);
           assert.equal(receipt.workflowState, "running");
-          const result = { ...receipt, cliSha: CLI_SHA, ideSha: IDE_SHA, vsixRunId: VSIX_RUN_ID,
+          const result = { ...receipt, cliSha: CLI_SHA, ideSha: IDE_SHA, fixtureSha: GITHUB_SHA, vsixRunId: VSIX_RUN_ID,
             vsixSha256: manifest.sha256, platform: process.platform, architecture: process.arch };
           console.log(JSON.stringify(result));
           writeFileSync(path.join(report, "session-fork.json"), JSON.stringify(result, null, 2) + "\n");

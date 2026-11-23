@@ -11,6 +11,7 @@ const {
   resolveConfiguredRuntime,
   runConfiguredVsCodeCommand,
 } = require("./configured-runtime.cjs");
+const { buildHostDomRelayLaunchArgs } = require("./run.cjs");
 
 const exec = promisify(execFile);
 const cli = path.resolve(__dirname, "../../../cli/bin/chainlesschain.js");
@@ -303,22 +304,29 @@ async function main() {
     const cdpPort = await reserveLoopbackPort();
     const receipt = path.join(t.configHome, "host-receipt.json");
     const { runTests } = require("@vscode/test-electron");
+    const launchProfileArgs = [
+      ...profileArgs,
+      `--remote-debugging-port=${cdpPort}`,
+      "--remote-debugging-address=127.0.0.1",
+      `--remote-allow-origins=http://127.0.0.1:${cdpPort}`,
+      "--disable-workspace-trust",
+      "--disable-updates",
+      "--skip-welcome",
+      "--skip-release-notes",
+    ];
+    const launchArgs =
+      process.platform === "darwin"
+        ? buildHostDomRelayLaunchArgs({
+            workspaceDir: workspace,
+            profileArgs: launchProfileArgs,
+          })
+        : [...launchProfileArgs, "--disable-telemetry", workspace];
+    console.log("[session-fork] installed VSIX and starting Extension Host");
     await runTests({
       vscodeExecutablePath: runtime.executablePath,
       extensionDevelopmentPath: path.join(__dirname, "driver"),
       extensionTestsPath: path.join(__dirname, "driver", "session-fork.cjs"),
-      launchArgs: [
-        ...profileArgs,
-        `--remote-debugging-port=${cdpPort}`,
-        "--remote-debugging-address=127.0.0.1",
-        `--remote-allow-origins=http://127.0.0.1:${cdpPort}`,
-        "--disable-workspace-trust",
-        "--disable-updates",
-        "--disable-telemetry",
-        "--skip-welcome",
-        "--skip-release-notes",
-        workspace,
-      ],
+      launchArgs,
       extensionTestsEnv: {
         ...env,
         CC_NATIVE_FORK_TEST: JSON.stringify({

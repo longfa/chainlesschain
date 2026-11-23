@@ -11,7 +11,7 @@ const {
   sendComposer,
   waitForDom,
 } = require("../cdp-journey.cjs");
-const { withTimeout } = require("./view-control.cjs");
+const { activateMacHostWindow, withTimeout } = require("./view-control.cjs");
 
 const activeTab =
   "document.querySelector('#tabs [role=tab][aria-selected=true]')";
@@ -32,7 +32,11 @@ async function runJourney() {
   assert.ok(
     installed && !installed.startsWith("..") && !path.isAbsolute(installed),
   );
+  await activateMacHostWindow({
+    log: () => console.log("[session-fork] focused macOS app"),
+  });
   await target.activate();
+  console.log("[session-fork] installed extension activated");
   await vscode.commands.executeCommand("notifications.clearAll");
 
   const { client: workbench } = await findWorkbenchWindow(cdpPort, 45_000);
@@ -173,6 +177,7 @@ async function runJourney() {
 }
 
 exports.run = async () => {
+  console.log("[session-fork] Extension Host test driver entered");
   try {
     await withTimeout(runJourney(), 230_000, "Native fork and workflow map");
   } catch (error) {
