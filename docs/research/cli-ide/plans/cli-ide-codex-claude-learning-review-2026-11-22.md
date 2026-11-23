@@ -389,7 +389,16 @@ Windows 本地进程级回归 9 项、任务与 MCP 回归 79 项、流式协议
 
 此前在候选提交下复核了 15 份 IDE 宿主报告及 671 个证据文件。VS Code `1.85.2` 和 `1.147.0` 在 Windows x64、Windows ARM64、Linux ARM64 的六次真实 DOM 双根工作区旅程通过。JetBrains 复核了 Linux x64 `2024.2`、`2025.2`，Windows x64 `2024.2`、`2025.2` 与 Windows ARM64 `2026.2.0.1` 的宿主证据。另已复核此前 Linux ARM64 的两份 JetBrains 报告。两个工作流分别生成 VSIX，均通过其归档摘要及同一候选提交校验，解包后 188 个文件逐字节一致。[VS Code Windows 宿主](https://github.com/longfa/chainlesschain/actions/runs/45225095657/job/137878502621) · [JetBrains Windows ARM64](https://github.com/longfa/chainlesschain/actions/runs/45225095722/job/137877208433)
 
-将 Intel `2025.2` 的 100 次界面观测与 CLI 轨迹按派发顺序对齐。8 次达到或超过 2,000 ms 的观测，在 `daemon resume` 启动前都已经过 1 秒以上。此段由界面提交和 CLI 前置读取共同构成，仍需分段计时。复验沿用 100 次观测和 P95 小于 2,000 ms 的门槛。[原始观测与 CLI 轨迹](https://github.com/longfa/chainlesschain/actions/runs/45225095657/artifacts/14852106933)
+按派发顺序对齐四个宿主各 100 次界面观测及 CLI 轨迹。同一 `daemon resume` 进程的启动和输出按进程实例 ID 匹配。各列为独立计算的 P95。
+
+| JetBrains 宿主       | 提交到界面可见 | 提交到 CLI 启动 | CLI 夹具启动到输出 | CLI 输出到界面可见 | 制品                                                                                                |
+| -------------------- | -------------: | --------------: | -----------------: | -----------------: | --------------------------------------------------------------------------------------------------- |
+| macOS Intel `2025.2` |       2,168 ms |        1,499 ms |               7 ms |             768 ms | [宿主制品](https://github.com/longfa/chainlesschain/actions/runs/45225095657/artifacts/14852106933) |
+| macOS Intel `2024.2` |       1,283 ms |          765 ms |               3 ms |             583 ms | [宿主制品](https://github.com/longfa/chainlesschain/actions/runs/45225095657/artifacts/14849762950) |
+| Windows `2025.2`     |         428 ms |          258 ms |               1 ms |             199 ms | [宿主制品](https://github.com/longfa/chainlesschain/actions/runs/45225095657/artifacts/14847303207) |
+| Linux `2025.2`       |         357 ms |          173 ms |               1 ms |             192 ms | [宿主制品](https://github.com/longfa/chainlesschain/actions/runs/45225095657/artifacts/14845369179) |
+
+macOS Intel `2025.2` 的 8 个超限样本都在 `daemon resume` 启动前耗时超过 1 秒。启动前阶段包含界面提交、排队和前置读取，当前复验采集各自耗时。验收沿用 100 次观测和 P95 小于 2,000 ms 的门槛。
 
 已在 JetBrains 宿主诊断记录对话框接受时间、后台线程排队、前置校验和 CLI 动作耗时。记录只在现有宿主诊断模式启用，并在安排界面更新后写入。Windows JDK 21 的 Gradle 编译、插件打包及单元测试通过，共 1,043 项通过、3 项跳过。提交 `4c7e14ad45` 的三平台 IDE 宿主复验已启动，macOS Intel `2025.2` 已获分配宿主。[分段计时实现](../../../../packages/jetbrains-plugin/src/main/java/com/chainlesschain/ide/intellij/SessionsWorkbenchToolWindowFactory.java) · [宿主复验](https://github.com/longfa/chainlesschain/actions/runs/45244831397/job/137939069339)
 
