@@ -54,16 +54,49 @@ describe("buildContext — context-usage enrichment", () => {
       contextWindow: 200000,
       turn: 3,
     });
-    expect(ctx.context).toEqual({ used_tokens: 50000, window: 200000, pct: 25 });
+    expect(ctx.context).toEqual({
+      used_tokens: 50000,
+      window: 200000,
+      pct: 25,
+    });
     expect(ctx.turn).toBe(3);
     // backward-compatible fields the custom-command path relies on:
     expect(ctx.session_id).toBe("S");
-    expect(ctx.model).toEqual({ id: "claude-opus-4-8", display_name: "claude-opus-4-8" });
+    expect(ctx.model).toEqual({
+      id: "claude-opus-4-8",
+      display_name: "claude-opus-4-8",
+    });
   });
   it("pct is 0 with an unknown window, clamps at 100 over budget", () => {
-    expect(buildContext({ cwd: "/", usedTokens: 9999, contextWindow: 0 }).context.pct).toBe(0);
-    expect(buildContext({ cwd: "/", usedTokens: 300000, contextWindow: 200000 }).context.pct).toBe(100);
+    expect(
+      buildContext({ cwd: "/", usedTokens: 9999, contextWindow: 0 }).context
+        .pct,
+    ).toBe(0);
+    expect(
+      buildContext({ cwd: "/", usedTokens: 300000, contextWindow: 200000 })
+        .context.pct,
+    ).toBe(100);
   });
+  it.each([
+    [199, false],
+    [200, true],
+    [201, true],
+  ])(
+    "checks context visibility at %d of 1,000 tokens",
+    (usedTokens, visible) => {
+      const context = buildContext({
+        usedTokens,
+        contextWindow: 1000,
+        contextUsageThreshold: 20,
+        taskState: "waiting",
+        approvalsPending: 1,
+      });
+      expect(context.context).toMatchObject({ pct: 20, visible });
+      const line = renderDefaultStatusLine(context);
+      expect(line.includes("⛁")).toBe(visible);
+      expect(line).toContain("task waiting  ·  approvals 1");
+    },
+  );
 });
 
 describe("renderDefaultStatusLine", () => {
@@ -84,7 +117,12 @@ describe("renderDefaultStatusLine", () => {
     expect(line).toContain("·");
   });
   it("omits the window readout when the window is unknown", () => {
-    const ctx = buildContext({ model: "qwen2.5:7b", provider: "ollama", cwd: "/x", contextWindow: 0 });
+    const ctx = buildContext({
+      model: "qwen2.5:7b",
+      provider: "ollama",
+      cwd: "/x",
+      contextWindow: 0,
+    });
     const line = renderDefaultStatusLine(ctx);
     expect(line).toContain("qwen2.5:7b");
     expect(line).not.toContain("⛁");

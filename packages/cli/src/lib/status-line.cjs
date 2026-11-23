@@ -95,14 +95,15 @@ function buildContext({
 } = {}) {
   const used = Math.max(0, Number(usedTokens) || 0);
   const window = Math.max(0, Number(contextWindow) || 0);
-  const pct = window > 0 ? Math.min(100, Math.round((used / window) * 100)) : 0;
+  const usageRatio = window > 0 ? used / window : 0;
+  const pct = Math.min(100, Math.round(usageRatio * 100));
   const threshold = Math.max(
     0,
     Math.min(100, Number(contextUsageThreshold) || 0),
   );
   const context = { used_tokens: used, window, pct };
   if (contextUsageThreshold !== undefined) {
-    context.visible = window > 0 && pct >= threshold;
+    context.visible = window > 0 && usageRatio >= threshold / 100;
     context.threshold = threshold;
   }
   const result = {
