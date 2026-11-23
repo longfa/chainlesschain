@@ -36,7 +36,14 @@ status 命令 → status.js (Commander) → 多维状态检查
 
 ```bash
 chainlesschain status    # 显示完整系统状态
+cc status --json --runner-state /path/to/runner-state.json
 ```
+
+### 执行位置 Runner
+
+`--runner-state` 读取 Runner 的状态文件。`--json` 输出的 `runner.startup` 包含接单时间 `orderedAt`、注册时间 `registeredAt` 和首个会话租约获准时间 `firstSessionAdmittedAt`。接单时间由调用方提供。
+
+三段耗时均以秒为单位。用 `order_to_registered_seconds` 查看接单到注册的时长，用 `registered_to_first_session_seconds` 查看注册后等待首个会话的时长，用 `order_to_first_session_seconds` 查看全过程。相关时间点尚未记录时，字段值为 `null`。
 
 ## 输出说明
 

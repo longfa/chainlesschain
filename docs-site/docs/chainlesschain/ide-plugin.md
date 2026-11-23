@@ -578,6 +578,12 @@ cc ide status          # 此刻会连哪台 + MCP config（token 脱敏）
 2. 关 IDE 都行；回来后 ChainlessChain: Background Agents 面板查看/追加指令/续接
 ```
 
+### 从历史回复分叉并查看工作流
+
+在 VS Code 中打开要分叉的聊天会话，通过命令面板运行 **ChainlessChain：分叉会话**（`ChainlessChain: Fork Session`）。选择一条已保存的助手回复作为历史截止点，或选择 **Fork entire session** 复制完整历史。新会话在另一标签中打开，源会话继续可用。两条会话分别保存后续回复及文件写入记录。
+
+运行 **ChainlessChain：工作流地图**（`ChainlessChain: Workflow Map`）查看项目内活动的 Cowork 工作流。在同一项目目录运行 `cc tasks --json --active-only` 可读取对应的任务 ID、父任务 ID 和状态。
+
 ### 终端派（不开面板）
 
 ```bash

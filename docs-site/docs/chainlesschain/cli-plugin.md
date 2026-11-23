@@ -86,6 +86,12 @@ chainlesschain plugin use <name> <version>         # 切换/回滚 active 版本
 
 `--allow-insecure-registry` 会允许 HTTP registry，存在 MITM 风险，只应在明确受信的隔离网络使用。私有源使用 `--token`；不要把 token 写进文档、命令历史或 JSON 报告。
 
+### 安装命令回执
+
+`cc plugin add <source> --json` 和 `cc plugin upgrade <source> --json` 可返回 `installCommand`。读取 `ran` 确认是否启动子进程，`exitCode` 是子进程退出码，无法取得时为 `null`。`timedOut` 和 `signaled` 分别表示超时和信号终止。`printedToStderr` 记录是否产生 stderr，`stderrDigest` 提供该输出的 SHA-256 摘要。
+
+自动化流程应同时检查 CLI 的进程退出码和 JSON 回执。安装命令失败时，CLI 返回非零，升级会保留原有的激活版本。候选 CLI `0.166.162` 也为 Git 获取子进程提供相同字段。
+
 ### 0.165.1 稳定版与未发布源码增量边界
 
 - npm `0.165.1` 继续提供 `0.164.0` 的受治理目录、选源、影响评审与已安装 bytes 回读，并把 plugin-bin 执行纳入 canonical workspace authority；其发布证据绑定 exact SHA `1a10ed7c8f`。

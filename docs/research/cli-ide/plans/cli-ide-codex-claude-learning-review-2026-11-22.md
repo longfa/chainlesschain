@@ -233,11 +233,11 @@ Claude 2.1.330 让子代理的模型回退（fallback）**传导**给它派生�
 | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | 统一任务投影          | 独立运行 `cc tasks --json` 可读持久化后台 shell、MCP 日志、后台 Agent、计划任务和项目内 Cowork 工作流。跨进程测试同时读回 shell、MCP 和计划任务。MCP 默认扫描最近 100 个 canonical 会话，`--session <id>` 可指定会话。REPL 可读同进程子代理。 | 即时 `run_shell` 命令的内存状态仍由所属运行时读取。跨宿主长期并发验收待补。                                                             |
 | 停止与诊断            | 重复停止复用回执。后台 shell 可读回 `stop_requested`、`stop_timeout` 和后续 `stop_confirmed`，Doctor 会提示孤儿风险。后台 Agent 的 `cc tasks --json` 提供可执行的 `stopPath`，从持久时间戳读回 `stopEvents`。                                 | 已验证持久化重载后的孤儿风险、Doctor 告警和原持有者回收，也已验证第二层子代理正在调用模型时停止真实后台会话。跨平台长时间运行仍需复验。 |
-| 插件安装结果          | Marketplace `add` 和 `upgrade` 与 Git 来源共用 `installCommand` 字段。已验证本机 registry 安装程序退出 0/17 和实际 Git 获取退出 0/128。`cc mcp add --command --json` 注册配置并返回 `ran: false`。                                            | 外部 Git 网络、代理与超时仍待实测。技能安装沿用现有 `cc plugin install` 入口。                                                          |
+| 插件安装结果          | Marketplace `add` 和 `upgrade` 与 Git 来源共用 `installCommand` 字段。本机 registry 退出 0/17，实际 Git 获取退出 0/128。回环代理已实测 CONNECT 失败和 120 秒超时回执。`cc mcp add --command --json` 注册配置并返回 `ran: false`。             | 外部 Git 服务的网络复验待补。技能安装沿用现有 `cc plugin install` 入口。                                                                |
 | 无人应答拒绝          | 无人应答策略和破坏性 Git 负向通过。真实 Agent 循环的 mock-provider 回归验证删除请求被拒绝，隔离目录内文件保留。                                                                                                                               | 已验证单次 CLI 和多轮 `stream-json` 输入均返回非零，并保留拒绝记录。多轮输入可继续处理后续合法消息。                                    |
 | MCP 共享生命周期      | 活跃子代理持有同一 MCPClient 的 transport。宿主请求关闭时等待最后一个持有者释放。MCPClient 回归验证第一次释放后连接仍在，最后一次释放仅执行一次断开。                                                                                         | 本机有状态 HTTP MCP 已验证两个同时运行的子代理释放顺序。跨客户端共享与外部宿主长时间运行待验收。                                        |
 | 计划任务与状态栏      | 到期时统一 `state` 和兼容别名，清理等待与停止提示。Windows REPL 在等待审批时输出 `task waiting` 和 `approvals 1`，占用低于设置阈值时隐藏上下文读数。                                                                                          | 调度宿主截图待补。                                                                                                                      |
-| 权限档位与旧审批      | 流式和交互 REPL 批准均写入会话日志。已验证 `cc daemon resume` 与新 CLI REPL 进程恢复批准档位，并拒绝同工具改参数或重放已结算事项。                                                                                                            | 其他平台的交互复测待补。                                                                                                                |
+| 权限档位与旧审批      | 流式和交互 REPL 批准均写入会话日志。Windows 与 Linux 已验证 `cc daemon resume` 和新 CLI REPL 进程恢复批准档位，并拒绝同工具改参数或重放已结算事项。                                                                                           | macOS 的交互复测待补。                                                                                                                  |
 | Headless 交付失败     | Windows 真实只读会话文件通过。Linux 满盘与只读挂载下，单次 JSON 和多轮 NDJSON 均退出 1，保留 `before-model` 回执。Linux `/dev/full` 与 Windows 只读文件句柄均实测 stdout 写入失败，两种模式都退出 1。                                         | `EPERM` 与 `EACCES` 已覆盖注入测试。macOS 的 stdout 重定向仍待复验。                                                                    |
 | VS Code 分叉与地图    | `cc session fork <id> --json` 支持按已验证的历史回复分叉。Windows 和 Linux 的 VS Code 1.145.2 安装候选 VSIX 后，两个聊天标签分别完成任务。已核对历史边界、两个独立的文件写入账本，以及工作流地图与 `cc tasks --json --active-only` 的一致性。 | macOS 宿主复测待补。                                                                                                                    |
 | MCP Schema 与 LSP     | 首次发现、发现缓存及 `list_changed` 刷新共用 schema 准入。非法替换保留已接纳的工具目录，诊断含工具名和字段路径，回归验证大段描述未进入诊断。                                                                                                  | 真实 TypeScript 语言服务器已验证冷启动并发查询。已验证首次接入的非法 Schema 在准入前后不改变会话文件，模型目录不含被拒绝工具。          |
@@ -251,6 +251,11 @@ Claude 2.1.330 让子代理的模型回退（fallback）**传导**给它派生�
 - VS Code 扩展通过 358 项 Node 测试。匹配版本的 Chromium Headless Shell 下，`npm run test:settings-ui` 通过三个面板的浏览器 smoke。
 - CLI command manifest、help index、四项 startup SLO 和源码出站分类检查均通过。
 - JetBrains 修复了动作完成时与在途轮询竞争而丢失刷新请求的问题。Windows 本地 Gradle `test` 成功，1,041 项通过、3 项跳过。真实 macOS 宿主的等待输入可见性仍需重新测量。
+
+### 阶段 D 的命令参考
+
+- 文档站已补充任务投影与停止事件、headless 写盘失败和状态栏阈值。另补充插件与 MCP 安装回执、Runner 三段耗时、VS Code 分叉与工作流对照命令。[Agent](../../../../docs-site/docs/chainlesschain/cli-agent.md#任务状态与停止回执) · [插件](../../../../docs-site/docs/chainlesschain/cli-plugin.md#安装命令回执) · [MCP](../../../../docs-site/docs/chainlesschain/cli-mcp.md#add) · [Runner](../../../../docs-site/docs/chainlesschain/cli-status.md#执行位置-runner) · [IDE](../../../../docs-site/docs/chainlesschain/ide-plugin.md#从历史回复分叉并查看工作流)
+- 已通过 CLI 命令清单和公开 IDE 能力清单校验。文档站结构检查覆盖 352 个文件。VitePress 本地构建生成 707 个 HTML 页面，其中五份修改后的命令参考均已核对渲染结果。
 
 ### 2026-11-23 续验
 
@@ -329,6 +334,7 @@ Windows 本地进程级回归 9 项、任务与 MCP 回归 79 项、流式协议
 - 13 个上游 npm 包沿用已发布版本。已按 npm 的完整性字段下载并校验所有归档，CLI 直接依赖与仓库固定版本相同。OIDC 发布工作流还会比较候选和公开子包归档，并核验签名来源。
 - Windows VS Code 1.145.2 安装 `0.37.197` 候选 VSIX 后复跑了两条会话分叉、各自的文件写入账本及运行中工作流地图对照。候选命令清单、帮助索引、补全、IDE 能力清单和 Marketplace 元数据检查已通过。复审 `agent-core.js` 相对上一发布标签的差异后更新了模型出站审查摘要，88 个源码文件和脚本通过预检。
 - Linux x64 的 12 项 CLI 进程回归通过，覆盖交互审批恢复、后台进程回收、插件安装回执与无人应答拒绝。Windows 通过 `openSync(path, "r")` 将只读文件句柄传给子进程 stdout。正常输出对照成功，单次 JSON 与流式 NDJSON 写入均报告 `EBADF` 并退出 1。
+- Windows 使用真实 Git HTTPS transport，向临时回环代理发起 CONNECT。代理返回 502 时，`cc plugin add --json` 退出 1，Git 回执退出码 128。代理保持连接但不回应时，Git 在约 120 秒后被终止，CLI 退出 1，回执包含 `timedOut: true`、`signaled: true`、`exitCode: null` 和 stderr 摘要。两次均使用测试域名，代理未转发请求。
 - Windows 本地构建并打包 CLI 候选。隔离目录安装该归档后，`cc --version` 输出 `0.166.162`，Web Panel 构建资源随包交付，10 个 CLI 直接依赖的内部 npm 包均解析到公开 npm 上的固定版本。候选 VS Code 扩展的 359 项 Node 测试全部通过。
 - Linux x64 容器内使用 Xvfb 启动通过官方 SHA-256 校验的 VS Code 1.145.2。真实宿主安装扩展 `0.37.197` 后完成分叉测试。进程退出 0，两条会话的历史和副作用账本独立，运行中的 Cowork 工作流在 IDE 与 CLI 投影一致。另有 41 项本地发布归档、精确提交门禁及来源验证测试通过。[原生宿主测试入口](../../../../packages/vscode-extension/test/extension-host/run-session-fork.cjs)
 - 上一提交的 IDE 预检发现 JetBrains 兼容性章节中的安装命令仍引用上一 CLI 版本。修正示例后，JetBrains 发布元数据、VS Code Marketplace 元数据、公开能力清单、路线图 fixture 校验和 14 项 CLI 依赖门禁测试均在本地通过。[上一轮 IDE 预检](https://github.com/longfa/chainlesschain/actions/runs/45181512001/job/137716210861)

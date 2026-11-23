@@ -107,6 +107,8 @@ chainlesschain mcp add <name> -u <url> [-t http|sse|stdio] [-H K=V]... [--auto-c
 | `--auto-connect`         | 启动时自动连接                                                                    |
 | `--json`                 | JSON 格式输出                                                                     |
 
+候选 CLI `0.166.162` 中，`cc mcp add <name> --command <command> --json` 只登记 stdio 配置，返回 `installCommand.ran: false`。如需启动并连接服务器，使用 `cc mcp connect <name>`。
+
 **Streamable HTTP 传输细节**（v5.0.2.10）：
 
 - 首次 `initialize` 握手后服务端返回 `Mcp-Session-Id`，客户端自动在后续请求里带上

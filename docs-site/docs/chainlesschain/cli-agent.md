@@ -212,6 +212,8 @@ type/properties/required/items/enum/const/additionalProperties）校验的 JSON�
 （裸 / 围栏 / 嵌入三形态），校验失败带错误清单纠错重跑（共 3 次），stdout 只打印校验通过的
 JSON，耗尽返回退出码 1。与 `--output-format stream-json` 互斥。脚本消费 agent 输出不再 parse 自由文本。
 
+**会话写入失败**。自动化调用应检查进程退出码。会话落盘失败时，JSON 或 NDJSON 结果可包含 `subtype: "error_persistence"` 和 `is_error: true`。其中 `persistence.phase` 标识失败阶段，`persistence.fs_code` 记录文件系统错误。检查会话目录的可写性和剩余空间后，再根据持久化结果决定如何恢复。若 stdout 本身写入失败，应读取 stderr 和退出码。
+
 **逐 token 增量**（`--include-partial-messages`，仅 `--output-format stream-json`）额外 emit
 `stream_event`/`content_block_delta`；真增量覆盖 ollama + anthropic + OpenAI 兼容
 （openai/deepseek/dashscope/mistral/gemini/volcengine），含流式 tool-call 重组。
@@ -810,6 +812,22 @@ Agent 模式集成了 SlotFiller 参数槽填充引擎，在调用 LLM 之前自
 ```
 
 未识别的意图（如 "help me understand this code"）不会触发 SlotFiller，直接传给 LLM 处理。
+
+## 任务状态与停止回执
+
+```bash
+cc tasks --json
+cc tasks --json --active-only --cwd /path/to/project
+cc tasks --json --session <session-id>
+```
+
+`tasks[].source` 区分后台 Shell、MCP、后台 Agent、计划任务和项目内 Cowork 工作流。用 `taskId` 对应任务，读取 `state`、`waitingOn` 和 `endsAt`。计划任务到期后显示 `expired`，`nextRunAt` 和 `expiresAction` 提供后续调度说明。
+
+`--session` 将 MCP 记录限定到指定的可读会话。省略时会扫描最近 100 个会话的 MCP 记录。`--cwd` 指定 Cowork 工作流的项目目录。`--active-only` 过滤 `tasks` 数组中的终态任务。
+
+需要停止时，按任务的 `stopPath` 使用对应入口。收到 `stop_requested` 表示已提出停止请求。通过 `stop_confirmed` 确认回收，遇到 `stop_timeout` 或 `orphanRisk: true` 时，通过 `cc doctor --json` 查看可用诊断。
+
+交互 REPL 的状态栏可显示等待审批和待审数量。可通过项目 `.claude/settings.json` 中的 `statusLine.contextUsageThreshold` 设置上下文占用显示阈值。
 
 ## 使用示例
 
