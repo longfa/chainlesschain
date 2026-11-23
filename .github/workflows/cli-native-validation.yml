@@ -142,6 +142,13 @@ jobs:
             --out packages/cli/src/assets/linux-subreaper \
             --commit "$CLI_NATIVE_VALIDATION_SHA"
 
+      - name: Build the exact-source Web Panel before Linux packaging
+        if: runner.os == 'Linux'
+        shell: bash
+        # A cold npm install can exceed the packer's file descriptor budget.
+        # Build the same locked assets as the npm release before invoking pack.
+        run: npm run build:web-panel:force --workspace packages/cli
+
       - name: Build standalone CLI on its matching native host
         shell: bash
         env:
@@ -152,9 +159,19 @@ jobs:
           TMP: ${{ runner.temp }}
         run: |
           set -euo pipefail
+          set --
+          if [ "$RUNNER_OS" = "Linux" ]; then
+            # Both tracked index files are placeholders rewritten by the build.
+            # Refuse any other tracked changes before admitting the generated assets.
+            git diff HEAD --exit-code -- . \
+              ':(exclude)packages/cli/src/assets/web-panel/index.html' \
+              ':(exclude)packages/web-panel/dist/index.html'
+            set -- --skip-web-panel-build --allow-dirty
+          fi
           node packages/cli/bin/chainlesschain.js pack \
             --cwd packages/cli \
             --no-project \
+            "$@" \
             --targets "${{ matrix.target }}" \
             --output "native-dist/chainlesschain-${{ matrix.target }}" \
             --update-manifest-url "https://validation.invalid/chainlesschain-update.json" \
