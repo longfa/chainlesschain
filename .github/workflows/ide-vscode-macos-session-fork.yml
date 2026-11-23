@@ -111,6 +111,7 @@ jobs:
       - name: Verify forked sessions and the running workflow map
         working-directory: packages/vscode-extension
         shell: bash
+        timeout-minutes: 12
         run: |
           report="$RUNNER_TEMP/fork-evidence"
           mkdir -p "$report"
@@ -124,7 +125,9 @@ jobs:
           const executable = await downloadAndUnzipVSCode({ version: process.env.VSCODE_VERSION });
           writeFileSync(path.join(process.env.RUNNER_TEMP, "fork-vscode-executable"), executable);
           NODE
-          node test/extension-host/run-session-fork.cjs \
+          # VS Code's profile socket must fit Darwin's 103-byte path limit.
+          short_tmp="$(node -p 'require("node:fs").realpathSync("/tmp")')"
+          TMPDIR="$short_tmp" node test/extension-host/run-session-fork.cjs \
             --vscode-executable "$(cat "$RUNNER_TEMP/fork-vscode-executable")" \
             --vscode-version "$VSCODE_VERSION" \
             --vsix "$RUNNER_TEMP/fork-candidate/chainlesschain-ide.vsix" \
