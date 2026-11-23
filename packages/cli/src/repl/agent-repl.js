@@ -31,12 +31,17 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import { createHash, randomUUID } from "node:crypto";
+import { isDeepStrictEqual } from "node:util";
 import { isPromise, isProxy } from "node:util/types";
 import { logger } from "../lib/logger.js";
 import { captureSkillRuntimeDependencies } from "../lib/evolution/skill-runtime-revalidation.js";
 import { captureAmbientExecutionLocation } from "../lib/execution-location-runtime.js";
 import { issueMcpStdioExecutionAuthority } from "../lib/mcp-stdio-execution-authority.js";
-import { getPlanModeManager, PlanState } from "../lib/plan-mode.js";
+import { PlanModeManager, PlanState } from "../lib/plan-mode.js";
+import {
+  openSessionPlan,
+  recordSessionPlanApproval,
+} from "../lib/session-plan-approval.js";
 import { createVimState, feedNormalKey } from "../lib/repl-vim.js";
 import {
   analyzeContinuation,
@@ -839,9 +844,15 @@ export async function agentLoop(messages, options) {
         chalk.gray(`  ⎌ checkpoint ${event.id} (before ${event.tool})\n`),
       );
     } else if (event.type === "tool-executing") {
+      const id = runtimeToolCallId(event.tool_use_id);
+      const planItem = options.planManager?.startPlanItemForTool(event.tool, {
+        toolUseId: id,
+      });
+      if (planItem?.error) throw new Error(planItem.error);
       const exec = {
-        id: runtimeToolCallId(event.tool_use_id),
+        id,
         providerId: event.tool_use_id || null,
+        planItemId: planItem?.id,
         tool: event.tool,
         args: event.args,
         startedAt: options.now ? options.now() : Date.now(),
@@ -924,6 +935,14 @@ export async function agentLoop(messages, options) {
         }
         options.sideEffects.persist();
         _currentSideEffectOpId = null;
+      }
+      if (exec?.planItemId) {
+        const failed = Boolean(event.error || event.result?.error);
+        const settlement = options.planManager.settlePlanItem(exec.planItemId, {
+          success: !failed,
+          error: failed ? "Tool execution failed" : null,
+        });
+        if (settlement?.error) throw new Error(settlement.error);
       }
       const durationMs =
         event.result?.toolTelemetryRecord?.durationMs ??
@@ -3229,6 +3248,7 @@ async function startAgentReplInWorkspaceOwned(
   let _replCleanupStarted = false;
   let _turnAbort = null;
   let _replOutputFailure = null;
+  let _planApprovalFailure = null;
   const _requestReplOutputClose = (error) => {
     if (error && !_replOutputFailure) _replOutputFailure = error;
     if (error) {
@@ -3401,8 +3421,17 @@ async function startAgentReplInWorkspaceOwned(
       callModel,
       source: "model",
     });
-  const _runReplDirectTool = async (tool, args, { signal = null } = {}) => {
+  const _runReplDirectTool = async (
+    tool,
+    args,
+    { signal = null, approvedPlanExecution = false } = {},
+  ) => {
     _runtimeLedgerTerminalLatch.assertOpen();
+    if (planManager.executionLock && !approvedPlanExecution) {
+      throw new Error(
+        "Use the approved plan to run tools while its execution lock is active",
+      );
+    }
     try {
       const durableSessionId = resolveReplMeteredSessionId(useJsonl, sessionId);
       return await runReplDirectToolWithLedger({
@@ -3413,6 +3442,11 @@ async function startAgentReplInWorkspaceOwned(
           executeTool(name, toolArgs, {
             sessionId: durableSessionId,
             sessionBudget: _sessionBudget,
+            planManager,
+            approvalGate: _approvalGate,
+            permissionRules: _permissionRules,
+            permissionConfirm: _permissionConfirm,
+            interactiveApproval: true,
             signal: combineReplSignals(signal, options.signal),
           }),
         now: options.now || Date.now,
@@ -3588,6 +3622,37 @@ async function startAgentReplInWorkspaceOwned(
   let db = null;
   let contextEngine = null;
   let sessionId = _startupJsonlResume?.sessionId || null;
+  let planManager = new PlanModeManager();
+  let planPermissionMode;
+  const _recordPlanApproval = () => {
+    if (planManager.memoryOnly) return true;
+    try {
+      recordSessionPlanApproval(planManager);
+      return true;
+    } catch (error) {
+      _planApprovalFailure = error;
+      logger.error("The plan approval receipt could not be persisted.");
+      _replRl.close();
+      return false;
+    }
+  };
+  if (sessionId) {
+    const plan = openSessionPlan(sessionId);
+    if (
+      plan.permissionMode &&
+      options.permissionMode !== undefined &&
+      !isDeepStrictEqual(
+        parsePermissionModeArg(options.permissionMode),
+        parsePermissionModeArg(plan.permissionMode),
+      )
+    ) {
+      throw new Error(
+        "Requested permission mode conflicts with the approved plan",
+      );
+    }
+    planManager = plan.manager;
+    planPermissionMode = plan.permissionMode;
+  }
   const _replCompactPersistence = createReplCompactPersistence(
     _startupJsonlResume?.ok ? _startupJsonlResume.rebuiltMessages : [],
   );
@@ -3757,6 +3822,7 @@ async function startAgentReplInWorkspaceOwned(
   // MEDIUM/HIGH-risk commands against the session's policy tier
   // (strict / trusted / autopilot).
   let _renderStatus = null;
+  let _managedSettings = null;
   try {
     const { getApprovalGate } =
       await import("../lib/session-core-singletons.js");
@@ -3908,6 +3974,7 @@ async function startAgentReplInWorkspaceOwned(
       await import("../lib/permission-authority.js");
     const permissionAuthorityOptions = { cwd: process.cwd() };
     const loaded = loadPermissionAuthority(permissionAuthorityOptions);
+    _managedSettings = loaded.managed;
     _permissionRulesProvider = createPermissionRulesProvider(
       permissionAuthorityOptions,
     );
@@ -4150,6 +4217,9 @@ async function startAgentReplInWorkspaceOwned(
         // Non-critical
       }
     }
+  }
+  if (useJsonl && sessionId && planManager.memoryOnly) {
+    planManager = new PlanModeManager({ sessionId });
   }
 
   // Phase H — register this session with session-core SessionManager so
@@ -4882,7 +4952,16 @@ async function startAgentReplInWorkspaceOwned(
   }
 
   // Apply bundle approval policy to this session (after both gate and sessionId are ready)
-  if (_bundleResolved?.approvalPolicy?.default && _approvalGate && sessionId) {
+  const { assertManagedPermissionMode } =
+    await import("../lib/settings-loader.cjs");
+  if (planPermissionMode)
+    assertManagedPermissionMode(planPermissionMode, _managedSettings);
+  if (
+    !planManager.executionLock &&
+    _bundleResolved?.approvalPolicy?.default &&
+    _approvalGate &&
+    sessionId
+  ) {
     try {
       await _approvalGate.setSessionPolicy(
         sessionId,
@@ -4904,9 +4983,11 @@ async function startAgentReplInWorkspaceOwned(
   // trusted tier + the autoMode.decisions classifier. An explicit flag wins
   // over the bundle's approvalPolicy default. Unknown values are ignored here
   // (headless validates them; interactively we just keep the default tier).
-  if (options.permissionMode && _approvalGate && sessionId) {
-    const parsed = parsePermissionModeArg(options.permissionMode);
-    if (parsed && typeof _approvalGate.setSessionPolicy === "function") {
+  if ((planPermissionMode || options.permissionMode) && sessionId) {
+    const parsed = parsePermissionModeArg(
+      planPermissionMode || options.permissionMode,
+    );
+    if (parsed && typeof _approvalGate?.setSessionPolicy === "function") {
       try {
         await _approvalGate.setSessionPolicy(sessionId, parsed.tier);
         await _approvalGate.awaitPersistence?.();
@@ -4914,9 +4995,17 @@ async function startAgentReplInWorkspaceOwned(
           parsed.auto ? "auto" : parsed.dontAsk ? "dontAsk" : parsed.tier,
         );
       } catch (error) {
+        if (planManager.executionLock) throw error;
         logger.warn(`Approval policy was not persisted: ${error.message}`);
       }
+    } else if (planManager.executionLock) {
+      throw new Error("Cannot apply the approved plan's permission mode");
     }
+  } else if (_approvalGate && sessionId) {
+    const tier = parsePermissionTier(
+      _approvalGate.getSessionPolicy?.(sessionId),
+    );
+    if (tier) setSessionTier(tier);
   }
 
   // Phase G #5 — inject top-K memory recall into system prompt for new sessions
@@ -5252,7 +5341,6 @@ async function startAgentReplInWorkspaceOwned(
         ? chalk.cyan("[N] ")
         : chalk.dim("[I] ")
       : "";
-    const planManager = getPlanModeManager();
     if (planManager.isActive()) {
       const state = planManager.state;
       if (state === PlanState.APPROVED || state === PlanState.EXECUTING) {
@@ -5633,6 +5721,7 @@ async function startAgentReplInWorkspaceOwned(
       if (isShiftTab) {
         _consumeReadlineKeypress(key);
         if (
+          !planManager.executionLock &&
           _approvalGate &&
           sessionId &&
           typeof _approvalGate.setSessionPolicy === "function"
@@ -7865,6 +7954,12 @@ async function startAgentReplInWorkspaceOwned(
                 initialCandidate.sessionId,
               );
               if (!prepared.ok) throw prepared.error;
+              const targetPlan = openSessionPlan(prepared.sessionId);
+              if (targetPlan.permissionMode)
+                assertManagedPermissionMode(
+                  targetPlan.permissionMode,
+                  _managedSettings,
+                );
               const preparedSideEffects = _prepareReplSideEffects(
                 prepared.sessionId,
                 { recover: true },
@@ -7892,6 +7987,24 @@ async function startAgentReplInWorkspaceOwned(
                   prepared.conversationMessages.at(-1)?.role === "user",
                 logMessage: `Resumed JSONL session ${prepared.sessionId} (${prepared.rebuiltMessages.length} messages)`,
               });
+              const targetMode = parsePermissionModeArg(
+                targetPlan.permissionMode ||
+                  (reuseCurrentLease
+                    ? _sessionTier
+                    : _approvalGate?.getSessionPolicy?.(prepared.sessionId)) ||
+                  "strict",
+              );
+              if (typeof _approvalGate?.setSessionPolicy === "function") {
+                await _approvalGate.setSessionPolicy(
+                  prepared.sessionId,
+                  targetMode.tier,
+                );
+                await _approvalGate.awaitPersistence?.();
+              } else if (targetPlan.manager.executionLock) {
+                throw new Error(
+                  "Cannot apply the approved plan's permission mode",
+                );
+              }
               const committed = commitPreparedReplJsonlResume(
                 prepared,
                 () => _applyPreparedResumeState(preparedState),
@@ -7906,6 +8019,14 @@ async function startAgentReplInWorkspaceOwned(
               }
               const previousLease = _replaceSessionHostLease(targetLease);
               adoptedTargetLease = true;
+              planManager = targetPlan.manager;
+              setSessionTier(
+                targetMode.auto
+                  ? "auto"
+                  : targetMode.dontAsk
+                    ? "dontAsk"
+                    : targetMode.tier,
+              );
               _replSideEffects = preparedSideEffects.sideEffects;
               if (preparedSideEffects.warning) {
                 logger.warn(preparedSideEffects.warning);
@@ -8697,7 +8818,6 @@ async function startAgentReplInWorkspaceOwned(
 
     // Plan mode commands
     if (trimmed.startsWith("/plan")) {
-      const planManager = getPlanModeManager();
       const subCmd = trimmed.slice(5).trim();
 
       if (!subCmd || subCmd === "enter") {
@@ -8706,7 +8826,12 @@ async function startAgentReplInWorkspaceOwned(
             "Already in plan mode. Use /plan show, /plan approve, or /plan reject.",
           );
         } else {
-          planManager.enterPlanMode({ title: "Agent Plan" });
+          const result = planManager.enterPlanMode({ title: "Agent Plan" });
+          if (result.error) {
+            logger.error(result.error);
+            prompt();
+            return;
+          }
           logger.success(
             "Entered plan mode. Write tools are blocked until you approve the plan.",
           );
@@ -8772,24 +8897,36 @@ async function startAgentReplInWorkspaceOwned(
               logger.warn(`Advisor plan review skipped: ${error.message}`);
             }
           }
-          planManager.approvePlan();
+          const approved = planManager.approvePlan({
+            permissionMode: permissionModeForTier(_sessionTier),
+          });
+          if (approved.error) {
+            logger.error(approved.error);
+            prompt();
+            return;
+          }
+          if (!_recordPlanApproval()) return;
           logger.success(
             `Plan approved! ${planManager.currentPlan.items.length} items ready for execution.`,
           );
-          logger.info(
-            "Write/execute tools are now unlocked. The AI can proceed.",
-          );
+          logger.info("The AI can execute the approved plan items.");
           messages.push({
             role: "system",
-            content: `[PLAN APPROVED] The user has approved your plan with ${planManager.currentPlan.items.length} items. You can now use all tools including write_file, edit_file, run_shell, and run_skill. Execute the plan items in order.`,
+            content:
+              "[PLAN APPROVED] Execute the approved plan items in order. Request a plan revision before using a write or execution tool outside the approval.",
           });
         }
       } else if (subCmd === "reject" || subCmd === "no") {
         if (!planManager.isActive()) {
           logger.info("No plan to reject.");
         } else {
-          planManager.rejectPlan("User rejected");
-          logger.info("Plan rejected. Exited plan mode.");
+          const wasApproved = Boolean(planManager.executionLock);
+          const result = planManager.rejectPlan("User rejected");
+          if (result.error) logger.error(result.error);
+          else {
+            if (wasApproved && !_recordPlanApproval()) return;
+            logger.info("Plan rejected. Exited plan mode.");
+          }
         }
       } else if (subCmd === "risk") {
         if (!planManager.isActive() || !planManager.currentPlan) {
@@ -8818,17 +8955,25 @@ async function startAgentReplInWorkspaceOwned(
         } else {
           logger.info("Executing plan items in DAG order...");
           try {
-            const { results, success } = await planManager.executePlan(
-              async (item) => {
-                if (item.tool && item.params) {
-                  process.stdout.write(
-                    chalk.gray(`  [${item.tool}] ${item.title}\n`),
-                  );
-                  return await _runReplDirectTool(item.tool, item.params);
-                }
-                return { skipped: true };
-              },
-            );
+            const execution = await planManager.executePlan(async (item) => {
+              if (item.tool && item.params) {
+                process.stdout.write(
+                  chalk.gray(`  [${item.tool}] ${item.title}\n`),
+                );
+                const result = await _runReplDirectTool(
+                  item.tool,
+                  item.params,
+                  {
+                    approvedPlanExecution: true,
+                  },
+                );
+                if (result?.error) throw new Error(result.error);
+                return result;
+              }
+              return { skipped: true };
+            });
+            if (execution.error) throw new Error(execution.error);
+            const { results, success } = execution;
             for (const r of results) {
               const icon = r.success ? chalk.green("✓") : chalk.red("✗");
               logger.log(
@@ -8838,15 +8983,22 @@ async function startAgentReplInWorkspaceOwned(
             logger.info(
               `Plan execution ${success ? "completed" : "finished with errors"}.`,
             );
-            planManager.exitPlanMode({ savePlan: true });
+            const exited = planManager.exitPlanMode({ savePlan: true });
+            if (exited.error) throw new Error(exited.error);
+            if (!_recordPlanApproval()) return;
           } catch (err) {
             logger.error(`Plan execution failed: ${err.message}`);
           }
         }
       } else if (subCmd === "exit") {
         if (planManager.isActive()) {
-          planManager.exitPlanMode({ savePlan: true });
-          logger.info("Exited plan mode.");
+          const wasApproved = Boolean(planManager.executionLock);
+          const result = planManager.exitPlanMode({ savePlan: true });
+          if (result.error) logger.error(result.error);
+          else {
+            if (wasApproved && !_recordPlanApproval()) return;
+            logger.info("Exited plan mode.");
+          }
         } else {
           logger.info("Not in plan mode.");
         }
@@ -9248,6 +9400,10 @@ async function startAgentReplInWorkspaceOwned(
           logger.info(
             "Usage: /permissions [strict|trusted|autopilot|auto|dontask]  " +
               "(aliases: default · manual · accept-edits · bypass). No arg = show rules.",
+          );
+        } else if (planManager.executionLock) {
+          logger.info(
+            "The approved plan locks the current permission mode. Use /plan exit to release it.",
           );
         } else if (
           !_approvalGate ||
@@ -10180,6 +10336,7 @@ async function startAgentReplInWorkspaceOwned(
             ? (event) => appendEvent(sessionId, "model_decision", event)
             : undefined,
         permissionMode: _sessionTier,
+        planManager,
         // Seed the subagent-contract CEILING with the interactive session's
         // CURRENT approval tier (mapped back to a permission mode) so a spawned
         // sub-agent inherits/tightens from it (tighten-only), mirroring the
@@ -10968,7 +11125,10 @@ async function startAgentReplInWorkspaceOwned(
     if (_evolutionSession !== null) {
       try {
         await _evolutionSession.close(
-          _replOutputFailure || _runtimeLedgerTerminalLatch.error() || null,
+          _replOutputFailure ||
+            _planApprovalFailure ||
+            _runtimeLedgerTerminalLatch.error() ||
+            null,
         );
       } catch (error) {
         _replOutputFailure ||= error;
@@ -10978,7 +11138,9 @@ async function startAgentReplInWorkspaceOwned(
       ? _replOutputFailure.code === "EPIPE"
         ? 0
         : 1
-      : 0;
+      : _planApprovalFailure
+        ? 1
+        : 0;
     outputScope.restore();
     process.exit(outputExitCode);
   });

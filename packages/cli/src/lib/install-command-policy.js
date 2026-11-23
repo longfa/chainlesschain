@@ -23,9 +23,32 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { createHash } from "node:crypto";
 import shellPolicy from "../runtime/coding-agent-shell-policy.cjs";
 
 const { splitCommandSegments, tokenizeShellCommand } = shellPolicy;
+
+/** Normalize installer side effects into a stable machine-readable receipt. */
+export function normalizeInstallCommandResult(value = null) {
+  const input = value && typeof value === "object" ? value : {};
+  const stderr = typeof input.stderr === "string" ? input.stderr : "";
+  const digest =
+    typeof input.stderrDigest === "string" && input.stderrDigest
+      ? input.stderrDigest
+      : createHash("sha256").update(stderr, "utf8").digest("hex");
+  const exitCode = Number.isSafeInteger(input.exitCode) ? input.exitCode : null;
+  return {
+    ran: input.ran === true || exitCode !== null || input.started === true,
+    exitCode,
+    timedOut: input.timedOut === true,
+    signaled: input.signaled === true || input.signal != null,
+    printedToStderr:
+      input.printedToStderr === true ||
+      stderr.length > 0 ||
+      input.stderrBytes > 0,
+    stderrDigest: digest,
+  };
+}
 
 // Leading tokens that wrap the real command and must be stripped before the
 // binary is read: privilege elevation, env-var assignments, and `env`/`command`.

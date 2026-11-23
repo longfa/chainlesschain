@@ -1111,7 +1111,7 @@ async function activate(context) {
             /^session-fork-[a-f0-9]{32}$/.test(forkedId)
           ) {
             if (chatProvider.activeSessionId() === sessionId)
-              chatProvider.resumeSessionId(forkedId);
+              chatProvider.openSessionInNewTab(forkedId);
             vscode.window.showInformationMessage(
               `ChainlessChain: forked session ${forkedId}`,
             );

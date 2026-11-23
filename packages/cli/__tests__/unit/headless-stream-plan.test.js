@@ -139,6 +139,10 @@ it("restores the approved mode and tool lock from a fresh process", async () => 
       },
     });
     expect(freshHost("bypassPermissions").status).toBe(1);
+    expect(
+      openSessionPlan(sessionId, "default", { permissionModeIsFallback: true })
+        .permissionMode,
+    ).toBe("acceptEdits");
     const singleRows = [];
     const single = await runAgentHeadless(
       {
@@ -188,6 +192,9 @@ it("restores the approved mode and tool lock from a fresh process", async () => 
     const missing = freshHost();
     expect(missing.status).toBe(1);
     expect(missing.stderr).toContain("no matching session approval receipt");
+    expect(() =>
+      openSessionPlan(sessionId, "default", { permissionModeIsFallback: true }),
+    ).toThrow("no matching session approval receipt");
   } finally {
     vi.unstubAllEnvs();
     rmSync(root, { recursive: true, force: true });

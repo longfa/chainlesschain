@@ -149,6 +149,8 @@ import {
   classifyDenial,
   recordDenial,
   formatDenials,
+  DESTRUCTIVE_SHELL_DENIAL_CODE,
+  isDestructiveShellDenial,
 } from "../lib/repl-denials.js";
 import executionBroker from "../lib/process-execution-broker/index.js";
 import { extractPluginUsageAttribution } from "../lib/plugin-usage-attribution.js";
@@ -640,6 +642,7 @@ async function withHeadlessSessionHostLease(options, deps, task) {
   let budgetRoot = null;
   let scopedOptions = options;
   let preflightAdmission;
+  let taskStarted = false;
   try {
     // Session authority/lease/budget setup can lazily initialize AppConfig and
     // DatabaseManager. Those legacy diagnostics use console.info (stdout), and
@@ -805,12 +808,50 @@ async function withHeadlessSessionHostLease(options, deps, task) {
         scopedOptions = { ...scopedOptions, ...budgetRoot.options };
       }
     });
+    taskStarted = true;
     return await task(scopedOptions, {
       ...deps,
       [HEADLESS_SESSION_RESOLUTION]: resolution,
       [HEADLESS_SESSION_HOST_LEASE]: lease,
       [HEADLESS_CANONICAL_ADMISSION]: preflightAdmission,
     });
+  } catch (error) {
+    if (taskStarted) throw error;
+    const sessionId =
+      resolution?.resumeId || resolution?.sessionId || options.sessionId;
+    const persistence = projectSessionPersistenceFailure(
+      createSessionPersistenceFailure(error, {
+        sessionId,
+        operation: "session-start",
+      }),
+      { phase: "before-model" },
+    );
+    if (!persistence) throw error;
+    try {
+      deps.onPersistenceFailure?.(persistence);
+    } catch {
+      // Observability cannot change persistence semantics.
+    }
+    const result = `${persistence.code}: canonical session admission was refused (${persistence.fs_code}; ${persistence.commit_state})`;
+    if (outputFormat !== "text") {
+      deps.writeOut(
+        JSON.stringify(
+          buildResultEnvelope({
+            subtype: "error_persistence",
+            isError: true,
+            result,
+            sessionId,
+            toolCalls: [],
+            usage: {},
+            numTurns: 0,
+            durationMs: 0,
+            persistence,
+          }),
+        ) + "\n",
+      );
+    }
+    deps.writeErr(`${result}\n`);
+    return { exitCode: 1, result, isError: true, persistence };
   } finally {
     // Cleanup can touch the same lazy stores. Keep late diagnostics out of a
     // completed JSON/NDJSON payload while preserving release-on-close failure.
@@ -1591,7 +1632,13 @@ async function runAgentHeadlessInWorkspace(
     try {
       const { openSessionPlan } =
         await import("../lib/session-plan-approval.js");
-      const plan = openSessionPlan(sessionId, options.permissionMode);
+      const plan = openSessionPlan(sessionId, options.permissionMode, {
+        // A resumed worker replays the original launch profile. A verified
+        // session approval takes precedence over that historical default.
+        permissionModeIsFallback:
+          Boolean(process.env.CC_BACKGROUND_AGENT_ID) &&
+          process.env.CC_BACKGROUND_RESTORE_PLAN_PERMISSION === "1",
+      });
       planManager = plan.manager;
       options = { ...options, permissionMode: plan.permissionMode };
     } catch {
@@ -3279,6 +3326,7 @@ async function runAgentHeadlessInWorkspace(
   };
   let finalText = "";
   let endReason = "complete";
+  let destructiveShellDenied = false;
   let stopForCost = false;
   let stopForCompactionUsageUnknown = false;
 
@@ -3892,6 +3940,7 @@ async function runAgentHeadlessInWorkspace(
           }
           case "tool-result": {
             const err = event.error || event.result?.error || null;
+            if (isDestructiveShellDenial(event)) destructiveShellDenied = true;
             // A denied request has no invocation to settle. Explicit provider
             // IDs must never fall back to a different pending invocation.
             const settledCall =
@@ -4670,10 +4719,15 @@ async function runAgentHeadlessInWorkspace(
     endReason === "budget-exhausted" || endReason === "max_turns";
   const costStopped = endReason === "cost-budget-exhausted";
   const goalExhausted = endReason === "goal-exhausted";
+  // A final answer can follow a hard shell refusal. Keep the refusal in the
+  // process result so automation cannot treat the destructive request as done.
+  const deniedDestructiveRequest =
+    endReason === "complete" && destructiveShellDenied;
   let isError =
     exhausted ||
     costStopped ||
     goalExhausted ||
+    deniedDestructiveRequest ||
     endReason === "no-response" ||
     endReason === "deferred-mutation-unresolved";
   let subtype = exhausted
@@ -4847,6 +4901,9 @@ async function runAgentHeadlessInWorkspace(
     }
   }
 
+  const resultCode =
+    sessionPersistenceCode ||
+    (deniedDestructiveRequest ? DESTRUCTIVE_SHELL_DENIAL_CODE : null);
   if (isStream) {
     emitStream({
       type: "result",
@@ -4862,7 +4919,7 @@ async function runAgentHeadlessInWorkspace(
         ? { compaction_degradations: compactionDegradations }
         : {}),
       ...(persistenceFailure ? { persistence: persistenceFailure } : {}),
-      ...(sessionPersistenceCode ? { code: sessionPersistenceCode } : {}),
+      ...(resultCode ? { code: resultCode } : {}),
     });
   } else if (isJson) {
     writeOut(
@@ -4881,7 +4938,7 @@ async function runAgentHeadlessInWorkspace(
           compactionDegradations,
           persistence: persistenceFailure,
         }),
-        ...(sessionPersistenceCode ? { code: sessionPersistenceCode } : {}),
+        ...(resultCode ? { code: resultCode } : {}),
       }) + "\n",
     );
   } else {
@@ -4929,7 +4986,7 @@ async function runAgentHeadlessInWorkspace(
     result: finalText,
     isError,
     ...(persistenceFailure ? { persistence: persistenceFailure } : {}),
-    ...(sessionPersistenceCode ? { code: sessionPersistenceCode } : {}),
+    ...(resultCode ? { code: resultCode } : {}),
   };
 }
 

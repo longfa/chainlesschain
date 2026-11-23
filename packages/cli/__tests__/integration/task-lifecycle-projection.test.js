@@ -1,6 +1,14 @@
 import { randomUUID } from "node:crypto";
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, rmSync } from "node:fs";
+import { once } from "node:events";
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -11,6 +19,8 @@ import {
   startSession,
 } from "../../src/harness/jsonl-session-store.js";
 import { BackgroundTaskManager } from "../../src/harness/background-task-manager.js";
+import { isProcessAlive } from "../../src/lib/background-agent-supervisor.js";
+import { inspectPosixProcessGroup } from "../../src/lib/process-execution-broker/owned-posix-process-group.js";
 import { AgentScheduleStore } from "../../src/lib/agent-schedule-store.js";
 import { createMcpCallLedger } from "../../src/lib/mcp-call-ledger.js";
 import { createSessionMcpLedgerSink } from "../../src/lib/mcp-call-ledger-store.js";
@@ -21,6 +31,131 @@ import {
 } from "../../src/lib/mcp-task-journal.js";
 
 const cli = fileURLToPath(new URL("../../src/index.js", import.meta.url));
+
+it("reports a live background worker whose stop cannot be confirmed by a reloaded manager", async () => {
+  const root = mkdtempSync(join(tmpdir(), "cc-task-stop-evidence-"));
+  const workspace = join(root, "workspace");
+  mkdirSync(workspace);
+  const userHome = join(root, "user-home");
+  mkdirSync(userHome);
+  vi.stubEnv("HOME", userHome);
+  vi.stubEnv("USERPROFILE", userHome);
+  vi.stubEnv("CHAINLESSCHAIN_HOME", join(root, "config"));
+  vi.stubEnv("CHAINLESSCHAIN_SECURITY_ANCHOR_HOME", join(root, "security"));
+  vi.stubEnv("APPDATA", join(root, "appdata"));
+  vi.stubEnv("XDG_CONFIG_HOME", join(root, "config"));
+  const script = join(workspace, "fixture.cjs");
+  const marker = join(workspace, "started.txt");
+  writeFileSync(
+    script,
+    `
+    require("node:fs").writeFileSync(${JSON.stringify(marker)}, String(process.pid));
+    setTimeout(() => process.exit(0), 45_000);
+  `,
+  );
+  const command = `"${process.execPath.replaceAll("\\", "/")}" "${script.replaceAll("\\", "/")}"`;
+  const owner = new BackgroundTaskManager();
+  let task;
+  let child;
+  try {
+    task = owner.run({ command, cwd: workspace });
+    child = owner.processes.get(task.id);
+    const deadline = Date.now() + 15_000;
+    while (
+      !existsSync(marker) &&
+      child.exitCode === null &&
+      Date.now() < deadline
+    ) {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+    expect(existsSync(marker)).toBe(true);
+    const payloadPid = Number(readFileSync(marker, "utf8"));
+    expect(payloadPid).toBeGreaterThan(0);
+    expect(payloadPid).not.toBe(child.pid);
+    expect(child.exitCode).toBeNull();
+    expect(isProcessAlive(payloadPid)).toBe(true);
+
+    // The reloaded manager sees the on-disk task but cannot signal a process
+    // it does not own. The original owner still holds the handle for cleanup.
+    const observer = new BackgroundTaskManager({
+      recoverOnStart: true,
+      recoverPending: false,
+    });
+    expect(observer.stop(task.id)).toEqual({
+      requested: true,
+      confirmed: false,
+      orphanRisk: true,
+    });
+    expect(
+      observer.tasks.get(task.id).history.map(({ event }) => event),
+    ).toEqual(expect.arrayContaining(["stop_requested", "stop_timeout"]));
+    expect(child.exitCode).toBeNull();
+    expect(isProcessAlive(payloadPid)).toBe(true);
+
+    const run = (...args) => {
+      const result = spawnSync(process.execPath, [cli, ...args], {
+        cwd: workspace,
+        encoding: "utf8",
+        timeout: 45_000,
+        windowsHide: true,
+      });
+      expect(result.error).toBeUndefined();
+      return JSON.parse(result.stdout);
+    };
+    expect(run("tasks", "--json").tasks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: task.id, orphanRisk: true }),
+      ]),
+    );
+    expect(
+      run("doctor", "--json").checkup.flatMap((section) => section.checks),
+    ).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: "bg-shell-stop-unconfirmed",
+          level: "warn",
+        }),
+      ]),
+    );
+
+    const exited = once(child, "exit");
+    owner.stop(task.id);
+    await exited;
+    const payloadStillRunning = () => {
+      const states = inspectPosixProcessGroup(child.pid, {
+        platform: process.platform,
+        spawnSync,
+      });
+      return states
+        ? states.some((state) => state !== "Z" && state !== "X")
+        : isProcessAlive(payloadPid);
+    };
+    const reapDeadline = Date.now() + 5_000;
+    while (payloadStillRunning() && Date.now() < reapDeadline) {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+    expect(payloadStillRunning()).toBe(false);
+    expect(owner.stop(task.id)).toEqual({
+      requested: true,
+      confirmed: true,
+      orphanRisk: false,
+    });
+    expect(task.history.at(-1)?.event).toBe("stop_confirmed");
+    const stored = run("tasks", "--json").tasks.find(
+      ({ id }) => id === task.id,
+    );
+    expect(stored).toMatchObject({ state: "cancelled" });
+    expect(stored).not.toHaveProperty("orphanRisk");
+  } finally {
+    if (child && child.exitCode === null && child.signalCode === null) {
+      const exited = once(child, "exit");
+      owner.stop(task.id);
+      await exited;
+    }
+    vi.unstubAllEnvs();
+    rmSync(root, { recursive: true, force: true });
+  }
+});
 
 it("reads concurrent task sources and forks a verified session from separate CLI processes", async () => {
   const root = mkdtempSync(join(tmpdir(), "cc-task-lifecycle-"));

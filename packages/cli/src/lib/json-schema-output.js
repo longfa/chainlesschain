@@ -286,12 +286,7 @@ const SINGLE_SUBSCHEMA_KEYWORDS = [
   "unevaluatedProperties",
 ];
 
-const ARRAY_SUBSCHEMA_KEYWORDS = [
-  "allOf",
-  "anyOf",
-  "oneOf",
-  "prefixItems",
-];
+const ARRAY_SUBSCHEMA_KEYWORDS = ["allOf", "anyOf", "oneOf", "prefixItems"];
 
 const MAP_SUBSCHEMA_KEYWORDS = [
   "$defs",
@@ -322,11 +317,7 @@ function resolveSchemaUri(reference, baseUri) {
   }
 }
 
-function scanSchemaDocument(
-  schema,
-  retrievalUri,
-  { references, resources },
-) {
+function scanSchemaDocument(schema, retrievalUri, { references, resources }) {
   const seen = new Set();
 
   function visit(node, inheritedBase) {
@@ -547,8 +538,8 @@ async function fetchExternalSchema(
   const schema = parseExternalSchema(raw, uri);
   const bytes =
     Number.isFinite(response?.bytes) && response.bytes >= 0
-    ? response.bytes
-    : Buffer.byteLength(JSON.stringify(schema), "utf8");
+      ? response.bytes
+      : Buffer.byteLength(JSON.stringify(schema), "utf8");
   if (bytes > maxDocumentBytes) {
     throw new Error(
       `External JSON Schema "${uri}" exceeds ${maxDocumentBytes} bytes`,
@@ -556,9 +547,7 @@ async function fetchExternalSchema(
   }
   let retrievalUri = uri;
   if (responseEnvelope && response?.url) {
-    retrievalUri = withoutFragment(
-      resolveSchemaUri(String(response.url), uri),
-    );
+    retrievalUri = withoutFragment(resolveSchemaUri(String(response.url), uri));
     const redirected = new URL(retrievalUri);
     const redirectPolicy = checkAllowed(retrievalUri, {
       allowedDomains,
@@ -584,11 +573,7 @@ async function fetchExternalSchema(
  * Remote references are HTTPS-only and use the shared DNS-rebinding/SSRF-safe
  * fetch path with bounded document count, bytes, redirects and timeout.
  */
-export async function loadSchemaFileWithRefs(
-  fs,
-  schemaFile,
-  options = {},
-) {
+export async function loadSchemaFileWithRefs(fs, schemaFile, options = {}) {
   const schema = loadSchemaFile(fs, schemaFile);
   if (!schema || typeof schema !== "object") return schema;
 
@@ -605,16 +590,13 @@ export async function loadSchemaFileWithRefs(
   const allowedDomains = Array.isArray(options.allowedDomains)
     ? options.allowedDomains
     : ["*"];
-  const maxDocuments =
-    options.maxDocuments ?? DEFAULT_MAX_EXTERNAL_DOCUMENTS;
+  const maxDocuments = options.maxDocuments ?? DEFAULT_MAX_EXTERNAL_DOCUMENTS;
   const maxDocumentBytes =
     options.maxDocumentBytes ?? DEFAULT_MAX_EXTERNAL_DOCUMENT_BYTES;
   const maxTotalBytes =
     options.maxTotalBytes ?? DEFAULT_MAX_EXTERNAL_TOTAL_BYTES;
-  const timeoutMs =
-    options.timeoutMs ?? DEFAULT_EXTERNAL_TIMEOUT_MS;
-  const fetchSchema =
-    options.fetchSchema || _deps.webFetch;
+  const timeoutMs = options.timeoutMs ?? DEFAULT_EXTERNAL_TIMEOUT_MS;
+  const fetchSchema = options.fetchSchema || _deps.webFetch;
 
   const references = new Map();
   const resources = new Set();
@@ -626,8 +608,7 @@ export async function loadSchemaFileWithRefs(
 
   while (true) {
     const uri = [...references.keys()].find(
-      (candidate) =>
-        !resources.has(candidate) && !fetched.has(candidate),
+      (candidate) => !resources.has(candidate) && !fetched.has(candidate),
     );
     if (!uri) break;
     if (fetched.size >= maxDocuments) {
@@ -655,8 +636,7 @@ export async function loadSchemaFileWithRefs(
       );
     }
     assertExternalSchemaIsValid(loaded.schema, uri);
-    const redirected =
-      loaded.retrievalUri && loaded.retrievalUri !== uri;
+    const redirected = loaded.retrievalUri && loaded.retrievalUri !== uri;
     if (redirected) {
       registry[loaded.retrievalUri] = loaded.schema;
       registry[uri] = { $ref: loaded.retrievalUri };
@@ -726,6 +706,7 @@ export async function runJsonSchemaConstrained(cfg = {}) {
         writeErr,
       },
     );
+    if (outcome?.exitCode) return outcome.exitCode;
     const raw =
       String(outcome?.result ?? captured ?? "").trim() || captured.trim();
     lastRaw = raw;

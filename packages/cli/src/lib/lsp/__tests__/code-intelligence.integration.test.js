@@ -20,7 +20,7 @@ const suite = serverAvailable ? describe : describe.skip;
 
 if (!serverAvailable) {
   // Make the skip reason obvious in test output.
-  // eslint-disable-next-line no-console
+
   console.warn(
     "[lsp.integration] SKIP — no `typescript-language-server` on PATH. " +
       "Install it to run real LSP integration coverage.",
@@ -74,21 +74,23 @@ suite("CodeIntelligence against a real typescript-language-server", () => {
     }
   });
 
-  it("resolves a cross-file definition", async () => {
-    // `add` usage in main.ts (line 3, col 15) → declaration in math.ts
-    const res = await ci.definition(path.join(tmp, "src", "main.ts"), 3, 15);
-    expect(res.available).toBe(true);
-    expect(res.locations.length).toBeGreaterThan(0);
-    expect(res.locations.some((l) => l.file.endsWith("math.ts"))).toBe(true);
-  }, 30000);
+  it("serves simultaneous definition and references queries on cold start", async () => {
+    const main = path.join(tmp, "src", "main.ts");
+    const math = path.join(tmp, "src", "math.ts");
+    const [definition, references] = await Promise.all([
+      ci.definition(main, 3, 15),
+      ci.references(math, 1, 17),
+    ]);
 
-  it("finds all references to a symbol across files", async () => {
-    // `add` declaration in math.ts (line 1, col 17)
-    const res = await ci.references(path.join(tmp, "src", "math.ts"), 1, 17);
-    expect(res.available).toBe(true);
-    // declaration + import + call site
-    expect(res.locations.length).toBeGreaterThanOrEqual(2);
-    expect(res.locations.some((l) => l.file.endsWith("main.ts"))).toBe(true);
+    expect(definition.available).toBe(true);
+    expect(
+      definition.locations.map((item) => path.basename(item.file)),
+    ).toContain("math.ts");
+    expect(references.available).toBe(true);
+    expect(references.locations.length).toBeGreaterThanOrEqual(2);
+    expect(
+      references.locations.map((item) => path.basename(item.file)),
+    ).toContain("main.ts");
   }, 30000);
 
   it("reports diagnostics for an undefined name", async () => {

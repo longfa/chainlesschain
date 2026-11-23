@@ -11,6 +11,7 @@ import chalk from "chalk";
 import ora from "ora";
 import { logger } from "../lib/logger.js";
 import { bootstrap, shutdown } from "../runtime/bootstrap.js";
+import { withQuietStdout } from "../runtime/quiet-stdout.js";
 import {
   MCPClient,
   MCPServerConfig,
@@ -28,6 +29,7 @@ import {
   SUPPORTED_TRANSPORTS,
 } from "../lib/mcp-scaffold.js";
 import { parseJsonOption } from "../lib/parse-json-option.js";
+import { normalizeInstallCommandResult } from "../lib/install-command-policy.js";
 import { resolveMcpAuthTarget, isUrlLike } from "../lib/mcp-auth-target.js";
 import { notFoundWithSuggestion } from "../lib/suggest-name.js";
 import { findGitProjectRoot } from "../lib/project-root.cjs";
@@ -1291,7 +1293,8 @@ export function registerMcpCommand(program) {
           );
         }
 
-        const ctx = await bootstrap({ verbose: program.opts().verbose });
+        const boot = () => bootstrap({ verbose: program.opts().verbose });
+        const ctx = await (options.json ? withQuietStdout(boot) : boot());
         if (!ctx.db) {
           logger.error("Database not available");
           process.exit(1);
@@ -1471,7 +1474,14 @@ export function registerMcpCommand(program) {
         };
 
         if (options.json) {
-          console.log(JSON.stringify(payload));
+          console.log(
+            JSON.stringify({
+              ...payload,
+              ...(options.command
+                ? { installCommand: normalizeInstallCommandResult() }
+                : {}),
+            }),
+          );
         } else {
           logger.success(`MCP server "${chalk.cyan(name)}" configured`);
           if (options.url) {
@@ -1503,7 +1513,7 @@ export function registerMcpCommand(program) {
           }
         }
 
-        await shutdown();
+        await (options.json ? withQuietStdout(shutdown) : shutdown());
       } catch (err) {
         logger.error(`Failed: ${err.message}`);
         process.exit(1);

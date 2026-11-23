@@ -51,6 +51,7 @@ import {
   redactPluginSourceForDisplay,
 } from "../plugin-source-identity.js";
 import { assertRegistryResolutionAuthority } from "./remote-source.js";
+import { normalizeInstallCommandResult } from "../install-command-policy.js";
 import {
   writePluginLock,
   buildPluginSbom,
@@ -794,10 +795,18 @@ function _withMaterializedSource(source, fn, opts = {}) {
       }
       return result;
     }
-    const cloned = fetchGitRepo(git.url, git.ref, { cwd: opts.cwd });
+    let cloned;
+    let installCommand;
     try {
+      cloned = fetchGitRepo(git.url, git.ref, {
+        cwd: opts.cwd,
+        onInstallCommand(receipt) {
+          installCommand = receipt;
+        },
+      });
       const result = fn(cloned, git);
       if (result && typeof result === "object") {
+        if (installCommand) result.installCommand = installCommand;
         try {
           const cached = publishMarketplaceSourceCache(
             cloned,
@@ -816,9 +825,13 @@ function _withMaterializedSource(source, fn, opts = {}) {
         }
       }
       return result;
+    } catch (error) {
+      if (installCommand) error.installCommand = installCommand;
+      throw error;
     } finally {
       try {
-        _deps.rmSync(path.dirname(cloned), { recursive: true, force: true });
+        if (cloned)
+          _deps.rmSync(path.dirname(cloned), { recursive: true, force: true });
       } catch {
         /* temp cleanup is best-effort */
       }
@@ -1987,13 +2000,17 @@ export function fetchGitRepo(url, ref, options = {}) {
   const executable = resolveTrustedGitExecutable(cwd);
   const base = _deps.mkdtempSync(path.join(os.tmpdir(), "cc-plugin-git-"));
   const dir = path.join(base, "repo");
+  const stderrHash = crypto.createHash("sha256");
+  let printedToStderr = false;
+  let ran = false;
+  let lastProcess;
   const run = (args) => {
     const hardenedArgs = hardenedPluginGitArgs(args, { url, cwd });
     const auditRedactArgIndexes = hardenedArgs.flatMap((argument, index) =>
       argument === url || (ref != null && argument === ref) ? [index] : [],
     );
     try {
-      return _deps.spawnSync(executable, hardenedArgs, {
+      lastProcess = _deps.spawnSync(executable, hardenedArgs, {
         cwd: base,
         encoding: "utf8",
         env: hardenedPluginGitEnvironment(),
@@ -2006,8 +2023,16 @@ export function fetchGitRepo(url, ref, options = {}) {
         auditRedactArgIndexes,
       });
     } catch (error) {
-      return { error, status: null, stdout: "", stderr: "" };
+      lastProcess = { error, status: null, stdout: "", stderr: "" };
     }
+    if (lastProcess.stderr?.length) {
+      printedToStderr = true;
+      stderrHash.update(lastProcess.stderr);
+    }
+    ran ||= Boolean(
+      lastProcess.pid || lastProcess.signal || lastProcess.status != null,
+    );
+    return lastProcess;
   };
 
   // Reduce host-specific checkout differences before the v2 inventory hashes
@@ -2027,35 +2052,56 @@ export function fetchGitRepo(url, ref, options = {}) {
   const cloneArgs = [...canonicalCheckoutArgs, "clone", "--depth", "1"];
   if (ref) cloneArgs.push("--branch", ref);
   cloneArgs.push(url, dir);
-  let res = run(cloneArgs);
-  if (res.error && res.error.code === "ENOENT") {
-    throw new Error("git is not installed (needed to fetch a remote plugin)");
-  }
-  if (res.error) {
-    throw new Error(
-      `git process failed for ${redactPluginSourceForDisplay(url)}`,
-    );
-  }
-  if (res.status !== 0) {
-    // A commit SHA can't be used with --branch/--depth; retry with a full clone
-    // then checkout the ref explicitly.
-    if (ref) {
-      try {
-        _deps.rmSync(dir, { recursive: true, force: true });
-      } catch {
-        /* ignore */
-      }
-      const full = run([...canonicalCheckoutArgs, "clone", url, dir]);
-      if (!full.error && full.status === 0) {
-        const co = run([...canonicalCheckoutArgs, "-C", dir, "checkout", ref]);
-        if (co.status === 0) return dir;
-      }
+  try {
+    const res = run(cloneArgs);
+    if (res.error?.code === "ENOENT") {
+      throw new Error("git is not installed (needed to fetch a remote plugin)");
     }
-    throw new Error(
-      `git clone failed for ${redactPluginSourceForDisplay(url)} (git exited ${res.status})`,
-    );
+    if (res.error) {
+      throw new Error(
+        `git process failed for ${redactPluginSourceForDisplay(url)}`,
+      );
+    }
+    if (res.status !== 0) {
+      // A commit SHA can't be used with --branch/--depth; retry with a full clone
+      // then checkout the ref explicitly.
+      if (ref) {
+        try {
+          _deps.rmSync(dir, { recursive: true, force: true });
+        } catch {
+          /* ignore */
+        }
+        const full = run([...canonicalCheckoutArgs, "clone", url, dir]);
+        if (!full.error && full.status === 0) {
+          const co = run([
+            ...canonicalCheckoutArgs,
+            "-C",
+            dir,
+            "checkout",
+            ref,
+          ]);
+          if (!co.error && co.status === 0) return dir;
+        }
+      }
+      throw new Error(
+        `git clone failed for ${redactPluginSourceForDisplay(url)} (git exited ${lastProcess.status})`,
+      );
+    }
+    return dir;
+  } finally {
+    if (lastProcess) {
+      options.onInstallCommand?.(
+        normalizeInstallCommandResult({
+          ran,
+          exitCode: lastProcess.status,
+          timedOut: lastProcess.error?.code === "ETIMEDOUT",
+          signal: lastProcess.signal,
+          printedToStderr,
+          stderrDigest: stderrHash.digest("hex"),
+        }),
+      );
+    }
   }
-  return dir;
 }
 
 /**
@@ -3390,17 +3436,17 @@ function sameSourceAuthority(current, candidate) {
   if (current.type === "registry") {
     return Boolean(
       current.sourceDigest &&
-        candidate.sourceDigest &&
-        current.sourceDigest === candidate.sourceDigest &&
-        current.resolvedSourceDigest &&
-        candidate.resolvedSourceDigest &&
-        current.resolvedSourceDigest === candidate.resolvedSourceDigest,
+      candidate.sourceDigest &&
+      current.sourceDigest === candidate.sourceDigest &&
+      current.resolvedSourceDigest &&
+      candidate.resolvedSourceDigest &&
+      current.resolvedSourceDigest === candidate.resolvedSourceDigest,
     );
   }
   return Boolean(
     current.sourceDigest &&
-      candidate.sourceDigest &&
-      current.sourceDigest === candidate.sourceDigest,
+    candidate.sourceDigest &&
+    current.sourceDigest === candidate.sourceDigest,
   );
 }
 
@@ -3996,8 +4042,8 @@ function assertCatalogRemoteArtifactBindings(metadata) {
   const expectedSignature = expectations.signature || {};
   const expectsRemoteSignature = Boolean(
     expectedSignature.url &&
-      expectedSignature.publicKeyUrl &&
-      expectedSignature.publicKeySha256,
+    expectedSignature.publicKeyUrl &&
+    expectedSignature.publicKeySha256,
   );
   if (expectsRemoteSignature !== Boolean(evidence.signature)) {
     throw new Error(
@@ -5626,9 +5672,9 @@ function samePointerState(left, right) {
   if (!left.present) return true;
   return Boolean(
     Buffer.isBuffer(left.bytes) &&
-      Buffer.isBuffer(right.bytes) &&
-      left.bytes.equals(right.bytes) &&
-      sameFileGeneration(left.generation, right.generation),
+    Buffer.isBuffer(right.bytes) &&
+    left.bytes.equals(right.bytes) &&
+    sameFileGeneration(left.generation, right.generation),
   );
 }
 
@@ -5666,9 +5712,9 @@ function sameLifecycleFileState(left, right) {
   if (!left.present) return true;
   return Boolean(
     Buffer.isBuffer(left.bytes) &&
-      Buffer.isBuffer(right.bytes) &&
-      left.bytes.equals(right.bytes) &&
-      sameFileGeneration(left.generation, right.generation),
+    Buffer.isBuffer(right.bytes) &&
+    left.bytes.equals(right.bytes) &&
+    sameFileGeneration(left.generation, right.generation),
   );
 }
 
@@ -5716,11 +5762,11 @@ function serializePluginNameState(state) {
 function samePluginNameState(left, right) {
   return Boolean(
     left &&
-      right &&
-      sameFileGeneration(left.generation, right.generation) &&
-      left.payloadDigest === right.payloadDigest &&
-      left.fileCount === right.fileCount &&
-      left.totalBytes === right.totalBytes,
+    right &&
+    sameFileGeneration(left.generation, right.generation) &&
+    left.payloadDigest === right.payloadDigest &&
+    left.fileCount === right.fileCount &&
+    left.totalBytes === right.totalBytes,
   );
 }
 
@@ -5743,8 +5789,8 @@ function lifecycleFileContentMatches(left, right) {
   if (!left.present) return true;
   return Boolean(
     Buffer.isBuffer(left.bytes) &&
-      Buffer.isBuffer(right.bytes) &&
-      left.bytes.equals(right.bytes),
+    Buffer.isBuffer(right.bytes) &&
+    left.bytes.equals(right.bytes),
   );
 }
 
@@ -5810,9 +5856,7 @@ function hasRetainedLifecycleRecovery(nameDir) {
 function authoritativeTransactionCleanupPending(cleanup) {
   return Boolean(
     cleanup?.cleanupPending === true &&
-      /^\.(?:install|uninstall)-/u.test(
-        path.basename(cleanup.cleanupPath || ""),
-      ),
+    /^\.(?:install|uninstall)-/u.test(path.basename(cleanup.cleanupPath || "")),
   );
 }
 
@@ -5902,22 +5946,22 @@ function fileGeneration(stat) {
 function sameFileGeneration(left, right) {
   return Boolean(
     left &&
-      right &&
-      left.dev === right.dev &&
-      left.ino === right.ino &&
-      left.birthtimeMs === right.birthtimeMs &&
-      left.mtimeMs === right.mtimeMs &&
-      left.size === right.size,
+    right &&
+    left.dev === right.dev &&
+    left.ino === right.ino &&
+    left.birthtimeMs === right.birthtimeMs &&
+    left.mtimeMs === right.mtimeMs &&
+    left.size === right.size,
   );
 }
 
 function sameInstalledVersionState(left, right) {
   return Boolean(
     left &&
-      right &&
-      sameFileGeneration(left.generation, right.generation) &&
-      left.payloadDigest === right.payloadDigest &&
-      left.sourceDigest === right.sourceDigest,
+    right &&
+    sameFileGeneration(left.generation, right.generation) &&
+    left.payloadDigest === right.payloadDigest &&
+    left.sourceDigest === right.sourceDigest,
   );
 }
 
@@ -5999,8 +6043,8 @@ function activePointerMatchesSnapshot(transaction) {
   if (!snapshot.present) return true;
   return Boolean(
     Buffer.isBuffer(current.bytes) &&
-      Buffer.isBuffer(snapshot.bytes) &&
-      current.bytes.equals(snapshot.bytes),
+    Buffer.isBuffer(snapshot.bytes) &&
+    current.bytes.equals(snapshot.bytes),
   );
 }
 

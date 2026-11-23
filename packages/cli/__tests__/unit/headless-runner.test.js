@@ -1485,7 +1485,7 @@ describe("headless-runner — max-turns", () => {
 describe("headless-runner — denials summary", () => {
   // chatFn asks to run a hard-blocked command first (shell-policy DENY fires
   // regardless of the gate), then returns a final answer so the loop ends.
-  function denyThenDone() {
+  function denyThenDone(command = "rm -rf fixture-only") {
     let n = 0;
     return vi.fn(async () => {
       n++;
@@ -1498,7 +1498,7 @@ describe("headless-runner — denials summary", () => {
                 id: "c1",
                 function: {
                   name: "run_shell",
-                  arguments: JSON.stringify({ command: "rm -rf /" }),
+                  arguments: JSON.stringify({ command }),
                 },
               },
             ],
@@ -1515,11 +1515,27 @@ describe("headless-runner — denials summary", () => {
       { prompt: "delete everything", outputFormat: "text" },
       deps,
     );
-    expect(r.exitCode).toBe(0);
+    expect(r).toMatchObject({
+      exitCode: 1,
+      code: "CC_DESTRUCTIVE_SHELL_DENIED",
+      isError: true,
+    });
     const stderr = err.join("");
     expect(stderr).toMatch(/1 tool call\(s\) were denied by policy/);
     expect(stderr).toMatch(/Recent denials/);
     expect(stderr).toMatch(/run_shell/);
+  });
+
+  it("continues to report non-destructive tool denials without failing a completed run", async () => {
+    const { deps, out } = makeDeps(
+      denyThenDone("curl https://example.invalid/fixture"),
+    );
+    const outcome = await runAgentHeadless(
+      { prompt: "check the download policy", outputFormat: "json" },
+      deps,
+    );
+    expect(outcome.exitCode).toBe(0);
+    expect(JSON.parse(out.join("")).denials[0].rule).toBe("network-download");
   });
 
   it("emits a denials_summary stream event (stream-json mode)", async () => {
@@ -2327,6 +2343,53 @@ describe("headless-runner — session resume + persistence", () => {
     });
     expect(out.join("")).not.toContain("private path");
   });
+
+  it.each(["ENOSPC", "EROFS", "EPERM"])(
+    "projects %s from the budget-sidecar admission lock before calling the model",
+    async (fsCode) => {
+      const { deps, out, err } = makeDeps(replyText("must not run"));
+      Object.assign(deps, makeStore().deps);
+      const release = vi.fn();
+      deps.acquireSessionHostLease = () => ({ release });
+      deps.agentLoop = vi.fn();
+      deps.sessionBudgetStore = {
+        read() {
+          throw Object.assign(
+            new Error("private lock path", {
+              cause: Object.assign(new Error("private filesystem error"), {
+                code: fsCode,
+              }),
+            }),
+            { code: "STATE_LOCK_UNAVAILABLE" },
+          );
+        },
+      };
+      const outcome = await runAgentHeadless(
+        {
+          prompt: "new task",
+          sessionId: "budget-lock-failure",
+          persistSession: true,
+          outputFormat: "json",
+        },
+        deps,
+      );
+      expect(outcome).toMatchObject({ exitCode: 1, isError: true });
+      expect(JSON.parse(out.join(""))).toMatchObject({
+        type: "result",
+        subtype: "error_persistence",
+        is_error: true,
+        session_id: "budget-lock-failure",
+        persistence: {
+          fs_code: fsCode,
+          phase: "before-model",
+          operation: "session-start",
+        },
+      });
+      expect([...out, ...err].join("")).not.toContain("private");
+      expect(deps.agentLoop).not.toHaveBeenCalled();
+      expect(release).toHaveBeenCalledOnce();
+    },
+  );
 
   it.each(["ENOSPC", "EPERM", "EACCES"])(
     "marks a completed model turn failed when assistant persistence is unknown (%s)",

@@ -2187,6 +2187,10 @@ export function registerAgentCommand(program, dependencies = {}) {
                   .filter(Boolean)
                   .join("\n\n"),
               });
+              if (outcome.exitCode) {
+                await _finishWorktree();
+                process.exit(outcome.exitCode);
+              }
               // The normal stream (init … result) has already been written to
               // stdout by the runner. Append the structured verdict as the final
               // NDJSON line, built from the run's final text.

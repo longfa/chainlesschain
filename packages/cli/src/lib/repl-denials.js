@@ -17,6 +17,17 @@
 /** Keep the most recent N denials per session (bounded ring buffer). */
 export const MAX_RECENT_DENIALS = 20;
 
+export const DESTRUCTIVE_SHELL_DENIAL_CODE = "CC_DESTRUCTIVE_SHELL_DENIED";
+
+export function isDestructiveShellDenial(event) {
+  const policy = event.result?.shellCommandPolicy;
+  return (
+    event.tool === "run_shell" &&
+    policy?.allowed === false &&
+    policy.ruleId === "dangerous-delete"
+  );
+}
+
 /** Error-message prefixes agent-core attaches to a blocked tool call. */
 const DENIAL_PREFIX = /^\s*\[(Shell Policy|Permission|ApprovalGate|Hook)\]/;
 

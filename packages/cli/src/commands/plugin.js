@@ -6,8 +6,8 @@
 import chalk from "chalk";
 import fs from "node:fs";
 import path from "node:path";
-import { createHash } from "node:crypto";
 import { logger } from "../lib/logger.js";
+import { normalizeInstallCommandResult } from "../lib/install-command-policy.js";
 import {
   enforcePluginPolicy,
   loadPluginManagedPolicy,
@@ -40,28 +40,7 @@ function collectRepeatableOption(value, previous = []) {
   return [...previous, value];
 }
 
-/** Normalize installer side effects into a stable machine-readable receipt. */
-export function normalizeInstallCommandResult(value = null) {
-  const input = value && typeof value === "object" ? value : {};
-  const stderr = typeof input.stderr === "string" ? input.stderr : "";
-  const digest =
-    typeof input.stderrDigest === "string" && input.stderrDigest
-      ? input.stderrDigest
-      : createHash("sha256").update(stderr, "utf8").digest("hex");
-  const exitCode = Number.isSafeInteger(input.exitCode) ? input.exitCode : null;
-  const ran = input.ran === true || exitCode !== null || input.started === true;
-  return {
-    ran,
-    exitCode,
-    timedOut: input.timedOut === true,
-    signaled: input.signaled === true || input.signal != null,
-    printedToStderr:
-      input.printedToStderr === true ||
-      stderr.length > 0 ||
-      input.stderrBytes > 0,
-    stderrDigest: digest,
-  };
-}
+export { normalizeInstallCommandResult };
 
 function normalizeRegistryUrls(value) {
   if (Array.isArray(value)) return value.filter(Boolean);
@@ -2316,13 +2295,13 @@ export function registerPluginCommand(program) {
           }
         }
         logger.error(`Install failed: ${err.message}${recoveryNote}`);
-        if (options.json && (err.installCommand || installCommand)) {
+        const receipt =
+          err.installCommand || res?.installCommand || installCommand;
+        if (options.json && receipt) {
           console.log(
             JSON.stringify({
               error: { code: err.code || "CC_PLUGIN_INSTALL_FAILED" },
-              installCommand: normalizeInstallCommandResult(
-                err.installCommand || installCommand,
-              ),
+              installCommand: normalizeInstallCommandResult(receipt),
             }),
           );
         }
@@ -4167,13 +4146,13 @@ export function registerPluginCommand(program) {
           }
         }
         logger.error(`Upgrade failed: ${err.message}${recoveryNote}`);
-        if (options.json && (err.installCommand || installCommand)) {
+        const receipt =
+          err.installCommand || res?.installCommand || installCommand;
+        if (options.json && receipt) {
           console.log(
             JSON.stringify({
               error: { code: err.code || "CC_PLUGIN_UPGRADE_FAILED" },
-              installCommand: normalizeInstallCommandResult(
-                err.installCommand || installCommand,
-              ),
+              installCommand: normalizeInstallCommandResult(receipt),
             }),
           );
         }

@@ -2061,6 +2061,16 @@ export function preflightToolExecutionAuthority(name, args, context = {}) {
       policy: { decision: "blocked", via: "effective-tool-set" },
     };
   }
+  if (
+    !(name === "git" && isReadOnlyGitCommand(args?.command)) &&
+    context.planManager?.allowsApprovedToolArgs?.(name, args) === false
+  ) {
+    return {
+      error: `[Plan Execution Lock] Tool "${name}" with these arguments does not match the next approved plan item. Request a plan revision before making this change.`,
+      code: "CC_PLAN_TOOL_ARGS_NOT_APPROVED",
+      policy: { decision: "blocked", via: "plan-execution-lock" },
+    };
+  }
   return guardExactFileMutationScope(name, args, context, cwd);
 }
 
@@ -2987,6 +2997,7 @@ export async function executeTool(name, args, context = {}) {
   const authorityDenial = preflightToolExecutionAuthority(name, args, {
     ...context,
     cwd,
+    planManager,
   });
   if (authorityDenial) return authorityDenial;
   let admittedEffectiveToolSetDigest = null;
@@ -6281,14 +6292,30 @@ async function executeToolInner(
         const refusal = ephemeralWorktreeConsumerRefusal("Background shell");
         if (refusal) return attachDescriptor(refusal);
       }
+      const shellPolicyOpts = Object.freeze({
+        ...(shellPolicyOverrides
+          ? { overrideRuleIds: Object.freeze([...shellPolicyOverrides]) }
+          : {}),
+        ...(classifyAllShell ? { classifyAllShell: true } : {}),
+      });
+      let shellPolicy = evaluateShellCommandPolicy(
+        args.command,
+        shellPolicyOpts,
+      );
       if (unattendedActionPolicy?.unattended === true) {
         const unattendedVerdict = evaluateUnattendedShellAction(args.command, {
           ...unattendedActionPolicy,
           attended: false,
         });
         if (!unattendedVerdict.allow) {
+          const deleteDenied =
+            shellPolicy.allowed === false &&
+            shellPolicy.ruleId === "dangerous-delete";
           return attachDescriptor({
-            error: `[Unattended Action] ${unattendedVerdict.reason}; shell command was not run.`,
+            error: deleteDenied
+              ? `[Shell Policy] ${shellPolicy.reason} Use a non-destructive approach.`
+              : `[Unattended Action] ${unattendedVerdict.reason}; shell command was not run.`,
+            ...(deleteDenied ? { shellCommandPolicy: shellPolicy } : {}),
             unattendedAction: {
               actionClass: unattendedVerdict.actionClass || null,
               ...unattendedVerdict,
@@ -6298,12 +6325,6 @@ async function executeToolInner(
         }
       }
 
-      const shellPolicyOpts = Object.freeze({
-        ...(shellPolicyOverrides
-          ? { overrideRuleIds: Object.freeze([...shellPolicyOverrides]) }
-          : {}),
-        ...(classifyAllShell ? { classifyAllShell: true } : {}),
-      });
       // Layer-by-layer explanation chain for a blocked command: which layers
       // were consulted and what each said (settings rules → shell policy →
       // approval gate). Attached to denial results so `/permissions denials`
@@ -6339,10 +6360,6 @@ async function executeToolInner(
         return chain;
       };
       const override = getRuntimeToolDescriptorByCommand(args.command);
-      let shellPolicy = evaluateShellCommandPolicy(
-        args.command,
-        shellPolicyOpts,
-      );
       let approvalOutcome = null;
       let approvalAuthorization = null;
       let approvalAuthorizationContext = null;
@@ -18077,7 +18094,8 @@ export async function* agentLoop(messages, options) {
           earlyAuthorityDenial,
         );
         const preExecutionDenied =
-          earlyAuthorityDenial.code === TOOL_RECOVERY_PAUSED_CODE;
+          earlyAuthorityDenial.code === TOOL_RECOVERY_PAUSED_CODE ||
+          earlyAuthorityDenial.code === "CC_PLAN_TOOL_ARGS_NOT_APPROVED";
         if (preExecutionDenied) {
           // Declare the rejected request without an execution/ledger boundary
           // or its arguments. Consumers can pair the refusal by provider ID.

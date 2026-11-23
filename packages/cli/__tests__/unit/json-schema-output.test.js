@@ -124,6 +124,24 @@ describe("runJsonSchemaConstrained", () => {
     expect(seen.appendSystemPrompt).toContain('"required":["name","count"]');
   });
 
+  it("preserves a failed run even when its answer matches the schema", async () => {
+    let attempts = 0;
+    const code = await runJsonSchemaConstrained({
+      schema: SCHEMA,
+      baseOptions: base,
+      writeOut: () => {
+        throw new Error("failed answers must not be emitted");
+      },
+      writeErr: () => {},
+      runHeadless: async () => {
+        attempts++;
+        return { result: '{"name":"x","count":1}', exitCode: 1 };
+      },
+    });
+    expect(code).toBe(1);
+    expect(attempts).toBe(1);
+  });
+
   it("retries with a corrective prompt and succeeds on attempt 2", async () => {
     const prompts = [];
     let out = "";
@@ -432,12 +450,12 @@ describe("loadSchemaFileWithRefs", () => {
       "https://schemas.test/defs/name.json",
     ]);
     expect(buildStructuredResult(schema, { name: "Ada" }).valid).toBe(true);
-    expect(buildStructuredResult(schema, { name: "A" }).errors[0]).toMatchObject(
-      {
-        code: "minLength",
-        instancePath: "/name",
-      },
-    );
+    expect(
+      buildStructuredResult(schema, { name: "A" }).errors[0],
+    ).toMatchObject({
+      code: "minLength",
+      instancePath: "/name",
+    });
   });
 
   it("uses the final redirect URI as the base for relative refs", async () => {
@@ -486,9 +504,7 @@ describe("loadSchemaFileWithRefs", () => {
     const first = await load(1);
     const second = await load(2);
 
-    expect(computeSchemaDigest(first)).not.toBe(
-      computeSchemaDigest(second),
-    );
+    expect(computeSchemaDigest(first)).not.toBe(computeSchemaDigest(second));
   });
 
   it("blocks private-host refs before the injected transport is called", async () => {
@@ -534,17 +550,13 @@ describe("loadSchemaFileWithRefs", () => {
       "https://schemas.test/b.json": { type: "string" },
     };
     await expect(
-      loadSchemaFileWithRefs(
-        {},
-        '{"$ref":"https://schemas.test/a.json"}',
-        {
-          maxDocuments: 1,
-          fetchSchema: async (uri) => ({
-            statusCode: 200,
-            content: documents[uri],
-          }),
-        },
-      ),
+      loadSchemaFileWithRefs({}, '{"$ref":"https://schemas.test/a.json"}', {
+        maxDocuments: 1,
+        fetchSchema: async (uri) => ({
+          statusCode: 200,
+          content: documents[uri],
+        }),
+      }),
     ).rejects.toThrow(/exceeds 1 documents/);
   });
 });

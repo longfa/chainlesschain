@@ -5,7 +5,7 @@ async function readTaskSources({ session, cwd }) {
   const { listJsonlSessions, resolveSessionAuthority } =
     await import("../harness/jsonl-session-store.js");
   const { listMcpTaskRecords } = await import("../lib/mcp-task-journal.js");
-  const { listBackgroundAgents } =
+  const { hasValidBackgroundAgentStopCleanupProof, listBackgroundAgents } =
     await import("../lib/background-agent-supervisor.js");
   const { listDynamicWorkflowWorkbenchStates } =
     await import("../lib/dynamic-workflow-runtime.js");
@@ -29,6 +29,19 @@ async function readTaskSources({ session, cwd }) {
   return {
     mcp,
     agent: listBackgroundAgents({ all: true }).map((agent) => {
+      const stopRequestedAt = Number(agent.stopRequestedAt);
+      const stopEvents = [];
+      if (Number.isFinite(stopRequestedAt) && stopRequestedAt > 0) {
+        stopEvents.push({ type: "stop_requested", at: stopRequestedAt });
+      }
+      const stopConfirmed = hasValidBackgroundAgentStopCleanupProof(agent);
+      if (stopConfirmed) {
+        stopEvents.push({
+          type: "stop_confirmed",
+          at: Number(agent.stopCleanupConfirmedAt),
+        });
+      }
+      const orphanRisk = !stopConfirmed && agent.stopPending === true;
       const waitingOn = agent.pendingQuestion
         ? "user-input"
         : agent.lifecycleState === "waitingApproval"
@@ -47,7 +60,12 @@ async function readTaskSources({ session, cwd }) {
         lastEventAt: agent.endedAt ?? agent.heartbeatAt ?? agent.startedAt,
         startedAt: agent.startedAt,
         label: agent.title,
-        stopPath: agent.status === "running" ? `cc stop ${agent.id}` : null,
+        stopPath:
+          agent.status === "running" || orphanRisk
+            ? `cc agents stop ${agent.id}`
+            : null,
+        stopEvents,
+        orphanRisk,
       };
     }),
     cowork: listDynamicWorkflowWorkbenchStates(cwd ?? process.cwd()).runs.map(

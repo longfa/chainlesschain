@@ -131,6 +131,12 @@ import {
 import { IterationBudget } from "../lib/iteration-budget.js";
 import { CostBudget } from "../lib/cost-budget.js";
 import {
+  classifyDenial,
+  DESTRUCTIVE_SHELL_DENIAL_CODE,
+  isDestructiveShellDenial,
+  recordDenial,
+} from "../lib/repl-denials.js";
+import {
   resolvePermissionMode,
   normalizePermissionMode,
   resolveEnabledTools,
@@ -965,6 +971,7 @@ async function runTurn(
     cache_creation_input_tokens: 0,
   };
   const toolCalls = [];
+  const destructiveDenials = [];
   let finalText = "";
   let endReason = "complete";
   let stopForCost = false;
@@ -1074,6 +1081,12 @@ async function runTurn(
       }
       case "tool-result": {
         const err = event.error || event.result?.error || null;
+        if (isDestructiveShellDenial(event)) {
+          recordDenial(destructiveDenials, {
+            ...classifyDenial(event),
+            at: now(),
+          });
+        }
         // No invocation started for a preflight denial. For actual results,
         // retain the adjacency fallback only for legacy events without IDs.
         const lastCall =
@@ -1290,7 +1303,14 @@ async function runTurn(
   ) {
     sideEffects.persist();
   }
-  return { finalText, endReason, usage, toolCalls, compactionUsageUnknown };
+  return {
+    finalText,
+    endReason,
+    usage,
+    toolCalls,
+    compactionUsageUnknown,
+    destructiveDenials,
+  };
 }
 
 function compactionUsageUnknownDiagnostic(event) {
@@ -6060,6 +6080,28 @@ async function runAgentHeadlessStreamInWorkspace(
       break;
     }
 
+    if (outcome.destructiveDenials.length > 0) {
+      emit({
+        type: "denials_summary",
+        count: outcome.destructiveDenials.length,
+        denials: outcome.destructiveDenials,
+        session_id: sessionId,
+        turn: turns,
+      });
+      try {
+        const { appendRecentDenials } =
+          await import("../lib/permission-denial-store.js");
+        appendRecentDenials(outcome.destructiveDenials, {
+          sessionId,
+          permissionMode: options.permissionMode || "default",
+          cwd,
+          source: "headless",
+        });
+      } catch {
+        // The review store is best-effort; the refusal still reaches the client.
+      }
+    }
+
     if (outcome.endReason === "user-input-pending") {
       if (!settleToolRoundsForHost("after-model")) break;
       emit({
@@ -6156,9 +6198,12 @@ async function runAgentHeadlessStreamInWorkspace(
       outcome.endReason === "budget-exhausted" ||
       outcome.endReason === "max_turns";
     const costStopped = outcome.endReason === "cost-budget-exhausted";
+    const deniedDestructiveRequest =
+      outcome.endReason === "complete" && outcome.destructiveDenials.length > 0;
     const isError =
       exhausted ||
       costStopped ||
+      deniedDestructiveRequest ||
       outcome.endReason === "no-response" ||
       outcome.endReason === "deferred-mutation-unresolved" ||
       Boolean(persistenceFailure);
@@ -6200,13 +6245,16 @@ async function runAgentHeadlessStreamInWorkspace(
       usage: outcome.usage,
       ...(transcriptRefs ? { transcript_refs: transcriptRefs } : {}),
       ...(persistenceFailure ? { persistence: persistenceFailure } : {}),
+      ...(deniedDestructiveRequest && !persistenceFailure
+        ? { code: DESTRUCTIVE_SHELL_DENIAL_CODE }
+        : {}),
     });
 
     // --json-schema (P2): emit this turn's structured verdict right after its
     // result — schema_digest + valid + value/errors from the turn's final text.
     // Never falls back to free text; an unparseable/invalid reply reports
     // valid:false with coded/pointered errors. Parity with single-prompt output.
-    if (_jsonSchema) {
+    if (_jsonSchema && !deniedDestructiveRequest) {
       const parsed = _jso.extractJsonPayload(String(outcome.finalText ?? ""));
       emit({
         ..._jso.buildStructuredResult(

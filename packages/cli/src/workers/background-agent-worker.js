@@ -130,11 +130,11 @@ export function assertBackgroundAgentWorkerAcceptsPrompt(
 function ownsBackgroundAgentWorkerRecord(current, workerPid, workerGeneration) {
   return Boolean(
     current &&
-      (!current.workerGeneration ||
-        current.workerGeneration === workerGeneration) &&
-      (Number(current.workerClaimedPid) === workerPid ||
-        (current.workerClaimedPid == null &&
-          Number(current.workerPid ?? current.pid) === workerPid)),
+    (!current.workerGeneration ||
+      current.workerGeneration === workerGeneration) &&
+    (Number(current.workerClaimedPid) === workerPid ||
+      (current.workerClaimedPid == null &&
+        Number(current.workerPid ?? current.pid) === workerPid)),
   );
 }
 
@@ -148,11 +148,10 @@ export function createBackgroundAgentWorkerFinalStateUpdater({
   now = Date.now,
 }) {
   return (current) => {
-    if (!current || !ownsBackgroundAgentWorkerRecord(
-      current,
-      workerPid,
-      workerGeneration,
-    )) {
+    if (
+      !current ||
+      !ownsBackgroundAgentWorkerRecord(current, workerPid, workerGeneration)
+    ) {
       return null;
     }
     if (current.status !== "running") {
@@ -1123,6 +1122,8 @@ function startTurn(argv, promptText) {
           env: {
             ...process.env,
             CC_BACKGROUND_AGENT_ID: job.id,
+            CC_BACKGROUND_RESTORE_PLAN_PERMISSION:
+              job.restorePlanPermission === true ? "1" : "",
             CC_BACKGROUND_TURN_IPC_NONCE: turnIpcToken,
             [BACKGROUND_TURN_BOOTSTRAP_ENV.nonce]: turnBootstrapNonce,
             [BACKGROUND_TURN_BOOTSTRAP_ENV.workerGeneration]:

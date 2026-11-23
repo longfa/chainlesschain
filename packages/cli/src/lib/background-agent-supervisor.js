@@ -2749,6 +2749,7 @@ export function resumeBackgroundAgent(id, prompt, options = {}) {
       : state.governance,
     launchProfile,
     apiKey: options.apiKey,
+    restorePlanPermission: !options.launchProfileOverride,
   });
 }
 
@@ -2897,6 +2898,7 @@ export function launchBackgroundAgent({
   governance,
   launchProfile,
   apiKey,
+  restorePlanPermission = false,
 }) {
   assertBackgroundArgvDurable(argv);
   assertBackgroundArgvDurable(followUpArgv, "background follow-up");
@@ -2981,6 +2983,7 @@ export function launchBackgroundAgent({
     },
     ...(worktreeState || {}),
     governance: governanceState,
+    restorePlanPermission,
     // Present = interactive attach can start follow-up turns; absent = the
     // transport rejects prompts (log-only session).
     ...(Array.isArray(followUpArgv)

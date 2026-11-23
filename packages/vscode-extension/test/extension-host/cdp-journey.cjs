@@ -2194,6 +2194,7 @@ module.exports = {
   assertJourneyArtifacts,
   buildCdpWebSocketOptions,
   acceptJavaScriptDialog,
+  chooseQuickPickItem,
   clickSessionsWorkbenchAction,
   createCdpPipeSocket,
   createFixtureCli,
@@ -2205,6 +2206,8 @@ module.exports = {
   readJourneyResult,
   reserveLoopbackPort,
   runCdpHostJourney,
+  sendComposer,
+  waitForDom,
   waitForFile,
   writeJsonSignal,
 };

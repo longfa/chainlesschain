@@ -19,10 +19,33 @@ function resolveConfiguredRuntime(executable, requestedVersion) {
     throw new Error("Configured VS Code executable is not a file");
   }
   const directory = path.dirname(executablePath);
-  const appDirectory = [
+  let appDirectory = [
     path.join(directory, "resources", "app"),
     path.resolve(directory, "..", "Resources", "app"),
   ].find((candidate) => fs.existsSync(path.join(candidate, "package.json")));
+  if (!appDirectory && process.platform === "win32") {
+    // Newer archives keep the launcher at the root and version the resources.
+    const candidates = fs
+      .readdirSync(directory, { withFileTypes: true })
+      .flatMap((entry) => {
+        if (!entry.isDirectory() || !/^[0-9a-f]{10}$/u.test(entry.name))
+          return [];
+        const candidate = path.join(directory, entry.name, "resources", "app");
+        const productPath = path.join(candidate, "product.json");
+        const manifestPath = path.join(candidate, "package.json");
+        if (!fs.existsSync(productPath) || !fs.existsSync(manifestPath))
+          return [];
+        const product = JSON.parse(fs.readFileSync(productPath, "utf8"));
+        const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+        return product.commit?.slice(0, 10) === entry.name &&
+          manifest.version === requestedVersion
+          ? [candidate]
+          : [];
+      });
+    if (candidates.length > 1)
+      throw new Error("Configured VS Code resources are ambiguous");
+    appDirectory = candidates[0];
+  }
   if (!appDirectory) {
     throw new Error(
       "Configured VS Code distribution has no application manifest",

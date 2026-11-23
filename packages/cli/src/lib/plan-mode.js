@@ -8,6 +8,7 @@
  */
 
 import { EventEmitter } from "events";
+import { isDeepStrictEqual } from "node:util";
 import {
   createPlanSessionEvent,
   PLAN_PERSISTENCE_ERROR_CODES,
@@ -1232,6 +1233,21 @@ export class PlanModeManager extends EventEmitter {
       approvedItemIds: [...this.executionLock.approvedItemIds],
       allowedTools: [...this.executionLock.allowedTools],
     };
+  }
+
+  /** Enforce the parameters covered by a durable session approval. */
+  allowsApprovedToolArgs(toolName, args) {
+    if (!this.sessionId || !this.executionLock || READ_TOOLS.has(toolName))
+      return true;
+
+    const item = this.currentPlan?.items.find(
+      (candidate) =>
+        candidate.tool === toolName &&
+        this.executionLock.approvedItemIds.includes(candidate.id) &&
+        (candidate.status === PlanStatus.APPROVED ||
+          candidate.status === PlanStatus.EXECUTING),
+    );
+    return Boolean(item && isDeepStrictEqual(item.params, args));
   }
 
   /**

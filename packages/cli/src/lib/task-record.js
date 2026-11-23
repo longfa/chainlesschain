@@ -174,6 +174,9 @@ export function toTaskRecord(value, source = "unknown", options = {}) {
       input.onExpire ??
       (normalizedSource === "schedule" && endsAt ? "retire" : null),
     ...(input.orphanRisk === true ? { orphanRisk: true } : {}),
+    ...(Array.isArray(input.stopEvents) && input.stopEvents.length > 0
+      ? { stopEvents: input.stopEvents }
+      : {}),
     terminal: TERMINAL.has(state),
     rawSource: normalizedSource === "unknown" ? input : undefined,
   };

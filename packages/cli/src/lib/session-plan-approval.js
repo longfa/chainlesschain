@@ -24,7 +24,11 @@ function approvalFor(manager, lock) {
   };
 }
 
-export function openSessionPlan(sessionId, requestedMode) {
+export function openSessionPlan(
+  sessionId,
+  requestedMode,
+  { permissionModeIsFallback = false } = {},
+) {
   const manager = new PlanModeManager({ sessionId });
   const lock = manager.getExecutionLock();
   if (!lock && !sessionExists(sessionId))
@@ -52,11 +56,16 @@ export function openSessionPlan(sessionId, requestedMode) {
     verified?.permissionProfileDigest !== approval.permissionProfileDigest
   )
     throw new Error("The saved plan has no matching session approval receipt");
-  if (requestedMode !== undefined && requestedMode !== lock.permissionMode)
+  if (
+    !permissionModeIsFallback &&
+    requestedMode !== undefined &&
+    requestedMode !== lock.permissionMode
+  )
     throw new Error(
       "Requested permission mode conflicts with the approved plan",
     );
   if (
+    manager.lastEvent?.type === "plan-execution-started" ||
     manager.currentPlan.items.some(
       (item) => item.status === PlanStatus.EXECUTING,
     )

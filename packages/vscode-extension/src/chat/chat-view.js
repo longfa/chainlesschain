@@ -2989,6 +2989,12 @@ class ChatViewProvider {
     else this._pendingNewTab = true;
   }
 
+  /** Open a persisted conversation while keeping the source tab live. */
+  openSessionInNewTab(sessionId) {
+    this._openNewTab(sessionId);
+    this.vscode.commands.executeCommand("chainlesschainIdeChat.focus");
+  }
+
   /** Save at a completed tool boundary before opening a fresh task context. */
   continueInNewConversation() {
     const conv = this._activeConv();

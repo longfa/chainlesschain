@@ -343,6 +343,42 @@ test("configured host requires an exact matching distribution and native CLI", (
   assert.ok(!JSON.stringify(runtime.receipt).includes(root));
 });
 
+test(
+  "configured Windows archive binds the CLI to its versioned resources",
+  { skip: process.platform !== "win32" },
+  () => {
+    const root = temporaryRoot();
+    const executable = path.join(root, "Code.exe");
+    fs.writeFileSync(executable, "test executable");
+    const app = path.join(root, "1234567890", "resources", "app");
+    fs.mkdirSync(path.join(app, "out"), { recursive: true });
+    fs.writeFileSync(
+      path.join(app, "package.json"),
+      JSON.stringify({ version: "1.145.2" }),
+    );
+    const product = path.join(app, "product.json");
+    fs.writeFileSync(product, JSON.stringify({ commit: "a".repeat(40) }));
+    assert.throws(
+      () => resolveConfiguredRuntime(executable, "1.145.2"),
+      /no application manifest/,
+    );
+    fs.writeFileSync(
+      product,
+      JSON.stringify({ commit: "1234567890" + "a".repeat(30) }),
+    );
+    const cliPath = path.join(app, "out", "cli.js");
+    fs.writeFileSync(cliPath, "");
+    assert.equal(
+      resolveConfiguredRuntime(executable, "1.145.2").cliPath,
+      cliPath,
+    );
+    assert.throws(
+      () => resolveConfiguredRuntime(executable, "1.145.1"),
+      /no application manifest/,
+    );
+  },
+);
+
 test("configured CLI preserves literal arguments and rejects failed or hung processes", async () => {
   const root = temporaryRoot();
   const cliPath = path.join(root, "fixture cli.cjs");

@@ -213,8 +213,8 @@ describe("REPL compact persistence fencing", () => {
     );
     expect(source).toContain("_runReplDirectTool(tool, args, {");
     expect(source).toContain("signal: autonomousAgent.signal");
-    expect(source).toContain(
-      "return await _runReplDirectTool(item.tool, item.params)",
+    expect(source).toMatch(
+      /_runReplDirectTool\(\s*item\.tool,\s*item\.params,\s*\{\s*approvedPlanExecution: true/u,
     );
   });
 

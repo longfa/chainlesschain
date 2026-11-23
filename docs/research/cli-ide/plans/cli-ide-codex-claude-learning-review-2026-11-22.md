@@ -229,19 +229,19 @@ Claude 2.1.330 让子代理的模型回退（fallback）**传导**给它派生�
 
 提交 `75976d2790` 建立了统一任务字段。下表记录继续实施后的工作树，发布记录对应已归档的发行提交。
 
-| 任务包                | 当前证据                                                                                                                                                                                                                                         | 剩余验收                                                                                      |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
-| 统一任务投影          | 独立运行 `cc tasks --json` 可读持久化后台 shell、MCP 日志、后台 Agent、计划任务和项目内 Cowork 工作流。跨进程测试同时读回 shell、MCP 和计划任务。MCP 默认扫描最近 100 个 canonical 会话，`--session <id>` 可指定会话。REPL 可读同进程子代理。    | 即时 `run_shell` 命令的内存状态仍由所属运行时读取。跨宿主长期并发验收待补。                   |
-| 停止与诊断            | 重复停止复用回执，`stop_requested`、`stop_timeout` 和后续 `stop_confirmed` 可持久化读回。无法确认停止时，`cc tasks --json` 输出 `orphanRisk`，Doctor 的后台检查会提示。                                                                          | 两级子代理和真实孤儿进程的宿主验收待补。                                                      |
-| 插件安装结果          | 显式 Marketplace command source 的 add / upgrade JSON 携带 `installCommand`。实际 Node 子进程测试验证 stderr 摘要、成功退出 0、失败退出 17。回执保存摘要和进程结果。                                                                             | 完整 CLI registry 安装旅程待补。Git 获取、`cc skill install` 和 `cc mcp add` 的统一回执待补。 |
-| 无人应答拒绝          | 无人应答策略和破坏性 Git 负向通过。真实 Agent 循环的 mock-provider 回归验证删除请求被拒绝，隔离目录内文件保留。                                                                                                                                  | 顶层 CLI 的专用非零退出码仍需验证。                                                           |
-| MCP 共享生命周期      | 活跃子代理持有同一 MCPClient 的 transport。宿主请求关闭时等待最后一个持有者释放。MCPClient 回归验证第一次释放后连接仍在，最后一次释放仅执行一次断开。                                                                                            | 跨客户端共享和真实双子代理宿主贯通待补。                                                      |
-| 计划任务与状态栏      | 到期时统一 `state` 和兼容别名，清理等待与停止提示。REPL 状态栏接入会话 MCP 等待、审批提示、待审批数和最近未到期计划。`statusLine.contextUsageThreshold` 的测试验证低于阈值时隐藏上下文读数。                                                     | 真实交互审批和调度宿主截图待补。                                                              |
-| 权限档位与旧审批      | 流式批准写入会话日志，流式重开和单次 headless 续跑恢复同一执行锁。新进程和旧审批所有权回归通过。                                                                                                                                                 | 真实后台宿主重启和交互 REPL 的权限档位复验待补。                                              |
-| Headless 交付失败     | `ENOSPC`、`EROFS`、`EPERM` 和 `EACCES` 的目标回归覆盖非零退出与可解析 JSON 回执。                                                                                                                                                                | 实际满盘、只读卷和各平台 stdout 重定向仍需复验。                                              |
-| VS Code 分叉与地图    | `cc session fork <id> --json` 可分叉完整会话，`--after-message <id>` 可选取已验证的历史回复。VS Code 提供分页回复选择器。跨进程回归验证历史边界、独立回复和 MCP 活动账本隔离。Workflow Map 读取 `cc tasks --json --active-only` 的 Cowork 记录。 | 真实 VS Code 宿主双会话和地图对照仍待验收。                                                   |
-| MCP Schema 与 LSP     | 首次发现、发现缓存及 `list_changed` 刷新共用 schema 准入。非法替换保留已接纳的工具目录，诊断含工具名和字段路径，回归验证大段描述未进入诊断。                                                                                                     | 会话文件大小断言与真实语言服务器冷启动验收待补。                                              |
-| Runner 指标与模型传播 | `cc status --runner-state` 可读 Runner 的首会话租约时间和三段耗时。模型回退结果接入子代理、内置自动压缩和会话日志。                                                                                                                              | 外部 provisioning、真实远程目标进程启动、真实供应商链路的端到端证据待补。                     |
+| 任务包                | 当前证据                                                                                                                                                                                                                                      | 剩余验收                                                                                                                                |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| 统一任务投影          | 独立运行 `cc tasks --json` 可读持久化后台 shell、MCP 日志、后台 Agent、计划任务和项目内 Cowork 工作流。跨进程测试同时读回 shell、MCP 和计划任务。MCP 默认扫描最近 100 个 canonical 会话，`--session <id>` 可指定会话。REPL 可读同进程子代理。 | 即时 `run_shell` 命令的内存状态仍由所属运行时读取。跨宿主长期并发验收待补。                                                             |
+| 停止与诊断            | 重复停止复用回执。后台 shell 可读回 `stop_requested`、`stop_timeout` 和后续 `stop_confirmed`，Doctor 会提示孤儿风险。后台 Agent 的 `cc tasks --json` 提供可执行的 `stopPath`，从持久时间戳读回 `stopEvents`。                                 | 已验证持久化重载后的孤儿风险、Doctor 告警和原持有者回收，也已验证第二层子代理正在调用模型时停止真实后台会话。跨平台长时间运行仍需复验。 |
+| 插件安装结果          | Marketplace `add` 和 `upgrade` 与 Git 来源共用 `installCommand` 字段。已验证本机 registry 安装程序退出 0/17 和实际 Git 获取退出 0/128。`cc mcp add --command --json` 注册配置并返回 `ran: false`。                                            | 外部 Git 网络、代理与超时仍待实测。技能安装沿用现有 `cc plugin install` 入口。                                                          |
+| 无人应答拒绝          | 无人应答策略和破坏性 Git 负向通过。真实 Agent 循环的 mock-provider 回归验证删除请求被拒绝，隔离目录内文件保留。                                                                                                                               | 已验证单次 CLI 和多轮 `stream-json` 输入均返回非零，并保留拒绝记录。多轮输入可继续处理后续合法消息。                                    |
+| MCP 共享生命周期      | 活跃子代理持有同一 MCPClient 的 transport。宿主请求关闭时等待最后一个持有者释放。MCPClient 回归验证第一次释放后连接仍在，最后一次释放仅执行一次断开。                                                                                         | 本机有状态 HTTP MCP 已验证两个同时运行的子代理释放顺序。跨客户端共享与外部宿主长时间运行待验收。                                        |
+| 计划任务与状态栏      | 到期时统一 `state` 和兼容别名，清理等待与停止提示。Windows REPL 在等待审批时输出 `task waiting` 和 `approvals 1`，占用低于设置阈值时隐藏上下文读数。                                                                                          | 调度宿主截图待补。                                                                                                                      |
+| 权限档位与旧审批      | 流式和交互 REPL 批准均写入会话日志。已验证 `cc daemon resume` 与新 CLI REPL 进程恢复批准档位，并拒绝同工具改参数或重放已结算事项。                                                                                                            | 其他平台的交互复测待补。                                                                                                                |
+| Headless 交付失败     | Windows 真实只读会话文件通过。Linux 满盘与只读挂载下，单次 JSON 和多轮 NDJSON 均退出 1，保留 `before-model` 回执。stdout 重定向到 `/dev/full` 时，两种模式都退出 1。                                                                          | `EPERM` 与 `EACCES` 已覆盖注入测试。macOS 及 Windows 的 stdout 重定向仍待复验。                                                         |
+| VS Code 分叉与地图    | `cc session fork <id> --json` 支持按已验证的历史回复分叉。Windows VS Code 1.145.2 安装当前源码打包的 VSIX 后，两个聊天标签分别完成任务。已核对历史边界、两个独立的文件写入账本，以及工作流地图与 `cc tasks --json --active-only` 的一致性。   | Linux 和 macOS 宿主复测待补。                                                                                                           |
+| MCP Schema 与 LSP     | 首次发现、发现缓存及 `list_changed` 刷新共用 schema 准入。非法替换保留已接纳的工具目录，诊断含工具名和字段路径，回归验证大段描述未进入诊断。                                                                                                  | 真实 TypeScript 语言服务器已验证冷启动并发查询。已验证首次接入的非法 Schema 在准入前后不改变会话文件，模型目录不含被拒绝工具。          |
+| Runner 指标与模型传播 | `cc status --runner-state` 可读 Runner 的首会话租约时间和三段耗时。模型回退结果接入子代理、内置自动压缩和会话日志。                                                                                                                           | 外部 provisioning、真实远程目标进程启动、真实供应商链路的端到端证据待补。                                                               |
 
 ### 可复现的本地验证
 
@@ -264,6 +264,56 @@ Claude 2.1.330 让子代理的模型回退（fallback）**传导**给它派生�
 - 平台公开目录已返回 `gpt-6.2-sol` 和 `gpt-6.2-astra`，两者支持 Chat Completions 和 Responses。已同步至内置模型快照。[GPT-6.2 Sol 文档](https://chainlesschain.net/apidoc#model/gpt-6.2-sol) · [GPT-6.2 Astra 文档](https://chainlesschain.net/apidoc#model/gpt-6.2-astra)
 - `cc setup`、`cc llm models --provider lk --json`、Web、VS Code、JetBrains 和桌面设置按需获取公开目录。设置页可手动刷新，平台暂时不可达时使用内置目录。目录请求无需 LK Key。真实模型调用和账户权限待按账户验证。
 - 本机 CLI 以 `source: "live"` 读取到 205 个模型及两个 GPT-6.2 ID。CLI、Web、VS Code、JetBrains 与桌面本地测试覆盖离线回退、协议筛选、配置草稿及凭据边界。VS Code 设置页浏览器 smoke 通过。
+
+### 2026-11-23 晚间验收
+
+- 单次 headless 原先会在拒绝删除后被模型的最终回复覆盖为成功。本轮默认模式与 `--unattended` 均保留 `dangerous-delete` 拒绝记录，返回退出码 1、`is_error: true` 和 `CC_DESTRUCTIVE_SHELL_DENIED`。测试只使用临时用户目录，拒绝后标记文件完整。即使模型最后给出满足 Schema 的对象，流式外层进程也返回同一退出码。Schema 重试仅在运行成功且输出校验失败时继续。[进程级回归](../../../../packages/cli/__tests__/e2e/headless-destructive-denial.test.js)
+- 从本机临时 registry 启动真实 `cc plugin add --json`，成功回执记录安装程序退出码 0；失败回执记录安装程序退出码 17、CLI 退出码 1。两次均记录 `printedToStderr` 和一致的 SHA‑256 摘要。[registry 安装回归](../../../../packages/cli/__tests__/e2e/plugin-marketplace-command-receipt.test.js)
+- 两个真实 `SubAgentContext` 在本机重叠运行并共享一个有状态 HTTP MCP 会话。宿主请求关闭后，第一个子代理退出，`tools/call` 仍使用原会话成功。最后一个子代理退出后，服务端收到一次携带原会话 ID 的 `DELETE`。[共享连接集成回归](../../../../packages/cli/__tests__/integration/subagent-mcp-late-connection.test.js)
+- 真实 `typescript-language-server` 4.4.1 与 TypeScript 5.9.3 冷启动时，同时查询跨文件定义和引用均返回正确文件。诊断、文档符号和重命名预览也通过。[真实语言服务器回归](../../../../packages/cli/src/lib/lsp/__tests__/code-intelligence.integration.test.js)
+
+Windows 本地进程级回归 6 项、MCP 集成与单元回归 92 项、LSP 集成与单元回归 40 项、Schema 与拒绝记录单元回归 56 项、headless 拒绝摘要回归 6 项通过。命令清单、四项 CLI 启动 SLO 与改动文件的 ESLint 错误检查通过。
+
+以上为该轮源码的本地证据。后台进程回收的后续结果见下一节。
+
+### 2026-11-23 多轮协议与任务回收验收
+
+- 两条消息通过真实 CLI 的 `--input-format stream-json` 输入。第一轮的危险删除被拒绝，返回 `CC_DESTRUCTIVE_SHELL_DENIED`，拒绝记录持久化。符合 Schema 的模型回复未被当作第一轮成功值发布。第二轮合法请求成功并产生 Schema 校验结果。stdin 结束后，进程以退出码 1 反映第一轮失败。临时用户目录内的标记文件完整。[多轮进程回归](../../../../packages/cli/__tests__/e2e/headless-destructive-denial.test.js)
+- 本机 MCP HTTP 服务在 `tools/list` 返回包含长描述的非法 `inputSchema`。运行中 headless 会话的 JSONL 在准入前后字节相同，模型请求及最终会话不含该工具或长描述。错误包含字段路径，普通回复仍可持久化。[Schema 会话边界回归](../../../../packages/cli/__tests__/integration/mcp-schema-admission-session.test.js)
+- 对同一本机 registry 执行 `cc plugin upgrade --json`。fixture 产物摘要改变时沿用显式来源变更审批。安装程序退出 0 时激活 `2.0.0`，退出 17 时 CLI 返回非零及回执，激活指针保持 `1.0.0`。[安装与升级回归](../../../../packages/cli/__tests__/e2e/plugin-marketplace-command-receipt.test.js)
+- 实际启动后台 Shell worker 及其 Node 子进程。重载任务记录后的管理器没有进程句柄，发起停止时记录 `stop_requested`、`stop_timeout`。`cc tasks --json` 显示 `orphanRisk: true`，`cc doctor --json` 发出未确认停止告警。原持有者清理进程树后，子进程退出，状态变为 `cancelled`，风险字段清除。[实际进程回收与诊断回归](../../../../packages/cli/__tests__/integration/task-lifecycle-projection.test.js)
+- 通过 Windows 的文件只读属性在会话准入后制造真实写入失败。CLI 返回退出码 1 和 `before-model` 持久化诊断，JSON 可解析。测试确认模型未调用，原会话字节保持不变。[只读会话文件回归](../../../../packages/cli/__tests__/integration/headless-readonly-session.test.js)
+
+Windows 本地进程级回归 9 项、任务与 MCP 回归 79 项、流式协议与拒绝记录单元回归 125 项、实际只读会话文件回归 1 项通过，共 214 项。命令清单校验、改动文件的 ESLint 错误检查及 Git 差异检查通过。
+
+### 2026-11-23 后台宿主与两层子代理验收
+
+- `cc daemon resume` 重建启动档案。新宿主将档案中的原权限档位用作会话没有有效批准时的默认值，并在执行前核验会话日志中的批准回执与计划执行锁。显式替换档案时仍检查权限档位冲突。批准快照缺失或与回执不匹配时拒绝启动。
+- 持久会话在执行前将工具参数与该工具的下一项批准事项核对。Windows 端到端测试让原后台宿主退出，用流式 CLI 为同一会话批准 `acceptEdits`，再启动新宿主。测试验证改写到未批准路径会被拒绝，批准的文件写入成功，重复执行已结算事项也会被拒绝。
+- Windows 端到端测试让后台 Agent 通过真实工具调用派生两层子代理。第二层到达本机 Ollama 协议测试端点后，`cc agents stop` 终止后台进程及在途请求。独立运行 `cc tasks --json` 可从 `stopEvents` 按顺序读回 `stop_requested` 和 `stop_confirmed`。
+- `packages/cli/__tests__/e2e/background-agent-lifecycle.test.js` 的两个用例均通过，模型回复由本机测试服务提供。计划模式、任务投影、后台启动档案和真实后台进程回归均通过，命令清单与 `git diff --check` 通过。
+
+### 2026-11-23 VS Code 原生宿主验收
+
+- Windows 上用 VS Code 1.145.2 安装当前源码打包的扩展 `0.37.196`。从历史回复分叉后，源会话保持打开，新标签从选定的回复继续。两边各写了一个文件，测试等到界面读回已保存的回复后，分别核对了 canonical 历史与 `file-write` 账本。模型响应由本机测试服务提供。[原生宿主测试入口](../../../../packages/vscode-extension/test/extension-host/run-session-fork.cjs)
+- Workflow Map 显示了同一个正在运行的 Cowork 工作流。测试把名称、状态、任务 ID 和父任务 ID 与独立执行的 `cc tasks --json --active-only` 逐项核对。
+- 从仓库根目录运行 `npm --workspace chainlesschain-ide run package -- --out <vsix>` 打包，再运行 `node packages/vscode-extension/test/extension-host/run-session-fork.cjs --vscode-executable <绝对路径> --vscode-version 1.145.2 --vsix <vsix>` 复现。
+- 扩展 Node 套件通过 359 项。
+
+### 2026-11-23 交互审批与安装回执验收
+
+- 管道驱动 Windows 的真实 CLI readline REPL。原进程在 `acceptEdits` 档位批准计划并退出。新进程恢复为 `trusted`，拒绝显式 `manual` 冲突及 `/permissions autopilot` 切换。模型三次请求写文件，只有批准路径和参数的一次执行成功。未批准路径未创建，已结算事项的重放被拒绝。[REPL 进程回归](../../../../packages/cli/__tests__/e2e/repl-plan-approval.test.js)
+- 同一 REPL 退出计划后遇到需要确认的工具请求。等待审批时，终端输出待审数量 1，低上下文占用下隐藏上下文指示器。500 ms 无应答后工具被拒绝。
+- `cc plugin add --json` 从临时 Git 仓库克隆并安装，记录 Git 退出码 0 和 stderr 摘要。缺失仓库返回 CLI 退出码 1 与 Git 退出码 128。回执也用于 Git 来源的升级。[安装回执进程回归](../../../../packages/cli/__tests__/e2e/plugin-marketplace-command-receipt.test.js)
+- `cc mcp add --command --json` 输出可直接由 `JSON.parse` 解析。测试注册一个写标记的 Node 命令，回执为 `ran: false`，标记文件未创建。数据库启动和关闭诊断输出到 stderr。
+- 上述 CLI 进程套件通过 6 项，后台 Agent 与无人应答套件另通过 6 项。REPL、插件、MCP 和 Runner 相关单元测试通过 382 项。命令清单、四项启动 SLO 和公开 IDE 能力清单校验通过。
+
+### 2026-11-23 Linux 原生文件系统验收
+
+- 实际满盘复现了单次 headless 的预算文件锁在模型调用前失败、stdout 为空的问题。修复后，单次入口将原始文件系统错误投影为 `CC_SESSION_PERSISTENCE_FAILED`，保留 `before-model` 阶段与退出码 1。流式入口使用同一回执契约。
+- Linux x64 容器中使用 Node 22.20.0、npm `0.166.161` 的依赖和当前工作树的 CLI 源码。分别把 `sessions` 挂在用满的 1 MiB tmpfs 和只读 tmpfs 上。单次 JSON 和流式 NDJSON 的四个组合均退出 1，输出可解析，且模型调用数为 0。
+- stdout 重定向到 Linux `/dev/full` 后，两种入口均退出 1 并向 stderr 输出写入失败。正常 stdout 的对照请求退出 0，返回完整 JSON。
+- 在已安装依赖的 Linux 仓库中，按可靠性工作流创建两种挂载并设置 `CC_CLI_RELIABILITY_DISK_ENOSPC_HOME` 与 `CC_CLI_RELIABILITY_DISK_EROFS_HOME`，再运行 `node packages/cli/__tests__/fixtures/headless-native-filesystem.mjs`。[挂载配置](../../../../.github/workflows/cli-reliability-soak.yml) · [原生回归脚本](../../../../packages/cli/__tests__/fixtures/headless-native-filesystem.mjs)
 
 ### LK 目录发布候选 0.166.161
 

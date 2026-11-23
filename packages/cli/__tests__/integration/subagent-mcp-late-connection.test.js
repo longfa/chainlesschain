@@ -1,4 +1,4 @@
-import "../helpers/test-model-egress.js";
+import { withTestEvolutionIngress } from "../helpers/test-model-egress.js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import fs from "node:fs";
 import os from "node:os";
@@ -46,6 +46,109 @@ function reply(name, args, id) {
     usage: {},
   };
 }
+
+it("keeps a stateful MCP session usable until both running subagents exit", async () => {
+  const sessionId = "shared-subagent-fixture";
+  const disconnects = [];
+  const server = createServer(async (request, response) => {
+    if (request.method === "GET") return response.writeHead(405).end();
+    if (request.method === "DELETE") {
+      disconnects.push(request.headers["mcp-session-id"]);
+      return response.writeHead(204).end();
+    }
+    const chunks = [];
+    for await (const chunk of request) chunks.push(chunk);
+    const message = JSON.parse(Buffer.concat(chunks).toString());
+    if (message.id == null) return response.writeHead(202).end();
+    let result = {};
+    if (message.method === "initialize") {
+      response.setHeader("Mcp-Session-Id", sessionId);
+      result = {
+        protocolVersion: "2025-11-25",
+        serverInfo: { name: "shared-fixture", version: "1" },
+        capabilities: { tools: {} },
+      };
+    } else if (message.method === "tools/list") {
+      result = { tools: [{ name: "echo", inputSchema: { type: "object" } }] };
+    } else if (message.method === "tools/call") {
+      if (
+        request.headers["mcp-session-id"] !== sessionId ||
+        disconnects.length
+      ) {
+        return response.writeHead(404).end();
+      }
+      result = {
+        content: [{ type: "text", text: "shared session is active" }],
+      };
+    }
+    response.setHeader("Content-Type", "application/json");
+    response.end(JSON.stringify({ jsonrpc: "2.0", id: message.id, result }));
+  });
+
+  const client = new MCPClient();
+  const children = ["first", "last"].map((role) => {
+    const started = deferred();
+    const finish = deferred();
+    const child = SubAgentContext.create({
+      role,
+      cwd,
+      mcpClient: client,
+      llmOptions: withTestEvolutionIngress({
+        provider: "mock",
+        model: "fixture",
+        runnableProviderFallback: false,
+        chatFn: async () => {
+          started.resolve();
+          await finish.promise;
+          return { message: { role: "assistant", content: role }, usage: {} };
+        },
+      }),
+    });
+    return { child, started, finish };
+  });
+  const running = [];
+  try {
+    await new Promise((resolve, reject) => {
+      server.once("error", reject);
+      server.listen(0, "127.0.0.1", resolve);
+    });
+    await client.connect("shared", {
+      url: `http://127.0.0.1:${server.address().port}/mcp`,
+      transport: "http",
+    });
+    for (const { child, started } of children) {
+      const run = child.run("Hold the host client");
+      running.push(run);
+      await Promise.race([
+        started.promise,
+        run.then((result) => {
+          throw new Error(
+            `${child.role} exited before entering its loop: ${result.summary}`,
+          );
+        }),
+      ]);
+    }
+
+    const shutdown = client.disconnectAll();
+    children[0].finish.resolve();
+    await expect(running[0]).resolves.toMatchObject({ summary: "first" });
+    expect(disconnects).toEqual([]);
+    await expect(client.callTool("shared", "echo", {})).resolves.toEqual({
+      content: [{ type: "text", text: "shared session is active" }],
+    });
+    children[1].finish.resolve();
+    await expect(running[1]).resolves.toMatchObject({ summary: "last" });
+    await shutdown;
+    expect(disconnects).toEqual([sessionId]);
+    expect(client.servers.has("shared")).toBe(false);
+  } finally {
+    for (const { finish } of children) finish.resolve();
+    await Promise.allSettled(running);
+    await client.disconnectAll();
+    server.closeAllConnections();
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
 
 async function lateChild({
   fresh = false,
