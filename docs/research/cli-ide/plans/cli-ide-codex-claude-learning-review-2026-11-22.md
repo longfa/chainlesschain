@@ -333,7 +333,7 @@ Windows 本地进程级回归 9 项、任务与 MCP 回归 79 项、流式协议
 - Linux x64 容器内使用 Xvfb 启动通过官方 SHA-256 校验的 VS Code 1.145.2。真实宿主安装扩展 `0.37.197` 后完成分叉测试。进程退出 0，两条会话的历史和副作用账本独立，运行中的 Cowork 工作流在 IDE 与 CLI 投影一致。另有 41 项本地发布归档、精确提交门禁及来源验证测试通过。[原生宿主测试入口](../../../../packages/vscode-extension/test/extension-host/run-session-fork.cjs)
 - 上一提交的 IDE 预检发现 JetBrains 兼容性章节中的安装命令仍引用上一 CLI 版本。修正示例后，JetBrains 发布元数据、VS Code Marketplace 元数据、公开能力清单、路线图 fixture 校验和 14 项 CLI 依赖门禁测试均在本地通过。[上一轮 IDE 预检](https://github.com/longfa/chainlesschain/actions/runs/45181512001/job/137716210861)
 - 五组验证已按修正后的同一候选 SHA 发起。等待全部适用门禁成功后按顺序发布 CLI，核对公开 npm 归档和来源，再发布并核对两款 IDE 插件。[CLI CI](https://github.com/longfa/chainlesschain/actions/runs/45182636803) · [严格沙箱](https://github.com/longfa/chainlesschain/actions/runs/45182636725) · [原生构建](https://github.com/longfa/chainlesschain/actions/runs/45182636734) · [IDE Extensions](https://github.com/longfa/chainlesschain/actions/runs/45182636709) · [IDE ARM64](https://github.com/longfa/chainlesschain/actions/runs/45182637445)
-- 运行时源码提交 `73286530a5507cf311e165d132399f85f6238d0b` 已通过本地 Linux、Windows、WSL、容器和严格 SSH 的执行位置验证。下载五份制品后用仓库验证器复核了来源、文件摘要、进程生命周期和每个位置 100 次轨迹，共 500 次。macOS 与全部六个位置的汇总验收待完成。[执行位置矩阵](https://github.com/longfa/chainlesschain/actions/runs/45179047694)
+- 运行时源码提交 `73286530a5507cf311e165d132399f85f6238d0b` 已通过本地 Linux、Windows、WSL、容器和严格 SSH 的执行位置验证。下载五份制品后用仓库验证器复核了来源、文件摘要、进程生命周期和每个位置 100 次轨迹，共 500 次。第一轮 macOS 作业未获分配宿主即被取消，六个位置的汇总门禁未通过。第二轮已按同一 SHA 重跑完整矩阵。[首轮结果](https://github.com/longfa/chainlesschain/actions/runs/45179047694/attempts/1) · [第二轮验证](https://github.com/longfa/chainlesschain/actions/runs/45179047694/attempts/2)
 
 ### CLI 0.166.160 发布验证记录
 
