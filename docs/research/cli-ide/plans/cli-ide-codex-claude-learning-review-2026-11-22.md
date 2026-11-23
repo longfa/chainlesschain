@@ -229,7 +229,7 @@ Claude 2.1.330 让子代理的模型回退（fallback）**传导**给它派生�
 
 ## 继续实施与本地验收
 
-提交 `75976d2790` 建立了统一任务字段。以下状态对应 2026-11-24 02:17（北京时间）的实际验证结果。
+提交 `75976d2790` 建立了统一任务字段。以下状态对应 2026-11-24 02:21（北京时间）的实际验证结果。
 
 ### 当前任务实际完成情况
 
@@ -377,6 +377,7 @@ Windows 本地进程级回归 9 项、任务与 MCP 回归 79 项、流式协议
 | CLI 后台会话交互                         | Linux、Windows 通过     | 两个平台已通过实际 worker 断开与重连，macOS 仍在排队。[后台会话测试](https://github.com/longfa/chainlesschain/actions/runs/45225095842)                                                                                                                                                                                                                                                                                      |
 | macOS MCP 启动器                         | x64 通过                | macOS Intel 宿主通过编译警告门禁、平台原语和契约测试。ARM64 排队。[x64 作业](https://github.com/longfa/chainlesschain/actions/runs/45225011304/job/137869360220) · [完整矩阵](https://github.com/longfa/chainlesschain/actions/runs/45225011304)                                                                                                                                                                             |
 | IDE 浏览器验证                           | 三个平台通过            | Linux、Windows 和 macOS Intel 的浏览器验证通过。macOS 完成真实 CLI 持久化、双来源浏览器操作与回放验证。已下载三平台制品并复跑汇总，结果与 CI 制品逐字节一致。[macOS 作业](https://github.com/longfa/chainlesschain/actions/runs/45225095657/job/137877503573) · [三平台汇总制品](https://github.com/longfa/chainlesschain/actions/runs/45225095657/artifacts/14847549456)                                                    |
+| VS Code Remote-SSH 容器                  | 双根工作区通过          | 候选 VSIX `0.37.197` 在 Linux 容器的远程扩展宿主中安装并激活。已重算 40 个制品文件的摘要，重跑汇总与 CI 输出逐字节一致。改动一份制品后，摘要校验按预期拒绝。此次为手动验证，发布标签仍需通过正式门禁。[宿主制品](https://github.com/longfa/chainlesschain/actions/runs/45225095657/artifacts/14846277316) · [汇总制品](https://github.com/longfa/chainlesschain/actions/runs/45225095657/artifacts/14847232526)              |
 | IDE 宿主与 ARM64                         | Linux、Windows 作业通过 | IDE Extensions 已通过 13 个作业，IDE ARM64 已通过 7 个作业。macOS Intel JetBrains 2024.2 宿主验证已开始，其余 macOS IDE 宿主验证仍在排队。[JetBrains 2024.2 作业](https://github.com/longfa/chainlesschain/actions/runs/45225095657/job/137877503769) · [IDE Extensions](https://github.com/longfa/chainlesschain/actions/runs/45225095657) · [IDE ARM64](https://github.com/longfa/chainlesschain/actions/runs/45225095722) |
 | CLI 候选 npm 归档                        | Windows、Linux 本地通过 | 隔离 Windows 安装通过六次调度 CLI 调用。Linux 从同一归档安装，八套调度测试共 319 项通过，含 POSIX 目录 `fsync` 故障恢复用例。                                                                                                                                                                                                                                                                                                |
 | CLI `0.166.162`                          | 待发布                  | 待候选门禁全部通过后由 GitHub Actions OIDC 发布并验证公网归档。                                                                                                                                                                                                                                                                                                                                                              |
