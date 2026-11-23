@@ -5753,17 +5753,27 @@ class ProcessExecutionBroker extends EventEmitter {
     const cb = typeof options === "function" ? options : callback;
     if (this._requiresExplicitLinuxWorkspaceShell(opts.cwd || process.cwd())) {
       const invocation = this._explicitLinuxShellInvocation(command, opts);
-      return this.spawn(invocation.command, invocation.args, {
-        ...opts,
-        shell: false,
-        origin: opts.origin || "shell:exec",
-      });
+      return this.execFile(
+        invocation.command,
+        invocation.args,
+        {
+          ...opts,
+          shell: false,
+          origin: opts.origin || "shell:exec",
+        },
+        cb,
+      );
     }
-    return this.spawn(command, [], {
-      ...opts,
-      shell: true,
-      origin: opts.origin || "shell:exec",
-    });
+    return this.execFile(
+      command,
+      [],
+      {
+        ...opts,
+        shell: true,
+        origin: opts.origin || "shell:exec",
+      },
+      cb,
+    );
   }
 
   execSync(command, options = {}) {

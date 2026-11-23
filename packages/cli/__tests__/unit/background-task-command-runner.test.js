@@ -28,11 +28,13 @@ describe("background task command runner", () => {
   });
 
   it("keeps an unpinned legacy command on the Broker shell path", async () => {
-    const execSync = vi.fn(() => "legacy-ok");
+    const exec = vi.fn((_command, _options, callback) => {
+      callback(null, "legacy-ok", "");
+    });
     const execFile = vi.fn();
     const issueContract = vi.fn();
     Object.assign(_backgroundTaskCommandDeps, {
-      execSync,
+      exec,
       execFile,
       issueLinuxWorkspaceSandboxExecutionContract: issueContract,
     });
@@ -44,16 +46,35 @@ describe("background task command runner", () => {
         type: "shell",
       }),
     ).toBe("legacy-ok");
-    expect(execSync).toHaveBeenCalledWith(
+    expect(exec).toHaveBeenCalledWith(
       "echo legacy",
       expect.objectContaining({
         cwd,
         origin: "background-task:command:shell",
-        shell: true,
+        timeout: 300000,
+        stdio: ["ignore", "pipe", "pipe"],
       }),
+      expect.any(Function),
     );
     expect(execFile).not.toHaveBeenCalled();
     expect(issueContract).not.toHaveBeenCalled();
+  });
+
+  it("lets the worker event loop run during an unpinned shell command", async () => {
+    const command = `"${process.execPath}" -e "setTimeout(() => process.stdout.write('shell-ok'), 100)"`;
+    const result = executeBackgroundTaskCommand({
+      command,
+      cwd,
+      type: "shell",
+    });
+    try {
+      const heartbeat = new Promise((resolve) =>
+        setImmediate(resolve, "heartbeat"),
+      );
+      expect(await Promise.race([result, heartbeat])).toBe("heartbeat");
+    } finally {
+      expect(await result).toBe("shell-ok");
+    }
   });
 
   it("uses explicit shell argv and a one-shot contract for a pinned Linux task", async () => {

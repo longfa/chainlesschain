@@ -270,6 +270,7 @@ Claude 2.1.330 让子代理的模型回退（fallback）**传导**给它派生�
 
 - 流式 headless 逐会话创建 `PlanModeManager`。批准时把档位、工具白名单和已批准事项摘要写入会话日志。单次 headless 续跑采用同一执行锁。新进程回归验证了档位恢复和事项结算，并验证显式档位冲突、快照篡改和快照丢失会拒绝启动。
 - `cc status --json --runner-state <file>` 可读取执行位置 Runner 的接单、注册和首个会话租约获准时间及三段耗时。接单时间由调用方提供。已授权的 post-session hook 走 FIFO 并发队列，前一项失败后会释放槽位。实际远程目标进程启动时间和 provisioning 钩子仍需远程宿主提供证据。
+- 用三个真实 Linux Docker 子进程验证了授权后的 post-session hook 队列。Runner 在排空三条租约后进入 `parked`，一个钩子运行、两个等待。每个容器都在临时文件系统中写入并读回自己的回执。首个钩子按测试预设以 7 退出，后两个按入队顺序执行并以 0 退出。重放已消费的授权会被拒绝，独立 CLI 进程从 Runner 状态重读了三段启动耗时。该验证使用本机 Docker，远程部署仍需单独验收。[Runner 实现](../../../../packages/cli/src/lib/execution-location-runner-lifecycle.js)
 - 配置回退和可运行供应商回退都使用成功请求的模型决策。子代理继承实际模型和连接，声明的子代理模型可覆盖继承结果。内置自动压缩可沿用同一连接，持久会话的决策事件仅保存模型、供应商和端点来源摘要。严格计量路径继续遵守现有的每次物理请求结算边界。
 - 本轮目标套件通过 222 项。计划与旧审批 30 项，模型回退与子代理 96 项，Runner 与目标执行位置 60 项，压缩与计量 36 项。`headless-stream-plan.test.js` 包含新进程读取、单次 headless 续跑和篡改拒绝。`execution-location-runner-lifecycle.test.js` 通过独立的 CLI 进程验证 JSON 输出。命令清单、启动 SLO 和源码出站分类检查通过。
 

@@ -5,7 +5,7 @@ import executionBroker from "../lib/process-execution-broker/index.js";
 const SUPPORTED_BOUNDARIES = new Set(["filesystem", "network"]);
 
 export const _backgroundTaskCommandDeps = {
-  execSync: (...args) => executionBroker.execSync(...args),
+  exec: (...args) => executionBroker.exec(...args),
   execFile: (...args) => executionBroker.execFile(...args),
   issueLinuxWorkspaceSandboxExecutionContract: (...args) =>
     executionBroker.issueLinuxWorkspaceSandboxExecutionContract(...args),
@@ -116,6 +116,15 @@ function explicitShellInvocation(command) {
   return { file: "/bin/sh", args: ["-c", command] };
 }
 
+function readCommandOutput(start) {
+  return new Promise((resolve, reject) => {
+    start((error, stdout) => {
+      if (error) reject(error);
+      else resolve(stdout);
+    });
+  });
+}
+
 export function executeBackgroundTaskCommand({
   command,
   cwd,
@@ -158,15 +167,16 @@ export function executeBackgroundTaskCommand({
     encoding: "utf-8",
     timeout: 300000,
     maxBuffer: 10 * 1024 * 1024,
+    stdio: ["ignore", "pipe", "pipe"],
     origin: `background-task:command:${type || "unknown"}`,
     policy: "allow",
     scope: "background-task",
   };
   if (boundaries.length === 0) {
-    return _backgroundTaskCommandDeps.execSync(command, {
-      ...commonOptions,
-      shell: true,
-    });
+    // Keep the worker event loop free to send heartbeats while the shell runs.
+    return readCommandOutput((callback) =>
+      _backgroundTaskCommandDeps.exec(command, commonOptions, callback),
+    );
   }
 
   const binding = canonicalBinding(workspaceCwd, commonOptions.cwd, boundaries);
@@ -177,7 +187,6 @@ export function executeBackgroundTaskCommand({
   const spawnOptions = {
     ...commonOptions,
     cwd: binding.workingDirectory,
-    stdio: ["ignore", "pipe", "pipe"],
     shell: false,
     sandboxPolicy,
   };
@@ -212,23 +221,12 @@ export function executeBackgroundTaskCommand({
       boundaries,
     );
   }
-  return new Promise((resolve, reject) => {
-    const options = {
-      ...spawnOptions,
-      ...(sandboxExecutionContract ? { sandboxExecutionContract } : {}),
-    };
-    try {
-      _backgroundTaskCommandDeps.execFile(
-        invocation.file,
-        invocation.args,
-        options,
-        (error, stdout) => {
-          if (error) reject(error);
-          else resolve(stdout);
-        },
-      );
-    } catch (error) {
-      reject(error);
-    }
-  });
+  return readCommandOutput((callback) =>
+    _backgroundTaskCommandDeps.execFile(
+      invocation.file,
+      invocation.args,
+      { ...spawnOptions, sandboxExecutionContract },
+      callback,
+    ),
+  );
 }
