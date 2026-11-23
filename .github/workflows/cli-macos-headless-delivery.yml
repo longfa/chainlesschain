@@ -1,4 +1,5 @@
-name: CLI macOS Headless Delivery
+name: CLI macOS Plan Validation
+run-name: CLI macOS ${{ inputs.check }} for ${{ inputs.commit_sha }}
 
 on:
   workflow_dispatch:
@@ -7,13 +8,20 @@ on:
         description: Exact CLI candidate commit
         required: true
         type: string
+      check:
+        description: Native scenario to verify
+        type: choice
+        default: headless-stdout
+        options:
+          - headless-stdout
+          - approval-recovery
 
 permissions:
   contents: read
 
 jobs:
-  headless-stdout:
-    name: Headless JSON and NDJSON delivery (macOS Intel)
+  native-scenario:
+    name: ${{ inputs.check }} (macOS Intel)
     runs-on: macos-15-intel
     timeout-minutes: 15
     env:
@@ -35,16 +43,18 @@ jobs:
 
       - name: Verify exact CLI checkout
         shell: bash
-        run: test "$(git rev-parse HEAD)" = "$CLI_SHA"
+        run: |
+          test "$(git rev-parse HEAD)" = "$CLI_SHA"
+          test "$(node -p 'process.platform')" = darwin
+          test "$(node -p 'process.arch')" = x64
 
       - name: Install CLI dependencies
         run: npm ci --workspace packages/cli --include-workspace-root=false --legacy-peer-deps --no-audit --no-fund
 
       - name: Verify normal stdout and a read-only redirected descriptor
+        if: inputs.check == 'headless-stdout'
         shell: bash
         run: |
-          test "$(node -p 'process.platform')" = darwin
-          test "$(node -p 'process.arch')" = x64
           git fetch --no-tags --depth=1 origin "$GITHUB_SHA"
           fixture="packages/cli/__tests__/fixtures/headless-native-filesystem"
           temporary="$fixture-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT.mjs"
@@ -59,8 +69,31 @@ jobs:
           printf '%s\n' "$GITHUB_SHA" > "$report/fixture-commit.txt"
 
       - name: Upload native delivery evidence
+        if: inputs.check == 'headless-stdout'
         uses: actions/upload-artifact@v6
         with:
           name: cli-headless-stdout-macos-${{ github.run_attempt }}
           path: ${{ runner.temp }}/headless-stdout-evidence/
           if-no-files-found: error
+
+      - name: Verify interactive approval recovery across CLI processes
+        if: inputs.check == 'approval-recovery'
+        working-directory: packages/cli
+        shell: bash
+        run: |
+          report="$RUNNER_TEMP/approval-recovery-evidence"
+          mkdir -p "$report"
+          printf '%s\n' "$CLI_SHA" > "$report/cli-commit.txt"
+          node -p 'JSON.stringify({platform: process.platform, architecture: process.arch, node: process.version})' > "$report/runtime.json"
+          vitest="$(node -p 'const path = require("node:path"); path.join(path.dirname(require.resolve("vitest/package.json")), "vitest.mjs")')"
+          node "$vitest" run --config vitest.e2e.config.js \
+            __tests__/e2e/repl-plan-approval.test.js --maxWorkers=1 \
+            --reporter=default --reporter=json --outputFile="$report/approval-recovery.json"
+
+      - name: Upload approval recovery evidence
+        if: always() && inputs.check == 'approval-recovery'
+        uses: actions/upload-artifact@v6
+        with:
+          name: cli-approval-recovery-macos-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/approval-recovery-evidence/
+          if-no-files-found: warn
