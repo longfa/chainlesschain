@@ -239,9 +239,9 @@ Claude 2.1.330 让子代理的模型回退（fallback）**传导**给它派生�
 | 计划任务与状态栏      | 到期时统一 `state` 和兼容别名，清理等待与停止提示。Windows REPL 在等待审批时输出 `task waiting` 和 `approvals 1`，占用低于设置阈值时隐藏上下文读数。                                                                                          | 调度宿主截图待补。                                                                                                                      |
 | 权限档位与旧审批      | 流式和交互 REPL 批准均写入会话日志。已验证 `cc daemon resume` 与新 CLI REPL 进程恢复批准档位，并拒绝同工具改参数或重放已结算事项。                                                                                                            | 其他平台的交互复测待补。                                                                                                                |
 | Headless 交付失败     | Windows 真实只读会话文件通过。Linux 满盘与只读挂载下，单次 JSON 和多轮 NDJSON 均退出 1，保留 `before-model` 回执。Linux `/dev/full` 与 Windows 只读文件句柄均实测 stdout 写入失败，两种模式都退出 1。                                         | `EPERM` 与 `EACCES` 已覆盖注入测试。macOS 的 stdout 重定向仍待复验。                                                                    |
-| VS Code 分叉与地图    | `cc session fork <id> --json` 支持按已验证的历史回复分叉。Windows VS Code 1.145.2 安装当前源码打包的 VSIX 后，两个聊天标签分别完成任务。已核对历史边界、两个独立的文件写入账本，以及工作流地图与 `cc tasks --json --active-only` 的一致性。   | Linux 和 macOS 宿主复测待补。                                                                                                           |
+| VS Code 分叉与地图    | `cc session fork <id> --json` 支持按已验证的历史回复分叉。Windows 和 Linux 的 VS Code 1.145.2 安装候选 VSIX 后，两个聊天标签分别完成任务。已核对历史边界、两个独立的文件写入账本，以及工作流地图与 `cc tasks --json --active-only` 的一致性。 | macOS 宿主复测待补。                                                                                                                    |
 | MCP Schema 与 LSP     | 首次发现、发现缓存及 `list_changed` 刷新共用 schema 准入。非法替换保留已接纳的工具目录，诊断含工具名和字段路径，回归验证大段描述未进入诊断。                                                                                                  | 真实 TypeScript 语言服务器已验证冷启动并发查询。已验证首次接入的非法 Schema 在准入前后不改变会话文件，模型目录不含被拒绝工具。          |
-| Runner 指标与模型传播 | `cc status --runner-state` 可读 Runner 的首会话租约时间和三段耗时。模型回退结果接入子代理、内置自动压缩和会话日志。                                                                                                                           | 外部 provisioning、真实远程目标进程启动、真实供应商链路的端到端证据待补。                                                               |
+| Runner 指标与模型传播 | `cc status --runner-state` 可读 Runner 的首会话租约时间和三段耗时。模型回退结果接入子代理、内置自动压缩和会话日志。执行位置矩阵已验证本地 Linux、Windows、WSL、容器和严格 SSH 的目标进程及生命周期。                                          | macOS 执行位置、外部 provisioning 和真实模型供应商链路的端到端证据待补。                                                                |
 
 ### 可复现的本地验证
 
@@ -330,9 +330,10 @@ Windows 本地进程级回归 9 项、任务与 MCP 回归 79 项、流式协议
 - Windows VS Code 1.145.2 安装 `0.37.197` 候选 VSIX 后复跑了两条会话分叉、各自的文件写入账本及运行中工作流地图对照。候选命令清单、帮助索引、补全、IDE 能力清单和 Marketplace 元数据检查已通过。复审 `agent-core.js` 相对上一发布标签的差异后更新了模型出站审查摘要，88 个源码文件和脚本通过预检。
 - Linux x64 的 12 项 CLI 进程回归通过，覆盖交互审批恢复、后台进程回收、插件安装回执与无人应答拒绝。Windows 通过 `openSync(path, "r")` 将只读文件句柄传给子进程 stdout。正常输出对照成功，单次 JSON 与流式 NDJSON 写入均报告 `EBADF` 并退出 1。
 - Windows 本地构建并打包 CLI 候选。隔离目录安装该归档后，`cc --version` 输出 `0.166.162`，Web Panel 构建资源随包交付，10 个 CLI 直接依赖的内部 npm 包均解析到公开 npm 上的固定版本。候选 VS Code 扩展的 359 项 Node 测试全部通过。
+- Linux x64 容器内使用 Xvfb 启动通过官方 SHA-256 校验的 VS Code 1.145.2。真实宿主安装扩展 `0.37.197` 后完成分叉测试。进程退出 0，两条会话的历史和副作用账本独立，运行中的 Cowork 工作流在 IDE 与 CLI 投影一致。另有 41 项本地发布归档、精确提交门禁及来源验证测试通过。[原生宿主测试入口](../../../../packages/vscode-extension/test/extension-host/run-session-fork.cjs)
 - 上一提交的 IDE 预检发现 JetBrains 兼容性章节中的安装命令仍引用上一 CLI 版本。修正示例后，JetBrains 发布元数据、VS Code Marketplace 元数据、公开能力清单、路线图 fixture 校验和 14 项 CLI 依赖门禁测试均在本地通过。[上一轮 IDE 预检](https://github.com/longfa/chainlesschain/actions/runs/45181512001/job/137716210861)
 - 五组验证已按修正后的同一候选 SHA 发起。等待全部适用门禁成功后按顺序发布 CLI，核对公开 npm 归档和来源，再发布并核对两款 IDE 插件。[CLI CI](https://github.com/longfa/chainlesschain/actions/runs/45182636803) · [严格沙箱](https://github.com/longfa/chainlesschain/actions/runs/45182636725) · [原生构建](https://github.com/longfa/chainlesschain/actions/runs/45182636734) · [IDE Extensions](https://github.com/longfa/chainlesschain/actions/runs/45182636709) · [IDE ARM64](https://github.com/longfa/chainlesschain/actions/runs/45182637445)
-- 用运行时源码提交 `73286530a5507cf311e165d132399f85f6238d0b` 发起执行位置验证，跟踪实际目标进程和生命周期结果。结果对应实施源码的复验。[执行位置矩阵](https://github.com/longfa/chainlesschain/actions/runs/45179047694)
+- 运行时源码提交 `73286530a5507cf311e165d132399f85f6238d0b` 已通过本地 Linux、Windows、WSL、容器和严格 SSH 的执行位置验证。下载五份制品后用仓库验证器复核了来源、文件摘要、进程生命周期和每个位置 100 次轨迹，共 500 次。macOS 与全部六个位置的汇总验收待完成。[执行位置矩阵](https://github.com/longfa/chainlesschain/actions/runs/45179047694)
 
 ### CLI 0.166.160 发布验证记录
 
