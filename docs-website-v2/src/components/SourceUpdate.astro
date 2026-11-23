@@ -57,8 +57,8 @@ const items = english
     </p>
     <p class="mt-3 text-sm text-muted">
       {english
-        ? `CLI, cc ui and both IDE plugins offer LK primary ${lk.primary} and manual backup ${lk.backup}, sharing one LK Key. The OpenAI-compatible default is ${lk.defaultOpenAiModel}; legacy aliases retain the same model. Credentials are saved per channel, including Volcengine. The ${lk.modelCount}-model catalog contains ${lk.chatModels} protocol-filtered chat models, without granting account access or verifying every generation path. Live prices, balance, Key quota and actual API bills use platform credits; bills contain no Token counts. Media models remain catalog references. Matching desktop source supports account queries; ${releaseStatus.productVersion} is a historical client with its previous download source unavailable.`
-        : `CLI、cc ui 与两款 IDE 提供 LK 主地址 ${lk.primary}、手动备用地址 ${lk.backup} 和共用 LK Key。OpenAI 兼容协议默认 ${lk.defaultOpenAiModel}，旧别名按原模型迁移。各渠道（含火山）保存凭证，切回时恢复。${lk.modelCount} 项目录中 ${lk.chatModels} 项对话模型按协议筛选，不代表账户权限或所有生成路径已验证。实时价格、余额、Key 额度与真实 API 账单以平台算力计，账单没有 Token 数；媒体模型仅供目录参考。桌面源码支持账户查询；${releaseStatus.productVersion} 为历史客户端，旧下载源暂不可用。`}
+        ? `CLI and cc ui refresh the public LK catalog on demand. The bundled snapshot includes ${lk.modelCount} entries and ${lk.chatModels} chat models, including gpt-6.2-sol and gpt-6.2-astra. The OpenAI-compatible default is ${lk.defaultOpenAiModel}. To switch from ${lk.primary} to ${lk.backup}, edit the endpoint and keep the same LK Key. Model access depends on the account. Prices, balances, quotas and bills use platform credits.`
+        : `CLI 和 cc ui 按需刷新 LK 公开目录。离线快照有 ${lk.modelCount} 项，其中 ${lk.chatModels} 项是对话模型，包括 gpt-6.2-sol 和 gpt-6.2-astra。OpenAI 兼容协议默认使用 ${lk.defaultOpenAiModel}。从 ${lk.primary} 切换到 ${lk.backup} 时手动修改地址，并继续使用同一个 LK Key。模型访问以账户权限为准。价格、余额、额度和账单以平台算力计。`}
     </p>
     <div class="mt-8 grid gap-6 md:grid-cols-3">
       {items.map(([title, description]) => (

@@ -1,10 +1,10 @@
 # ChainlessChain - Personal Mobile AI Management System Based on USB Key and SIMKey
 
-## Current public release (2026-11-22)
+## Current public release (2026-11-23)
 
-CLI **0.166.160** is public on npm from exact source `1dd4f2c6cc7128995312be08738ae5d6d692ad25`. GitHub Actions published it through OIDC and verified public installation, archive integrity, and signed provenance. Install `npm i -g chainlesschain@0.166.160 --registry https://registry.npmjs.org`, restart the host, and check `cc --version`.
+CLI **0.166.161** is public on npm from exact source `22f4dfea080546d586f75652fd5075671019ffb8`. GitHub Actions published it through OIDC and verified the public installation, archive and signed provenance. Install `npm i -g chainlesschain@0.166.161 --registry https://registry.npmjs.org`, restart the host, and check `cc --version`. [npm publication evidence](https://github.com/longfa/chainlesschain/actions/runs/45084688787)
 
-Open VSX **0.37.195** is public and recommends CLI **0.166.160**. Public JetBrains **0.4.209** recommends CLI **0.166.159**. The JetBrains **0.4.210** candidate failed its macOS host gate before upload. The CLI adds unified task listing and stop receipts, and VS Code adds session fork and workflow map commands. [Upgrade guide](docs-site/docs/chainlesschain/cli-ide-update-2026-11-22-160.md) · [Task lifecycle design](docs/design/release-runtime-update-2026-11-22-160.md) · [npm publication evidence](https://github.com/longfa/chainlesschain/actions/runs/45018972099)
+The CLI and Web Panel can refresh the LK model catalog. The offline catalog includes GPT‑6.2 Sol and Astra. The paired IDE versions are Open VSX **0.37.196** and JetBrains **0.4.211**. [Upgrade guide and marketplace status](docs-site/docs/chainlesschain/cli-ide-update-2026-11-23-161.md)
 
 ## Previous public release (2026-11-21)
 

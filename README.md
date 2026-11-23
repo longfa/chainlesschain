@@ -1,10 +1,10 @@
 # ChainlessChain - 基于U盘和SIMKey的个人移动AI管理系统
 
-## 当前公开版本（2026-11-22）
+## 当前公开版本（2026-11-23）
 
-CLI **0.166.160** 已通过 GitHub Actions OIDC 发布到 npm，准确源码提交为 `1dd4f2c6cc7128995312be08738ae5d6d692ad25`。公开安装、归档完整性和签名来源已验证。运行 `npm i -g chainlesschain@0.166.160 --registry https://registry.npmjs.org` 安装，重启宿主后运行 `cc --version`。
+CLI **0.166.161** 已通过 GitHub Actions OIDC 发布到 npm。精确源码为 `22f4dfea080546d586f75652fd5075671019ffb8`，公开安装、归档和签名来源已验证。运行 `npm i -g chainlesschain@0.166.161 --registry https://registry.npmjs.org` 安装，重启宿主后运行 `cc --version`。 [npm 发布证据](https://github.com/longfa/chainlesschain/actions/runs/45084688787)
 
-Open VSX **0.37.195** 已公开并推荐 CLI **0.166.160**。公开 JetBrains **0.4.209** 推荐 CLI **0.166.159**，候选 **0.4.210** 的 macOS 宿主门禁失败，未上传。本轮新增统一任务列表与停止回执，VS Code 增加会话分叉和工作流地图。[升级指南](docs-site/docs/chainlesschain/cli-ide-update-2026-11-22-160.md) · [任务生命周期设计](docs/design/release-runtime-update-2026-11-22-160.md) · [npm 发布证据](https://github.com/longfa/chainlesschain/actions/runs/45018972099)
+CLI 和 Web 工作台可刷新 LK 模型目录，离线快照内置 GPT‑6.2 Sol 和 Astra。配套 IDE 为 Open VSX **0.37.196** 和 JetBrains **0.4.211**，公开下载状态见升级指南。 [升级指南](docs-site/docs/chainlesschain/cli-ide-update-2026-11-23-161.md)
 
 ## 上一轮公开版本（2026-11-21）
 

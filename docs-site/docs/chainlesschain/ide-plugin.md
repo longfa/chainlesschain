@@ -2,14 +2,14 @@
 
 ## 当前公开版本（2026-11-22）
 
-CLI **0.166.160** 已在 npm 公开，VS Code 扩展 **0.37.195** 已在 Open VSX 公开。配套 JetBrains 插件为 **0.4.210**。升级后重启宿主，运行 `cc --version` 和 `cc doctor`。[升级指南与商店状态](./cli-ide-update-2026-11-22-160)
+CLI **0.166.161** 已在 npm 公开。配套 IDE 为 Open VSX **0.37.196** 和 JetBrains **0.4.211**。升级后重启宿主，运行 `cc --version` 和 `cc doctor`。[升级指南与商店状态](./cli-ide-update-2026-11-23-161)
 
 ## 历史发行与源码核对（2026-11-21）
 
 已验证公开 **CLI 0.166.159 / Open VSX 0.37.194 / JetBrains 0.4.208**，两款 IDE 推荐 CLI .156；JetBrains 已审核公开，公开安装包已与正式候选核对。安装 `npm i -g chainlesschain@0.166.159 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`、`cc doctor`。
 JetBrains **0.4.209** 已上传并等待 Marketplace 审批/上架；公开列表仍为 **0.4.208**。
 
-LK 使用 `https://api.vv666.ai` 主地址和 `https://api.lk666.ai` 手动备用地址；OpenAI 兼容连接为 `/v1`、默认 `gpt-6.1-sol`。目录为 **202 项 / 86 项对话模型**，聊天下拉按协议筛选；余额、动态分组价格与实际 API 账单通过已保存的 LK 连接读取，金额单位为算力，与本地 Token 统计分开。
+LK 使用 `https://api.vv666.ai` 主地址和 `https://api.lk666.ai` 手动备用地址；OpenAI 兼容连接为 `/v1`、默认 `gpt-6.1-sol`。配套扩展可刷新公开目录，离线快照包含 `gpt-6.2-sol` 和 `gpt-6.2-astra`，聊天下拉按协议筛选；余额、动态分组价格与实际 API 账单通过已保存的 LK 连接读取，金额单位为算力，与本地 Token 统计分开。
 
 文档核对源码 `fc49fd24e9d544352205b6785f37f560b834c574`；不可变发行来源 `2aa00100a73f9b170b719c7f79e986470643485f`。Git 标题中的“1.5.6”不代表可安装版本号，CLI 包的真实版本为 **0.166.159**。本轮不新增模型任务验收，**NOT_PAID_READY / NOT_ADMITTED / HOLD** 保留。最后已核验历史客户端为 **v5.0.3.145**，旧安装包源目前返回 404，不能视为当前可下载；本轮不发布 PC/mobile 安装包。
 

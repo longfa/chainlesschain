@@ -4,7 +4,7 @@ layout: home
 hero:
   name: ChainlessChain
   text: 去中心化个人 AI 管理平台
-  tagline: "CLI 0.166.160、Open VSX 0.37.195 和 JetBrains 0.4.209 已公开"
+  tagline: "CLI 0.166.161 已发布，支持 LK 模型目录刷新"
   image:
     src: /logo.png
     alt: ChainlessChain Logo
@@ -75,7 +75,7 @@ features:
   - icon: 🧑‍💻
     title: CLI 和 IDE 配套版本
     details: "Open VSX 0.37.195 推荐 CLI 0.166.160；JetBrains 公开版 0.4.209 推荐 CLI 0.166.159。"
-    link: /chainlesschain/cli-ide-update-2026-11-22-160
+    link: /chainlesschain/cli-ide-update-2026-11-23-161
   - icon: 🔐
     title: 安全优先
     details: 本地优先、权限控制、会话恢复、Process Broker、跨平台沙箱与加密配置清单共同保护 Agent 执行边界。
@@ -102,7 +102,7 @@ features:
 
 ## 当前公开版本（2026-11-22）
 
-CLI **0.166.160** 已通过 npm 公开安装、归档完整性和签名来源校验。运行 `npm i -g chainlesschain@0.166.160 --registry https://registry.npmjs.org` 安装，重启宿主后运行 `cc --version` 和 `cc doctor`。[升级指南与商店状态](/chainlesschain/cli-ide-update-2026-11-22-160)
+CLI **0.166.161** 已通过 npm 公开下载、归档完整性和签名来源校验。运行 `npm i -g chainlesschain@0.166.161 --registry https://registry.npmjs.org` 安装，重启宿主后运行 `cc --version` 和 `cc doctor`。[升级指南与商店状态](/chainlesschain/cli-ide-update-2026-11-23-161)
 
 ## 历史发行与源码核对（2026-11-21）
 

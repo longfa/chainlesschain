@@ -3,13 +3,13 @@
 平台文档已列出 [GPT-6.2 Sol](https://chainlesschain.net/apidoc#model/gpt-6.2-sol) 和 [GPT-6.2 Astra](https://chainlesschain.net/apidoc#model/gpt-6.2-astra)，两者支持 OpenAI Chat Completions 和 Responses。
 主地址 `https://api.vv666.ai`，备用 `https://api.lk666.ai`，手动切换地址；不会自动重发生成请求。
 
-CLI **0.166.156**、Open VSX **0.37.192** 与 JetBrains **0.4.207** 均已公开验证；两款 IDE 推荐 CLI .156。完整发布顺序与限制见 [更新说明](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-18-156.md)。
+CLI **0.166.161** 已在 npm 公开。配套 IDE 为 Open VSX **0.37.196** 和 JetBrains **0.4.211**。[更新说明与商店状态](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-23-161.md)
 
 ## 模型配置
 
 CLI 执行 `cc setup`；Web 执行 `cc ui` 后进入 LLM 配置；IDE 打开 Configure LLM。选择 LK、协议、模型和主备地址，填写 LK 自己的 Key，保存后测试连接。每个平台的 Key 独立保存，LK 主备地址及协议共用 LK 凭据。修改连接后先保存再查询账户。
 
-当前源码中的 CLI、Web、VS Code、JetBrains 和桌面设置会在打开模型配置时请求平台公开目录。设置界面的「刷新模型」可以重新查询，并保留正在编辑的模型 ID。请求失败时使用安装包内置目录。JetBrains 的在线查询由配套 CLI 提供。
+CLI 和 Web 工作台会在打开模型配置时请求平台公开目录。配套的 VS Code、JetBrains 和桌面源码也支持刷新，「刷新模型」会重新查询并保留正在编辑的模型 ID。请求失败时使用安装包内置目录。JetBrains 的在线查询由配套 CLI 提供。
 
 用 `cc llm models --provider lk --json` 查看目录，`source` 为 `live` 表示刚从平台取得，为 `bundled` 表示使用内置目录。2026-11-23 的内置快照包含 205 项，其中 89 个对话、26 个图片、83 个视频和 7 个音频模型。下拉框按协议筛选对话模型。账户可用性和推理结果需用自己的 LK Key 验证。
 
@@ -50,4 +50,4 @@ node --test packages/cli/test-node/lk-channel.node-test.mjs
 - 获授权的最小 `gpt-6.1-sol` Chat Completions 请求返回 HTTP 200 和文本。
 - 使用真实接口运行账户适配器，余额、用量、价格、账单均成功；验证记录不保留 Key 或账户金额。
 - CLI、Web、VS Code、JetBrains 共享生成目录；具体发布以当前提交的 Actions 门禁和公开渠道回读为准。
-- 不声称逐个实测全部模型，不发布新的 PC/mobile 安装器，聊天设置不执行媒体任务提交或轮询。
+- GPT-6.2 Sol 和 Astra 的验证覆盖公开目录、协议和内置快照。实际推理与账户权限按 LK 连接核验。新客户端安装包状态见升级指南。

@@ -1,6 +1,6 @@
 # 快速开始
 
-> 当前公开 CLI 为 **0.166.160**，配套 Open VSX **0.37.195**。JetBrains 公开版为 **0.4.209**，推荐 CLI **0.166.159**。历史客户端 **v5.0.3.145** 的旧下载源暂不可用。**NOT_PAID_READY / NOT_ADMITTED / HOLD** 保留。[升级指南与商店状态](../chainlesschain/cli-ide-update-2026-11-22-160) · [当前源码仓库](https://github.com/longfa/chainlesschain)
+> CLI **0.166.161** 已在 npm 公开。配套 IDE 为 Open VSX **0.37.196** 和 JetBrains **0.4.211**。可通过 `cc ui` 打开浏览器工作台。[升级指南与商店状态](../chainlesschain/cli-ide-update-2026-11-23-161)
 
 > 2026-10-16 历史公开版本：CLI **0.166.103**、Open VSX **0.37.148**、JetBrains **0.4.165**；两个 IDE 均推荐 CLI `.103`。Session Core **0.3.19**、Kernel **0.1.10**、PDH **0.4.65**，原生产品 **v5.0.3.140** 独立发行。正式预算 **NOT_PAID_READY**，36+9 **NOT_RUN（0/36、0/9）**。 见[升级与故障排查](../chainlesschain/cli-ide-update-2026-10-16)。以下带日期的早期记录保留历史范围。
 
@@ -13,7 +13,7 @@
 安装固定公开版本，配置自己的模型连接，然后启动本机 Web 面板：
 
 ```bash
-npm install -g chainlesschain@0.166.160 --registry https://registry.npmjs.org
+npm install -g chainlesschain@0.166.161 --registry https://registry.npmjs.org
 cc setup --skip-download --skip-services
 cc ui
 ```

@@ -1,10 +1,10 @@
 # CLI 文档
 
-## 当前公开 CLI 0.166.160 与 IDE 配套版本
+## 当前公开 CLI 0.166.161 与 IDE 配套版本
 
-CLI **0.166.160** 已通过 GitHub Actions OIDC 发布并完成 npm 公开安装、归档及签名来源验证。发行标签 `v-npm-0-166-160` 绑定提交 `1dd4f2c6cc7128995312be08738ae5d6d692ad25`。Open VSX **0.37.195** 推荐 CLI **0.166.160**，公开 JetBrains **0.4.209** 推荐 CLI **0.166.159**。[npm 发布证据](https://github.com/longfa/chainlesschain/actions/runs/45018972099)
+CLI **0.166.161** 已通过 GitHub Actions OIDC 发布并验证 npm 归档与签名来源。发行标签 `v-npm-0-166-161` 绑定提交 `22f4dfea080546d586f75652fd5075671019ffb8`。配套扩展为 Open VSX **0.37.196** 和 JetBrains **0.4.211**。[npm 发布证据](https://github.com/longfa/chainlesschain/actions/runs/45084688787)
 
-安装 `npm i -g chainlesschain@0.166.160 --registry https://registry.npmjs.org`，重启 CLI 和 IDE 宿主后运行 `cc --version`、`cc doctor`。真实账号计费、生产远程服务和业务效果验收仍按各自发布准入执行。[升级指南与商店状态](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-22-160.md)
+运行 `npm i -g chainlesschain@0.166.161 --registry https://registry.npmjs.org` 安装，重启宿主后执行 `cc --version`、`cc doctor`。通过 `cc llm models --provider lk --json` 查询 LK 实时目录和离线回退状态。[升级指南与商店状态](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-23-161.md)
 
 <!-- release141-current:start -->
 
