@@ -1,10 +1,10 @@
 # ChainlessChain IDE Bridge (JetBrains)
 
-JetBrains **0.4.209** is approved, listed, and publicly downloadable. It recommends CLI **0.166.159**, as verified in the published ZIP. [Download 0.4.209](https://plugins.jetbrains.com/files/32208/1225644/chainlesschain-ide-bridge-0.4.209.zip)
+JetBrains **0.4.211** is approved, listed, and publicly downloadable. It recommends CLI **0.166.161**, as verified in the published ZIP. [Download 0.4.211](https://plugins.jetbrains.com/plugin/download?rel=true&updateId=1226836)
 
-Install its recommended CLI with `npm i -g chainlesschain@0.166.159 --registry https://registry.npmjs.org`, restart the IDE, and verify `cc --version`.
+Install its recommended CLI with `npm i -g chainlesschain@0.166.161 --registry https://registry.npmjs.org`, restart the IDE, and verify `cc --version`.
 
-## Release candidate 0.4.210 / CLI 0.166.160
+## Historical candidate 0.4.210 / CLI 0.166.160
 
 The immutable candidate tag is `ide-jetbrains-v0.4.210`. Its macOS IntelliJ 2025.2 host gate failed before upload. The candidate recommends public CLI **0.166.160**. [Release workflow](https://github.com/longfa/chainlesschain/actions/runs/45020514604)
 
@@ -318,7 +318,7 @@ See the [verified publication evidence](https://github.com/longfa/chainlesschain
 
 ## Release compatibility
 
-Plugin **0.4.211** is the current release candidate and recommends `chainlesschain@0.166.161`. The model menu reads the online LK catalog through this CLI. It includes GPT-6.2 Sol and GPT-6.2 Astra in its offline catalog.
+Plugin **0.4.212** recommends `chainlesschain@0.166.162`. The model menu reads the online LK catalog through this CLI and includes GPT-6.2 Sol and GPT-6.2 Astra in its offline catalog.
 
 Once the paired CLI is public, install it with `npm i -g chainlesschain@0.166.161 --registry https://registry.npmjs.org`. Goal transfer and native Graph features require matching desktop support and explicit native authorization.
 
