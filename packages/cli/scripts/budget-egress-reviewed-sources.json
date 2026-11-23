@@ -150,9 +150,9 @@
     },
     {
       "path": "packages/cli/src/commands/agenda.js",
-      "digest": "sha256:50204bbb316cde4868755b15d0897fd8b811cc2b58a952e53f70d70df95eb695",
+      "digest": "sha256:ff2581a2adaad2cd32fa9eef4450cd9261014fefa0216f52fa54d389872cec11",
       "category": "TASK_CONTROLLED_NETWORK",
-      "rationale": "User-selected URL retrieval for agenda material; arbitrary endpoint behavior/cost is not a model-token contract."
+      "rationale": "User-selected URL retrieval for agenda material; arbitrary endpoint behavior/cost is not a model-token contract. The 0.166.162 timing delta formats existing schedule deadlines and reads eligibility from the local schedule planner."
     },
     {
       "path": "packages/cli/src/commands/ask.js",
