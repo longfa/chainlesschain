@@ -231,7 +231,7 @@ Claude 2.1.330 让子代理的模型回退（fallback）**传导**给它派生�
 
 | 任务包                | 当前证据                                                                                                                                                                                                                                      | 剩余验收                                                                                                                                |
 | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| 统一任务投影          | 独立运行 `cc tasks --json` 可读持久化后台 shell、MCP 日志、后台 Agent、计划任务和项目内 Cowork 工作流。Windows 实测同时读回在运行的 shell、真实 HTTP MCP 任务和计划。MCP 默认扫描最近 100 个 canonical 会话，`--session <id>` 可指定会话。    | Windows 与 Linux 容器均已验证两个同机管理进程的长期并发。即时 `run_shell` 的内存状态由所属运行时读取，跨设备长期并发待验收。            |
+| 统一任务投影          | 独立运行 `cc tasks --json` 可读持久化后台 shell、MCP 日志、后台 Agent、计划任务和项目内 Cowork 工作流。Windows 实测同时读回在运行的 shell、真实 HTTP MCP 任务和计划。MCP 默认扫描最近 100 个 canonical 会话，`--session <id>` 可指定会话。    | 已验证 Windows 与 SSH Linux 容器的独立任务状态及并发回收。即时 `run_shell` 的内存状态由所属运行时读取，独立物理设备仍待验收。           |
 | 停止与诊断            | 重复停止复用回执。后台 shell 可读回 `stop_requested`、`stop_timeout` 和后续 `stop_confirmed`，Doctor 会提示孤儿风险。后台 Agent 的 `cc tasks --json` 提供可执行的 `stopPath`，从持久时间戳读回 `stopEvents`。                                 | 已验证持久化重载后的孤儿风险、Doctor 告警和原持有者回收，也已验证第二层子代理正在调用模型时停止真实后台会话。跨平台长时间运行仍需复验。 |
 | 插件安装结果          | Marketplace `add` 和 `upgrade` 与 Git 来源共用 `installCommand` 字段。本机 registry 退出 0/17，Git 获取退出 0/128。已实测外部 HTTPS 获取、回环代理拒绝和 120 秒超时。MCP 注册与 `cc skill add --json` 创建脚手架均返回 `ran: false`。         | 外部仓库获取成功但制品不符合插件格式时，CLI 仍以非零退出并保留 Git 回执。                                                               |
 | 无人应答拒绝          | 无人应答策略和破坏性 Git 负向通过。真实 Agent 循环的 mock-provider 回归验证删除请求被拒绝，隔离目录内文件保留。                                                                                                                               | 已验证单次 CLI 和多轮 `stream-json` 输入均返回非零，并保留拒绝记录。多轮输入可继续处理后续合法消息。                                    |
@@ -258,6 +258,7 @@ Claude 2.1.330 让子代理的模型回退（fallback）**传导**给它派生�
 - 双进程复验发现，原来的同步 Shell 调用会阻塞工作进程心跳，导致长任务被误判超时。修复后同一台 Windows 宿主上的两个管理进程各运行一个真实 Shell 任务，并发 121 秒。6 次独立 `cc tasks --json` 调用验证了运行状态和停止后的读回。第一个持有者确认回收后，第二个进程继续执行。第二个任务也停止后，`--active-only` 不再返回这两个任务。相关回归 99 项通过。[修复与测试](https://github.com/longfa/chainlesschain/commit/bf05fdb4f827926db991d5baf1867ca44596e6aa)
 - 在 Linux 容器内，用候选的 Shell 执行器和 broker 文件替换安装验证环境中的对应文件。实际命令运行期间事件循环仍可以处理其他事件。子进程收到 stdin EOF，非零退出保留退出码和两路输出。
 - 在无网络 Linux 容器内，以非 root 用户从候选归档运行两个独立的后台 Shell 管理进程。两项任务并发 125 秒，通过挂载 `registerTasksCommand` 的独立进程执行 6 次任务查询。第一项停止后第二项仍可运行，最后两个 Shell 的原生 PID 均已消失，`--active-only` 返回零项。前两次完整 CLI 查询超过测试夹具的 45 秒时限。后续复验中，完整 `cc tasks --json --active-only` 在 29.454 秒后返回两项 `running`，独立命令入口另外完成 6 次查询，两项任务并发 126 秒并确认回收。
+- 用候选归档在 Windows 和经严格 SSH 连接的 Linux 容器中各运行两个真实 Shell。四项任务重叠 121.246 秒。Windows 使用完整 CLI 查询 7 次，Linux 使用完整 CLI 读回两项 `running`，另通过独立命令入口查询 6 次。两边的查询各自读到本地环境中的两个任务。两边均确认先停止一项时另一项继续运行，最后原生 PID 均已回收，活跃列表归零。
 - 使用 `AgentScheduleStore.scheduleWakeup` 创建独立测试任务，让到期时间早于计划执行时间。配置状态栏命令从 stdin 读取上下文的 `task.schedule_ends_at`。分别运行 `cc statusline preview --json`、`cc tasks --json` 和 `cc agenda run`。状态栏在到期前读到日期，调度进程随后持久化 `expired`，并从 `--active-only` 结果移除任务，清除状态栏预览的日期和停止路径。[Windows 命令输出截图](../implementation/evidence/task-lifecycle-20261123/windows-schedule-expiry.png) · [状态栏实现](../../../../packages/cli/src/lib/status-line.js)
 - Windows 的两个实际 MCPClient 通过 HTTP 连接 Linux Docker 测试服务。第一个客户端发起关闭后释放第一个持有者，再保持最后一个持有者五分钟。两个会话每五秒各调用一次工具，其间均无提前断开。释放第一个客户端的最后一个持有者后，第二个客户端仍可调用。最终两个会话分别完成 61 和 62 次调用，服务端各收到一次 `DELETE`，无拒绝请求。[子代理持有回归入口](../../../../packages/cli/__tests__/integration/subagent-mcp-late-connection.test.js)
 - 使用从安装归档部署的 CLI `0.166.162` 在 Windows ConPTY 中复验了默认状态栏。打开 REPL 后显示 `schedule ends` 和实际截止时间。到期后运行 `cc agenda run`，重启 REPL 时该提示消失。`cc tasks --json` 显示 `pending` 转为 `expired`，`stopPath` 清空，任务从 `--active-only` 移除，全程模型调用为 0。截图摘录了交互输出与独立进程读回的任务记录。Windows 交互审批回归也已通过。[Windows ConPTY 输出摘录](../implementation/evidence/task-lifecycle-20261123/windows-schedule-terminal.png)
@@ -274,6 +275,7 @@ Claude 2.1.330 让子代理的模型回退（fallback）**传导**给它派生�
 - 流式 headless 逐会话创建 `PlanModeManager`。批准时把档位、工具白名单和已批准事项摘要写入会话日志。单次 headless 续跑采用同一执行锁。新进程回归验证了档位恢复和事项结算，并验证显式档位冲突、快照篡改和快照丢失会拒绝启动。
 - `cc status --json --runner-state <file>` 可读取执行位置 Runner 的接单、注册和首个会话租约获准时间及三段耗时。接单时间由调用方提供。已授权的 post-session hook 走 FIFO 并发队列，前一项失败后会释放槽位。实际远程目标进程启动时间和 provisioning 钩子仍需远程宿主提供证据。
 - 用三个真实 Linux Docker 子进程验证了授权后的 post-session hook 队列。Runner 在排空三条租约后进入 `parked`，一个钩子运行、两个等待。每个容器都在临时文件系统中写入并读回自己的回执。首个钩子按测试预设以 7 退出，后两个按入队顺序执行并以 0 退出。重放已消费的授权会被拒绝，独立 CLI 进程从 Runner 状态重读了三段启动耗时。该验证使用本机 Docker，远程部署仍需单独验收。[Runner 实现](../../../../packages/cli/src/lib/execution-location-runner-lifecycle.js)
+- Windows Runner 通过严格 SSH 连接独立的 Linux 容器目标，先验证固定主机密钥、Linux 进程 PID 和钩子文件摘要，再记录注册时间。错误主机密钥被拒绝。独立 CLI 读回接单至注册 1.973 秒、接单至首租约 2.083 秒、注册至首租约 0.110 秒。三条租约排空后，SSH 钩子按容量 1 排队，退出码为 `7, 0, 0`。每份回执从另一条 SSH 连接读回，已消费授权的重放被拒绝。该夹具覆盖真实 SSH 目标，生产远程供应环境仍待验收。[Runner 实现](../../../../packages/cli/src/lib/execution-location-runner-lifecycle.js)
 - 使用候选 `bf05fdb4f8` 的 `cc agent --provider ollama --fallback-model qwen2:7b` 连接真实的本机 Ollama。首选的不存在模型返回 HTTP 404，备用模型返回 HTTP 200 并生成 `spawn_sub_agent` 工具调用。子代理直接用 `qwen2:7b` 完成一次真实推理，随后父任务继续完成，CLI 以 0 退出。回环代理只放行两个指定模型和一个委派工具，推理使用 2,048 token 上下文。无工具对照也成功完成模型回退。此处覆盖本机 Ollama 链路，内置压缩和外部供应商各有独立验收范围。
 - 用候选 `bf05fdb4f8` 复验 Ollama 回退后的自动压缩。独立配置启用 `aggressive` 阈值，声明规划窗口为 4,096 token。首选模型返回 HTTP 404，`qwen2:7b` 返回真实只读工具调用。运行时跟踪确认压缩使用回退模型，估算上下文为 7,710 token，触发阈值为 1,638。常规 CLI 复验收到 `strategy=canonical` 和 `status=committed`，估算节省 7,535 token，最终退出 0。本次自动压缩通过本地规则完成。另用显式会话验证了严格计量负向路径，首选模型的 404 直接返回给调用方，CLI 退出 5。
 - 单独调用内置语义压缩组件，将真实 Ollama 回退结果中的模型和端点传给摘要请求。该请求使用相同的 `qwen2:7b`，工具目录为空，Ollama 返回 HTTP 200。普通 JSON 模式返回了不合规的 `objective`，组件保留用量并降级为 `extractive-fallback`。回环夹具用 Ollama 的 JSON Schema 输出重跑后，组件接纳 `llm-structured`，读回 213 个输入 token 和 223 个输出 token。该次验证直接调用压缩组件，JSON Schema 由测试代理传递。[语义压缩组件](../../../../packages/cli/src/harness/provider-backed-compaction.js) · [Ollama 结构化输出](https://docs.ollama.com/capabilities/structured-outputs)
@@ -383,7 +385,12 @@ Windows 本地进程级回归 9 项、任务与 MCP 回归 79 项、流式协议
 | Open VSX              | `0.37.195`  | [公开扩展与 VSIX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide/0.37.195)              | `ide-vscode-v0.37.195`   |
 | JetBrains Marketplace | `0.4.209`   | [公开 ZIP](https://plugins.jetbrains.com/plugin/download?rel=true&updateId=1225644)，推荐 CLI `0.166.159` | `ide-jetbrains-v0.4.209` |
 
-继续实施后的改动仍需在新提交上通过相应发布矩阵。Codex 冷首次扫描继续使用 `recency_at + useStateDbOnly`，上游修复验证后再解除 HOLD。
+继续实施后的改动仍需在新提交上通过相应发布矩阵。Codex 冷首次扫描继续使用 `recency_at + useStateDbOnly`，HOLD 保持。
+
+### Codex 0.171.0 冷首次扫描续验
+
+- 使用官方 npm `0.171.0` 二进制在 Windows 和 Linux 各生成协议 Schema，并据此验证请求和响应。两个时间点不同的合成 rollout 在两端各六个未索引目录均于首次扫描完整分页，`limit: 1` 时首屏游标可继续读取第二屏。[Codex 0.171.0 发布](https://github.com/openai/codex/releases/tag/rust-v0.171.0) · [上游 rollout 测试夹具](https://github.com/openai/codex/blob/rust-v0.171.0/codex-rs/app-server/tests/common/rollout.rs)
+- 用仓库历史探针生成两条真实会话，模型响应来自专用回环夹具。Windows 的独立升序和降序冷目录首次均完整翻了两页，方向顺序互反。Linux 的三个独立复验也都能完整翻两页，但两个方向返回同一顺序，`cold-direction-order` 检查失败。随后用完全相同的文件时间和会话时间重测，两端各六次均能翻全两页，升序和降序均按同一顺序返回。[仓库历史探针](../../../../packages/cli/scripts/codex-app-server-history-probe.mjs)
 
 ## 不建议直接照搬的部分
 
