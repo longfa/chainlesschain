@@ -281,6 +281,7 @@ Claude 2.1.330 让子代理的模型回退（fallback）**传导**给它派生�
 
 - 文档站已补充任务投影与停止事件、headless 写盘失败和状态栏阈值。另补充插件与 MCP 安装回执、Runner 三段耗时、VS Code 分叉与工作流对照命令。[Agent](../../../../docs-site/docs/chainlesschain/cli-agent.md#任务状态与停止回执) · [插件](../../../../docs-site/docs/chainlesschain/cli-plugin.md#安装命令回执) · [MCP](../../../../docs-site/docs/chainlesschain/cli-mcp.md#add) · [Runner](../../../../docs-site/docs/chainlesschain/cli-status.md#执行位置-runner) · [IDE](../../../../docs-site/docs/chainlesschain/ide-plugin.md#从历史回复分叉并查看工作流)
 - 已通过 CLI 命令清单和公开 IDE 能力清单校验。文档站结构检查覆盖 352 个文件。VitePress 本地构建生成 707 个 HTML 页面，其中五份修改后的命令参考均已核对渲染结果。
+- 本轮更新 `agenda` 和 `loop` 参考页后，文档站结构检查和 VitePress 构建通过。已核对两个页面渲染的截止时间示例、JSON 字段和 `loop_wait` 事件。[Agenda](../../../../docs-site/docs/chainlesschain/cli-agenda.md) · [Loop](../../../../docs-site/docs/chainlesschain/cli-loop.md)
 - 公开 IDE 能力清单增加任务投影、状态栏上下文、安装命令回执、headless 持久化错误、Runner 启动时间和会话分叉的字段映射。校验器核对命令注册与指南路径，`cc tasks` 直接注册的命令入口也纳入核对。[能力清单](../../../cli/PUBLIC_IDE_CAPABILITY_MANIFEST.generated.json)
 - `cc skill add --json` 已验证项目创建、全局创建、重复名称和无项目四条路径。成功回执返回技能位置，失败回执返回 `error.message` 和退出码 1。两者共用 `installCommand`，均未启动子进程。技能与插件回执的 13 项进程测试和 6 项能力清单测试通过。新增技能参考和状态栏字段也已在 707 页文档站构建中验证。
 
@@ -362,9 +363,23 @@ Windows 本地进程级回归 9 项、任务与 MCP 回归 79 项、流式协议
 
 ### CLI 0.166.162 与配套 IDE 的发布候选
 
+- 当前候选提交 `8edf2ce503360edf7cdbaf41464ffef4f0534a2f` 包含三个调度入口的截止时间与下次运行字段。CLI、Open VSX 和 JetBrains 版本分别为 `0.166.162`、`0.37.197` 和 `0.4.212`。两款插件推荐 CLI `0.166.162`。[候选源码](https://github.com/longfa/chainlesschain/commit/8edf2ce503360edf7cdbaf41464ffef4f0534a2f)
+
+| 当前候选发布验证                         | 实际状态 | 证据与剩余条件                                                                                                                                                                                                                 |
+| ---------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| CLI CI 与 CLI Strict Sandbox             | 已启动   | 等待候选提交的 Linux、Windows、macOS 完整矩阵。[CLI CI](https://github.com/longfa/chainlesschain/actions/runs/45223310954) · [严格沙箱](https://github.com/longfa/chainlesschain/actions/runs/45223310719)                     |
+| CLI 原生构建                             | 已启动   | 等待三平台六个原生目标。[原生验证](https://github.com/longfa/chainlesschain/actions/runs/45223395747)                                                                                                                          |
+| CLI 后台会话交互                         | 已启动   | 跟踪三平台的实际 worker 断开、重连回归。[后台会话测试](https://github.com/longfa/chainlesschain/actions/runs/45223395553)                                                                                                      |
+| macOS MCP 启动器                         | 排队     | 上一候选的启动器作业已取消，新候选 x64 和 ARM64 任务已进入队列。[启动器验证](https://github.com/longfa/chainlesschain/actions/runs/45223310564)                                                                                |
+| IDE 宿主与 ARM64                         | 已启动   | Windows、Linux、macOS 的 VS Code 和 JetBrains 宿主矩阵等待完成。[IDE 扩展](https://github.com/longfa/chainlesschain/actions/runs/45223310438) · [IDE ARM64](https://github.com/longfa/chainlesschain/actions/runs/45223395456) |
+| CLI `0.166.162`                          | 待发布   | 待候选门禁全部通过后由 GitHub Actions OIDC 发布并验证公网归档。                                                                                                                                                                |
+| Open VSX `0.37.197`、JetBrains `0.4.212` | 待发布   | 待 IDE 门禁和 CLI 公网归档验证。                                                                                                                                                                                               |
+
+#### 补齐调度字段前的发布验证
+
 - 补齐调度字段前的候选 `bf05fdb4f827926db991d5baf1867ca44596e6aa` 修复了后台 Shell 心跳，包含 `89e7bc37cd` 补齐的技能回执和公开能力清单。CLI、Open VSX 和 JetBrains 版本分别为 `0.166.162`、`0.37.197` 和 `0.4.212`。两款插件的推荐 CLI 都是 `0.166.162`。三个候选版本尚未上架。[候选源码](https://github.com/longfa/chainlesschain/commit/bf05fdb4f827926db991d5baf1867ca44596e6aa)
 
-新版调度实现进入发布候选后，须按该源代码提交重新通过发布矩阵。下表保留补齐调度字段前的候选证据。
+下表记录补齐调度字段前的候选证据。
 
 | 发布相关项目                             | 实际状态                | 证据与剩余条件                                                                                                                                                                                                                                                                                                                                                  |
 | ---------------------------------------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

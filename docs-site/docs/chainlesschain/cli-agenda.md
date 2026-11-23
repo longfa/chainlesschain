@@ -83,6 +83,8 @@ cc agenda list
 cc agenda list --json
 ```
 
+CLI `0.166.162` 候选在每条 JSON 记录中补充三个字段。`endsAt` 是 ISO 格式的截止时间，`expiresAction` 为 `retire` 时表示到期后停止派发，`nextRunAt` 是下次可执行时间。到期后或下次触发达到截止时，`nextRunAt` 为 `null`。原有 `expiresAt`、`dueAt`、`nextAt` 继续提供原始时间。
+
 ### `cc agenda run`
 
 触发全部到期条目（由常驻触发器周期性调用）。
