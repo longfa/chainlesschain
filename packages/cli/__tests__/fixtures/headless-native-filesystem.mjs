@@ -5,18 +5,28 @@ import {
   closeSync,
   existsSync,
   openSync,
+  readFileSync,
   unlinkSync,
   writeFileSync,
 } from "node:fs";
 import { createServer } from "node:http";
 import { join } from "node:path";
+import { parseArgs } from "node:util";
 import { CLI_BIN, testHome } from "../e2e/_helpers/cli-e2e.js";
 
-assert.equal(process.platform, "linux", "Linux mount fixtures are required");
-const mounts = {
-  ENOSPC: process.env.CC_CLI_RELIABILITY_DISK_ENOSPC_HOME,
-  EROFS: process.env.CC_CLI_RELIABILITY_DISK_EROFS_HOME,
-};
+const { values } = parseArgs({
+  options: { "stdout-only": { type: "boolean" } },
+});
+const stdoutOnly = values["stdout-only"];
+if (!stdoutOnly) {
+  assert.equal(process.platform, "linux", "Linux mount fixtures are required");
+}
+const mounts = stdoutOnly
+  ? {}
+  : {
+      ENOSPC: process.env.CC_CLI_RELIABILITY_DISK_ENOSPC_HOME,
+      EROFS: process.env.CC_CLI_RELIABILITY_DISK_EROFS_HOME,
+    };
 for (const [fsCode, mount] of Object.entries(mounts)) {
   assert.ok(mount, `Configure the ${fsCode} session mount before running`);
   const marker = join(
@@ -34,19 +44,25 @@ for (const [fsCode, mount] of Object.entries(mounts)) {
 }
 
 const t = testHome("headless-native-filesystem");
+const reply = "Native delivery fixture";
 let calls = 0;
-const server = createServer((request, response) => {
-  request.resume();
+const server = createServer(async (request, response) => {
   if (request.url !== "/api/chat") return response.writeHead(404).end();
+  const chunks = [];
+  for await (const chunk of request) chunks.push(chunk);
+  const { stream } = JSON.parse(Buffer.concat(chunks).toString("utf8"));
   calls += 1;
-  response.setHeader("Content-Type", "application/json");
+  response.setHeader(
+    "Content-Type",
+    stream ? "application/x-ndjson" : "application/json",
+  );
   response.end(
     JSON.stringify({
-      message: { role: "assistant", content: "Linux delivery fixture" },
+      message: { role: "assistant", content: reply },
       done: true,
       prompt_eval_count: 4,
       eval_count: 2,
-    }),
+    }) + (stream ? "\n" : ""),
   );
 });
 
@@ -141,27 +157,55 @@ try {
       );
     }
   }
-  const control = await run("json");
-  assert.equal(control.code, 0, JSON.stringify(control));
-  assert.equal(JSON.parse(control.stdout).result, "Linux delivery fixture");
-  const full = openSync("/dev/full", "w");
+  const destination = stdoutOnly
+    ? t.writeScript("unchanged stdout file")
+    : "/dev/full";
+  const stdoutFd = openSync(destination, stdoutOnly ? "r" : "w");
   try {
     for (const format of ["json", "stream-json"]) {
+      const control = await run(format);
+      assert.equal(control.code, 0, JSON.stringify(control));
+      const records = control.stdout
+        .trim()
+        .split(/\r?\n/u)
+        .map((line) => JSON.parse(line));
+      if (format === "json") assert.equal(records.length, 1);
+      const results = records.filter((record) => record.type === "result");
+      assert.equal(results.length, 1, JSON.stringify(records));
+      assert.equal(results[0].result, reply);
+      assert.equal(results[0].is_error, false);
+
       const before = calls;
-      const result = await run(format, { stdoutFd: full });
+      const result = await run(format, { stdoutFd });
       assert.equal(result.code, 1, JSON.stringify(result));
-      assert.match(result.stderr, /ENOSPC|no space left|output stream/i);
+      assert.equal(result.signal, null);
+      const expectedError = stdoutOnly
+        ? /EBADF|bad file descriptor/i
+        : /ENOSPC|no space left|output stream/i;
+      const diagnostic = result.stderr
+        .split(/\r?\n/u)
+        .find((line) => expectedError.test(line));
+      assert.ok(diagnostic, JSON.stringify(result));
+      if (stdoutOnly)
+        assert.equal(
+          readFileSync(destination, "utf8"),
+          "unchanged stdout file",
+        );
       console.log(
         JSON.stringify({
-          case: "stdout-/dev/full",
+          case: stdoutOnly ? "stdout-read-only-descriptor" : "stdout-/dev/full",
+          platform: process.platform,
+          arch: process.arch,
           format,
+          controlExitCode: control.code,
           exitCode: result.code,
+          diagnostic,
           modelCalls: calls - before,
         }),
       );
     }
   } finally {
-    closeSync(full);
+    closeSync(stdoutFd);
   }
 } finally {
   server.closeAllConnections();

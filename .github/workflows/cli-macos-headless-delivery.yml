@@ -1,0 +1,66 @@
+name: CLI macOS Headless Delivery
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit_sha:
+        description: Exact CLI candidate commit
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  headless-stdout:
+    name: Headless JSON and NDJSON delivery (macOS Intel)
+    runs-on: macos-15-intel
+    timeout-minutes: 15
+    env:
+      CLI_SHA: ${{ inputs.commit_sha }}
+      npm_config_onnxruntime_node_install_cuda: skip
+    steps:
+      - name: Validate candidate SHA
+        shell: bash
+        run: '[[ "$CLI_SHA" =~ ^[0-9a-f]{40}$ ]]'
+
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.commit_sha }}
+          persist-credentials: false
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22.12.0"
+
+      - name: Verify exact CLI checkout
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$CLI_SHA"
+
+      - name: Install CLI dependencies
+        run: npm ci --workspace packages/cli --include-workspace-root=false --legacy-peer-deps --no-audit --no-fund
+
+      - name: Verify normal stdout and a read-only redirected descriptor
+        shell: bash
+        run: |
+          test "$(node -p 'process.platform')" = darwin
+          test "$(node -p 'process.arch')" = x64
+          git fetch --no-tags --depth=1 origin "$GITHUB_SHA"
+          fixture="packages/cli/__tests__/fixtures/headless-native-filesystem"
+          temporary="$fixture-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT.mjs"
+          test ! -e "$temporary"
+          trap 'rm -f -- "$temporary"' EXIT
+          # Use the newer test fixture with the exact candidate CLI and helpers.
+          git show "$GITHUB_SHA:$fixture.mjs" > "$temporary"
+          report="$RUNNER_TEMP/headless-stdout-evidence"
+          mkdir -p "$report"
+          node "$temporary" --stdout-only | tee "$report/stdout-delivery.ndjson"
+          printf '%s\n' "$CLI_SHA" > "$report/cli-commit.txt"
+          printf '%s\n' "$GITHUB_SHA" > "$report/fixture-commit.txt"
+
+      - name: Upload native delivery evidence
+        uses: actions/upload-artifact@v6
+        with:
+          name: cli-headless-stdout-macos-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/headless-stdout-evidence/
+          if-no-files-found: error
