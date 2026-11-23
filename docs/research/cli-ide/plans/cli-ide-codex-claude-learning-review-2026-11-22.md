@@ -238,7 +238,7 @@ Claude 2.1.330 让子代理的模型回退（fallback）**传导**给它派生�
 | MCP 共享生命周期      | 活跃子代理持有同一 MCPClient 的 transport。宿主请求关闭时等待最后一个持有者释放。MCPClient 回归验证第一次释放后连接仍在，最后一次释放仅执行一次断开。                                                                                         | 本机有状态 HTTP MCP 已验证两个同时运行的子代理释放顺序。跨客户端共享与外部宿主长时间运行待验收。                                        |
 | 计划任务与状态栏      | 到期时统一 `state` 和兼容别名，清理等待与停止提示。Windows REPL 在等待审批时输出 `task waiting` 和 `approvals 1`，占用低于设置阈值时隐藏上下文读数。                                                                                          | 调度宿主截图待补。                                                                                                                      |
 | 权限档位与旧审批      | 流式和交互 REPL 批准均写入会话日志。已验证 `cc daemon resume` 与新 CLI REPL 进程恢复批准档位，并拒绝同工具改参数或重放已结算事项。                                                                                                            | 其他平台的交互复测待补。                                                                                                                |
-| Headless 交付失败     | Windows 真实只读会话文件通过。Linux 满盘与只读挂载下，单次 JSON 和多轮 NDJSON 均退出 1，保留 `before-model` 回执。stdout 重定向到 `/dev/full` 时，两种模式都退出 1。                                                                          | `EPERM` 与 `EACCES` 已覆盖注入测试。macOS 及 Windows 的 stdout 重定向仍待复验。                                                         |
+| Headless 交付失败     | Windows 真实只读会话文件通过。Linux 满盘与只读挂载下，单次 JSON 和多轮 NDJSON 均退出 1，保留 `before-model` 回执。Linux `/dev/full` 与 Windows 只读文件句柄均实测 stdout 写入失败，两种模式都退出 1。                                         | `EPERM` 与 `EACCES` 已覆盖注入测试。macOS 的 stdout 重定向仍待复验。                                                                    |
 | VS Code 分叉与地图    | `cc session fork <id> --json` 支持按已验证的历史回复分叉。Windows VS Code 1.145.2 安装当前源码打包的 VSIX 后，两个聊天标签分别完成任务。已核对历史边界、两个独立的文件写入账本，以及工作流地图与 `cc tasks --json --active-only` 的一致性。   | Linux 和 macOS 宿主复测待补。                                                                                                           |
 | MCP Schema 与 LSP     | 首次发现、发现缓存及 `list_changed` 刷新共用 schema 准入。非法替换保留已接纳的工具目录，诊断含工具名和字段路径，回归验证大段描述未进入诊断。                                                                                                  | 真实 TypeScript 语言服务器已验证冷启动并发查询。已验证首次接入的非法 Schema 在准入前后不改变会话文件，模型目录不含被拒绝工具。          |
 | Runner 指标与模型传播 | `cc status --runner-state` 可读 Runner 的首会话租约时间和三段耗时。模型回退结果接入子代理、内置自动压缩和会话日志。                                                                                                                           | 外部 provisioning、真实远程目标进程启动、真实供应商链路的端到端证据待补。                                                               |
@@ -297,7 +297,7 @@ Windows 本地进程级回归 9 项、任务与 MCP 回归 79 项、流式协议
 
 - Windows 上用 VS Code 1.145.2 安装当前源码打包的扩展 `0.37.196`。从历史回复分叉后，源会话保持打开，新标签从选定的回复继续。两边各写了一个文件，测试等到界面读回已保存的回复后，分别核对了 canonical 历史与 `file-write` 账本。模型响应由本机测试服务提供。[原生宿主测试入口](../../../../packages/vscode-extension/test/extension-host/run-session-fork.cjs)
 - Workflow Map 显示了同一个正在运行的 Cowork 工作流。测试把名称、状态、任务 ID 和父任务 ID 与独立执行的 `cc tasks --json --active-only` 逐项核对。
-- 从仓库根目录运行 `npm --workspace chainlesschain-ide run package -- --out <vsix>` 打包，再运行 `node packages/vscode-extension/test/extension-host/run-session-fork.cjs --vscode-executable <绝对路径> --vscode-version 1.145.2 --vsix <vsix>` 复现。
+- 从仓库根目录运行 `npm --prefix packages/vscode-extension run package -- --out <VSIX 绝对路径>` 打包，再运行 `node packages/vscode-extension/test/extension-host/run-session-fork.cjs --vscode-executable <绝对路径> --vscode-version 1.145.2 --vsix <VSIX 绝对路径>` 复现。
 - 扩展 Node 套件通过 359 项。
 
 ### 2026-11-23 交互审批与安装回执验收
@@ -323,7 +323,18 @@ Windows 本地进程级回归 9 项、任务与 MCP 回归 79 项、流式协议
 - JetBrains Marketplace 已批准并公开 `0.4.211`（更新 ID `1226836`）。公开 ZIP 的 SHA-256 为 `717a0ef85b9572ffec7e757205cfaa93c0b9cd805e98f93a276f1ab402986a98`。与流水线 ZIP 逐项核对，两项归档内容一致，内置插件描述符推荐 CLI `0.166.161`。[JetBrains 公开 ZIP](https://plugins.jetbrains.com/plugin/download?rel=true&updateId=1226836)
 - 移动与桌面候选 `v5.0.3.147` 等待 Android 内嵌 CLI `0.166.161`。当前 Android 固定归档对应 `0.166.145`，上游归档下载返回 404。[Android 当前归档](https://github.com/chainlesschain/chainlesschain/releases/tag/internal-binaries-android-v20261110)
 
-### 发布验证进度
+### CLI 0.166.162 与配套 IDE 的发布候选
+
+- 候选 `5321e5338e9962f0c0cbe7b31b31888228551498` 将 CLI、Open VSX 和 JetBrains 分别定为 `0.166.162`、`0.37.197` 和 `0.4.212`。两款插件的推荐 CLI 都是 `0.166.162`。核对公开渠道后确认三个候选版本尚未上架。[候选源码](https://github.com/longfa/chainlesschain/commit/5321e5338e9962f0c0cbe7b31b31888228551498)
+- 13 个上游 npm 包沿用已发布版本。已按 npm 的完整性字段下载并校验所有归档，CLI 直接依赖与仓库固定版本相同。OIDC 发布工作流还会比较候选和公开子包归档，并核验签名来源。
+- Windows VS Code 1.145.2 安装 `0.37.197` 候选 VSIX 后复跑了两条会话分叉、各自的文件写入账本及运行中工作流地图对照。候选命令清单、帮助索引、补全、IDE 能力清单和 Marketplace 元数据检查已通过。复审 `agent-core.js` 相对上一发布标签的差异后更新了模型出站审查摘要，88 个源码文件和脚本通过预检。
+- Linux x64 的 12 项 CLI 进程回归通过，覆盖交互审批恢复、后台进程回收、插件安装回执与无人应答拒绝。Windows 通过 `openSync(path, "r")` 将只读文件句柄传给子进程 stdout。正常输出对照成功，单次 JSON 与流式 NDJSON 写入均报告 `EBADF` 并退出 1。
+- Windows 本地构建并打包 CLI 候选。隔离目录安装该归档后，`cc --version` 输出 `0.166.162`，Web Panel 构建资源随包交付，10 个 CLI 直接依赖的内部 npm 包均解析到公开 npm 上的固定版本。候选 VS Code 扩展的 359 项 Node 测试全部通过。
+- 上一提交的 IDE 预检发现 JetBrains 兼容性章节中的安装命令仍引用上一 CLI 版本。修正示例后，JetBrains 发布元数据、VS Code Marketplace 元数据、公开能力清单、路线图 fixture 校验和 14 项 CLI 依赖门禁测试均在本地通过。[上一轮 IDE 预检](https://github.com/longfa/chainlesschain/actions/runs/45181512001/job/137716210861)
+- 五组验证已按修正后的同一候选 SHA 发起。等待全部适用门禁成功后按顺序发布 CLI，核对公开 npm 归档和来源，再发布并核对两款 IDE 插件。[CLI CI](https://github.com/longfa/chainlesschain/actions/runs/45182636803) · [严格沙箱](https://github.com/longfa/chainlesschain/actions/runs/45182636725) · [原生构建](https://github.com/longfa/chainlesschain/actions/runs/45182636734) · [IDE Extensions](https://github.com/longfa/chainlesschain/actions/runs/45182636709) · [IDE ARM64](https://github.com/longfa/chainlesschain/actions/runs/45182637445)
+- 用运行时源码提交 `73286530a5507cf311e165d132399f85f6238d0b` 发起执行位置验证，跟踪实际目标进程和生命周期结果。结果对应实施源码的复验。[执行位置矩阵](https://github.com/longfa/chainlesschain/actions/runs/45179047694)
+
+### CLI 0.166.160 发布验证记录
 
 已发布 CLI 和 Open VSX 的准确源码提交为 `1dd4f2c6cc7128995312be08738ae5d6d692ad25`。
 
