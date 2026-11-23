@@ -1330,17 +1330,16 @@ chainlesschain skill history code-review --limit 10
 chainlesschain skill add my-analyzer
 
 # 编辑技能定义（SKILL.md 格式，包含 YAML 元数据 + 提示词 + 工具声明）
-# 文件位于 .chainlesschain/skills/my-analyzer.md
+# 文件位于 .chainlesschain/skills/my-analyzer/SKILL.md
 
-# 验证技能定义格式是否正确
-chainlesschain skill validate .chainlesschain/skills/my-analyzer.md
-
-# 重新加载技能注册表（修改后立即生效）
-chainlesschain skill reload
+# 查看已识别的技能元数据
+chainlesschain skill info my-analyzer
 
 # 删除自定义技能
 chainlesschain skill remove my-analyzer
 ```
+
+脚本可运行 `cc skill add my-analyzer --json`。候选 CLI `0.166.162` 输出 `name`、`scope`、`targetDir` 及 `installCommand`。创建脚手架只写入本地文件，`installCommand.ran` 为 `false`。名称已存在或工作区缺少项目配置时，CLI 退出 1 并返回包含 `error.message` 的 JSON 回执。
 
 ### 技能层级浏览
 

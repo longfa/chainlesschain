@@ -827,7 +827,7 @@ cc tasks --json --session <session-id>
 
 需要停止时，按任务的 `stopPath` 使用对应入口。收到 `stop_requested` 表示已提出停止请求。通过 `stop_confirmed` 确认回收，遇到 `stop_timeout` 或 `orphanRisk: true` 时，通过 `cc doctor --json` 查看可用诊断。
 
-交互 REPL 的状态栏可显示等待审批和待审数量。可通过项目 `.claude/settings.json` 中的 `statusLine.contextUsageThreshold` 设置上下文占用显示阈值。
+交互 REPL 的状态栏可显示等待审批和待审数量。自定义状态栏命令接收 `task.state`、`task.approvals_pending` 和 `task.mcp_errors` 等事件上下文。可通过项目 `.claude/settings.json` 中的 `statusLine.contextUsageThreshold` 设置上下文占用显示阈值。
 
 ## 使用示例
 

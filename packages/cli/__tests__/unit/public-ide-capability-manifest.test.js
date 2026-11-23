@@ -38,6 +38,17 @@ describe("public IDE capability manifest", () => {
     ).toBe(true);
   });
 
+  it("checks the CLI automation command roots and guides", () => {
+    const drifted = JSON.parse(JSON.stringify(PUBLIC_IDE_CAPABILITY_MANIFEST));
+    const taskProjection = drifted.surfaces.cli.automation.taskProjection;
+    taskProjection.commands = ["unregistered-task-command"];
+    taskProjection.guides = ["docs-site/docs/missing-task-guide.md"];
+    expect(validatePublicIdeSurfaces({ manifest: drifted })).toEqual([
+      "CLI automation command is missing: unregistered-task-command",
+      "Missing declared source: docs-site/docs/missing-task-guide.md",
+    ]);
+  });
+
   it("pins the checked-in JSON and generated README sections byte-for-byte", () => {
     expect(validatePublicIdeGeneratedArtifacts()).toEqual([]);
   });

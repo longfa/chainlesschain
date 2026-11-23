@@ -287,11 +287,35 @@ export function validatePublicIdeSurfaces({
   const cliCommands = (commandManifest.commands || []).map(
     (entry) => entry.name,
   );
+  const cliAutomationCommands = new Set(cliCommands);
+  for (const [name, route] of Object.entries(cli.directCommands || {})) {
+    const { entrypoint, source, registrar } = route;
+    requireFile(entrypoint);
+    requireFile(source);
+    if (
+      existsSync(join(repoRoot, entrypoint)) &&
+      existsSync(join(repoRoot, source)) &&
+      read(repoRoot, entrypoint).includes(`${registrar}(program)`) &&
+      read(repoRoot, source).includes(`.command(${JSON.stringify(name)})`)
+    ) {
+      cliAutomationCommands.add(name);
+    } else {
+      fail(`Direct CLI command registration is missing: ${name}`);
+    }
+  }
   for (const command of cli.requiredCommands) {
     if (!cliCommands.includes(command))
       fail(`CLI command manifest is missing: ${command}`);
     if (!helpIndex.commands?.[command])
       fail(`CLI help index is missing: ${command}`);
+  }
+  for (const { commands, guides } of Object.values(cli.automation || {})) {
+    for (const command of commands) {
+      const [name] = command.split(" ");
+      if (!cliAutomationCommands.has(name))
+        fail(`CLI automation command is missing: ${command}`);
+    }
+    for (const guide of guides) requireFile(guide);
   }
   if (!String(helpIndex.commands?.ide || "").includes("doctor")) {
     fail("CLI `ide` help no longer advertises the `ide doctor` subcommand");

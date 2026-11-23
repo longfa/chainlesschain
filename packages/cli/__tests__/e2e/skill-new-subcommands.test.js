@@ -118,5 +118,39 @@ describe("E2E: skill new subcommands", () => {
         run("skill add dupe-skill", { cwd: tempDir });
       }).toThrow();
     });
+
+    it("reports local scaffold creation and duplicate failure as JSON", () => {
+      const args = "skill add receipt-skill --json";
+      const options = { cwd: tempDir };
+      const receipt = {
+        ran: false,
+        exitCode: null,
+        timedOut: false,
+        signaled: false,
+        printedToStderr: false,
+        stderrDigest:
+          "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      };
+      const created = JSON.parse(run(args, options));
+      expect(created).toMatchObject({
+        name: "receipt-skill",
+        scope: "project",
+        installCommand: receipt,
+      });
+      expect(existsSync(join(created.targetDir, "SKILL.md"))).toBe(true);
+      expect(existsSync(join(created.targetDir, "handler.js"))).toBe(true);
+
+      let failure;
+      try {
+        run(args, options);
+      } catch (error) {
+        failure = error;
+      }
+      expect(failure?.status).toBe(1);
+      expect(JSON.parse(failure.stdout)).toMatchObject({
+        error: { message: expect.stringContaining("Skill already exists") },
+        installCommand: receipt,
+      });
+    });
   });
 });

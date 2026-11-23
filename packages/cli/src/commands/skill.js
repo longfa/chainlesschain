@@ -49,6 +49,7 @@ import {
 import { raceWithAbort, throwIfAborted } from "../lib/abort-utils.js";
 import { getElectronUserDataDir } from "../lib/paths.js";
 import { findProjectRoot } from "../lib/project-detector.js";
+import { normalizeInstallCommandResult } from "../lib/install-command-policy.js";
 import { loadConfig } from "../lib/config-manager.js";
 import { applyConfigLlmDefaults } from "../lib/llm-config-defaults.js";
 import { BUILT_IN_PROVIDERS } from "../lib/llm-providers.js";
@@ -714,7 +715,21 @@ export function registerSkillCommand(program, dependencies = {}) {
       "--global",
       "Create as a global (managed) skill instead of project-level",
     )
+    .option("--json", "Output the scaffold and install command receipt as JSON")
     .action(async (name, options) => {
+      const fail = (message) => {
+        if (options.json) {
+          console.log(
+            JSON.stringify({
+              error: { message },
+              installCommand: normalizeInstallCommandResult(),
+            }),
+          );
+        } else {
+          logger.error(message);
+        }
+        process.exitCode = 1;
+      };
       let targetDir;
 
       if (options.global) {
@@ -723,23 +738,34 @@ export function registerSkillCommand(program, dependencies = {}) {
       } else {
         const projectRoot = findProjectRoot();
         if (!projectRoot) {
-          logger.error(
+          fail(
             'Not inside a ChainlessChain project. Run "chainlesschain init" first, or use --global.',
           );
-          process.exit(1);
+          return;
         }
         targetDir = path.join(projectRoot, ".chainlesschain", "skills", name);
       }
 
       if (fs.existsSync(targetDir)) {
-        logger.error(`Skill already exists: ${targetDir}`);
-        process.exit(1);
+        fail(`Skill already exists: ${targetDir}`);
+        return;
       }
 
       try {
         createControlledSkillScaffold(name, targetDir);
 
         const scope = options.global ? "global" : "project";
+        if (options.json) {
+          console.log(
+            JSON.stringify({
+              name,
+              scope,
+              targetDir,
+              installCommand: normalizeInstallCommandResult(),
+            }),
+          );
+          return;
+        }
         logger.success(`Created ${scope} skill: ${chalk.cyan(name)}`);
         logger.log(`  ${chalk.gray(targetDir)}`);
         logger.log("");
@@ -755,8 +781,7 @@ export function registerSkillCommand(program, dependencies = {}) {
           `Edit these files, then run: ${chalk.cyan(`chainlesschain skill run ${name} "test input"`)}`,
         );
       } catch (err) {
-        logger.error(`Failed to create skill: ${err.message}`);
-        process.exit(1);
+        fail(`Failed to create skill: ${err.message}`);
       }
     });
 
