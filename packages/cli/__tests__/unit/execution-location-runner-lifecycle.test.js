@@ -95,7 +95,7 @@ describe("execution location runner lifecycle", () => {
     const cli = spawnSync(
       process.execPath,
       [
-        fileURLToPath(new URL("../../src/index.js", import.meta.url)),
+        fileURLToPath(new URL("../../bin/chainlesschain.js", import.meta.url)),
         "status",
         "--json",
         "--runner-state",
