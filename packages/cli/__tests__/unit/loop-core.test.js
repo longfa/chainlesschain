@@ -67,6 +67,26 @@ describe("runLoop stop conditions", () => {
     expect(sleep).toHaveBeenCalledTimes(2);
   });
 
+  it("does not dispatch at the deadline and reports the last eligible next run", async () => {
+    let clock = 1000;
+    const runIteration = vi.fn(async () => ({ exitCode: 0 }));
+    const onWait = vi.fn();
+    const sleep = vi.fn(async (ms) => {
+      clock += ms;
+    });
+    const result = await runLoop({
+      runIteration,
+      intervalMs: 30,
+      endsAt: 1060,
+      onWait,
+      sleep,
+      now: () => clock,
+    });
+    expect(result).toMatchObject({ iterations: 2, stoppedBy: "expired" });
+    expect(runIteration).toHaveBeenCalledTimes(2);
+    expect(onWait.mock.calls).toEqual([[1030], [null]]);
+  });
+
   it("stops on the first exit-0 when untilExitZero is set", async () => {
     const runIteration = vi
       .fn()
@@ -291,6 +311,21 @@ describe("makeSleep", () => {
   it("resolves immediately for a zero delay", async () => {
     const sleep = makeSleep();
     await expect(sleep(0)).resolves.toBeUndefined();
+  });
+
+  it("preserves a delay beyond Node's single-timer limit", async () => {
+    vi.useFakeTimers();
+    try {
+      const done = vi.fn();
+      const sleeping = makeSleep()(2_147_483_647 + 10).then(done);
+      await vi.advanceTimersByTimeAsync(2_147_483_647);
+      expect(done).not.toHaveBeenCalled();
+      await vi.advanceTimersByTimeAsync(10);
+      await sleeping;
+      expect(done).toHaveBeenCalledOnce();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("does not accumulate abort listeners across normally-completing sleeps", async () => {

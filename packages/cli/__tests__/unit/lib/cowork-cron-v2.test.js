@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import * as M from "../../../src/lib/cowork-cron.js";
 
 describe("Cowork Cron V2 Surface", () => {
@@ -100,6 +100,51 @@ describe("Cowork Cron V2 Surface", () => {
       const p = M.getCcronProfileV2("p1");
       p.metadata.x = 99;
       expect(M.getCcronProfileV2("p1").metadata.x).toBe(1);
+    });
+
+    it("predicts eligible runs and retires a profile at the deadline", () => {
+      const endsAt = "2026-10-01T12:02:00.000Z";
+      const clock = vi
+        .spyOn(Date, "now")
+        .mockReturnValue(Date.parse("2026-10-01T12:00:30Z"));
+      try {
+        expect(
+          M.registerCcronProfileV2({
+            id: "p1",
+            owner: "a",
+            expr: "* * * * *",
+            endsAt,
+          }),
+        ).toMatchObject({
+          endsAt,
+          expiresAction: "retire",
+          state: "pending",
+          nextRunAt: null,
+        });
+        expect(M.activateCcronProfileV2("p1").nextRunAt).toBe(
+          "2026-10-01T12:01:00.000Z",
+        );
+        M.createCcronTickV2({ id: "eligible", profileId: "p1" });
+        M.createCcronTickV2({ id: "in-flight", profileId: "p1" });
+        M.runningCcronTickV2("in-flight");
+        expect(() =>
+          M.createCcronTickV2({ id: "late", profileId: "p1", tickAt: endsAt }),
+        ).toThrow(/scheduled before/);
+
+        clock.mockReturnValue(Date.parse("2026-10-01T12:01:30Z"));
+        expect(M.getCcronProfileV2("p1").nextRunAt).toBeNull();
+        clock.mockReturnValue(Date.parse(endsAt));
+        expect(M.listCcronProfilesV2()[0]).toMatchObject({
+          state: "expired",
+          status: "archived",
+          nextRunAt: null,
+        });
+        expect(M.getCcronTickV2("eligible").status).toBe("cancelled");
+        expect(() => M.runningCcronTickV2("eligible")).toThrow();
+        expect(M.completeCcronTickV2("in-flight").status).toBe("completed");
+      } finally {
+        clock.mockRestore();
+      }
     });
   });
 

@@ -50,6 +50,7 @@ export function registerCcronCommand(program) {
     .requiredOption("--id <id>")
     .requiredOption("--owner <owner>")
     .option("--expr <expr>", "cron expression", "0 0 * * *")
+    .option("--ends-at <timestamp>", "Retire the profile at this timestamp")
     .action((o) =>
       console.log(JSON.stringify(registerCcronProfileV2(o), null, 2)),
     );

@@ -13,6 +13,7 @@
 
 /** Multipliers for the duration suffixes we accept. */
 const DURATION_UNITS = { ms: 1, s: 1000, m: 60000, h: 3600000 };
+const MAX_TIMER_DELAY_MS = 2_147_483_647;
 
 /**
  * Parse a human interval ("30s", "5m", "1.5h", "500ms") into milliseconds.
@@ -169,17 +170,22 @@ export function makeSleep(signal) {
         clearTimeout(t);
         resolve();
       };
-      t = setTimeout(() => {
-        // Normal completion: drop the abort listener so it can't accumulate on
-        // a shared signal across rounds. A long `cc loop` reuses one
-        // AbortController for the whole run, and `{once:true}` only removes the
-        // listener if it FIRES — a sleep that completes normally never aborts,
-        // so without this each round would leak a dangling listener (N rounds →
-        // N retained closures + a MaxListenersExceededWarning past 10).
-        signal?.removeEventListener("abort", onAbort);
-        resolve();
-      }, ms);
+      let remaining = ms;
+      const wait = () => {
+        const chunk = Math.min(remaining, MAX_TIMER_DELAY_MS);
+        t = setTimeout(() => {
+          remaining -= chunk;
+          if (remaining > 0) {
+            wait();
+            return;
+          }
+          // A normally completed round must release its abort listener.
+          signal?.removeEventListener("abort", onAbort);
+          resolve();
+        }, chunk);
+      };
       signal?.addEventListener("abort", onAbort, { once: true });
+      wait();
     });
 }
 
@@ -192,11 +198,14 @@ export function makeSleep(signal) {
  * @param {(n:number)=>Promise<{exitCode?:number, output?:string}>} opts.runIteration
  * @param {number}   opts.intervalMs       default delay between iterations (>= 0)
  * @param {number}  [opts.maxIterations]   stop after N rounds (>= 1)
+ * @param {number|null} [opts.endsAt]      epoch-ms deadline for dispatching rounds
  * @param {boolean} [opts.untilExitZero]   stop once a round exits with code 0
  * @param {RegExp}  [opts.untilRegex]      stop once a round's output matches
  * @param {(ms:number)=>Promise<void>} [opts.sleep]  injectable delay
  * @param {()=>boolean} [opts.shouldStop]  external stop probe (e.g. SIGINT)
  * @param {(n:number, res:object)=>void} [opts.onIteration] per-round hook
+ * @param {(nextRunAt:number|null)=>void} [opts.onWait] next eligible dispatch
+ * @param {()=>number} [opts.now]          injectable clock
  * @param {number}  [opts.startIndex]      iterations already done (resume)
  * @returns {Promise<{iterations:number, stoppedBy:string, results:object[]}>}
  *          `iterations` is cumulative (startIndex + rounds run this call);
@@ -206,11 +215,14 @@ export async function runLoop({
   runIteration,
   intervalMs,
   maxIterations,
+  endsAt = null,
   untilExitZero = false,
   untilRegex = null,
   sleep,
   shouldStop,
   onIteration,
+  onWait,
+  now = Date.now,
   startIndex = 0,
 }) {
   if (typeof runIteration !== "function") {
@@ -226,6 +238,9 @@ export async function runLoop({
   while (true) {
     if (shouldStop && shouldStop()) {
       return { iterations: i, stoppedBy: "signal", results };
+    }
+    if (endsAt != null && now() >= endsAt) {
+      return { iterations: i, stoppedBy: "expired", results };
     }
 
     i += 1;
@@ -261,6 +276,10 @@ export async function runLoop({
     const nextMs = Number.isFinite(res.nextDelayMs)
       ? res.nextDelayMs
       : intervalMs;
-    await delay(nextMs);
+    const waitingSince = now();
+    const nextRunAt = waitingSince + nextMs;
+    const wakeAt = endsAt == null ? nextRunAt : Math.min(nextRunAt, endsAt);
+    onWait?.(endsAt == null || nextRunAt < endsAt ? nextRunAt : null);
+    await delay(Math.max(0, wakeAt - waitingSince));
   }
 }

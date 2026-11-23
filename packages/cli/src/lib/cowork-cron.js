@@ -1752,10 +1752,58 @@ function _ccronCheckT(from, to) {
   if (!a || !a.has(to))
     throw new Error(`invalid ccron tick transition ${from} → ${to}`);
 }
-function _ccronCountActive(owner) {
+function expireCcronProfile(profile, now) {
+  if (
+    profile?.endsAt != null &&
+    Date.parse(profile.endsAt) <= now &&
+    !_ccronPTerminal.has(profile.status)
+  ) {
+    profile.status = CCRON_PROFILE_MATURITY_V2.ARCHIVED;
+    profile.updatedAt = now;
+    profile.archivedAt = now;
+    profile.expiredAt = profile.endsAt;
+    for (const tick of _ccronTsV2.values()) {
+      if (
+        tick.profileId === profile.id &&
+        tick.status === CCRON_TICK_LIFECYCLE_V2.QUEUED
+      ) {
+        cancelCcronTickV2(tick.id, "profile-expired", now);
+      }
+    }
+  }
+  return profile;
+}
+
+function snapshotCcronProfile(profile, now) {
+  let nextRunAt = null;
+  if (profile.status === CCRON_PROFILE_MATURITY_V2.ACTIVE) {
+    try {
+      const next = nextCoworkCronTime(profile.expr, now);
+      if (
+        next != null &&
+        (profile.endsAt == null || next < Date.parse(profile.endsAt))
+      ) {
+        nextRunAt = new Date(next).toISOString();
+      }
+    } catch {
+      // Legacy profiles can contain an expression that cannot predict a run.
+    }
+  }
+  return {
+    ...profile,
+    state: profile.expiredAt ? "expired" : profile.status,
+    expiresAction: profile.endsAt ? "retire" : null,
+    nextRunAt,
+    metadata: { ...profile.metadata },
+  };
+}
+
+function _ccronCountActive(owner, now) {
   let c = 0;
-  for (const p of _ccronPsV2.values())
+  for (const profile of _ccronPsV2.values()) {
+    const p = expireCcronProfile(profile, now);
     if (p.owner === owner && p.status === CCRON_PROFILE_MATURITY_V2.ACTIVE) c++;
+  }
   return c;
 }
 function _ccronCountPending(profileId) {
@@ -1801,10 +1849,20 @@ export function _resetStateCoworkCronV2() {
   _ccronIdleMs = 30 * 24 * 60 * 60 * 1000;
   _ccronStuckMs = 60 * 1000;
 }
-export function registerCcronProfileV2({ id, owner, expr, metadata } = {}) {
+export function registerCcronProfileV2({
+  id,
+  owner,
+  expr,
+  endsAt,
+  metadata,
+} = {}) {
   if (!id || !owner) throw new Error("id and owner required");
   if (_ccronPsV2.has(id)) throw new Error(`ccron profile ${id} already exists`);
   const now = Date.now();
+  const deadline = endsAt == null ? null : Date.parse(endsAt);
+  if (deadline != null && !Number.isFinite(deadline)) {
+    throw new Error("endsAt must be a valid timestamp");
+  }
   const p = {
     id,
     owner,
@@ -1815,72 +1873,87 @@ export function registerCcronProfileV2({ id, owner, expr, metadata } = {}) {
     lastTouchedAt: now,
     activatedAt: null,
     archivedAt: null,
+    endsAt: deadline == null ? null : new Date(deadline).toISOString(),
     metadata: { ...(metadata || {}) },
   };
   _ccronPsV2.set(id, p);
-  return { ...p, metadata: { ...p.metadata } };
+  return snapshotCcronProfile(expireCcronProfile(p, now), now);
 }
 export function activateCcronProfileV2(id) {
-  const p = _ccronPsV2.get(id);
+  const now = Date.now();
+  const p = expireCcronProfile(_ccronPsV2.get(id), now);
   if (!p) throw new Error(`ccron profile ${id} not found`);
   const isInitial = p.status === CCRON_PROFILE_MATURITY_V2.PENDING;
   _ccronCheckP(p.status, CCRON_PROFILE_MATURITY_V2.ACTIVE);
-  if (isInitial && _ccronCountActive(p.owner) >= _ccronMaxActive)
+  if (isInitial && _ccronCountActive(p.owner, now) >= _ccronMaxActive)
     throw new Error(`max active ccron profiles for owner ${p.owner} reached`);
-  const now = Date.now();
   p.status = CCRON_PROFILE_MATURITY_V2.ACTIVE;
   p.updatedAt = now;
   p.lastTouchedAt = now;
   if (!p.activatedAt) p.activatedAt = now;
-  return { ...p, metadata: { ...p.metadata } };
+  return snapshotCcronProfile(p, now);
 }
 export function pauseCcronProfileV2(id) {
-  const p = _ccronPsV2.get(id);
+  const now = Date.now();
+  const p = expireCcronProfile(_ccronPsV2.get(id), now);
   if (!p) throw new Error(`ccron profile ${id} not found`);
   _ccronCheckP(p.status, CCRON_PROFILE_MATURITY_V2.PAUSED);
   p.status = CCRON_PROFILE_MATURITY_V2.PAUSED;
-  p.updatedAt = Date.now();
-  return { ...p, metadata: { ...p.metadata } };
+  p.updatedAt = now;
+  return snapshotCcronProfile(p, now);
 }
 export function archiveCcronProfileV2(id) {
-  const p = _ccronPsV2.get(id);
+  const now = Date.now();
+  const p = expireCcronProfile(_ccronPsV2.get(id), now);
   if (!p) throw new Error(`ccron profile ${id} not found`);
   _ccronCheckP(p.status, CCRON_PROFILE_MATURITY_V2.ARCHIVED);
-  const now = Date.now();
   p.status = CCRON_PROFILE_MATURITY_V2.ARCHIVED;
   p.updatedAt = now;
   if (!p.archivedAt) p.archivedAt = now;
-  return { ...p, metadata: { ...p.metadata } };
+  return snapshotCcronProfile(p, now);
 }
 export function touchCcronProfileV2(id) {
-  const p = _ccronPsV2.get(id);
+  const now = Date.now();
+  const p = expireCcronProfile(_ccronPsV2.get(id), now);
   if (!p) throw new Error(`ccron profile ${id} not found`);
   if (_ccronPTerminal.has(p.status))
     throw new Error(`cannot touch terminal ccron profile ${id}`);
-  const now = Date.now();
   p.lastTouchedAt = now;
   p.updatedAt = now;
-  return { ...p, metadata: { ...p.metadata } };
+  return snapshotCcronProfile(p, now);
 }
 export function getCcronProfileV2(id) {
-  const p = _ccronPsV2.get(id);
-  if (!p) return null;
-  return { ...p, metadata: { ...p.metadata } };
+  const now = Date.now();
+  const p = expireCcronProfile(_ccronPsV2.get(id), now);
+  return p ? snapshotCcronProfile(p, now) : null;
 }
 export function listCcronProfilesV2() {
-  return [..._ccronPsV2.values()].map((p) => ({
-    ...p,
-    metadata: { ...p.metadata },
-  }));
+  const now = Date.now();
+  return [..._ccronPsV2.values()].map((p) =>
+    snapshotCcronProfile(expireCcronProfile(p, now), now),
+  );
 }
 export function createCcronTickV2({ id, profileId, tickAt, metadata } = {}) {
   if (!id || !profileId) throw new Error("id and profileId required");
   if (_ccronTsV2.has(id)) throw new Error(`ccron tick ${id} already exists`);
-  if (!_ccronPsV2.has(profileId))
-    throw new Error(`ccron profile ${profileId} not found`);
+  const now = Date.now();
+  const profile = expireCcronProfile(_ccronPsV2.get(profileId), now);
+  if (!profile) throw new Error(`ccron profile ${profileId} not found`);
+  if (profile.endsAt != null) {
+    const suppliedTime = tickAt || now;
+    const scheduledAt =
+      typeof suppliedTime === "string" && !/^\d+$/u.test(suppliedTime)
+        ? Date.parse(suppliedTime)
+        : Number(suppliedTime);
+    if (
+      !Number.isFinite(scheduledAt) ||
+      Math.max(now, scheduledAt) >= Date.parse(profile.endsAt)
+    ) {
+      throw new Error(`ccron tick must be scheduled before ${profile.endsAt}`);
+    }
+  }
   if (_ccronCountPending(profileId) >= _ccronMaxPending)
     throw new Error(`max pending ccron ticks for profile ${profileId} reached`);
-  const now = Date.now();
   const t = {
     id,
     profileId,
@@ -1900,6 +1973,10 @@ export function runningCcronTickV2(id) {
   if (!t) throw new Error(`ccron tick ${id} not found`);
   _ccronCheckT(t.status, CCRON_TICK_LIFECYCLE_V2.RUNNING);
   const now = Date.now();
+  const profile = expireCcronProfile(_ccronPsV2.get(t.profileId), now);
+  if (Date.parse(profile?.endsAt) <= now) {
+    throw new Error(`ccron profile ${t.profileId} has expired`);
+  }
   t.status = CCRON_TICK_LIFECYCLE_V2.RUNNING;
   t.updatedAt = now;
   if (!t.startedAt) t.startedAt = now;
@@ -1926,11 +2003,10 @@ export function failCcronTickV2(id, reason) {
   if (reason) t.metadata.failReason = String(reason);
   return { ...t, metadata: { ...t.metadata } };
 }
-export function cancelCcronTickV2(id, reason) {
+export function cancelCcronTickV2(id, reason, now = Date.now()) {
   const t = _ccronTsV2.get(id);
   if (!t) throw new Error(`ccron tick ${id} not found`);
   _ccronCheckT(t.status, CCRON_TICK_LIFECYCLE_V2.CANCELLED);
-  const now = Date.now();
   t.status = CCRON_TICK_LIFECYCLE_V2.CANCELLED;
   t.updatedAt = now;
   if (!t.settledAt) t.settledAt = now;
@@ -1940,9 +2016,12 @@ export function cancelCcronTickV2(id, reason) {
 export function getCcronTickV2(id) {
   const t = _ccronTsV2.get(id);
   if (!t) return null;
+  expireCcronProfile(_ccronPsV2.get(t.profileId), Date.now());
   return { ...t, metadata: { ...t.metadata } };
 }
 export function listCcronTicksV2() {
+  const now = Date.now();
+  for (const profile of _ccronPsV2.values()) expireCcronProfile(profile, now);
   return [..._ccronTsV2.values()].map((t) => ({
     ...t,
     metadata: { ...t.metadata },
@@ -1951,7 +2030,8 @@ export function listCcronTicksV2() {
 export function autoPauseIdleCcronProfilesV2({ now } = {}) {
   const t = now ?? Date.now();
   const flipped = [];
-  for (const p of _ccronPsV2.values())
+  for (const profile of _ccronPsV2.values()) {
+    const p = expireCcronProfile(profile, t);
     if (
       p.status === CCRON_PROFILE_MATURITY_V2.ACTIVE &&
       t - p.lastTouchedAt >= _ccronIdleMs
@@ -1960,6 +2040,7 @@ export function autoPauseIdleCcronProfilesV2({ now } = {}) {
       p.updatedAt = t;
       flipped.push(p.id);
     }
+  }
   return { flipped, count: flipped.length };
 }
 export function autoFailStuckCcronTicksV2({ now } = {}) {
@@ -1980,10 +2061,13 @@ export function autoFailStuckCcronTicksV2({ now } = {}) {
   return { flipped, count: flipped.length };
 }
 export function getCoworkCronGovStatsV2() {
+  const now = Date.now();
   const profilesByStatus = {};
   for (const v of Object.values(CCRON_PROFILE_MATURITY_V2))
     profilesByStatus[v] = 0;
-  for (const p of _ccronPsV2.values()) profilesByStatus[p.status]++;
+  for (const p of _ccronPsV2.values()) {
+    profilesByStatus[expireCcronProfile(p, now).status]++;
+  }
   const ticksByStatus = {};
   for (const v of Object.values(CCRON_TICK_LIFECYCLE_V2)) ticksByStatus[v] = 0;
   for (const t of _ccronTsV2.values()) ticksByStatus[t.status]++;

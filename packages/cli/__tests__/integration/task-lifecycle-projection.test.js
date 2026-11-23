@@ -225,12 +225,18 @@ it("reads concurrent task sources and forks a verified session from separate CLI
     });
     const shell = manager.create({ command: "echo fixture" });
     const now = Date.now();
-    const schedule = new AgentScheduleStore({
+    const scheduleStore = new AgentScheduleStore({
       dir: join(root, ".chainlesschain", "agent-schedule"),
-    }).scheduleWakeup({
+    });
+    const schedule = scheduleStore.scheduleWakeup({
       prompt: "scheduled fixture",
       dueAt: now + 60_000,
       expiresAt: now + 120_000,
+    });
+    const retiredSchedule = scheduleStore.scheduleWakeup({
+      prompt: "retired before dispatch",
+      dueAt: now + 60_000,
+      expiresAt: now - 1000,
     });
 
     const list = run("tasks", "--json", "--session", sessionId);
@@ -254,6 +260,13 @@ it("reads concurrent task sources and forks a verified session from separate CLI
           source: "schedule",
           taskId: schedule.id,
           endsAt: new Date(now + 120_000).toISOString(),
+          nextRunAt: new Date(now + 60_000).toISOString(),
+        }),
+        expect.objectContaining({
+          source: "schedule",
+          taskId: retiredSchedule.id,
+          state: "expired",
+          nextRunAt: null,
         }),
       ]),
     );

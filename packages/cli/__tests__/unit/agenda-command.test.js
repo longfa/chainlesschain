@@ -59,11 +59,38 @@ describe("cc agenda", () => {
   });
 
   it("lists entries as JSON", () => {
-    store.scheduleWakeup({ prompt: "a", delayMs: 1000 });
-    const code = runAgendaList({ json: true }, { store, log });
+    const beforeExpiry = store.scheduleWakeup({
+      prompt: "run before expiry",
+      delayMs: 1000,
+      expiresInMs: 3000,
+    });
+    const atExpiry = store.scheduleWakeup({
+      prompt: "retire without running",
+      delayMs: 2000,
+      expiresInMs: 2000,
+    });
+    const code = runAgendaList(
+      { json: true },
+      { store, log, now: () => clock },
+    );
     expect(code).toBe(0);
     const parsed = JSON.parse(logs.join("\n"));
-    expect(parsed.entries).toHaveLength(1);
+    expect(parsed.entries).toHaveLength(2);
+    expect(
+      parsed.entries.find((entry) => entry.id === beforeExpiry.id),
+    ).toMatchObject({
+      expiresAt: clock + 3000,
+      endsAt: new Date(clock + 3000).toISOString(),
+      expiresAction: "retire",
+      nextRunAt: new Date(clock + 1000).toISOString(),
+    });
+    expect(
+      parsed.entries.find((entry) => entry.id === atExpiry.id),
+    ).toMatchObject({
+      endsAt: new Date(clock + 2000).toISOString(),
+      expiresAction: "retire",
+      nextRunAt: null,
+    });
   });
 
   it("shows an explicit cron time zone in the human agenda", () => {

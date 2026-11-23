@@ -277,7 +277,26 @@ export function runAgendaList(options = {}, _deps = {}) {
   const now = _deps.now ? _deps.now() : Date.now();
   const nextAt = nextWakeupAt(entries, { now });
   if (options.json) {
-    log(JSON.stringify({ entries, nextWakeupAt: nextAt }, null, 2));
+    const entriesWithTiming = entries.map((entry) => {
+      const { expiresAt } = entry;
+      const endsAt = expiresAt == null ? null : new Date(expiresAt).toJSON();
+      const next = nextWakeupAt([entry], { now });
+      const canRunBeforeExpiry =
+        next != null && (expiresAt == null || next < expiresAt);
+      return {
+        ...entry,
+        endsAt,
+        expiresAction: endsAt ? "retire" : null,
+        nextRunAt: canRunBeforeExpiry ? new Date(next).toJSON() : null,
+      };
+    });
+    log(
+      JSON.stringify(
+        { entries: entriesWithTiming, nextWakeupAt: nextAt },
+        null,
+        2,
+      ),
+    );
     return 0;
   }
   if (entries.length === 0) {
@@ -301,7 +320,9 @@ export function runAgendaList(options = {}, _deps = {}) {
           : `${monitorWhat} (next ${new Date(e.nextAt).toISOString()})`;
     const expiry =
       e.expiresAt != null
-        ? chalk.dim(` · expires ${new Date(e.expiresAt).toISOString()}`)
+        ? chalk.dim(
+            ` · expires ${new Date(e.expiresAt).toISOString()} (retire)`,
+          )
         : "";
     const policy = e.runPolicy
       ? chalk.dim(` · ${describePolicy(e.runPolicy)}`)

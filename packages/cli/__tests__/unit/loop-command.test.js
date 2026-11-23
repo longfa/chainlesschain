@@ -347,6 +347,27 @@ describe("cc loop — --save / --resume persistence", () => {
     expect(process.exitCode).toBe(1);
   });
 
+  it("restores an expired saved deadline without spawning another iteration", async () => {
+    const id = `cc-loop-test-${Math.random().toString(36).slice(2)}`;
+    createdSessions.push(id);
+    const endsAt = "2001-01-01T00:00:00.000Z";
+    _deps.spawn = vi.fn();
+    for (const args of [
+      ["--save", id, "--ends-at", endsAt, "--json", "--", "node", "ignored.js"],
+      ["--resume", id, "--json"],
+    ]) {
+      const output = await run(...args);
+      expect(JSON.parse(output.slice(output.indexOf("{")))).toMatchObject({
+        endsAt,
+        expiresAction: "retire",
+        nextRunAt: null,
+        iterations: 0,
+        stoppedBy: "expired",
+      });
+    }
+    expect(_deps.spawn).not.toHaveBeenCalled();
+  });
+
   it("recovers a scheduler-settled pending iteration without spawning again", async () => {
     const id = `cc-loop-test-${Math.random().toString(36).slice(2)}`;
     createdSessions.push(id);

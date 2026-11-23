@@ -127,6 +127,13 @@ export function toTaskRecord(value, source = "unknown", options = {}) {
       createdAt,
   );
   const endsAt = timestamp(input.endsAt ?? input.expiresAt ?? input.expiryAt);
+  const nextRunAt = timestamp(input.nextRunAt ?? input.nextAt ?? input.dueAt);
+  const scheduleHasClosed =
+    normalizedSource === "schedule" &&
+    (TERMINAL.has(state) ||
+      (endsAt != null &&
+        nextRunAt != null &&
+        Date.parse(nextRunAt) >= Date.parse(endsAt)));
   const taskId = stableId(
     input,
     options.fallbackId || `${normalizedSource}-unknown`,
@@ -168,7 +175,7 @@ export function toTaskRecord(value, source = "unknown", options = {}) {
       null,
     ),
     createdAt,
-    nextRunAt: timestamp(input.nextRunAt ?? input.nextAt ?? input.dueAt),
+    nextRunAt: scheduleHasClosed ? null : nextRunAt,
     expiresAction:
       input.expiresAction ??
       input.onExpire ??
@@ -279,6 +286,7 @@ export function collectTaskRecords(options = {}) {
         status: "expired",
         waitingOn: null,
         stopPath: null,
+        nextRunAt: null,
         terminal: true,
       });
     }

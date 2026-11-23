@@ -253,6 +253,10 @@ export function registerLoopCommand(program) {
     )
     .option("-n, --max-iterations <n>", "Stop after N iterations")
     .option(
+      "--ends-at <timestamp>",
+      "Stop scheduling iterations at this timestamp",
+    )
+    .option(
       "--until-exit-zero",
       "Stop once an iteration exits with code 0 (e.g. tests pass)",
     )
@@ -382,6 +386,17 @@ export function registerLoopCommand(program) {
           savedConfig && !fromCli("untilExitZero")
             ? Boolean(savedConfig.untilExitZero)
             : Boolean(options.untilExitZero);
+        const deadlineInput = fromCli("endsAt")
+          ? options.endsAt
+          : savedConfig?.endsAt;
+        const deadline =
+          deadlineInput == null ? null : Date.parse(deadlineInput);
+        if (deadline != null && !Number.isFinite(deadline)) {
+          throw new Error("--ends-at must be a valid timestamp");
+        }
+        const endsAt =
+          deadline == null ? null : new Date(deadline).toISOString();
+        const expiresAction = endsAt == null ? null : "retire";
         const executionCwd = savedConfig?.cwd || process.cwd();
 
         // --- build the child invocation (shared with resume) ---
@@ -409,6 +424,7 @@ export function registerLoopCommand(program) {
             untilExitZero,
             until: untilRaw || null,
             cwd: executionCwd,
+            ...(endsAt == null ? {} : { endsAt }),
           };
           appendEvent(sessionId, "loop_config", savedConfig);
         }
@@ -441,7 +457,7 @@ export function registerLoopCommand(program) {
                 intervalMs,
               )}${maxIterations ? `, max ${maxIterations}` : ""}${
                 startIndex ? `, resuming from ${startIndex}` : ""
-              }${persist ? `, session ${sessionId}` : ""})`,
+              }${endsAt == null ? "" : `, retires at ${endsAt}`}${persist ? `, session ${sessionId}` : ""})`,
             )}`,
           ),
         );
@@ -511,11 +527,25 @@ export function registerLoopCommand(program) {
           summary = await runLoop({
             intervalMs,
             maxIterations,
+            endsAt: deadline,
             untilExitZero,
             untilRegex,
             startIndex,
             sleep: makeSleep(controller.signal),
             shouldStop: () => controller.signal.aborted,
+            onWait: (next) => {
+              const nextRunAt = next == null ? null : new Date(next).toJSON();
+              if (persist) {
+                appendEvent(sessionId, "loop_wait", {
+                  nextRunAt,
+                  endsAt,
+                  expiresAction,
+                });
+              }
+              if (!options.json && nextRunAt != null) {
+                logger.log(chalk.gray(`  next run at ${nextRunAt}`));
+              }
+            },
             onIteration: (n, res) => {
               const tag =
                 res.exitCode === 0
@@ -567,11 +597,13 @@ export function registerLoopCommand(program) {
             ? summary.results[summary.results.length - 1].exitCode
             : null;
         const stoppedBy = interrupted ? "signal" : summary.stoppedBy;
+        const timing = { endsAt, expiresAction, nextRunAt: null };
 
         if (persist) {
           appendEvent(sessionId, "loop_end", {
             stoppedBy,
             iterations: summary.iterations,
+            ...timing,
           });
         }
 
@@ -583,6 +615,7 @@ export function registerLoopCommand(program) {
                 stoppedBy,
                 lastExitCode: lastExit,
                 elapsed,
+                ...timing,
                 ...(persist ? { sessionId } : {}),
               },
               null,
