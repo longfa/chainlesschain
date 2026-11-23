@@ -161,6 +161,7 @@ async function lateChild({
   revoke = null,
   abort = false,
   childLoopTools = null,
+  dropToolResponse = false,
 } = {}) {
   const connection = deferred();
   const connectStarted = deferred();
@@ -195,6 +196,9 @@ async function lateChild({
   let url = "http://localhost:1/mcp";
   if (realHttp) {
     server = createServer(async (request, response) => {
+      // The successful transport fixture spans slow Windows startup and
+      // tool execution. A separate test exercises a dropped tool response.
+      response.setHeader("Connection", "close");
       if (request.method === "GET") {
         response.writeHead(405).end();
         return;
@@ -235,6 +239,10 @@ async function lateChild({
           ],
         };
       } else if (message.method === "tools/call") {
+        if (dropToolResponse) {
+          request.socket.destroy();
+          return;
+        }
         result = { content: [{ type: "text", text: "cloudy" }] };
       }
       response.setHeader("Content-Type", "application/json");
@@ -252,17 +260,22 @@ async function lateChild({
   maybeApplyToolSearch(mcp, {
     config: { enabled: true, catalogMode: mode, alwaysLoad: [], maxResults: 5 },
   });
-  const pendingConnection = setupMcpFromConfig(
-    {
-      weather: {
-        url,
-        transport: "http",
-        headers: { Authorization: "test-fixture" },
+  const startConnection = () =>
+    setupMcpFromConfig(
+      {
+        weather: {
+          url,
+          transport: "http",
+          headers: { Authorization: "test-fixture" },
+        },
       },
-    },
-    { into: mcp, mcpLifecycleAuthority: lifecycleAuthority },
-  );
-  await connectStarted.promise;
+      { into: mcp, mcpLifecycleAuthority: lifecycleAuthority },
+    );
+  let pendingConnection;
+  if (!realHttp) {
+    pendingConnection = startConnection();
+    await connectStarted.promise;
+  }
   const childRequests = [];
   let childResults = [];
   let rootCalls = 0;
@@ -301,6 +314,12 @@ async function lateChild({
       (options.extraToolDefinitions || []).map((tool) => tool.function.name),
     );
     if (childRequests.length === 1) {
+      if (realHttp) {
+        // Start the actual handshake once the child reaches its first model
+        // turn. Cold process setup should not consume its network deadline.
+        pendingConnection = startConnection();
+        await connectStarted.promise;
+      }
       if (abort) controller.abort();
       connection.resolve();
       await pendingConnection;
@@ -489,6 +508,28 @@ describe("late MCP connection inherited by an already running subagent", () => {
       ),
     ).toHaveLength(1);
     expect(observed.callTool).toHaveBeenCalledTimes(1);
+  });
+
+  it("reports an unknown outcome without replaying a received HTTP tool call when the response is lost", async () => {
+    const observed = await lateChild({
+      realHttp: true,
+      dropToolResponse: true,
+    });
+    expect(observed.childResults[2]).toMatchObject({
+      status: "outcome_unknown",
+      retryable: false,
+      mcpLedgerIncident: {
+        phase: "call",
+        code: "CC_MCP_TRANSPORT_OUTCOME_UNKNOWN",
+      },
+    });
+    expect(observed.callTool).toHaveBeenCalledTimes(1);
+    expect(
+      observed.httpRequests.filter(
+        (message) => message.method === "tools/call",
+      ),
+    ).toHaveLength(1);
+    expect(observed.ledgerRecords.at(-1)?.status).toBe("started");
   });
 
   it.each(["model", "ledger", "schema", "admission"])(
