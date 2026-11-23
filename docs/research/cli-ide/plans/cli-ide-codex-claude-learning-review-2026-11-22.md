@@ -229,7 +229,7 @@ Claude 2.1.330 让子代理的模型回退（fallback）**传导**给它派生�
 
 ## 继续实施与本地验收
 
-提交 `75976d2790` 建立了统一任务字段。以下状态对应 2026-11-24 01:53（北京时间）的实际验证结果。
+提交 `75976d2790` 建立了统一任务字段。以下状态对应 2026-11-24 01:57（北京时间）的实际验证结果。
 
 ### 当前任务实际完成情况
 
@@ -252,7 +252,7 @@ Claude 2.1.330 让子代理的模型回退（fallback）**传导**给它派生�
 | JetBrains 等待输入可见性     | 已修复，部分平台待验     | 修复了动作完成与在途轮询竞争时的刷新丢失。Windows Gradle 测试通过 1,041 项，跳过 3 项。候选 IDE 的 Linux、Windows 实际宿主作业已通过。                                                                                                                                   | macOS 实际宿主的可见性延迟仍待重新测量。                                    |
 | JetBrains macOS 启动与恢复   | Intel 2024.2 诊断通过    | `0.4.212` 在候选提交的真实 IntelliJ 宿主以确定性 CLI 夹具验证启动、重启后恢复结果、八项 CLI 身份与配置场景、冷启动超时和显式重试。已复核原始协议与界面记录。[macOS 诊断制品](https://github.com/longfa/chainlesschain/actions/runs/45200157659/artifacts/14838893256)    | 候选 IDE 发布矩阵正在验收。                                                 |
 | LK 模型目录                  | 已实现，公开目录已验证   | CLI、Web 和 IDE 能刷新公开目录，内置快照包含 GPT-6.2 Sol 与 Astra。                                                                                                                                                                                                      | 使用生产账户验证模型调用及权限。                                            |
-| 执行位置全矩阵               | 第四轮 2 个位置通过      | 第四轮 Linux 与容器各通过 100 次，已复核两份制品。第三轮的五个位置共 500 次已核验，macOS ARM64 未获宿主。[第四轮结果](https://github.com/longfa/chainlesschain/actions/runs/45179047694/attempts/4)                                                                      | 本轮 Windows、WSL、严格 SSH 运行中，macOS 排队。六位置汇总待验。            |
+| 执行位置全矩阵               | 第四轮 4 个位置通过      | Linux、WSL、容器和严格 SSH 各通过 100 次，本轮四份制品已复核，共 400 次轨迹。[第四轮结果](https://github.com/longfa/chainlesschain/actions/runs/45179047694/attempts/4)                                                                                                  | 本轮 Windows 运行中，macOS 等待宿主，六位置汇总待验。                       |
 | Codex 冷首次扫描             | 保持 HOLD                | 官方 0.171.0 可完整翻页。Linux 真实会话三轮复验中，升降序同序，仓库方向检查失败。Windows 和 Linux 的精确时间相同夹具也都复现同序。                                                                                                                                       | 保持 `recency_at + useStateDbOnly`。待跨平台冷启动和同时间排序门禁通过。    |
 
 ### 可复现的本地验证
@@ -369,6 +369,7 @@ Windows 本地进程级回归 9 项、任务与 MCP 回归 79 项、流式协议
 
 | 当前候选发布验证                         | 实际状态                | 证据与剩余条件                                                                                                                                                                                                                                                                                              |
 | ---------------------------------------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 13 个上游 npm 包                         | 公网归档已复核          | 按候选提交的版本从 npm registry 下载全部归档，验证 SHA-512 与归档内名称、版本。候选 CLI 的 10 条直接内部依赖对齐，连同上游包共检查 15 条内部依赖约束。                                                                                                                                                      |
 | CLI CI 与 CLI Strict Sandbox             | Linux、Windows 前置通过 | CLI 源码审计及 Linux、Windows PDH 通过。严格沙箱的 Linux 两种架构和 Windows 边界作业通过。macOS PDH 与两个沙箱作业排队。[CLI CI](https://github.com/longfa/chainlesschain/actions/runs/45225011599) · [严格沙箱](https://github.com/longfa/chainlesschain/actions/runs/45225095992)                         |
 | CLI 原生构建                             | 4 个目标通过            | Linux 和 Windows 两种架构已核对。macOS x64 已通过构建及实际宿主的版本与状态检查，安装更新回归运行中。macOS ARM64 排队。[完整矩阵](https://github.com/longfa/chainlesschain/actions/runs/45225096629) · [macOS x64 作业](https://github.com/longfa/chainlesschain/actions/runs/45225096629/job/137869339586) |
 | CLI 后台会话交互                         | Linux、Windows 通过     | 两个平台已通过实际 worker 断开与重连，macOS 仍在排队。[后台会话测试](https://github.com/longfa/chainlesschain/actions/runs/45225095842)                                                                                                                                                                     |
