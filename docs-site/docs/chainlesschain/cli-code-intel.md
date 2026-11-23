@@ -97,6 +97,14 @@
 
 未安装对应服务器时，命令返回 `unavailable` 并提示安装建议，agent 侧则优雅降级到文本搜索。
 
+### 降级到文本搜索
+
+`code_intelligence` 返回 `available: false` 时，Agent 可以用 `search_files` 查找文本。
+
+- 单文件搜索使用 `path`，支持跨行模式。传入 `regex: true` 时，非法正则返回 `ERR_TEXT_SEARCH_PATTERN`。
+- 目录内容搜索使用 `directory` 和 `content_search: true`，模式必须是单行。Windows 可传入 `regex: true` 显式启用 `findstr` 的正则模式。
+- 目录搜索遇到原生命令错误或超时会返回 `ERR_SEARCH_INCOMPLETE`，已有命中可能不完整。搜索正常完成且无命中时返回 `No matches found`。
+
 ## 配置参考
 
 | 项           | 机制                                | 默认    | 说明                                     |
