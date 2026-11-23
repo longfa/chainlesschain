@@ -8722,7 +8722,11 @@ async function executeToolInner(
       // Pattern is model/user-supplied and flows into a shell — build the
       // command with it SAFELY quoted (see search-command.js). Raw interpolation
       // here was a command-injection bypass of the run_shell guards.
-      const built = buildSearchCommand({ pattern: args.pattern, isContent });
+      const built = buildSearchCommand({
+        pattern: args.pattern,
+        isContent,
+        regex: args.regex,
+      });
       if (built.error) {
         return attachDescriptor({ error: built.error });
       }
@@ -8762,10 +8766,8 @@ async function executeToolInner(
             cwd: root,
             encoding: "utf8",
             timeout: 10000,
-            // Windows `findstr`/`dir /s` have no `head` cap (unlike the POSIX
-            // `| head -20`), so a large tree can blow past execSync's 1 MB
-            // default and throw ENOBUFS. Give it real headroom AND salvage the
-            // partial below — otherwise a busy repo silently reports "no matches".
+            // Uncapped native search output can exceed execSync's 1 MB default.
+            // Allow more headroom and preserve partial hits on ENOBUFS below.
             maxBuffer: 8 * 1024 * 1024,
           });
           _ingestSearchOutput(output, ictx);

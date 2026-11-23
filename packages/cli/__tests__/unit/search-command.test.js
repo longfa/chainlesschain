@@ -55,6 +55,17 @@ describe.each(["linux", "win32"])(
         }).cmd,
       ).toContain(" leading and trailing ");
     });
+
+    it.each(["first\nsecond", "first\r\nsecond"])(
+      "rejects a multiline directory content pattern before invoking the shell",
+      (pattern) => {
+        expect(
+          buildSearchCommand({ pattern, isContent: true, platform }),
+        ).toEqual({
+          error: expect.stringContaining("Use path for multiline search"),
+        });
+      },
+    );
   },
 );
 
@@ -63,7 +74,7 @@ describe("buildSearchCommand (POSIX)", () => {
     buildSearchCommand({ pattern, isContent, platform: "linux" });
 
   it("single-quotes the pattern for content (grep) and filename (find)", () => {
-    expect(onPosix("hello", true).cmd).toContain("grep -r -l -i 'hello' .");
+    expect(onPosix("hello", true).cmd).toContain("grep -r -l -i -e 'hello' .");
     expect(onPosix("hello", false).cmd).toContain("find . -name '*hello*'");
   });
 
@@ -89,6 +100,17 @@ describe("buildSearchCommand (Windows)", () => {
   it("double-quotes the pattern for findstr and dir", () => {
     expect(onWin("hello", true).cmd).toBe('findstr /s /i /n "hello" *');
     expect(onWin("hello", false).cmd).toBe('dir /s /b "*hello*" 2>NUL');
+  });
+
+  it("preserves an explicit request for directory regex mode", () => {
+    expect(
+      buildSearchCommand({
+        pattern: "he[lo]*",
+        isContent: true,
+        regex: true,
+        platform: "win32",
+      }).cmd,
+    ).toBe('findstr /s /i /n /r "he[lo]*" *');
   });
 
   it("keeps the redirect OUTSIDE the quotes (so 2>NUL still applies)", () => {

@@ -22,6 +22,29 @@ afterEach(() => {
 });
 
 describe("long text file keyword search", () => {
+  it("distinguishes invalid directory content patterns from native no-match results", async () => {
+    const { dir } = fixture("needle");
+    const searchDirectory = (pattern) =>
+      executeTool(
+        "search_files",
+        { directory: dir, pattern, content_search: true, regex: true },
+        { cwd: dir },
+      );
+
+    expect(await searchDirectory("needle")).toMatchObject({
+      matches: [expect.stringContaining("long.txt")],
+    });
+    expect(await searchDirectory("absent-word")).toMatchObject({
+      files: [],
+      message: "No matches found",
+    });
+    expect(await searchDirectory("[")).toMatchObject({
+      code: "ERR_SEARCH_INCOMPLETE",
+      matches: [],
+      failures: [expect.objectContaining({ exitCode: 2 })],
+    });
+  });
+
   it("does not report a timed-out directory search as no matches", async () => {
     const { dir } = fixture("needle");
     const spy = vi

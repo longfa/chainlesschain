@@ -29,18 +29,27 @@ export function shquotePosix(s) {
  * @param {object} a
  * @param {string} a.pattern        the raw search pattern
  * @param {boolean} a.isContent     content search (grep/findstr) vs filename
+ * @param {boolean} [a.regex]       request regex mode explicitly on Windows
  * @param {string} [a.platform=process.platform]
  * @returns {{cmd:string}|{error:string}}
  */
 export function buildSearchCommand({
   pattern,
   isContent,
+  regex,
   platform = process.platform,
 }) {
   if (typeof pattern !== "string" || pattern.length === 0) {
     return { error: "search_files requires a non-empty string pattern" };
   }
   const pat = pattern;
+
+  if (isContent && /[\r\n]/.test(pat)) {
+    return {
+      error:
+        "Directory content search requires a single-line pattern. Use path for multiline search in a file.",
+    };
+  }
 
   if (platform === "win32") {
     // cmd.exe has no reliable way to escape an embedded double-quote, and the
@@ -55,14 +64,16 @@ export function buildSearchCommand({
     }
     return {
       cmd: isContent
-        ? `findstr /s /i /n "${pat}" *`
+        ? `findstr /s /i /n${regex === true ? " /r" : ""} "${pat}" *`
         : `dir /s /b "*${pat}*" 2>NUL`,
     };
   }
 
+  // Preserve grep's exit status so a syntax or read error reaches the caller.
+  // The caller already bounds captured stdout and the returned matches.
   return {
     cmd: isContent
-      ? `grep -r -l -i ${shquotePosix(pat)} . --include="*" 2>/dev/null | head -20`
+      ? `grep -r -l -i -e ${shquotePosix(pat)} . --include="*" 2>/dev/null`
       : `find . -name ${shquotePosix(`*${pat}*`)} -type f 2>/dev/null | head -20`,
   };
 }
