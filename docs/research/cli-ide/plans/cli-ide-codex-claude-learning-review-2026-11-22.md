@@ -229,7 +229,7 @@ Claude 2.1.330 让子代理的模型回退（fallback）**传导**给它派生�
 
 ## 继续实施与本地验收
 
-提交 `75976d2790` 建立了统一任务字段。以下状态对应 2026-11-24 03:02（北京时间）的实际验证结果。
+提交 `75976d2790` 建立了统一任务字段。以下状态对应 2026-11-24 03:05（北京时间）的实际验证结果。
 
 ### 当前任务实际完成情况
 
@@ -381,7 +381,7 @@ Windows 本地进程级回归 9 项、任务与 MCP 回归 79 项、流式协议
 | VS Code x64 宿主                         | 三平台两版本通过        | 已复核 Windows、Linux 和 macOS Intel 的六份报告及 212 个文件。三平台都用同一候选 VSIX，在稳定版 `1.147.0` 和最低版 `1.85.2` 通过双根、多窗口、重启恢复。[Windows 制品](https://github.com/longfa/chainlesschain/actions/runs/45225095657/artifacts/14845304557) · [Linux 制品](https://github.com/longfa/chainlesschain/actions/runs/45225095657/artifacts/14849219410) · [macOS 制品](https://github.com/longfa/chainlesschain/actions/runs/45225095657/artifacts/14850961032) |
 | IDE 宿主与 ARM64                         | JetBrains 2025.2 未通过 | IDE Extensions 通过 16 个作业。JetBrains Intel `2025.2` 未达到等待输入门槛，会话恢复与停止未运行。独立 IDE ARM64 矩阵通过 7 个作业，macOS ARM64 仍在排队。[JetBrains 2025.2 作业](https://github.com/longfa/chainlesschain/actions/runs/45225095657/job/137877503657) · [IDE ARM64](https://github.com/longfa/chainlesschain/actions/runs/45225095722)                                                                                                                          |
 | CLI 候选 npm 归档                        | Windows、Linux 本地通过 | 隔离 Windows 安装通过六次调度 CLI 调用。Linux 从同一归档安装，八套调度测试共 319 项通过，含 POSIX 目录 `fsync` 故障恢复用例。                                                                                                                                                                                                                                                                                                                                                   |
-| 桌面端综合测试                           | Linux 复验通过          | 首轮 Linux 和 Windows 的 5 项失败来自 `llm:lk-models` 的旧注册断言。修复提交 `fe0ead3eda` 本地 60 项通过。Linux 单元、集成、性能、数据库和 UKey 五套复验通过，Windows 仍在运行。[Linux 报告](https://github.com/longfa/chainlesschain/actions/runs/45241167244/artifacts/14853286014) · [综合复验](https://github.com/longfa/chainlesschain/actions/runs/45241167244)                                                                                                           |
+| 桌面端综合测试                           | Linux、Windows 复验通过 | 首轮 5 项失败来自 `llm:lk-models` 的旧注册断言。修复提交 `fe0ead3eda` 的两平台主报告各通过单元、集成、性能、数据库和 UKey 五套测试，退出码均为 0。[Linux 报告](https://github.com/longfa/chainlesschain/actions/runs/45241167244/artifacts/14853286014) · [Windows 报告](https://github.com/longfa/chainlesschain/actions/runs/45241167244/artifacts/14852134832)                                                                                                               |
 | CLI `0.166.162`                          | 待发布                  | 待候选门禁全部通过后由 GitHub Actions OIDC 发布并验证公网归档。                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | Open VSX `0.37.197`、JetBrains `0.4.212` | 待发布                  | 待 IDE 门禁和 CLI 公网归档验证。                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 
@@ -391,7 +391,7 @@ Windows 本地进程级回归 9 项、任务与 MCP 回归 79 项、流式协议
 
 将 Intel `2025.2` 的 100 次界面观测与 CLI 轨迹按派发顺序对齐。8 次达到或超过 2,000 ms 的观测，在 `daemon resume` 启动前都已经过 1 秒以上。此段由界面提交和 CLI 前置读取共同构成，仍需分段计时。复验沿用 100 次观测和 P95 小于 2,000 ms 的门槛。[原始观测与 CLI 轨迹](https://github.com/longfa/chainlesschain/actions/runs/45225095657/artifacts/14852106933)
 
-已在 JetBrains 宿主诊断记录对话框接受时间、后台线程排队、前置校验和 CLI 动作耗时。记录只在现有宿主诊断模式启用，并在安排界面更新后写入。Windows 本地直接用 JUnit 验证诊断记录，6 项通过。macOS Intel 宿主分段样本待采集。[分段计时实现](../../../../packages/jetbrains-plugin/src/main/java/com/chainlesschain/ide/intellij/SessionsWorkbenchToolWindowFactory.java)
+已在 JetBrains 宿主诊断记录对话框接受时间、后台线程排队、前置校验和 CLI 动作耗时。记录只在现有宿主诊断模式启用，并在安排界面更新后写入。Windows JDK 21 的 Gradle 编译、插件打包及单元测试通过，共 1,043 项通过、3 项跳过。提交 `4c7e14ad45` 的三平台 IDE 宿主复验已启动，macOS Intel `2025.2` 已获分配宿主。[分段计时实现](../../../../packages/jetbrains-plugin/src/main/java/com/chainlesschain/ide/intellij/SessionsWorkbenchToolWindowFactory.java) · [宿主复验](https://github.com/longfa/chainlesschain/actions/runs/45244831397/job/137939069339)
 
 #### 补齐调度字段前的发布验证
 
