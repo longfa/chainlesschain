@@ -257,7 +257,7 @@ Claude 2.1.330 让子代理的模型回退（fallback）**传导**给它派生�
 - 候选 `89e7bc37cd` 在 Windows 上从独立 CLI 进程运行 `cc tasks --json --session <id>`。同时观测到正常运行的后台 Shell 和 HTTP MCP 任务，以及待执行计划。MCP 任务由 [durable-child](../../../../packages/cli/__tests__/fixtures/mcp-tasks/durable-child.mjs) 通过真实 `tools/call` 建立，凭据保存在临时 DPAPI vault。保持三个来源并发至少 12 秒后，另一个进程轮询 MCP 得到 `input_required`，CLI 投影显示 `waitingOn: "mcp-input"`，网络上共派发一次工具调用。旁观进程中 Shell 的 `stopPath` 为 `null`。原持有者请求停止并确认回收后，独立 CLI 读回 `cancelled`。
 - 使用 `AgentScheduleStore.scheduleWakeup` 创建独立测试任务，让到期时间早于计划执行时间。配置状态栏命令从 stdin 读取上下文的 `task.schedule_ends_at`。分别运行 `cc statusline preview --json`、`cc tasks --json` 和 `cc agenda run`。状态栏在到期前读到日期，调度进程随后持久化 `expired`，并从 `--active-only` 结果移除任务，清除状态栏预览的日期和停止路径。[Windows 命令输出截图](../implementation/evidence/task-lifecycle-20261123/windows-schedule-expiry.png) · [状态栏实现](../../../../packages/cli/src/lib/status-line.js)
 - Windows 的两个实际 MCPClient 通过 HTTP 连接 Linux Docker 测试服务。第一个客户端发起关闭后释放第一个持有者，再保持最后一个持有者五分钟。两个会话每五秒各调用一次工具，其间均无提前断开。释放第一个客户端的最后一个持有者后，第二个客户端仍可调用。最终两个会话分别完成 61 和 62 次调用，服务端各收到一次 `DELETE`，无拒绝请求。[子代理持有回归入口](../../../../packages/cli/__tests__/integration/subagent-mcp-late-connection.test.js)
-- 截图由真实调度和状态栏预览输出渲染。Windows 的交互审批 REPL 回归另行通过，ConPTY 抓录和独立管道抓录的调度场景在拿到首个提示符前超时，留作后续交互宿主复验。
+- 使用从安装归档部署的 CLI `0.166.162` 在 Windows ConPTY 中复验了默认状态栏。打开 REPL 后显示 `schedule ends` 和实际截止时间。到期后运行 `cc agenda run`，重启 REPL 时该提示消失。`cc tasks --json` 显示 `pending` 转为 `expired`，`stopPath` 清空，任务从 `--active-only` 移除，全程模型调用为 0。截图摘录了交互输出与独立进程读回的任务记录。Windows 交互审批回归也已通过。[Windows ConPTY 输出摘录](../implementation/evidence/task-lifecycle-20261123/windows-schedule-terminal.png)
 
 ### 阶段 D 的命令参考
 
