@@ -14,14 +14,14 @@ cc llm models --provider lk --json
 
 升级后重启 IDE 宿主。旧扩展所推荐的 CLI 版本以扩展自己的说明为准。
 
-| 渠道                  | 版本         | 状态                                                                                                  |
-| --------------------- | ------------ | ----------------------------------------------------------------------------------------------------- |
-| npm CLI               | `0.166.161`  | 已公开并回读验证                                                                                      |
-| Open VSX              | `0.37.196`   | 配套 CLI `0.166.161`，[发布验证中](https://github.com/longfa/chainlesschain/actions/runs/45095531533) |
-| JetBrains Marketplace | `0.4.211`    | 配套 CLI `0.166.161`，[发布验证中](https://github.com/longfa/chainlesschain/actions/runs/45095532301) |
-| 移动端和桌面端        | `v5.0.3.147` | 候选，等待两款配套 IDE 公开验证                                                                       |
+| 渠道                  | 版本         | 状态                                                                                                            |
+| --------------------- | ------------ | --------------------------------------------------------------------------------------------------------------- |
+| npm CLI               | `0.166.161`  | 已公开并回读验证                                                                                                |
+| Open VSX              | `0.37.196`   | 配套 CLI `0.166.161`，[已公开并校验 VSIX](https://github.com/longfa/chainlesschain/actions/runs/45095531533)    |
+| JetBrains Marketplace | `0.4.211`    | 配套 CLI `0.166.161`，[已上传，等待公开上架](https://github.com/longfa/chainlesschain/actions/runs/45095532301) |
+| 移动端和桌面端        | `v5.0.3.147` | 等待 JetBrains 公开验证和 Android 内嵌 CLI 包更新                                                               |
 
-当前可下载的 Open VSX `0.37.195` 和 JetBrains `0.4.209` 分别推荐 CLI `0.166.160` 和 `0.166.159`。[Open VSX 商店](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide) · [JetBrains 商店](https://plugins.jetbrains.com/plugin/32208-chainlesschain-ide-bridge/versions)
+Open VSX `0.37.196` 已可下载，VS Code 也可安装同一 VSIX。当前可下载的 JetBrains `0.4.209` 推荐 CLI `0.166.159`。[Open VSX 商店](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide) · [下载 VSIX](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.196/file/chainlesschain.chainlesschain-ide-0.37.196.vsix) · [JetBrains 商店](https://plugins.jetbrains.com/plugin/32208-chainlesschain-ide-bridge/versions)
 
 ## 核心特性
 

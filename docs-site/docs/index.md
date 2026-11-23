@@ -74,7 +74,7 @@ features:
     link: /chainlesschain/desktop-model-governance
   - icon: 🧑‍💻
     title: CLI 和 IDE 配套版本
-    details: "Open VSX 0.37.195 推荐 CLI 0.166.160；JetBrains 公开版 0.4.209 推荐 CLI 0.166.159。"
+    details: "Open VSX 0.37.196 推荐 CLI 0.166.161。JetBrains 公开版 0.4.209 推荐 CLI 0.166.159。"
     link: /chainlesschain/cli-ide-update-2026-11-23-161
   - icon: 🔐
     title: 安全优先
