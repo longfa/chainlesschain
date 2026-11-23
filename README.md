@@ -4,7 +4,7 @@
 
 CLI **0.166.161** 已通过 GitHub Actions OIDC 发布到 npm。精确源码为 `22f4dfea080546d586f75652fd5075671019ffb8`，公开安装、归档和签名来源已验证。运行 `npm i -g chainlesschain@0.166.161 --registry https://registry.npmjs.org` 安装，重启宿主后运行 `cc --version`。 [npm 发布证据](https://github.com/longfa/chainlesschain/actions/runs/45084688787)
 
-CLI 和 Web 工作台可刷新 LK 模型目录，离线快照内置 GPT‑6.2 Sol 和 Astra。配套 IDE 为 Open VSX **0.37.196** 和 JetBrains **0.4.211**，公开下载状态见升级指南。 [升级指南](docs-site/docs/chainlesschain/cli-ide-update-2026-11-23-161.md)
+Open VSX **0.37.196** 与 JetBrains **0.4.211** 均已公开，推荐 CLI **0.166.161**。CLI、Web 工作台和配套 IDE 可按需刷新 LK 模型目录，内置快照覆盖 GPT‑6.2 Sol 和 Astra。`cc tasks --json` 汇总任务状态、到期时间、等待项和停止路径，VS Code 扩展提供会话分叉和工作流地图。[安装与升级](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-23-161.html) · [设计与验证](https://design.chainlesschain.com/release-runtime-update-2026-11-23-161.html)
 
 ## 上一轮公开版本（2026-11-21）
 

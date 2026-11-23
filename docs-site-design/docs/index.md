@@ -4,7 +4,7 @@ layout: home
 hero:
   name: ChainlessChain
   text: 系统设计文档
-  tagline: "CLI 0.166.160、Open VSX 0.37.195 和 JetBrains 0.4.209 已公开，JetBrains 0.4.210 待通过宿主门禁"
+  tagline: "CLI 0.166.161、Open VSX 0.37.196 和 JetBrains 0.4.211 已公开"
   image:
     src: /logo.png
     alt: ChainlessChain Logo
@@ -21,9 +21,9 @@ hero:
 
 features:
   - icon: 🛡️
-    title: CLI 与 IDE 任务生命周期
-    details: "CLI 统一读取任务状态、停止路径与到期时间，VS Code 增加会话分叉和工作流地图。"
-    link: /release-runtime-update-2026-11-22-160
+    title: CLI 与 IDE 运行时及 LK 模型目录
+    details: "任务状态与停止回执、会话分叉、LK 实时目录和离线回退。"
+    link: /release-runtime-update-2026-11-23-161
   - icon: 🏢
     title: 组织目标、授权记忆与站内通知（主线）
     details: 历史产品 .140 已包含显式巡检、多级审批、独立验收、共享记忆与授权通知；当前 .145 独立发行，记忆不自动注入模型。
@@ -94,9 +94,9 @@ features:
   </div>
 </div>
 
-## 当前运行时与发行（2026-11-22）
+## 当前运行时与发行（2026-11-23）
 
-CLI **0.166.160** 和 Open VSX **0.37.195** 从 `1dd4f2c6cc7128995312be08738ae5d6d692ad25` 发布。公开 JetBrains **0.4.209** 推荐 CLI **0.166.159**，候选 **0.4.210** 的 macOS 宿主门禁失败，未上传。[任务生命周期设计与证据](/release-runtime-update-2026-11-22-160)
+CLI **0.166.161** 已在 npm 公开。Open VSX **0.37.196** 与 JetBrains **0.4.211** 已核验公开下载，均推荐 CLI **0.166.161**。LK 目录可按需刷新，离线快照包括 GPT‑6.2 Sol 和 Astra。[运行时、目录设计与发行证据](/release-runtime-update-2026-11-23-161) · [上轮任务生命周期设计](/release-runtime-update-2026-11-22-160)
 
 ## 历史发行与源码核对（2026-11-21）
 

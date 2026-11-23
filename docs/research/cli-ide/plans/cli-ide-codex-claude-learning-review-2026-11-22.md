@@ -270,7 +270,8 @@ Claude 2.1.330 让子代理的模型回退（fallback）**传导**给它派生�
 - 上一候选 `9438b5c91eabb7b4f494eb3457dc41bd2cc67dec` 的 Strict Sandbox 和六目标原生验证通过。本地流式与计划套件 95 项通过。CLI CI 在三个系统上均发现同一个过期的 `EACCES` 断言。[上一轮 CLI CI](https://github.com/longfa/chainlesschain/actions/runs/45047479777) · [上一轮原生验证](https://github.com/longfa/chainlesschain/actions/runs/45047591088)
 - `v-npm-0-166-161` 固定到 `22f4dfea080546d586f75652fd5075671019ffb8`。CLI CI、Strict Sandbox 三系统矩阵和六目标原生验证通过。13 个上游子包已公开下载校验。CLI 通过 OIDC 发布为 npm `latest`，公开归档与发行工作流归档的 SHA-512 相同，签名来源验证通过。[CLI CI](https://github.com/longfa/chainlesschain/actions/runs/45084571018) · [Strict Sandbox](https://github.com/longfa/chainlesschain/actions/runs/45084574812) · [原生验证](https://github.com/longfa/chainlesschain/actions/runs/45084580552) · [npm OIDC 发布](https://github.com/longfa/chainlesschain/actions/runs/45084688787)
 - IDE 精确源码 `f7abc5e74e87238e4673bb6eda3e409833fe18a6` 通过 IDE Extensions 和 ARM64 宿主验证。Open VSX `0.37.196` 已公开为最新版，公开 VSIX 和流水线制品的 SHA-256 均为 `23d7ddae1f1272ae8f8893bc51e4258a3f42b522282f589cf38306f75d299ecf`，包内推荐 CLI `0.166.161`。JetBrains `0.4.211` 已通过全宿主验证并上传商店，公开上架待核验。[IDE Extensions](https://github.com/longfa/chainlesschain/actions/runs/45047153828) · [ARM64](https://github.com/longfa/chainlesschain/actions/runs/45047153787) · [Open VSX 发布](https://github.com/longfa/chainlesschain/actions/runs/45095531533) · [JetBrains 发布](https://github.com/longfa/chainlesschain/actions/runs/45095532301)
-- 移动与桌面候选 `v5.0.3.147` 等待 JetBrains 公开回读及 Android 内嵌 CLI `0.166.161`。当前 Android 固定归档对应 `0.166.145`，上游归档下载返回 404。[Android 当前归档](https://github.com/chainlesschain/chainlesschain/releases/tag/internal-binaries-android-v20261110)
+- JetBrains Marketplace 已批准并公开 `0.4.211`（更新 ID `1226836`）。公开 ZIP 的 SHA-256 为 `717a0ef85b9572ffec7e757205cfaa93c0b9cd805e98f93a276f1ab402986a98`。与流水线 ZIP 逐项核对，两项归档内容一致，内置插件描述符推荐 CLI `0.166.161`。[JetBrains 公开 ZIP](https://plugins.jetbrains.com/plugin/download?rel=true&updateId=1226836)
+- 移动与桌面候选 `v5.0.3.147` 等待 Android 内嵌 CLI `0.166.161`。当前 Android 固定归档对应 `0.166.145`，上游归档下载返回 404。[Android 当前归档](https://github.com/chainlesschain/chainlesschain/releases/tag/internal-binaries-android-v20261110)
 
 ### 发布验证进度
 
@@ -286,7 +287,7 @@ Claude 2.1.330 让子代理的模型回退（fallback）**传导**给它派生�
 | Open VSX 发布            | 配套版本已公开                                                                                           | [GitHub Actions](https://github.com/longfa/chainlesschain/actions/runs/45020514156)                                                                              |
 | JetBrains 候选 `0.4.210` | macOS Intel IntelliJ 2025.2 的 `needs_input` 可见性 P95 为 2,706 ms，门槛为低于 2,000 ms。上传作业已跳过 | [失败作业](https://github.com/longfa/chainlesschain/actions/runs/45020514604/job/137202314448)                                                                   |
 
-## 当前公开版本
+## 2026-11-22 公开版本记录
 
 | 渠道                  | 版本        | 公开读回                                                                                                  | 精确标签                 |
 | --------------------- | ----------- | --------------------------------------------------------------------------------------------------------- | ------------------------ |

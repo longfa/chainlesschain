@@ -14,16 +14,18 @@ cc llm models --provider lk --json
 
 升级后重启 IDE 宿主。旧扩展所推荐的 CLI 版本以扩展自己的说明为准。
 
-| 渠道                  | 版本         | 状态                                                                                                            |
-| --------------------- | ------------ | --------------------------------------------------------------------------------------------------------------- |
-| npm CLI               | `0.166.161`  | 已公开并回读验证                                                                                                |
-| Open VSX              | `0.37.196`   | 配套 CLI `0.166.161`，[已公开并校验 VSIX](https://github.com/longfa/chainlesschain/actions/runs/45095531533)    |
-| JetBrains Marketplace | `0.4.211`    | 配套 CLI `0.166.161`，[已上传，等待公开上架](https://github.com/longfa/chainlesschain/actions/runs/45095532301) |
-| 移动端和桌面端        | `v5.0.3.147` | 等待 JetBrains 公开验证和 Android 内嵌 CLI 包更新                                                               |
+| 渠道                  | 版本         | 状态                                                                                                         |
+| --------------------- | ------------ | ------------------------------------------------------------------------------------------------------------ |
+| npm CLI               | `0.166.161`  | 已公开并回读验证                                                                                             |
+| Open VSX              | `0.37.196`   | 配套 CLI `0.166.161`，[已公开并校验 VSIX](https://github.com/longfa/chainlesschain/actions/runs/45095531533) |
+| JetBrains Marketplace | `0.4.211`    | 配套 CLI `0.166.161`，已公开并校验 ZIP                                                                       |
+| 移动端和桌面端        | `v5.0.3.147` | 等待 Android 内嵌 CLI 包更新                                                                                 |
 
-Open VSX `0.37.196` 已可下载，VS Code 也可安装同一 VSIX。当前可下载的 JetBrains `0.4.209` 推荐 CLI `0.166.159`。[Open VSX 商店](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide) · [下载 VSIX](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.196/file/chainlesschain.chainlesschain-ide-0.37.196.vsix) · [JetBrains 商店](https://plugins.jetbrains.com/plugin/32208-chainlesschain-ide-bridge/versions)
+VS Code 可安装公开 VSIX。JetBrains 用户可在 IDE 的插件市场更新，或下载 ZIP 安装。两款扩展升级后都可打开 Configure LLM 刷新 LK 模型。[下载 VSIX](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.196/file/chainlesschain.chainlesschain-ide-0.37.196.vsix) · [下载 JetBrains ZIP](https://plugins.jetbrains.com/plugin/download?rel=true&updateId=1226836) · [JetBrains 发布记录](https://github.com/longfa/chainlesschain/actions/runs/45095532301)
 
 ## 核心特性
+
+`cc tasks --json` 汇总后台 Shell、MCP、Agent、计划任务和项目内 Cowork 工作流。可查看状态、到期时间、等待项与停止路径。VS Code 可从历史回复分叉会话，并在工作流地图中查看当前项目的活动流程。
 
 `cc setup` 和 `cc ui` 的 LLM 配置会读平台公开目录，支持手动刷新。CLI 输出 `source: "live"` 时使用平台目录，`source: "bundled"` 时使用内置快照。配套 IDE 也提供模型刷新。
 
@@ -60,4 +62,4 @@ CLI 和 Web 工作台通过公开接口取得模型名称、类型和支持的�
 
 ## 相关文档
 
-[CLI 安装与配置](./cli-setup) · [IDE 指南](./ide-plugin) · [安装部署](./installation)
+[CLI 安装与配置](./cli-setup) · [IDE 指南](./ide-plugin) · [安装部署](./installation) · [运行时与 LK 目录设计](https://design.chainlesschain.com/release-runtime-update-2026-11-23-161.html)

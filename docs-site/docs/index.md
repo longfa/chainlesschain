@@ -4,7 +4,7 @@ layout: home
 hero:
   name: ChainlessChain
   text: 去中心化个人 AI 管理平台
-  tagline: "CLI 0.166.161 已发布，支持 LK 模型目录刷新"
+  tagline: "CLI 0.166.161、Open VSX 0.37.196 和 JetBrains 0.4.211 已公开"
   image:
     src: /logo.png
     alt: ChainlessChain Logo
@@ -74,7 +74,7 @@ features:
     link: /chainlesschain/desktop-model-governance
   - icon: 🧑‍💻
     title: CLI 和 IDE 配套版本
-    details: "Open VSX 0.37.196 推荐 CLI 0.166.161。JetBrains 公开版 0.4.209 推荐 CLI 0.166.159。"
+    details: "Open VSX 0.37.196 和 JetBrains 0.4.211 均推荐 CLI 0.166.161，支持按需刷新 LK 模型目录。"
     link: /chainlesschain/cli-ide-update-2026-11-23-161
   - icon: 🔐
     title: 安全优先

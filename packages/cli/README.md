@@ -4,7 +4,7 @@
 
 CLI **0.166.161** is public on npm from exact source `22f4dfea080546d586f75652fd5075671019ffb8`. GitHub Actions verified the public archive and signed provenance after CLI CI, Strict Sandbox and the child-package checks passed. Install `npm i -g chainlesschain@0.166.161 --registry https://registry.npmjs.org` and check `cc --version`. [OIDC publication](https://github.com/longfa/chainlesschain/actions/runs/45084688787)
 
-Run `cc llm models --provider lk --json` to read the online LK catalog or its offline snapshot, which includes GPT‑6.2 Sol and Astra. Account access and inference depend on your LK key. Open VSX **0.37.196** and JetBrains **0.4.211** are the paired IDE versions. The upgrade guide tracks public downloads, model verification and the native-client release. [Upgrade guide and release limits](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-23-161.md)
+Run `cc llm models --provider lk --json` to read the online LK catalog or the bundled snapshot, which includes GPT‑6.2 Sol and Astra. Use `cc tasks --json` to inspect task states, deadlines, waiting dependencies, and stop paths. Open VSX **0.37.196** and JetBrains **0.4.211** are publicly available and recommend this CLI version. [Upgrade guide and release limits](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-23-161.html)
 
 Command-line interface for installing, configuring, and managing [ChainlessChain](https://www.chainlesschain.com), including the coding agent, governed tools, sessions, memory, and IDE integrations.
 
