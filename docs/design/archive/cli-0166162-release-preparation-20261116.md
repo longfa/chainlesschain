@@ -1,15 +1,15 @@
 ---
-title: CLI 0.166.162 发布候选
+title: CLI 0.166.162 历史发布准备
 description: longfa 仓库、chainlesschain.net 域名与 OIDC 来源固定
 ---
 
-# CLI 0.166.162 发布候选
+# CLI 0.166.162 历史发布准备
 
-> Historical preparation from 2026-11-16, superseded by later releases. See the [current CLI 0.166.156 release](https://github.com/longfa/chainlesschain/blob/main/docs-site/docs/chainlesschain/cli-ide-update-2026-11-19-156.md) for current versions and installation.
+> 本文归档 2026-11-16 的候选准备记录。当前各渠道版本和安装方式见[升级指南](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-23-161.html)。
 
-## 当前状态
+## 当时的状态
 
-CLI **0.166.162** 尚未发布。当前 npm 公共版本仍为 **0.166.150**；本候选从 longfa/chainlesschain 的准确提交继续 0.166.153 源码，并统一 LK 文档与定价入口为 **https://chainlesschain.net**。
+当时准备中的 CLI **0.166.162** 尚未发布，已核验的 npm 公开版本为 **0.166.150**。候选从 longfa/chainlesschain 的 0.166.153 源码继续，统一 LK 文档与定价入口到 **https://chainlesschain.net**。
 
 ## 发行门禁
 
@@ -19,7 +19,7 @@ CLI **0.166.162** 尚未发布。当前 npm 公共版本仍为 **0.166.150**；�
 
 不得使用本地 npm 发布、npm 写入 Token、旧提交检查或部分矩阵替代这些门禁。
 
-## 使用
+## 当时的安装方式
 
 在公开回读完成前继续使用：
 

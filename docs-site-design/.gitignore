@@ -11,4 +11,5 @@ docs/*.md
 !docs/index.md
 docs/modules/
 docs/spike/
+docs/archive/
 *.tar.gz
