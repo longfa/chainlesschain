@@ -141,8 +141,11 @@ describe("operator window synthetic Responses preflight", () => {
                         ? largeHandoff
                           ? JSON.stringify({
                               ...JSON.parse(summary),
-                              objective:
-                                String.fromCodePoint(0x6458).repeat(4000),
+                              // An unbound task must actually be displaced to
+                              // exercise the provider admission guard.
+                              objective: String.fromCodePoint(0x6458).repeat(
+                                omitTaskBinding ? 21500 : 4000,
+                              ),
                             })
                           : summary
                         : "done",

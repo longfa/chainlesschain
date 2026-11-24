@@ -89,6 +89,20 @@ describe("non-persistent canonical compaction host context", () => {
     );
   });
 
+  it("retains a handoff that fits the full conversation input budget", async () => {
+    const messages = history().slice(1);
+    const handoff = { role: "assistant", content: "Progress ".repeat(100) };
+    const result = await compact(messages, {
+      compressor: {
+        maxTokens: 512,
+        compress: async () => ({ messages: [handoff], stats: { saved: 100 } }),
+      },
+    });
+    expect(result.receipt.status).toBe("committed");
+    expect(result.messages).toContainEqual(handoff);
+    expect(result.messages).toContainEqual(messages.at(-1));
+  });
+
   it("rejects a handoff that exceeds the budget without committing it", async () => {
     const messages = history().slice(1);
     const commit = vi.fn();

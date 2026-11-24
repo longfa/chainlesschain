@@ -9,6 +9,7 @@ import {
   classifyPricingReceipt,
   ORIGINAL_CANDIDATE_DIGEST,
   PRICING_SEMANTIC_MUTANTS,
+  readEngineeringPricingControl,
   readOriginalPricingCandidate,
 } from "../scripts/verify01-review-pricing-diagnostic.mjs";
 import {
@@ -136,6 +137,20 @@ test("replays exactly the original archived candidate, without changing its impo
   assert.equal(candidate.length, 4924);
 });
 
+test("loads the engineering control calibrated for the frozen pricing implementation", () => {
+  assert.deepEqual(
+    readEngineeringPricingControl(),
+    execFileSync(
+      "git",
+      [
+        "show",
+        "fcee60cd4cc29cc524f561264e8d9f2b26032894:packages/cli/__tests__/unit/usage-pricing-context.test.js",
+      ],
+      { windowsHide: true },
+    ),
+  );
+});
+
 test("each semantic mutation has one syntax-valid match in the frozen pricing implementation", () => {
   const original = execFileSync(
     "git",
@@ -187,7 +202,7 @@ test("an empty candidate with a passing baseline cannot establish any semantic o
     });
     assert.throws(
       () => classifyPricingReceipt(receipt, semanticMutant),
-      /candidate assertions were not executed; semantic outcome cannot be established/u,
+      /candidate check did not pass; semantic outcome cannot be established/u,
     );
   }
 });

@@ -186,6 +186,11 @@ function kernelBudget(compressor, ephemeralTokens = 0, messages = []) {
     // Live host policy/retry text still consumes the provider window even
     // though it is deliberately absent from the durable authority partition.
     safetyMarginTokens: ephemeralTokens,
+    // Like provider planning, let conversation use the available input budget.
+    // The kernel still applies the global limit and reserves recovery capacity.
+    partitionCeilings: {
+      conversation: Math.max(0, inputBudget - ephemeralTokens),
+    },
     recoveryReserveTokens: Math.min(
       256,
       Math.max(1, Math.floor(inputBudget * 0.05)),

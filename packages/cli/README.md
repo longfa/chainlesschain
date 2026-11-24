@@ -2,7 +2,7 @@
 
 ## CLI 0.166.163 candidate
 
-The candidate improves file-search diagnostics, retries a timed-out Windows credential read once, and asks coding agents to verify workspace changes before reporting delivery. The planned pairing is Open VSX **0.37.198** and JetBrains **0.4.213**. The public pairing and install command are below.
+The candidate improves file-search diagnostics, retries a timed-out Windows credential read once, and asks coding agents to verify workspace changes before reporting delivery. Canonical compaction retains summaries that fit the available conversation budget. The planned pairing is Open VSX **0.37.198** and JetBrains **0.4.213**. The public pairing and install command are below.
 
 ## Public CLI 0.166.162 and IDE pairing
 
