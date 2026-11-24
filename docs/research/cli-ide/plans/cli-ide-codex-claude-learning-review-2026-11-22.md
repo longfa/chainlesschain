@@ -363,6 +363,11 @@ Claude 2.1.330 让子代理的模型回退（fallback）**传导**给它派生�
 
 按冻结计划的 45 个样本 ID 核对，公开版诊断已取得 27 项宿主或生成记录，含准备失败和跳过回执。生成通过共 10 项，其中普通任务 9 项，首次旅程 1 项。已导出的独立校验报告覆盖 10 项，Windows CLI 首次旅程的候选通过行为检查。端到端通过数为 0。原始回执继续绑定各自的驱动提交和宿主，后续复跑与独立检查继续按 36+9 全量追踪。
 
+### GitHub Actions 原生续验
+
+- 从 `3a77cf06aa41dd5e95d5bb60d6f946923ce55ccc` 发起三平台全量续验。公开制品仍为 CLI `0.166.162`、Open VSX `0.37.197` 和 JetBrains `0.4.212`。LK `gpt-6.1-sol` 使用操作者本机凭据，通过 GitHub Actions secret 提供给任务代理。矩阵选择器已通过，验证覆盖 45 个冻结样本。[运行记录](https://github.com/longfa/chainlesschain/actions/runs/45363579053)
+- Windows 七个生成作业均在 checkout 阶段失败，未开始任务生成。代表作业报告历史文档证据 PNG 的路径过长。修复在 checkout 前启用 Git 长路径，并保留 `core.autocrlf=false`。独立验收也会校验 LK 的供应商、执行提交和制品身份。[Windows VS Code 失败作业](https://github.com/longfa/chainlesschain/actions/runs/45363579053/job/138339877562)
+
 ### 2026-11-23 晚间验收
 
 - 单次 headless 原先会在拒绝删除后被模型的最终回复覆盖为成功。本轮默认模式与 `--unattended` 均保留 `dangerous-delete` 拒绝记录，返回退出码 1、`is_error: true` 和 `CC_DESTRUCTIVE_SHELL_DENIED`。测试只使用临时用户目录，拒绝后标记文件完整。即使模型最后给出满足 Schema 的对象，流式外层进程也返回同一退出码。Schema 重试仅在运行成功且输出校验失败时继续。[进程级回归](../../../../packages/cli/__tests__/e2e/headless-destructive-denial.test.js)

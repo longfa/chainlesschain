@@ -291,8 +291,11 @@ jobs:
     env:
       GRADLE_USER_HOME: ${{ github.workspace }}/.gradle-native-tasks
     steps:
-      - name: Preserve source byte identity on Windows
-        run: git config --global core.autocrlf false
+      - name: Preserve source bytes and enable long paths on Windows
+        if: runner.os == 'Windows'
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.longpaths true
       - uses: actions/checkout@v5
         with:
           ref: ${{ github.sha }}
@@ -478,7 +481,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ inputs.accept_existing_run || github.run_id }}
       - name: Bind fresh provider delivery identity before acceptance
-        if: inputs.provider == 'openai' || inputs.fresh_volcengine_round
+        if: inputs.provider == 'openai' || inputs.provider == 'lk' || inputs.fresh_volcengine_round
         env:
           EXPECTED_DELIVERY_SHA: ${{ inputs.accept_existing_commit || github.sha }}
           NATIVE_PROJECT_REVISION_FILE: ${{ inputs.project_revision_file || '' }}
