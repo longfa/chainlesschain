@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ask coding sessions to verify workspace changes against tool receipts before reporting delivery.
 - Let canonical compaction retain a handoff that fits the available conversation budget while enforcing the total context limit.
 - Use a bounded local handoff when a deterministic compaction summary exceeds the context budget, and retain file read positions.
+- Reset the failed file-read delivery streak when the model receives a requested source page.
 - Report Chat Completions stream errors in the agent, chat, and token-stream commands and stop the failed response.
 - Pair with Open VSX 0.37.198 and JetBrains 0.4.213 after the exact-source release gates pass.
 
