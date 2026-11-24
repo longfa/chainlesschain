@@ -107,6 +107,33 @@ test("LK validates stream completion, tool names and usage", () => {
   );
 });
 
+test("LK reports an upstream error after the incomplete-stream trailer", () => {
+  const frame = (value) => `data: ${JSON.stringify(value)}\n\n`;
+  const model = LK_BROKER.model;
+  const partial = frame({ model, choices: [{ index: 0, delta: {} }] });
+  const usageFrame = frame({ model, choices: [], usage });
+  const trailer = frame({ model, choices: null, usage: null });
+  const upstream = frame({ error: { type: "new_api_error" } });
+  const done = "data: [DONE]\n\n";
+  const read = (stream) => lkDiagnosticStreamUsage(stream, { max_tokens: 5 });
+
+  assert.throws(
+    () => read(partial + usageFrame + trailer + upstream),
+    /PROVIDER_ERROR/,
+  );
+  for (const suffix of [
+    "",
+    done,
+    frame({ model, choices: [{ index: 0, finish_reason: "stop" }] }) + done,
+  ]) {
+    assert.throws(
+      () => read(partial + usageFrame + trailer + suffix),
+      /CHOICES_INVALID/,
+    );
+  }
+  assert.throws(() => read(partial + trailer + upstream), /CHOICES_INVALID/);
+});
+
 test("LK checks separately reported reasoning against the total and output limit", () => {
   // Terminal usage from the first Linux VS Code journey in Actions run 45363579053.
   const usage = {
