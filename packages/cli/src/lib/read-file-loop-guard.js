@@ -103,8 +103,11 @@ export class ReadFileLoopGuard {
       }
     }
     for (const entry of this.progress.values()) {
+      let delivered = false;
+      let undelivered = 0;
       for (const pending of entry.pendingPages) {
         if (this.isPageVisible(pending.page)) {
+          delivered = true;
           entry.confirmedSpans = mergeSpan(
             entry.confirmedSpans,
             pending.page.readSpan,
@@ -117,11 +120,16 @@ export class ReadFileLoopGuard {
             };
           }
         } else {
-          entry.undeliveredReads++;
+          undelivered++;
           if (pending.reread) entry.rereads.delete(pending.reread);
           if (pending.restoring) entry.contextRestoreOffered = false;
         }
       }
+      // Reset the streak only when a pending read is visible to the provider.
+      // An older page in the prompt cannot reset a failed new read.
+      entry.undeliveredReads = delivered
+        ? 0
+        : entry.undeliveredReads + undelivered;
       entry.pendingPages = [];
       // Execution reserves ranges synchronously for parallel reads. Only
       // source actually selected for the provider becomes historical coverage.

@@ -120,6 +120,7 @@ describe("ReadFileLoopGuard recovery", () => {
       expect(entry.spans).toEqual([]);
       expect(entry.rereads.size).toBe(0);
       expect(entry.summary.reachedEnd).toBe(false);
+      expect(entry.undeliveredReads).toBe(attempt + 1);
     }
     const focused = read({ offset: 5, limit: 2 }, source);
     expect(focused.content).toBe("const ready = true;\nuse(ready);");
@@ -132,8 +133,29 @@ describe("ReadFileLoopGuard recovery", () => {
       [focused.readSpan.start, focused.readSpan.end],
     ]);
     expect(entry.summary.reachedEnd).toBe(false);
-    expect(entry.undeliveredReads).toBe(4);
+    expect(entry.undeliveredReads).toBe(0);
     expect(entry.summary.pendingDelivery).toBe(false);
+  });
+
+  it("keeps a focused read available when delivery resumes between omissions", () => {
+    const { guard, read } = fixture();
+    const observe = (page) =>
+      guard.observeVisibleMessages([
+        { role: "tool", content: JSON.stringify(page) },
+      ]);
+    const omit = (offset, attempts) => {
+      for (let i = 0; i < attempts; i++) {
+        const page = read({ offset, limit: 1 });
+        expect(page.content).toBeTruthy();
+        guard.observeVisibleMessages([]);
+      }
+    };
+    guard.observeVisibleMessages([]);
+    omit(1, 4);
+    observe(read({ offset: 2, limit: 1 }));
+    omit(3, 2);
+    const followup = read({ offset: 4, limit: 1 });
+    expect(followup.content).toBe(document.split("\n")[3]);
   });
 
   it("does not confirm a partial preview using the original full-page span", () => {
