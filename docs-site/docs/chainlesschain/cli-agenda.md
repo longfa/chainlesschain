@@ -83,7 +83,7 @@ cc agenda list
 cc agenda list --json
 ```
 
-CLI `0.166.162` 候选在每条 JSON 记录中补充三个字段。`endsAt` 是 ISO 格式的截止时间，`expiresAction` 为 `retire` 时表示到期后停止派发，`nextRunAt` 是下次可执行时间。到期后或下次触发达到截止时，`nextRunAt` 为 `null`。原有 `expiresAt`、`dueAt`、`nextAt` 继续提供原始时间。
+CLI `0.166.162` 在每条 JSON 记录中补充三个字段。`endsAt` 是 ISO 格式的截止时间，`expiresAction` 为 `retire` 时表示到期后停止派发，`nextRunAt` 是下次可执行时间。到期后或下次触发达到截止时，`nextRunAt` 为 `null`。原有 `expiresAt`、`dueAt`、`nextAt` 继续提供原始时间。
 
 ### `cc agenda run`
 
@@ -130,7 +130,7 @@ cc agenda run --watch 30
 
 ### `cc lab ccron` 的进程内截止时间
 
-CLI `0.166.162` 候选支持在注册 Cowork Cron V2 profile 时用 `--ends-at` 指定 ISO 8601 截止时间。以下示例传入已经过去的时间，可以直接观察到期结果。
+CLI `0.166.162` 支持在注册 Cowork Cron V2 profile 时用 `--ends-at` 指定 ISO 8601 截止时间。以下示例传入已经过去的时间，可以直接观察到期结果。
 
 ```bash
 cc lab ccron register-profile-v2 --id review --owner local --expr "0 9 * * *" --ends-at 2000-01-01T00:00:00Z

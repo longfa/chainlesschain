@@ -39,7 +39,7 @@ cc loop --save ci-watch --every 1m -- npm test          # 持久化为可续跑�
 cc loop --resume ci-watch --max-iterations 20           # 续跑（计数累计，flag 可覆盖）
 ```
 
-CLI `0.166.162` 候选支持 `--ends-at <timestamp>`。例如 `cc loop --save ci-watch --every 1m --ends-at 2026-12-01T09:00:00Z -- npm test`。到期后停止派发新轮次，让在途轮次收尾。恢复会话时继承保存的截止时间，显式传入 `--ends-at` 可覆盖本次运行的截止时间。
+CLI `0.166.162` 支持 `--ends-at <timestamp>`。例如 `cc loop --save ci-watch --every 1m --ends-at 2026-12-01T09:00:00Z -- npm test`。到期后停止派发新轮次，让在途轮次收尾。恢复会话时继承保存的截止时间，显式传入 `--ends-at` 可覆盖本次运行的截止时间。
 
 该版本的 JSON 摘要包含 `endsAt`、`expiresAction` 和 `nextRunAt`。结束时 `nextRunAt` 为 `null`，保存会话的 `loop_wait` 事件记录等待期间的下次可执行时间。因截止时间退出时，`stoppedBy` 为 `expired`。
 

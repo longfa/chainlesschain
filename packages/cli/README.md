@@ -1,10 +1,12 @@
 # chainlesschain CLI
 
-## CLI 0.166.162 and IDE pairing
+## Public CLI 0.166.162 and IDE pairing
 
-CLI **0.166.162** preserves approved plan permissions across resumes, reports headless persistence failures in JSON, and records Git installation outcomes. Install this version with `npm i -g chainlesschain@0.166.162 --registry https://registry.npmjs.org` after it is available on npm. Restart the CLI and IDE hosts, then run `cc --version` and `cc doctor`. Open VSX **0.37.197** and JetBrains **0.4.212** recommend this CLI version and have their own release gates.
+CLI **0.166.162** is public on npm from exact source `03cb502b0e0e3facfbce79ef336fec7861a5554c`. GitHub Actions verified the public archive and signed provenance after CLI CI, Strict Sandbox, and the child package checks passed. Install `npm i -g chainlesschain@0.166.162 --registry https://registry.npmjs.org`, restart the CLI and IDE hosts, then run `cc --version` and `cc doctor`. [OIDC publication](https://github.com/longfa/chainlesschain/actions/runs/45306343051)
 
-Paid readiness remains `NOT_PAID_READY`, native admission remains `NOT_ADMITTED`, and automatic promotion remains `HOLD`. This pairing covers the CLI and IDE extensions.
+This release preserves approved plan permissions across resumes, reports headless persistence failures in JSON, and records Git installation outcomes. Open VSX **0.37.197** is public. The paired JetBrains **0.4.212** is in its release workflow. [Upgrade guide](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-24-162.md)
+
+Release limits are `NOT_PAID_READY` for paid readiness, `NOT_ADMITTED` for native admission, and `HOLD` for automatic promotion. This pairing covers the CLI and IDE extensions.
 
 ## Public CLI 0.166.161 and IDE pairing
 

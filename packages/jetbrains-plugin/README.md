@@ -320,7 +320,7 @@ See the [verified publication evidence](https://github.com/longfa/chainlesschain
 
 Plugin **0.4.212** recommends `chainlesschain@0.166.162`. The model menu reads the online LK catalog through this CLI and includes GPT-6.2 Sol and GPT-6.2 Astra in its offline catalog.
 
-Once the paired CLI is public, install it with `npm i -g chainlesschain@0.166.162 --registry https://registry.npmjs.org`. Goal transfer and native Graph features require matching desktop support and explicit native authorization.
+Install the paired CLI with `npm i -g chainlesschain@0.166.162 --registry https://registry.npmjs.org`. Goal transfer and native Graph features require matching desktop support and explicit native authorization. [CLI publication](https://github.com/longfa/chainlesschain/actions/runs/45306343051)
 
 ## Previous candidates and development notes
 

@@ -137,6 +137,10 @@ export default defineConfig({
             link: "/modules/110-agent-platform-release-boundaries",
           },
           {
+            text: "CLI .162 / 会话恢复与任务生命周期",
+            link: "/release-runtime-update-2026-11-24-162",
+          },
+          {
             text: "CLI .161 / LK 目录与 IDE 发行",
             link: "/release-runtime-update-2026-11-23-161",
           },
