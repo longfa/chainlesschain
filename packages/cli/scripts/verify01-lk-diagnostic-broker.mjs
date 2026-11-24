@@ -17,6 +17,7 @@ export const LK_BROKER = Object.freeze({
   maximumAnswerTokens: 8192,
   timeoutMs: 180000,
   connectionAttemptTimeoutMs: 5000,
+  usageAccounting: "completion-with-optional-separate-reasoning/v1",
   formalSample: false,
 });
 
@@ -115,11 +116,18 @@ function validateUsage(usage, finish, countLimit) {
       ),
     "USAGE_UNKNOWN",
   );
-  check(
-    usage.total_tokens === usage.prompt_tokens + usage.completion_tokens,
-    "USAGE_INCONSISTENT",
-  );
-  check(usage.completion_tokens <= countLimit, "OUTPUT_LIMIT_EXCEEDED");
+  const reasoning = usage.completion_tokens_details?.reasoning_tokens;
+  check(reasoning === undefined || count(reasoning), "USAGE_INCONSISTENT");
+  const outputTokens = usage.total_tokens - usage.prompt_tokens;
+  // LK can include reasoning in completion_tokens or add it separately to
+  // total_tokens. Keep the reported fields intact for receipt verification.
+  const includesReasoning =
+    outputTokens === usage.completion_tokens &&
+    (reasoning ?? 0) <= usage.completion_tokens;
+  const separateReasoning =
+    reasoning > 0 && outputTokens - usage.completion_tokens === reasoning;
+  check(includesReasoning || separateReasoning, "USAGE_INCONSISTENT");
+  check(outputTokens <= countLimit, "OUTPUT_LIMIT_EXCEEDED");
   return { usage, finish };
 }
 

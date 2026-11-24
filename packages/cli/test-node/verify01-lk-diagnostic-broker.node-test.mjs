@@ -7,6 +7,7 @@ import {
   LK_BROKER,
   createLkDiagnosticBroker,
   lkDiagnosticBody,
+  lkDiagnosticJsonUsage,
   lkDiagnosticStreamUsage,
 } from "../scripts/verify01-lk-diagnostic-broker.mjs";
 import { nativeEnvironment } from "../scripts/verify01-native-task-campaign.mjs";
@@ -94,6 +95,60 @@ test("LK validates stream completion, tool names and usage", () => {
       ),
     /OUTPUT_TOOL_FORBIDDEN/,
   );
+});
+
+test("LK checks separately reported reasoning against the total and output limit", () => {
+  // Terminal usage from the first Linux VS Code journey in Actions run 45363579053.
+  const usage = {
+    prompt_tokens: 21933,
+    completion_tokens: 310,
+    total_tokens: 22268,
+    completion_tokens_details: { reasoning_tokens: 25 },
+  };
+  const response = { model: LK_BROKER.model, usage };
+  const json = (usage) =>
+    JSON.stringify({
+      ...response,
+      usage,
+      choices: [
+        {
+          index: 0,
+          finish_reason: "stop",
+          message: { role: "assistant", content: "fixture" },
+        },
+      ],
+    });
+  const stream = (usage) =>
+    `data: ${JSON.stringify({ model: response.model, choices: [{ index: 0, finish_reason: "stop" }] })}\n\n` +
+    `data: ${JSON.stringify({ ...response, choices: [], usage })}\n\ndata: [DONE]\n\n`;
+  for (const [read, encode] of [
+    [lkDiagnosticJsonUsage, json],
+    [lkDiagnosticStreamUsage, stream],
+  ]) {
+    assert.deepEqual(read(encode(usage), { max_tokens: 335 }), {
+      usage,
+      finish: "stop",
+    });
+    assert.throws(
+      () => read(encode(usage), { max_tokens: 334 }),
+      /OUTPUT_LIMIT_EXCEEDED/,
+    );
+    for (const invalid of [
+      { ...usage, total_tokens: 22269 },
+      { ...usage, completion_tokens_details: undefined },
+      { ...usage, completion_tokens_details: { reasoning_tokens: -25 } },
+    ]) {
+      assert.throws(
+        () => read(encode(invalid), { max_tokens: 335 }),
+        /USAGE_INCONSISTENT/,
+      );
+    }
+    const inclusive = { ...usage, completion_tokens: 335 };
+    assert.equal(
+      read(encode(inclusive), { max_tokens: 335 }).usage.completion_tokens,
+      335,
+    );
+  }
 });
 
 test("LK records provider usage while retaining unknown billing and estimate", async (t) => {

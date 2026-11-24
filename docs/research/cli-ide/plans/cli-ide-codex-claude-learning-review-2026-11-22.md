@@ -367,6 +367,8 @@ Claude 2.1.330 让子代理的模型回退（fallback）**传导**给它派生�
 
 - 从 `3a77cf06aa41dd5e95d5bb60d6f946923ce55ccc` 发起三平台全量续验。公开制品仍为 CLI `0.166.162`、Open VSX `0.37.197` 和 JetBrains `0.4.212`。LK `gpt-6.1-sol` 使用操作者本机凭据，通过 GitHub Actions secret 提供给任务代理。矩阵选择器已通过，验证覆盖 45 个冻结样本。[运行记录](https://github.com/longfa/chainlesschain/actions/runs/45363579053)
 - Windows 七个生成作业均在 checkout 阶段失败，未开始任务生成。代表作业报告历史文档证据 PNG 的路径过长。修复在 checkout 前启用 Git 长路径，并保留 `core.autocrlf=false`。独立验收也会校验 LK 的供应商、执行提交和制品身份。[Windows VS Code 失败作业](https://github.com/longfa/chainlesschain/actions/runs/45363579053/job/138339877562)
+- `e47ac3fa4a` 的 Windows 复跑中，CLI、VS Code 和五个独立 JetBrains 作业均通过原 checkout 步骤、原生归档准备检查并进入任务执行。[Windows 复跑](https://github.com/longfa/chainlesschain/actions/runs/45366738125)
+- Linux VS Code 五个样本均因 `DIAGNOSTIC_LK_USAGE_INCONSISTENT` 中断。`first-run-linux-vscode` 的第四次请求报告输入 `21933`、完成 `310`、推理 `25`、合计 `22268`。五个失败响应中，合计超出输入与完成之和的差值均等于 LK 单列的推理数。校验器现在识别包含推理和单列推理两种格式，以总量扣除输入检查输出上限，并保留原始回执。核对五个原响应摘要后全部离线重放成功，各降低输出上限一枚 token 均明确拒绝。JSON 与 SSE 回归同时检查了不一致总量和非法推理数。原生触发样本另行复跑。[Linux VS Code 原生作业](https://github.com/longfa/chainlesschain/actions/runs/45363579053/job/138339877498) · [原始制品](https://github.com/longfa/chainlesschain/actions/runs/45363579053/artifacts/14906995987)
 
 ### 2026-11-23 晚间验收
 
