@@ -2,7 +2,7 @@
 
 ## CLI 0.166.163 candidate
 
-The candidate improves file-search diagnostics, retries a timed-out Windows credential read once, and asks coding agents to verify workspace changes before reporting delivery. When the model receives a requested source page, the CLI clears the consecutive delivery failures for that file. Canonical compaction retains full handoffs that fit the conversation budget and can use a shorter local handoff with file read positions when needed. Chat Completions provider errors stop the stream and fail the turn. The planned pairing is Open VSX **0.37.198** and JetBrains **0.4.213**. The public pairing and install command are below.
+The candidate improves file-search diagnostics, retries a timed-out Windows credential read once, and asks coding agents to verify workspace changes before reporting delivery. When the model receives a requested source page, the CLI clears the consecutive delivery failures for that file. Canonical compaction retains full handoffs that fit the conversation budget and can use a shorter local handoff with file read positions when needed. Chat Completions provider errors stop the stream and fail the turn. Interrupting a turn closes its pending approvals. The planned pairing is Open VSX **0.37.198** and JetBrains **0.4.213**. The public pairing and install command are below.
 
 ## Public CLI 0.166.162 and IDE pairing
 

@@ -2684,6 +2684,7 @@ async function runAgentHeadlessStreamInWorkspace(
   // resolution is echoed as `approval_resolved` so UIs can settle their cards.
   const interactive = options.interactiveApprovals === true;
   const pendingApprovals = new Map();
+  let currentAbort = null;
   let approvalSeq = 0;
   const approvalTimeoutMs =
     Number(process.env.CC_APPROVAL_TIMEOUT_MS) > 0
@@ -2698,11 +2699,18 @@ async function runAgentHeadlessStreamInWorkspace(
   ) => {
     const p = pendingApprovals.get(id);
     if (!p) return;
-    const approve = [
-      "acceptOnce",
-      "acceptForTurn",
-      "acceptForSession",
-    ].includes(decision?.kind);
+    let approve = ["acceptOnce", "acceptForTurn", "acceptForSession"].includes(
+      decision?.kind,
+    );
+    if (
+      approve &&
+      p.turn &&
+      (p.turn !== currentAbort || p.turn.signal.aborted)
+    ) {
+      approve = false;
+      decision = { kind: "decline", reason: "Approval turn ended" };
+      via = "turn-ended";
+    }
     // Approval binding (authority §"权限来源与跨 Agent 授权边界"): an *approve*
     // verdict that carries a binding which does NOT match the one the request
     // advertised is stale / mis-routed / argument-tampered — reject it (deny,
@@ -2766,7 +2774,8 @@ async function runAgentHeadlessStreamInWorkspace(
     });
     p.resolve(!invalidReason && approve);
   };
-  const interactiveConfirm = (ctx = {}) => {
+  const interactiveConfirm = (ctx = {}, turn = currentAbort) => {
+    if (turn && (turn !== currentAbort || turn.signal.aborted)) return false;
     const requiredPermission = approvalPermissionForContext(ctx, { cwd });
     if (approvalGrantLedger.allows(requiredPermission)) return true;
     return new Promise((resolve) => {
@@ -2796,6 +2805,7 @@ async function runAgentHeadlessStreamInWorkspace(
         timer,
         binding,
         requiredPermission,
+        turn,
       });
       emit({
         type: "approval_request",
@@ -4075,10 +4085,6 @@ async function runAgentHeadlessStreamInWorkspace(
     classifyAllShell,
     enabledToolNames,
     disabledTools,
-    // --interactive-approvals: settings/hook `ask` (and, with an IDE bridge,
-    // edit reviews via openDiff) route to the structured approval round-trip
-    // instead of failing closed. Absent in CI/pipes → unchanged fail-closed.
-    permissionConfirm: interactive ? interactiveConfirm : undefined,
     // ask_user_question round-trip (opt-in via CC_INTERACTIVE_QUESTIONS): give
     // the tool handler an askUser that emits question_request + blocks on stdin.
     // Absent → agent-core returns user_not_reachable (graceful proceed).
@@ -4337,7 +4343,6 @@ async function runAgentHeadlessStreamInWorkspace(
   const queue = [];
   let wakeQueue = null;
   let inputDone = false;
-  let currentAbort = null;
   let inputBacklogFailure = false;
   let slashRequestSeq = 0;
   const inputLines = readJsonLines(input);
@@ -4402,7 +4407,19 @@ async function runAgentHeadlessStreamInWorkspace(
           settlePermissionDecisionGate(true);
         }
         if (parsed.interrupt) {
-          currentAbort?.abort();
+          const interruptedTurn = currentAbort;
+          interruptedTurn?.abort();
+          if (interruptedTurn) {
+            for (const [id, pending] of pendingApprovals) {
+              if (pending.turn === interruptedTurn) {
+                settleApproval(
+                  id,
+                  { kind: "decline", reason: "Approval turn interrupted" },
+                  "turn-interrupted",
+                );
+              }
+            }
+          }
           continue;
         }
         if (parsed.approval) {
@@ -5825,10 +5842,11 @@ async function runAgentHeadlessStreamInWorkspace(
     // Per-turn abort scope: an {"type":"interrupt"} from the pump above
     // aborts THIS turn (LLM fetch included — the signal reaches chatWithTools)
     // while the conversation/process stays alive for the next message.
-    currentAbort = new AbortController();
+    const turn = new AbortController();
+    currentAbort = turn;
     const turnSignal = options.signal
-      ? AbortSignal.any([options.signal, currentAbort.signal])
-      : currentAbort.signal;
+      ? AbortSignal.any([options.signal, turn.signal])
+      : turn.signal;
 
     // Capture the resumed pairs once, then normalize those same pairs only in
     // every provider request. The live authority array retains separate turns.
@@ -5843,6 +5861,9 @@ async function runAgentHeadlessStreamInWorkspace(
         messages,
         {
           ...loopOptionsBase,
+          permissionConfirm: interactive
+            ? (context) => interactiveConfirm(context, turn)
+            : undefined,
           // Custom-command frontmatter scopes THIS turn (parity with `cc command
           // run` / headless -p): a matched /name applies its model: and
           // allowed-tools:. Lowest-priority override — an explicit per-turn
