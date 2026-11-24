@@ -167,6 +167,28 @@ describe("background interaction durable journal", () => {
     expect(_deps.appendEventWithVerifiedProjection).not.toHaveBeenCalled();
   });
 
+  it("rejects a persisted question snapshot when recovered in a different session", () => {
+    const journal = new BackgroundInteractionJournal({
+      backgroundAgentId: binding.backgroundAgentId,
+    });
+    journal.recordPending({
+      requestId: "same-question",
+      binding,
+      payload: { question: "Deploy?" },
+    });
+    const snapshot = journal.toJSON();
+    expect(
+      BackgroundInteractionJournal.fromJSON(snapshot, {
+        expectedSessionId: binding.sessionId,
+      }).get("same-question"),
+    ).toMatchObject({ binding, status: "pending" });
+    expect(() =>
+      BackgroundInteractionJournal.fromJSON(snapshot, {
+        expectedSessionId: "session-other",
+      }),
+    ).toThrow(expect.objectContaining({ code: "INTERACTION_JOURNAL_CORRUPT" }));
+  });
+
   it("does not mutate the live journal when persistence fails", () => {
     const journal = new BackgroundInteractionJournal({
       backgroundAgentId: "bg-journal-1",

@@ -168,7 +168,8 @@ export function lkDiagnosticStreamUsage(raw, body) {
   let usage,
     finish,
     done = false,
-    modelSeen = false;
+    modelSeen = false,
+    awaitingProviderError = false;
   const toolNames = new Map();
   for (const block of raw.replaceAll("\r\n", "\n").split("\n\n")) {
     const data = block
@@ -179,11 +180,13 @@ export function lkDiagnosticStreamUsage(raw, body) {
     if (!data) continue;
     check(!done, "DATA_AFTER_TERMINAL");
     if (data === "[DONE]") {
+      check(!awaitingProviderError, "CHOICES_INVALID");
       done = true;
       continue;
     }
     const event = parseDiagnosticJson(data);
     check(event && !Object.hasOwn(event, "error"), "PROVIDER_ERROR");
+    check(!awaitingProviderError, "CHOICES_INVALID");
     if (event.model !== undefined) {
       check(event.model === LK_BROKER.model, "RESPONSE_MODEL_UNKNOWN");
       modelSeen = true;
@@ -195,6 +198,18 @@ export function lkDiagnosticStreamUsage(raw, body) {
         "CONFLICTING_USAGE",
       );
       usage = event.usage;
+    }
+    // LK can send this trailer after usage when the upstream stream ends early.
+    // The next frame must still report an error. A trailer cannot complete a reply.
+    if (
+      event.model === LK_BROKER.model &&
+      event.choices === null &&
+      event.usage === null &&
+      usage !== undefined &&
+      finish === undefined
+    ) {
+      awaitingProviderError = true;
+      continue;
     }
     check(
       Array.isArray(event.choices) && event.choices.length <= 1,
@@ -225,6 +240,7 @@ export function lkDiagnosticStreamUsage(raw, body) {
       }
     }
   }
+  check(!awaitingProviderError, "CHOICES_INVALID");
   check(done && modelSeen, "INCOMPLETE_STREAM");
   check(
     [...toolNames.values()].every((name) => tools.has(name)),
