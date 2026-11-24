@@ -52,6 +52,11 @@ const SUMMARY_CALL_ID_MAX_CHARS = 128;
 export const SUMMARY_INPUT_DEFAULT_MAX_CHARS = 24000;
 export const SUMMARY_INPUT_HARD_MAX_CHARS = 32000;
 const SUMMARY_INPUT_MIN_CHARS = 1024;
+const localCompactionResults = new WeakSet();
+
+export function isLocalCompactionResult(result) {
+  return localCompactionResults.has(result);
+}
 
 function isCompactionArtifact(message) {
   const kind = getDurableSystemMessageProvenance(message)?.kind;
@@ -560,7 +565,11 @@ export class PromptCompressor {
       stats.abVariant = abVariant.variant;
     }
 
-    return { messages: result, stats };
+    const outcome = { messages: result, stats };
+    if (summaryStats === null || summaryStats.summaryMode === "none") {
+      localCompactionResults.add(outcome);
+    }
+    return outcome;
   }
 
   shouldAutoCompact(messages) {

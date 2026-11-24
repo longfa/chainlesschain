@@ -9,8 +9,14 @@ import {
   canonicalDigest,
   InMemorySessionContextPort,
   getCompactionPlanRejection,
+  planContext,
 } from "@chainlesschain/context-memory-kernel";
 import { sessionExists } from "../../harness/jsonl-session-store.js";
+import { isLocalCompactionResult } from "../../harness/prompt-compressor.js";
+import {
+  buildExtractiveHandoff,
+  formatStructuredHandoff,
+} from "../../harness/structured-handoff.js";
 import {
   contextItemsToMessages,
   createSummaryContextItem,
@@ -19,6 +25,7 @@ import {
 import { JsonlSessionContextPort } from "./jsonl-session-context-port.js";
 import { createCliContextMemoryRuntime } from "./runtime.js";
 import { imageTransportEstimate } from "../image-token-estimate.js";
+import { fileReadProgressBody } from "../read-file-page.js";
 import { projectRuntimeTokenUsage } from "../runtime-usage-ledger.js";
 import { isCompactionHostBase } from "../compaction-host-provenance.js";
 import {
@@ -196,6 +203,44 @@ function kernelBudget(compressor, ephemeralTokens = 0, messages = []) {
       Math.max(1, Math.floor(inputBudget * 0.05)),
     ),
   };
+}
+
+function boundLocalHandoff(
+  item,
+  { items, planRequest, summaryOptions, droppedMessages, compressedMessages },
+) {
+  const droppedIds = new Set(
+    summaryOptions.parents.map(({ itemId }) => itemId),
+  );
+  const retained = items.filter(({ itemId }) => !droppedIds.has(itemId));
+  if (retained.length + droppedIds.size !== items.length) return item;
+
+  // Run the same planner as settlement so an already admissible handoff
+  // keeps its full contents. This preview has no write or provider effects.
+  const plan = planContext({ ...planRequest, items: [...retained, item] });
+  const omission = plan.dropped.find(({ itemId }) => itemId === item.itemId);
+  if (
+    !omission ||
+    !["input_budget", "partition_ceiling"].includes(omission.reason)
+  ) {
+    return item;
+  }
+
+  const handoff = formatStructuredHandoff(
+    buildExtractiveHandoff(droppedMessages, {
+      maxContentChars: Math.min(4000, plan.selectableBudget * 2),
+    }),
+  );
+  const bounded = createSummaryContextItem({
+    ...summaryOptions,
+    messages: [
+      { role: "assistant", content: `[Conversation Summary]\n${handoff}` },
+      ...compressedMessages.filter(
+        (message) => fileReadProgressBody(message) !== null,
+      ),
+    ],
+  });
+  return bounded.tokenEstimate < item.tokenEstimate ? bounded : item;
 }
 
 function usageReceipt(stats, provider, model) {
@@ -436,6 +481,22 @@ export async function compactLiveMessagesCanonical(
   const provider = options.provider || "provider.local";
   const model = options.model || "default";
   const memoryRevision = await runtime.memoryPort.getRevision();
+  const compactionPolicy = {
+    ...kernelBudget(
+      compressor,
+      messagesToContextItems(
+        ephemeralMessages.map(({ message }) => message),
+        { sessionId, allowExternalization: false },
+      ).reduce((total, item) => total + item.tokenEstimate, 0),
+      messages,
+    ),
+    sink: provider,
+    scopeAdmissions: [{ scope: "session", scopeId: sessionId }],
+    policyVersion: "cli-context-policy-v1",
+    modelProfile: model,
+    memoryRevision,
+    now: operationNow,
+  };
   let settledOutputItems = null;
   {
     const appendCompaction = runtime.sessionPort.appendCompaction.bind(
@@ -500,21 +561,8 @@ export async function compactLiveMessagesCanonical(
     receipt = await runtime.kernel.compactContext({
       operationId,
       sessionId,
-      ...kernelBudget(
-        compressor,
-        messagesToContextItems(
-          ephemeralMessages.map(({ message }) => message),
-          { sessionId, allowExternalization: false },
-        ).reduce((total, item) => total + item.tokenEstimate, 0),
-        messages,
-      ),
-      sink: provider,
-      scopeAdmissions: [{ scope: "session", scopeId: sessionId }],
-      policyVersion: "cli-context-policy-v1",
-      modelProfile: model,
-      memoryRevision,
+      ...compactionPolicy,
       allowFallback: false,
-      now: operationNow,
       metadata: {
         inputMessageCount: messages.length,
         originalTokens: estimatedTokens(messages),
@@ -535,15 +583,43 @@ export async function compactLiveMessagesCanonical(
         const reduced =
           Number(summaryStats.saved || 0) > 0 ||
           result.messages.length < droppedMessages.length;
-        const item = reduced
+        const summaryOptions = {
+          parents: droppedItems,
+          operationId: context.operationId,
+          now: operationNow,
+          allowExternalization: persistentSession,
+        };
+        let item = reduced
           ? createSummaryContextItem({
+              ...summaryOptions,
               messages: result.messages,
-              parents: droppedItems,
-              operationId: context.operationId,
-              now: operationNow,
-              allowExternalization: persistentSession,
             })
           : null;
+        if (
+          item &&
+          summaryReceipt.outcome === "not_metered" &&
+          isLocalCompactionResult(result)
+        ) {
+          const bounded = boundLocalHandoff(item, {
+            items: initialItems,
+            planRequest: {
+              ...compactionPolicy,
+              sessionHead: context.inputHead,
+            },
+            summaryOptions,
+            droppedMessages,
+            compressedMessages: result.messages,
+          });
+          if (bounded !== item) {
+            item = bounded;
+            summaryStats = {
+              ...summaryStats,
+              summaryMode: "extractive-fallback",
+              degraded: true,
+              degradedReason: "local_handoff_over_budget",
+            };
+          }
+        }
         return {
           items: item ? [item] : [],
           usageReceipt: summaryReceipt,
