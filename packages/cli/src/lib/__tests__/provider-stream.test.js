@@ -135,6 +135,22 @@ describe("openAIStream", () => {
     expect(await collect(openAIStream(args))).toEqual(["x"]);
   });
 
+  it("treats an explicit provider error as terminal without requiring a completion marker", async () => {
+    vi.stubGlobal(
+      "fetch",
+      mockFetch([
+        'data: {"choices":[{"delta":{"content":"partial"}}]}\n',
+        'data: {"error":{"message":"upstream connection reset"}}\n',
+        'data: {"choices":[{"delta":{"content":"late"}}]}\n',
+      ]),
+    );
+    const stream = openAIStream(args);
+    expect(await stream.next()).toEqual({ done: false, value: "partial" });
+    await expect(stream.next()).rejects.toMatchObject({
+      code: "CC_CHAT_COMPLETIONS_STREAM_FAILED",
+    });
+  });
+
   it("throws on a non-ok response", async () => {
     vi.stubGlobal(
       "fetch",

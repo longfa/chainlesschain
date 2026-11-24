@@ -175,6 +175,31 @@ describe("streamOpenAI", () => {
       ),
     ).rejects.toThrow("API error: 401");
   });
+
+  it("rejects a provider error after partial text in ordinary chat", async () => {
+    const cancel = vi.fn();
+    const body = makeReadableStream([
+      'data: {"choices":[{"delta":{"content":"partial"}}]}\n',
+      'data: {"error":{"message":"upstream connection reset"}}\n',
+    ]);
+    const reader = body.getReader();
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      body: { getReader: () => ({ ...reader, cancel }) },
+    });
+    const tokens = [];
+    await expect(
+      streamOpenAI(
+        [],
+        "gpt-4o",
+        "https://api.openai.com/v1",
+        "test-key",
+        (token) => tokens.push(token),
+      ),
+    ).rejects.toMatchObject({ code: "CC_CHAT_COMPLETIONS_STREAM_FAILED" });
+    expect(tokens).toEqual(["partial"]);
+    expect(cancel).toHaveBeenCalledOnce();
+  });
 });
 
 describe("streamGemini", () => {

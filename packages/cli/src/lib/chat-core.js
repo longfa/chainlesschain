@@ -24,6 +24,9 @@ import {
 } from "./provider-protocol.js";
 import { appendTokenUsage } from "../harness/jsonl-session-store.js";
 import {
+  CHAT_COMPLETIONS_STREAM_FAILED,
+  cancelProviderStreamReader,
+  createChatCompletionsStreamError,
   isRetryableStreamError,
   STREAM_RETRY_BASE_MS,
   resolveStreamRetryMax,
@@ -332,8 +335,7 @@ export async function streamOpenAI(
           }
           try {
             const json = JSON.parse(data);
-            if (options.requireCompletion && json.error)
-              throw new Error("OpenAI stream returned an error");
+            if (json?.error) throw createChatCompletionsStreamError();
             const content = json.choices?.[0]?.delta?.content;
             if (content) {
               fullResponse += content;
@@ -353,6 +355,7 @@ export async function streamOpenAI(
           } catch (error) {
             if (
               options.requireCompletion ||
+              error?.code === CHAT_COMPLETIONS_STREAM_FAILED ||
               error?.isOutputBackpressureFailure === true
             )
               throw error;
@@ -362,8 +365,12 @@ export async function streamOpenAI(
       }
     }
   } catch (e) {
+    if (e?.code === CHAT_COMPLETIONS_STREAM_FAILED)
+      cancelProviderStreamReader(reader);
     throw attachStreamRetryMetadata(
-      guard.stalled() && !isFormalBudgetError(e)
+      guard.stalled() &&
+        !isFormalBudgetError(e) &&
+        e?.code !== CHAT_COMPLETIONS_STREAM_FAILED
         ? new Error(
             `API stream stalled (no data in ${STREAM_STALL_MS / 1000}s)`,
           )
