@@ -1,0 +1,53 @@
+name: CLI cross-host task readback
+
+on:
+  push:
+    branches: [feature/cli-cross-host-task-readback-20261124]
+    paths:
+      - ".github/workflows/cli-cross-host-task-readback.yml"
+      - ".github/scripts/cli-cross-host-task-readback.mjs"
+
+permissions:
+  contents: read
+
+jobs:
+  remote-linux:
+    name: Published CLI task ownership on independent Linux host
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22.20.0"
+      - name: Install the exact release
+        run: npm install --prefix "$RUNNER_TEMP/cli" --registry https://registry.npmjs.org --omit=dev --no-audit --no-fund chainlesschain@0.166.162
+      - name: Announce the task rendezvous
+        id: rendezvous
+        run: |
+          node --input-type=module -e '
+            import { appendFileSync, writeFileSync } from "node:fs";
+            import { join } from "node:path";
+            const startAt = Date.now() + 135000;
+            writeFileSync(join(process.env.RUNNER_TEMP, "ready.json"), JSON.stringify({ startAt, run: process.env.GITHUB_RUN_ID }) + "\n");
+            appendFileSync(process.env.GITHUB_OUTPUT, "start_at=" + startAt + "\n");
+          '
+      - uses: actions/upload-artifact@v6
+        with:
+          name: cross-host-task-ready
+          path: ${{ runner.temp }}/ready.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Observe and confirm both independent task owners
+        env:
+          CC_CROSS_HOST_START_AT: ${{ steps.rendezvous.outputs.start_at }}
+        run: node .github/scripts/cli-cross-host-task-readback.mjs "$RUNNER_TEMP/cli/node_modules/chainlesschain" "$CC_CROSS_HOST_START_AT" "$RUNNER_TEMP/linux-result.json"
+      - uses: actions/upload-artifact@v6
+        with:
+          name: cross-host-task-linux-result
+          path: ${{ runner.temp }}/linux-result.json
+          if-no-files-found: error
+          retention-days: 30
