@@ -1,5 +1,9 @@
 # Changelog — ChainlessChain IDE Bridge (VS Code)
 
+## [0.37.198] - CLI 0.166.163 pairing (candidate, 2026-11-24)
+
+- Recommend CLI `0.166.163` for improved search diagnostics and recovery from a timed-out Windows credential read.
+
 ## [0.37.197] - CLI 0.166.162 pairing (candidate, 2026-11-23)
 
 - Open a session fork in a separate chat tab so the source conversation remains available.

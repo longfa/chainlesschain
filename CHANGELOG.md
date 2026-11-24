@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed - cc CLI 0.166.163 and IDE pairing (candidate, 2026-11-24)
+
+- Require a nonempty file search pattern and direct coding sessions to paginated reads when inspecting a file without a search term.
+- Preserve OS credential command failures and retry a timed-out Windows DPAPI read once.
+- Ask coding sessions to verify workspace changes against tool receipts before reporting delivery.
+- Pair with Open VSX 0.37.198 and JetBrains 0.4.213 after the exact-source release gates pass.
+
 ### Fixed - cc CLI 0.166.162 and IDE pairing (candidate, 2026-11-23)
 
 - Preserve approved plan permissions across interactive and background resumes. Report headless storage failures and destructive-action denials with nonzero exit codes.
