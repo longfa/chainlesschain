@@ -4,7 +4,7 @@
 
 CLI **0.166.162** 已通过 GitHub Actions OIDC 发布到 npm。Linux、Windows 和 macOS 发布门禁通过，公开归档和签名来源已核验。运行 `npm i -g chainlesschain@0.166.162 --registry https://registry.npmjs.org` 安装，重启宿主后运行 `cc --version` 和 `cc doctor`。 [npm 发布证据](https://github.com/longfa/chainlesschain/actions/runs/45306343051)
 
-本版恢复已批准计划的权限档位，提供无头启动错误和 Git 安装的 JSON 回执，并在任务视图显示调度截止时间与下一次执行时间。Open VSX **0.37.197** 已公开，配套 JetBrains **0.4.212** 正在发布。 [安装与升级](docs-site/docs/chainlesschain/cli-ide-update-2026-11-24-162.md)
+本版恢复已批准计划的权限档位，提供无头启动错误和 Git 安装的 JSON 回执，并在任务视图显示截止时间和下一次运行时间。Open VSX **0.37.197** 与 JetBrains **0.4.212** 已公开，安装包均已回读，推荐 CLI **0.166.162**。 [安装与升级](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-24-162.html) · [设计与验证](https://design.chainlesschain.com/release-runtime-update-2026-11-24-162.html)
 
 ## 上一公开版本（2026-11-23）
 

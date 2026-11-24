@@ -4,7 +4,7 @@ layout: home
 hero:
   name: ChainlessChain
   text: 系统设计文档
-  tagline: "CLI 0.166.161、Open VSX 0.37.196 和 JetBrains 0.4.211 已公开"
+  tagline: "CLI 0.166.162、Open VSX 0.37.197 和 JetBrains 0.4.212 已公开"
   image:
     src: /logo.png
     alt: ChainlessChain Logo
@@ -94,9 +94,9 @@ features:
   </div>
 </div>
 
-## 当前运行时与发行（2026-11-23）
+## 当前运行时与发行（2026-11-24）
 
-CLI **0.166.161** 已在 npm 公开。Open VSX **0.37.196** 与 JetBrains **0.4.211** 已核验公开下载，均推荐 CLI **0.166.161**。LK 目录可按需刷新，离线快照包括 GPT‑6.2 Sol 和 Astra。[运行时、目录设计与发行证据](/release-runtime-update-2026-11-23-161) · [上轮任务生命周期设计](/release-runtime-update-2026-11-22-160)
+CLI **0.166.162** 已在 npm 公开。Open VSX **0.37.197** 与 JetBrains **0.4.212** 已核验公开下载，均推荐 CLI **0.166.162**。 [会话恢复、任务生命周期与发行证据](/release-runtime-update-2026-11-24-162) · [LK 目录与上轮发行](/release-runtime-update-2026-11-23-161)
 
 ## 历史发行与源码核对（2026-11-21）
 

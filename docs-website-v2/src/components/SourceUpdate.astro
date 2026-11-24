@@ -45,9 +45,9 @@ const items = english
     )}
     <p class="mt-3 text-sm text-muted">
       {english
-        ? "Run cc tasks --json to see task states, deadlines, waiting dependencies, and stop paths. In VS Code, fork a session from an earlier reply or open the workflow map for active project workflows. Headless sessions can restore an approved plan after reopening."
-        : "运行 cc tasks --json 可查看任务状态、到期时间、等待项与停止路径。VS Code 支持从历史回复处分叉，并用工作流地图查看当前项目的活动流程。无头会话重开后可恢复已批准的计划。"}
-      <a class="text-ember hover:underline" href={releaseStatus.runtimeDesign}>{english ? " Runtime and LK catalog design ↗" : " 运行时与 LK 目录设计 ↗"}</a>
+        ? "Run cc tasks --json to see deadlines, next run times, waiting dependencies, and stop paths. A resumed session restores approved plan permissions, and headless startup persistence failures include a JSON receipt. VS Code opens session forks in their own tabs."
+        : "运行 cc tasks --json 可查看任务截止时间、下次运行时间、等待项与停止路径。恢复会话时保留已批准计划的权限，无头启动的持久化故障会返回 JSON 回执。VS Code 在独立标签页中打开分叉会话。"}
+      <a class="text-ember hover:underline" href={releaseStatus.runtimeDesign}>{english ? " Session recovery and task lifecycle design" : " 会话恢复与任务生命周期设计"}</a>
     </p>
     <p class="mt-3 text-sm text-muted">
       {english

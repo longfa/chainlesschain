@@ -4,7 +4,7 @@
 
 CLI **0.166.162** is public on npm from exact source `03cb502b0e0e3facfbce79ef336fec7861a5554c`. GitHub Actions verified the public archive and signed provenance after CLI CI, Strict Sandbox, and the child package checks passed. Install `npm i -g chainlesschain@0.166.162 --registry https://registry.npmjs.org`, restart the CLI and IDE hosts, then run `cc --version` and `cc doctor`. [OIDC publication](https://github.com/longfa/chainlesschain/actions/runs/45306343051)
 
-This release preserves approved plan permissions across resumes, reports headless persistence failures in JSON, and records Git installation outcomes. Open VSX **0.37.197** is public. The paired JetBrains **0.4.212** is in its release workflow. [Upgrade guide](../../docs-site/docs/chainlesschain/cli-ide-update-2026-11-24-162.md)
+This release preserves approved plan permissions across resumes, reports headless persistence failures in JSON, and records Git installation outcomes. Open VSX **0.37.197** and JetBrains **0.4.212** are publicly downloadable and recommend this CLI version. [Upgrade guide](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-24-162.html)
 
 Release limits are `NOT_PAID_READY` for paid readiness, `NOT_ADMITTED` for native admission, and `HOLD` for automatic promotion. This pairing covers the CLI and IDE extensions.
 

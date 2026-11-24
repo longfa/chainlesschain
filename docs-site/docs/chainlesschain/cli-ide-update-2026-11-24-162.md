@@ -8,7 +8,7 @@ CLI 已在 npm 公开。标签 `v-npm-0-166-162` 绑定提交 `03cb502b0e0e3facf
 
 Open VSX **0.37.197** 已上架，公开 VSIX 与标签工作流制品的 SHA-256 一致。 [下载 VSIX](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.197/file/chainlesschain.chainlesschain-ide-0.37.197.vsix) · [Open VSX 发布](https://github.com/longfa/chainlesschain/actions/runs/45309426901)
 
-JetBrains **0.4.212** 的发布工作流正在运行。 [JetBrains 发布进度](https://github.com/longfa/chainlesschain/actions/runs/45309426991)
+JetBrains **0.4.212** 已获 Marketplace 批准并公开上架。下载的 ZIP 内两项文件与标签工作流制品一致。 [下载 JetBrains 插件](https://plugins.jetbrains.com/plugin/download?rel=true&updateId=1227765) · [JetBrains 标签工作流](https://github.com/longfa/chainlesschain/actions/runs/45309426991)
 
 ## 使用示例
 

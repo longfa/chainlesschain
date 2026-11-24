@@ -4,7 +4,7 @@
 
 CLI **0.166.162** is public on npm. GitHub Actions published the exact source through OIDC after the Linux, Windows, and macOS gates passed, then verified the public archive and signed provenance. Install `npm i -g chainlesschain@0.166.162 --registry https://registry.npmjs.org`, restart the host, then run `cc --version` and `cc doctor`. [npm publication evidence](https://github.com/longfa/chainlesschain/actions/runs/45306343051)
 
-This release restores approved plan permissions across resumes, returns JSON receipts for headless startup and Git installation outcomes, and shows task deadlines and next run times. Open VSX **0.37.197** is public. The paired JetBrains **0.4.212** is in its release workflow. [Installation and upgrades](docs-site/docs/chainlesschain/cli-ide-update-2026-11-24-162.md)
+This release restores approved plan permissions across resumes, returns JSON receipts for headless startup and Git installation outcomes, and shows task deadlines and next run times. Open VSX **0.37.197** and JetBrains **0.4.212** are publicly downloadable, and both recommend CLI **0.166.162**. [Installation and upgrades](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-24-162.html) · [Design and verification](https://design.chainlesschain.com/release-runtime-update-2026-11-24-162.html)
 
 ## Previous public release (2026-11-23)
 

@@ -18,3 +18,5 @@ CLI、Web 工作台和配套 IDE 可按需刷新 LK 模型目录，离线快照�
 CLI CI 通过 74 个必需作业。Strict Sandbox 的 6 个作业与六目标原生验证通过。npm 发布核对了公开归档、签名来源及 13 个上游包，10 个直接依赖版本在清洁安装中匹配。当前工程边界为 `NOT_PAID_READY`、`NOT_ADMITTED`、`HOLD`。 [CLI CI](https://github.com/longfa/chainlesschain/actions/runs/45289860156) · [Strict Sandbox](https://github.com/longfa/chainlesschain/actions/runs/45289859907) · [六目标原生验证](https://github.com/longfa/chainlesschain/actions/runs/45289910251)
 
 Open VSX 公开归档与标签制品的 SHA-256 均为 `7bc6ac205f71df933408c69f783cbcea1d6490d2d8bcaa246c9ad25d31e7c10d`。 [Open VSX 发布](https://github.com/longfa/chainlesschain/actions/runs/45309426901)
+
+JetBrains `0.4.212` 通过六个宿主用例、单元测试和插件兼容性检查，已获 Marketplace 批准并公开上架。商店重打包后的 ZIP 内两项文件与标签制品逐字节一致。公开 ZIP 的 SHA-256 为 `984c8fe3b763ba3467cec57da77dd63de76b2ad0504d8623faa60ccf237647cc`，包内推荐 CLI `0.166.162`。 [标签工作流](https://github.com/longfa/chainlesschain/actions/runs/45309426991) · [公开 ZIP](https://plugins.jetbrains.com/plugin/download?rel=true&updateId=1227765)
