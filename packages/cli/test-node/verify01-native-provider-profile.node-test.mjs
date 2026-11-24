@@ -9,12 +9,115 @@ import { fileURLToPath } from "node:url";
 import {
   nativeProviderProfile,
   assertNativeProviderIdentity,
+  assertNativePrereleaseProject,
 } from "../scripts/verify01-native-provider-profile.mjs";
 import { nativeEnvironment } from "../scripts/verify01-native-task-campaign.mjs";
 import { inspectModelTrace } from "../scripts/verify01-volcengine-task-diagnostic.mjs";
 import { DIAGNOSTIC } from "../scripts/verify01-volcengine-task-diagnostic.mjs";
 import { loadNativeProjectRevision } from "../scripts/verify01-project-revision.mjs";
 import { validateNativePackageSetFile } from "../scripts/verify01-native-retest-plan.mjs";
+
+test("LK candidate acceptance binds an explicit frozen-project subset independently of the runtime", () => {
+  const packages = validateNativePackageSetFile(
+    "docs/research/cli/verify01-package-sets/2026-11-24-lk-prerelease163.json",
+  );
+  const { prepublication } = JSON.parse(packages.bytes);
+  const sourceSha = "d".repeat(40);
+  const project = {
+    projectCommit: DIAGNOSTIC.projectCommit,
+    planDigest: DIAGNOSTIC.planDigest,
+    revisionBinding: null,
+  };
+  assert.notEqual(prepublication.sourceCommit, project.projectCommit);
+  const profile = nativeProviderProfile("lk");
+  const hash = (value) =>
+    `sha256:${createHash("sha256").update(value).digest("hex")}`;
+  const modelTransport = {
+    provider: profile.provider,
+    runtimeProvider: profile.runtimeProvider,
+    model: profile.model,
+    endpoint: profile.policy.endpoint,
+    policyDigest: hash(JSON.stringify(profile.policy)),
+    defaultThinkingPreserved: true,
+    formalSample: false,
+  };
+  const summary = {
+    executionSourceCommit: sourceSha,
+    projectCommit: project.projectCommit,
+    planDigest: project.planDigest,
+    cohortKind: profile.cohortKind,
+    selectionScope: "operator-subset",
+    selectedSampleIds: ["verify-04"],
+    versions: packages.versions,
+    packageSetDigest: packages.packageSetDigest,
+    prepublication,
+    modelTransport,
+  };
+  summary.executionIdentityDigest = hash(
+    JSON.stringify({
+      sourceSha,
+      taskPlanDigest: project.planDigest,
+      versions: packages.versions,
+      packageSetDigest: packages.packageSetDigest,
+      modelTransport,
+    }),
+  );
+  assert.equal(
+    assertNativeProviderIdentity(summary, "lk", sourceSha, packages, project),
+    summary.executionIdentityDigest,
+  );
+  assert.throws(
+    () =>
+      assertNativeProviderIdentity(
+        { ...summary, selectionScope: "full-native-group" },
+        "lk",
+        sourceSha,
+        packages,
+        project,
+      ),
+    /explicit samples/u,
+  );
+  assert.throws(() =>
+    assertNativeProviderIdentity(
+      {
+        ...summary,
+        prepublication: {
+          ...prepublication,
+          sourceCommit: project.projectCommit,
+        },
+      },
+      "lk",
+      sourceSha,
+      packages,
+      project,
+    ),
+  );
+
+  const selected = { ...project, provider: "lk", sampleIds: ["verify-04"] };
+  assert.throws(() =>
+    assertNativePrereleaseProject(prepublication, {
+      ...selected,
+      revisionBinding: {},
+    }),
+  );
+  assert.throws(() =>
+    assertNativePrereleaseProject(prepublication, {
+      ...selected,
+      projectCommit: prepublication.sourceCommit,
+    }),
+  );
+  const repaired = { ...selected, provider: "openai", revisionBinding: {} };
+  assert.throws(
+    () => assertNativePrereleaseProject(prepublication, repaired),
+    /source must match/u,
+  );
+  assert.doesNotThrow(() =>
+    assertNativePrereleaseProject(prepublication, {
+      ...repaired,
+      projectCommit: prepublication.sourceCommit,
+    }),
+  );
+});
 
 test("trace identity follows the selected provider and rejects mismatched usage", () => {
   const original = nativeProviderProfile();

@@ -17,7 +17,10 @@ import {
   inspectModelTrace,
   changedFiles,
 } from "./verify01-volcengine-task-diagnostic.mjs";
-import { nativeProviderProfile } from "./verify01-native-provider-profile.mjs";
+import {
+  assertNativePrereleaseProject,
+  nativeProviderProfile,
+} from "./verify01-native-provider-profile.mjs";
 import { runtimeRepairBinding } from "./verify01-volcengine-historical-retry.mjs";
 import {
   nativeExecutionBudgets,
@@ -836,18 +839,13 @@ export async function runNativeCampaign(options) {
     projectCommit,
     revisionBinding,
   });
-  if (candidatePackages && !runtimeRepair) {
-    assert.ok(
-      revisionBinding,
-      "candidate generation requires an explicit repaired project",
-    );
-    assert.equal(
-      candidatePackages.binding.sourceCommit,
-      projectCommit,
-      "candidate engine and repaired project source must match",
-    );
-    assert.equal(provider, "openai");
-  }
+  assertNativePrereleaseProject(candidatePackages?.binding, {
+    provider,
+    projectCommit,
+    revisionBinding,
+    runtimeRepair,
+    sampleIds,
+  });
   const revisionMetadata = revisionBinding
     ? { projectRevision: revisionBinding }
     : {};

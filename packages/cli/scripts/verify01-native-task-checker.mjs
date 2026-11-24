@@ -18,6 +18,7 @@ import { generateReviewPack } from "./verify01-review-pack.mjs";
 import { REVIEW_IMAGE, reviewEnvironment } from "./verify01-review-runtime.mjs";
 import { DIAGNOSTIC } from "./verify01-volcengine-task-diagnostic.mjs";
 import { runtimeRepairBinding } from "./verify01-volcengine-historical-retry.mjs";
+import { assertNativePrereleaseProject } from "./verify01-native-provider-profile.mjs";
 import {
   selectNativeSamples,
   parseNativeSampleIds,
@@ -319,8 +320,13 @@ export async function checkNativeCampaign({
     ...(prepublication ? { prepublication } : {}),
   };
   if (prepublication) {
-    if (!runtimeRepair)
-      assert.equal(prepublication.sourceCommit, projectCommit);
+    assertNativePrereleaseProject(prepublication, {
+      provider: source.modelTransport?.provider,
+      projectCommit,
+      revisionBinding,
+      runtimeRepair,
+      sampleIds,
+    });
     const proof = json(artifactFile(input, "prerelease-bundle.json"));
     assert.equal(proof.sourceCommit, prepublication.sourceCommit);
     assert.equal(proof.runId, prepublication.runId);
