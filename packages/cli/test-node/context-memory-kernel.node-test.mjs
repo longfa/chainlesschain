@@ -38,6 +38,7 @@ import { JsonlSessionContextPort } from "../src/lib/context-memory-kernel/jsonl-
 import { CliLegacyMemoryPrivacyPurgePort } from "../src/lib/context-memory-kernel/privacy-purge-port.js";
 import { compactLiveMessagesCanonical } from "../src/lib/context-memory-kernel/live-compaction.js";
 import { prepareCanonicalProviderContext } from "../src/lib/context-memory-kernel/provider-context.js";
+import { collectFileReadProgress } from "../src/lib/read-file-page.js";
 import { addMemory as addLegacyMemory } from "../src/lib/memory-manager.js";
 import { storeMemory as storeLegacyHierarchicalMemory } from "../src/lib/hierarchical-memory.js";
 import { CLIPermanentMemory } from "../src/lib/permanent-memory.js";
@@ -59,6 +60,7 @@ import {
   readVerifiedMessages,
   startSession,
 } from "../src/harness/jsonl-session-store.js";
+import { PromptCompressor } from "../src/harness/prompt-compressor.js";
 
 const AT = "2026-08-29T00:00:00.000Z";
 const CLOCK = () => Date.parse(AT);
@@ -1341,6 +1343,85 @@ test("canonical live compaction owns selection and commits through its compatibi
       "finish the pending recovery check",
     );
     assert.ok(result.messages.length < messages.length);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("canonical live compaction bounds an oversized local handoff", async () => {
+  const directory = mkdtempSync(
+    join(TEMPORARY_ROOT, "cc-context-local-handoff-"),
+  );
+  const task = { role: "user", content: "Finish the pending recovery check." };
+  const cursor = {
+    path: "example.js",
+    range: { startLine: 1, endLine: 20, totalLines: 50 },
+    nextRead: { startLine: 21 },
+    readAt: 0,
+  };
+  const messages = [
+    { role: "user", content: `Old request. ${"x".repeat(1200)}` },
+    {
+      role: "assistant",
+      content: "",
+      tool_calls: [
+        {
+          id: "read-1",
+          type: "function",
+          function: { name: "read_file", arguments: '{"path":"example.js"}' },
+        },
+      ],
+    },
+    {
+      role: "tool",
+      tool_call_id: "read-1",
+      content: JSON.stringify({
+        ...cursor,
+        content: "file content ".repeat(100),
+      }),
+    },
+    ...["a", "b", "c", "d", "e", "f"].map((text) => ({
+      role: "assistant",
+      content: text.repeat(1200),
+    })),
+    task,
+  ];
+  const compressor = new PromptCompressor({ maxTokens: 512, maxMessages: 4 });
+  let summaries = 0;
+  let settledOutput;
+  const compress = compressor.compress.bind(compressor);
+  compressor.compress = async (...args) => {
+    summaries += 1;
+    return compress(...args);
+  };
+  try {
+    const result = await compactLiveMessagesCanonical(messages, {
+      compressor,
+      provider: "provider.local",
+      model: "model-1",
+      env: { CHAINLESSCHAIN_CONTEXT_MEMORY_CLI_STAGE: "canonical_default" },
+      memoryFilePath: join(directory, "memory.json"),
+      clock: CLOCK,
+      persist: false,
+      requiredUserBindings: [{ original: task, message: { ...task } }],
+      commit: async ({ canonical }) => {
+        settledOutput = canonical.outputItems;
+        return { ok: true };
+      },
+    });
+    assert.equal(summaries, 1);
+    assert.equal(result.receipt.status, "degraded");
+    assert.equal(result.stats.summaryMode, "extractive-fallback");
+    assert.equal(
+      result.messages.filter((message) => message === task).length,
+      1,
+    );
+    assert.deepEqual(collectFileReadProgress(result.messages), [cursor]);
+    const handoff = settledOutput.find(
+      (item) => item.sourceRef.store === "cli-context-summary",
+    );
+    assert.ok(handoff.provenance.parentDigests.length > 0);
+    assert.ok(handoff.tokenEstimate < 512);
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
