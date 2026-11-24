@@ -334,6 +334,59 @@ describe("interactive approvals round-trip", () => {
     ]);
   });
 
+  it("retires a pending approval before reporting a turn interrupt", async () => {
+    const input = new PassThrough();
+    const events = [];
+    input.write(
+      JSON.stringify({ type: "user", text: "Run the checks" }) + "\n",
+    );
+
+    await runAgentHeadlessStream(
+      { expandFileRefs: false, interactiveApprovals: true, settingsHooks: {} },
+      {
+        bootstrap: async () => ({ db: null }),
+        getApprovalGate: async () => null,
+        input,
+        writeErr: () => {},
+        writeOut(line) {
+          const event = JSON.parse(line);
+          events.push(event);
+          if (event.type === "approval_request") {
+            input.write(JSON.stringify({ type: "interrupt" }) + "\n");
+          }
+          if (event.type === "result") input.end();
+        },
+        agentLoop: async function* (_messages, options) {
+          const interrupted = new Promise((resolve) => {
+            options.signal.addEventListener("abort", resolve, { once: true });
+          });
+          await Promise.race([
+            options.permissionConfirm({
+              tool: "run_shell",
+              args: { command: "npm run test:unit" },
+            }),
+            interrupted,
+          ]);
+          options.signal.throwIfAborted();
+          yield { type: "response-complete", content: "checks finished" };
+        },
+      },
+    );
+
+    const request = events.find((event) => event.type === "approval_request");
+    const resolution = events.find(
+      (event) => event.type === "approval_resolved",
+    );
+    const result = events.find((event) => event.type === "result");
+    expect(resolution).toMatchObject({
+      id: request.id,
+      approved: false,
+      via: "turn-interrupted",
+    });
+    expect(result).toMatchObject({ subtype: "interrupted", is_error: false });
+    expect(events.indexOf(resolution)).toBeLessThan(events.indexOf(result));
+  });
+
   it("deny: the tool gets false", async () => {
     const h = harness({
       inputGen: async function* () {
