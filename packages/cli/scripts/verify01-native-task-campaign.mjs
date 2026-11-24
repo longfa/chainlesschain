@@ -349,7 +349,8 @@ export function nativeEnvironment(
     NO_COLOR: "1",
     LANG: "C.UTF-8",
     CC_FORMAL_QUALITY_EVAL_HERMETIC: "1",
-    CC_FORMAL_QUALITY_EVAL_PROVIDER: providerProfile.provider,
+    CC_FORMAL_QUALITY_EVAL_PROVIDER:
+      providerProfile.runtimeProvider ?? providerProfile.provider,
     CC_FORMAL_QUALITY_EVAL_ISOLATION_ROOT: root,
     CC_FORMAL_QUALITY_EVAL_ALLOWED_FILES: JSON.stringify(expectedFiles),
     [providerProfile.keyEnvironment]: capability,
@@ -520,7 +521,10 @@ export async function runVSCodeNativeTask({
       cwd: repository,
       env: environment,
       deadline,
-      secret: environment.VOLCENGINE_API_KEY,
+      secret:
+        environment.CC_API_KEY ||
+        environment.OPENAI_API_KEY ||
+        environment.VOLCENGINE_API_KEY,
       outputPrefix: path.join(outputDir, "commands/host-ui"),
     },
   );
@@ -652,6 +656,8 @@ export async function runNativeCampaign(options) {
     : null;
   const budgets = nativeExecutionBudgets(packageManifest, provider);
   providerProfile = nativeProviderProfile(provider, { budgets });
+  const runtimeProvider =
+    providerProfile.runtimeProvider ?? providerProfile.provider;
   const candidatePackages = readPrereleasePackages(
     packageManifest,
     process.env.CC_VERIFY01_PRERELEASE_DIRECTORY,
@@ -705,6 +711,11 @@ export async function runNativeCampaign(options) {
     `${planRoot}/comparison-bindings.json`,
     `${planRoot}/plan.sha256`,
   ];
+  if (provider === "lk")
+    bindingFiles.push(
+      "packages/cli/scripts/verify01-lk-diagnostic-broker.mjs",
+      "packages/cli/src/lib/llm-channel-presets.js",
+    );
   if (projectRevisionFile) bindingFiles.push(projectRevisionFile);
   const fetchPreloadSource =
     "packages/cli/scripts/verify01-fetch-diagnostics-preload.cjs";
@@ -866,6 +877,7 @@ export async function runNativeCampaign(options) {
     versions,
     modelTransport: {
       provider: providerProfile.provider,
+      ...(providerProfile.runtimeProvider ? { runtimeProvider } : {}),
       model: providerProfile.model,
       endpoint: providerProfile.policy.endpoint,
       policyDigest: hash(JSON.stringify(providerProfile.policy)),
@@ -900,9 +912,10 @@ export async function runNativeCampaign(options) {
       ? "volcengine-runtime-repair-frozen-project"
       : revisionBinding
         ? "repaired-source-followup"
-        : providerProfile.provider === "openai"
-          ? "new-openai-provider-diagnostic"
-          : "volcengine-native-diagnostic",
+        : (providerProfile.cohortKind ??
+          (providerProfile.provider === "openai"
+            ? "new-openai-provider-diagnostic"
+            : "volcengine-native-diagnostic")),
     executionIdentityDigest: hash(
       JSON.stringify({
         sourceSha,
@@ -1271,7 +1284,7 @@ export async function runNativeCampaign(options) {
       }
       broker.beginTask(sample.id);
       for (const [field, value] of Object.entries({
-        provider: providerProfile.provider,
+        provider: runtimeProvider,
         model: providerProfile.model,
         baseUrl: childBaseUrl,
       }))
@@ -1296,7 +1309,7 @@ export async function runNativeCampaign(options) {
       ]);
       assert.ok(readback.ok);
       const configured = JSON.parse(readback.stdout).value;
-      assert.equal(configured.provider, providerProfile.provider);
+      assert.equal(configured.provider, runtimeProvider);
       assert.equal(configured.model, providerProfile.model);
       assert.equal(configured.baseUrl, childBaseUrl);
       row.configure = {
@@ -1329,7 +1342,7 @@ export async function runNativeCampaign(options) {
         pluginDigest,
         versions,
         reviewChanges,
-        provider: providerProfile.provider,
+        provider: runtimeProvider,
         model: providerProfile.model,
         maxTurns: budgets.modelTurns,
         ...packageBinding,
@@ -1343,7 +1356,7 @@ export async function runNativeCampaign(options) {
           "-p",
           prompt,
           "--provider",
-          providerProfile.provider,
+          runtimeProvider,
           "--model",
           providerProfile.model,
           "--base-url",
@@ -1398,7 +1411,7 @@ export async function runNativeCampaign(options) {
         inspected.workspace,
         {
           allowSessionEnd: entry !== "cli",
-          expectedProvider: providerProfile.provider,
+          expectedProvider: runtimeProvider,
           expectedModel: providerProfile.model,
         },
       );

@@ -10,6 +10,10 @@ import {
   OPENAI_BROKER,
   createOpenAiDiagnosticBroker,
 } from "./verify01-openai-diagnostic-broker.mjs";
+import {
+  LK_BROKER,
+  createLkDiagnosticBroker,
+} from "./verify01-lk-diagnostic-broker.mjs";
 import { nativeExecutionBudgets } from "./verify01-native-execution-budgets.mjs";
 import { runtimeRepairBinding } from "./verify01-volcengine-historical-retry.mjs";
 
@@ -19,9 +23,20 @@ export function nativeProviderProfile(
   { budgets } = {},
 ) {
   assert.ok(
-    ["volcengine", "openai"].includes(provider),
+    ["volcengine", "openai", "lk"].includes(provider),
     "unsupported diagnostic provider",
   );
+  if (provider === "lk")
+    return Object.freeze({
+      provider,
+      runtimeProvider: "custom",
+      cohortKind: "lk-native-diagnostic",
+      model: LK_BROKER.model,
+      keyEnvironment: "CC_API_KEY",
+      policy: LK_BROKER,
+      createBroker: createLkDiagnosticBroker,
+      defaultThinkingPreserved: true,
+    });
   return provider === "openai"
     ? Object.freeze({
         provider,
@@ -91,12 +106,16 @@ export function assertNativeProviderIdentity(
       ? "volcengine-runtime-repair-frozen-project"
       : revision
         ? "repaired-source-followup"
-        : provider === "openai"
-          ? "new-openai-provider-diagnostic"
-          : "volcengine-native-diagnostic",
+        : (profile.cohortKind ??
+          (provider === "openai"
+            ? "new-openai-provider-diagnostic"
+            : "volcengine-native-diagnostic")),
   );
   assert.deepEqual(summary.modelTransport, {
     provider: profile.provider,
+    ...(profile.runtimeProvider
+      ? { runtimeProvider: profile.runtimeProvider }
+      : {}),
     model: profile.model,
     endpoint: profile.policy.endpoint,
     policyDigest: hash(JSON.stringify(profile.policy)),
