@@ -15,6 +15,63 @@ import {
   loadNativePackageSet,
   VERSIONS,
 } from "../scripts/verify01-native-task-campaign.mjs";
+import {
+  reviewDockerArgs,
+  reviewEnvironment,
+} from "../scripts/verify01-review-runtime.mjs";
+
+test("checker subprocesses keep the mounted Linux temporary directory", () => {
+  const env = reviewEnvironment({
+    PATH: "/usr/bin",
+    TMPDIR: "/mounted-checker/scratch",
+    CC_VERIFY01_NPM_CACHE_DIR: "/mounted-checker/npm-cache",
+    OPENAI_API_KEY: "fixture-key",
+  });
+  assert.deepEqual(env, {
+    PATH: "/usr/bin",
+    TMPDIR: "/mounted-checker/scratch",
+    CC_VERIFY01_NPM_CACHE_DIR: "/mounted-checker/npm-cache",
+  });
+});
+
+test("the shared npm cache is mounted only for locked dependency installation", () => {
+  const options = {
+    workspace: path.resolve("workspace"),
+    control: path.resolve("control"),
+    containerName: "verify01-fixture",
+    imageId: `sha256:${"a".repeat(64)}`,
+    uid: 1000,
+    gid: 1000,
+  };
+  const npmCacheDir = path.resolve("npm-cache");
+  const command = ["npm", "ci"];
+  const setup = reviewDockerArgs({
+    ...options,
+    setup: true,
+    command,
+    npmCacheDir,
+  });
+  assert.ok(
+    setup.includes(`type=bind,source=${npmCacheDir},target=/tmp/npm-cache`),
+  );
+  assert.throws(
+    () => reviewDockerArgs({ ...options, command, npmCacheDir }),
+    /only during locked dependency installation/,
+  );
+  assert.throws(
+    () =>
+      reviewDockerArgs({
+        ...options,
+        setup: true,
+        command: ["node", "--version"],
+        npmCacheDir,
+      }),
+    /only during locked dependency installation/,
+  );
+  const check = reviewDockerArgs({ ...options, command: ["node", "--test"] });
+  assert.equal(check[check.indexOf("--network") + 1], "none");
+  assert.ok(!check.some((arg) => arg.includes("/tmp/npm-cache")));
+});
 
 test("package set checker independently rejects missing, changed or mismatched version bindings", (t) => {
   const root = fs.mkdtempSync(
@@ -96,6 +153,16 @@ test("accepts only exact bounded candidate bytes at the catalog path", (t) => {
   assert.deepEqual(
     validateNativeCandidate(root, row, { expectedFiles: [file] })[0].bytes,
     bytes,
+  );
+  assert.throws(
+    () =>
+      validateNativeCandidate(
+        root,
+        row,
+        { expectedFiles: [file] },
+        { [file]: { digest: row.candidates[0].digest } },
+      ),
+    /candidate unchanged from initial workspace/u,
   );
   fs.appendFileSync(path.join(root, candidatePath), "changed");
   assert.throws(

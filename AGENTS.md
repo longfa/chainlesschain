@@ -35,6 +35,8 @@
 - Coverage targets (from docs): unit 80%+, integration 60%+, E2E on critical flows.
 - Naming: `*.test.ts` / `*.spec.ts` and tests under `tests/`.
 
+The primary purpose of the VERIFY01 36+9 campaign is to find reproducible problems and improve ChainlessChain. For each confirmed issue, record the triggering sample and evidence, fix the cause, and rerun the trigger. When infrastructure or a provider blocks a sample, record the failing stage and error.
+
 ## npm Release Validation
 
 - Use GitHub Actions OIDC Trusted Publishing for npm releases. This is the established release method; do not switch to npm tokens or local publishing when troubleshooting or retrying a failed release.

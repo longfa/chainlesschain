@@ -56,6 +56,21 @@ function defaultRunner(file, args, input = undefined) {
     timeout: 15000,
     ...(input !== undefined ? { input } : {}),
   });
+  if (result.error || result.signal) {
+    const reason = result.error?.code ?? result.signal;
+    const code =
+      typeof reason === "string" && /^[A-Z][A-Z0-9_]{0,39}$/u.test(reason)
+        ? reason
+        : "SECRET_STORE_COMMAND_FAILED";
+    const message =
+      code === "ETIMEDOUT"
+        ? "secret store command timed out"
+        : "secret store command failed";
+    const error = new Error(`${message} (${code})`);
+    error.code = code;
+    error.exitCode = result.status;
+    throw error;
+  }
   if (result.status !== 0) {
     const error = new Error(
       String(result.stderr || "secret store command failed").trim(),
@@ -202,11 +217,21 @@ function createDpapiBackend({
       key = normalizeSecretIdentifier(key, "secret key");
       const encoded = load()[key];
       if (!encoded) return null;
-      const plain = runner(
-        "powershell.exe",
-        ["-NoProfile", "-NonInteractive", "-Command", DPAPI_UNPROTECT_SCRIPT],
-        encoded,
-      ).trim();
+      const unprotect = () =>
+        runner(
+          "powershell.exe",
+          ["-NoProfile", "-NonInteractive", "-Command", DPAPI_UNPROTECT_SCRIPT],
+          encoded,
+        ).trim();
+      let plain;
+      try {
+        plain = unprotect();
+      } catch (error) {
+        if (error?.code !== "ETIMEDOUT") throw error;
+        // A cold PowerShell start can time out. DPAPI unprotect only reads the
+        // encrypted value, so one retry is safe before reporting a failure.
+        plain = unprotect();
+      }
       return Buffer.from(plain, "base64").toString("utf8");
     },
     delete(key) {

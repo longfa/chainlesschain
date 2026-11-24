@@ -85,7 +85,7 @@ test("existing provider selections retain their exact matrix and explicit sample
   );
 });
 
-test("manual OpenAI selector binds all cells to current packages, a dedicated key and one live attempt", (t) => {
+test("manual selector binds OpenAI and LK cells to their packages and dedicated credentials", (t) => {
   const repository = fileURLToPath(new URL("../../../", import.meta.url));
   const workflow = fs.readFileSync(
     path.join(
@@ -206,5 +206,28 @@ test("manual OpenAI selector binds all cells to current packages, a dedicated ke
   assert.match(
     run({ PACKAGE_SET_SELECTION: "prerelease" }).stderr,
     /explicit committed candidate package identity/u,
+  );
+  const lk = {
+    NATIVE_PROVIDER: "lk",
+    OPENAI_API_KEY: "",
+    LK_CREDENTIAL_PRESENT: "false",
+    HOST_SELECTION: "macos",
+    NATIVE_PACKAGE_SET_FILE:
+      "docs/research/cli/verify01-package-sets/2026-11-24-lk-public162.json",
+  };
+  assert.match(run(lk).stderr, /Dedicated repository LK_VERIFY01_API_KEY/u);
+  const lkValid = run({ ...lk, LK_CREDENTIAL_PRESENT: "true" });
+  assert.equal(lkValid.status, 0, lkValid.stderr);
+  const lkOutput = fs.readFileSync(lkValid.output, "utf8");
+  const lkMatrix = JSON.parse(/^matrix=(.+)$/mu.exec(lkOutput)[1]).include;
+  assert.equal(lkMatrix.length, 7);
+  assert.ok(lkMatrix.every(({ os }) => os === "macos-15"));
+  assert.equal(
+    lkMatrix.reduce((sum, row) => sum + row.sample_count, 0),
+    15,
+  );
+  assert.match(
+    workflow,
+    /CC_API_KEY: \$\{\{ inputs\.provider == 'lk' && secrets\.LK_VERIFY01_API_KEY \|\| '' \}\}/u,
   );
 });

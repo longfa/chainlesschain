@@ -1439,7 +1439,11 @@ export async function runNativeCampaign(options) {
         result.ok && row.model.pass && row.brokerStatus.passed;
       const brokerFailure =
         row.brokerStatus.poisoned ?? row.brokerStatus.errorCode;
-      const failure = [row.host.failure, brokerFailure]
+      const failure = [
+        row.host.failure,
+        brokerFailure,
+        row.model.pass ? undefined : row.model.failureCategory,
+      ]
         .filter(Boolean)
         .join("\n");
       if (failure) row.failure = redact(failure);

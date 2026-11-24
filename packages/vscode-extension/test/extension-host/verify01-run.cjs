@@ -189,6 +189,9 @@ async function main(argv = process.argv.slice(2)) {
       cachePath,
       timeout: Math.min(15000, config.deadline - Date.now()),
       spawn: {
+        // The Linux launcher also sees a Microsoft kernel in Docker Desktop.
+        // The operator has explicitly selected this isolated Linux host.
+        env: { ...process.env, DONT_PROMPT_WSL_INSTALL: "1" },
         timeout: Math.max(1, config.deadline - Date.now()),
         windowsHide: true,
       },
