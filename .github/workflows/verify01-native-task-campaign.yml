@@ -173,7 +173,7 @@ jobs:
             import {DIAGNOSTIC} from "./packages/cli/scripts/verify01-volcengine-task-diagnostic.mjs";
             import {validateNativePackageSetFile, assertUnfinishedNativeSamples} from "./packages/cli/scripts/verify01-native-retest-plan.mjs";
             import {nativeProviderCells} from "./packages/cli/scripts/verify01-native-round-matrix.mjs";
-            import {nativeProviderProfile} from "./packages/cli/scripts/verify01-native-provider-profile.mjs";
+            import {assertNativePrereleaseProject, nativeProviderProfile} from "./packages/cli/scripts/verify01-native-provider-profile.mjs";
             import {prereleasePackageBinding} from "./packages/cli/scripts/verify01-prerelease-package-set.mjs";
             import {loadPublicGeneratorProof} from "./packages/cli/scripts/verify01-public-generator-binding.mjs";
             import {assertFreshVolcengineRound, assertFreshVolcengineBudgetRetry, verifyFreshVolcengineCredential} from "./packages/cli/scripts/verify01-volcengine-fresh-round.mjs";
@@ -253,6 +253,7 @@ jobs:
             if (!entries.length) throw new Error("unknown entry");
             let rows = Object.entries(hosts).filter(([name]) => selected === "all" || name === selected).flatMap(([, [platform, os]]) => entries.map(entry => ({group: `${platform}-${entry}`, os, entry})));
             const ids = parseNativeSampleIds(process.env.SAMPLE_SELECTION);
+            if (provider === "lk") assertNativePrereleaseProject(candidate, {...project, provider, sampleIds: ids});
             const sampleKey = ids ? [...ids].sort().join("-") : "all";
             if (sampleKey.length > 160 || !/^[a-z0-9-]+$/.test(sampleKey)) throw new Error("sample concurrency key exceeds canonical bounds");
             if (provider === "volcengine" && !freshVolcengineRound && !run && entries.includes("jetbrains") && (!ids || ids.length !== 1)) throw new Error("JetBrains generation requires exactly one explicit sample per dispatch");

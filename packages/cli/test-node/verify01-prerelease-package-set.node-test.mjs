@@ -186,6 +186,29 @@ test("artifact evidence requires the exact successful build run and source", (t)
   other.workflow_run.head_sha = "c".repeat(40);
   assert.throws(() => verifyPrereleaseArtifactMetadata(binding, run, other));
 });
+test("the release fork can provide its own exact build without accepting other repositories", (t) => {
+  const f = fixture(t);
+  f.binding.repository = "longfa/chainlesschain";
+  f.run.repository = { full_name: f.binding.repository, id: 1113474176 };
+  f.artifact.workflow_run.repository_id = f.run.repository.id;
+  f.save();
+  assert.deepEqual(
+    readPrereleasePackages(f.manifest, f.root).binding,
+    f.binding,
+  );
+
+  f.artifact.workflow_run.repository_id = 42;
+  f.save();
+  assert.throws(() => readPrereleasePackages(f.manifest, f.root));
+
+  f.artifact.workflow_run.repository_id = f.run.repository.id;
+  f.run.repository.full_name = "chainlesschain/chainlesschain";
+  f.save();
+  assert.throws(() => readPrereleasePackages(f.manifest, f.root));
+
+  f.binding.repository = "other/chainlesschain";
+  assert.throws(() => prereleasePackageBinding(f.manifest));
+});
 test("original candidate bytes, bundle source and build provenance are all required", (t) => {
   const f = fixture(t);
   assert.deepEqual(

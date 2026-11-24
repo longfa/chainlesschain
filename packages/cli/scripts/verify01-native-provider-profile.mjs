@@ -64,6 +64,29 @@ export function nativeProviderProfile(
       });
 }
 
+export function assertNativePrereleaseProject(
+  candidate,
+  { provider, projectCommit, revisionBinding, runtimeRepair, sampleIds },
+) {
+  if (!candidate || runtimeRepair) return;
+  if (provider === "lk") {
+    assert.equal(revisionBinding, null);
+    assert.equal(projectCommit, DIAGNOSTIC.projectCommit);
+    assert.ok(sampleIds?.length, "LK prerelease requires explicit samples");
+    return;
+  }
+  assert.ok(
+    revisionBinding,
+    "candidate generation requires an explicit repaired project",
+  );
+  assert.equal(
+    candidate.sourceCommit,
+    projectCommit,
+    "candidate engine and repaired project source must match",
+  );
+  assert.equal(provider, "openai");
+}
+
 /** Validate a new provider cohort before its deliveries reach acceptance. */
 export function assertNativeProviderIdentity(
   summary,
@@ -131,8 +154,16 @@ export function assertNativeProviderIdentity(
         )
       : null;
     assert.deepEqual(summary.prepublication ?? null, candidate);
-    if (candidate && !runtimeRepair)
-      assert.equal(candidate.sourceCommit, projectIdentity?.projectCommit);
+    assertNativePrereleaseProject(candidate, {
+      provider,
+      projectCommit: projectIdentity?.projectCommit,
+      revisionBinding: revision,
+      runtimeRepair,
+      sampleIds:
+        summary.selectionScope === "operator-subset"
+          ? summary.selectedSampleIds
+          : undefined,
+    });
   }
   assert.equal(
     summary.executionIdentityDigest,

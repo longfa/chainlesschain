@@ -8,7 +8,10 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
 
-const repository = "chainlesschain/chainlesschain";
+const repositories = new Map([
+  ["chainlesschain/chainlesschain", null],
+  ["longfa/chainlesschain", 1113474176],
+]);
 const schema = "chainlesschain.verify01-prerelease-package-set/v1";
 const workflow = ".github/workflows/verify01-prerelease-packages.yml";
 const digest = (bytes) =>
@@ -19,7 +22,10 @@ export function prereleasePackageBinding(manifest) {
   const binding = manifest?.prepublication;
   if (binding === undefined) return null;
   assert.equal(binding.schema, schema);
-  assert.equal(binding.repository, repository);
+  assert.ok(
+    repositories.has(binding.repository),
+    "untrusted candidate repository",
+  );
   assert.equal(binding.workflow, workflow);
   assert.equal(binding.distribution, "prerelease-actions-artifact");
   assert.match(binding.sourceCommit ?? "", /^[a-f0-9]{40}$/u);
@@ -76,13 +82,19 @@ export function prereleasePackageBinding(manifest) {
 }
 
 export function verifyPrereleaseArtifactMetadata(binding, run, artifact) {
+  assert.ok(
+    repositories.has(binding.repository),
+    "untrusted candidate repository",
+  );
   assert.equal(run.id, binding.runId);
   assert.equal(run.head_sha, binding.sourceCommit);
   assert.equal(run.path, workflow);
   assert.equal(run.event, "workflow_dispatch");
   assert.equal(run.status, "completed");
   assert.equal(run.conclusion, "success");
-  assert.equal(run.repository.full_name, repository);
+  assert.equal(run.repository.full_name, binding.repository);
+  const repositoryId = repositories.get(binding.repository);
+  if (repositoryId !== null) assert.equal(run.repository.id, repositoryId);
   assert.equal(artifact.id, binding.artifactId);
   assert.equal(artifact.name, binding.artifactName);
   assert.equal(artifact.digest, binding.artifactDigest);
@@ -176,6 +188,7 @@ async function download(manifestFile, outputDirectory) {
   const manifest = JSON.parse(fs.readFileSync(manifestFile, "utf8"));
   const binding = prereleasePackageBinding(manifest);
   if (!binding) return;
+  const { repository } = binding;
   const runCommand = promisify(execFile);
   const execute = async (args) => {
     try {
