@@ -1,0 +1,59 @@
+{
+  "schema": "chainlesschain-cross-host-task-projection-evidence/v1",
+  "release": {
+    "version": "0.166.162",
+    "sourceCommit": "03cb502b0e0e3facfbce79ef336fec7861a5554c"
+  },
+  "driver": {
+    "commit": "d1d641041e2c3829707b92c12b53c436bb6bc0b3",
+    "scriptGitBlob": "fe4b39af588e1018b3132387fffa0b91e0ab605d"
+  },
+  "remote": {
+    "provider": "GitHub Actions",
+    "runnerLabel": "ubuntu-latest",
+    "runId": "45320953425",
+    "jobId": "138199087368",
+    "resultArtifactId": "14887069722",
+    "resultArchiveSha256": "73a1ec0b2c643f9ac8eaa7dcb5dd6abbcdafb4652309044a87e8b2ea49eef7ae"
+  },
+  "rendezvousAtEpochMs": 1795491693468,
+  "overlap": {
+    "startedAtEpochMs": 1795491695274,
+    "endedAtEpochMs": 1795491844539,
+    "durationMs": 149265,
+    "simultaneousShells": 4
+  },
+  "windows": {
+    "schema": "chainlesschain-cross-host-task-acceptance/v1",
+    "cliVersion": "0.166.162",
+    "platform": "win32",
+    "arch": "x64",
+    "node": "v22.20.0",
+    "startAt": 1795491693468,
+    "firstConcurrentAt": 1795491695274,
+    "lastConcurrentAt": 1795491846440,
+    "concurrentMs": 151166,
+    "readbacks": 6,
+    "independentOwners": 2,
+    "confirmedStops": 2,
+    "remainingActive": 0,
+    "runningTaskFields": ["state", "endsAt", "waitingOn", "stopPath"]
+  },
+  "linux": {
+    "schema": "chainlesschain-cross-host-task-acceptance/v1",
+    "cliVersion": "0.166.162",
+    "actionsRunId": "45320953425",
+    "platform": "linux",
+    "arch": "x64",
+    "node": "v22.20.0",
+    "startAt": 1795491693468,
+    "firstConcurrentAt": 1795491693775,
+    "lastConcurrentAt": 1795491844539,
+    "concurrentMs": 150764,
+    "readbacks": 7,
+    "independentOwners": 2,
+    "confirmedStops": 2,
+    "remainingActive": 0,
+    "runningTaskFields": ["state", "endsAt", "waitingOn", "stopPath"]
+  }
+}
