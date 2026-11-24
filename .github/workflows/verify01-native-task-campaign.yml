@@ -15,11 +15,11 @@ on:
         required: true
         default: false
       provider:
-        description: "Diagnostic provider; OpenAI starts a separate cohort and requires the dedicated OPENAI_API_KEY secret"
+        description: "Diagnostic provider. OpenAI and LK use their own credentials and cohort identities."
         type: choice
         required: true
         default: volcengine
-        options: [volcengine, openai]
+        options: [volcengine, openai, lk]
       fresh_volcengine_round:
         description: "Explicit new full Volcengine 36+9 round, retaining historical scores and using a dedicated key"
         type: boolean
@@ -133,6 +133,7 @@ jobs:
           packages/cli/test-node/verify01-ide-terminal.node-test.mjs
           packages/cli/test-node/verify01-volcengine-diagnostic-broker.node-test.mjs
           packages/cli/test-node/verify01-openai-diagnostic-broker.node-test.mjs
+          packages/cli/test-node/verify01-lk-diagnostic-broker.node-test.mjs
           packages/cli/test-node/verify01-openai-transport-preload.node-test.mjs
           packages/cli/test-node/verify01-native-provider-profile.node-test.mjs
           packages/cli/test-node/verify01-native-round-matrix.node-test.mjs
@@ -160,6 +161,7 @@ jobs:
           NATIVE_PROJECT_REVISION_FILE: ${{ inputs.project_revision_file || '' }}
           FRESH_VOLCENGINE_ROUND: ${{ inputs.fresh_volcengine_round && 'true' || 'false' }}
           VOLCENGINE_CREDENTIAL_PRESENT: ${{ secrets.VOLCENGINE_VERIFY01_API_KEY != '' }}
+          LK_CREDENTIAL_PRESENT: ${{ secrets.LK_VERIFY01_API_KEY != '' }}
           REVIEW_CHANGES: ${{ inputs.review_changes && 'true' || 'false' }}
           VOLCENGINE_API_KEY: ${{ inputs.fresh_volcengine_round && secrets.VOLCENGINE_VERIFY01_API_KEY || '' }}
           OPENAI_API_KEY: ${{ inputs.provider == 'openai' && secrets.OPENAI_API_KEY || '' }}
@@ -223,6 +225,7 @@ jobs:
               }
             }
             if (project.revisionBinding && provider !== "openai") throw new Error("repaired-source follow-up requires the explicit OpenAI diagnostic cohort");
+            if (!run && provider === "lk" && process.env.LK_CREDENTIAL_PRESENT !== "true") throw new Error("Dedicated repository LK_VERIFY01_API_KEY is required for LK generation");
             if (provider === "openai") {
               if (!["latest", "prerelease"].includes(packageSet)) throw new Error("OpenAI cohort requires an explicit public or prerelease package set");
               const cli = JSON.parse(fs.readFileSync("packages/cli/package.json", "utf8")).version;
@@ -289,8 +292,11 @@ jobs:
     env:
       GRADLE_USER_HOME: ${{ github.workspace }}/.gradle-native-tasks
     steps:
-      - name: Preserve source byte identity on Windows
-        run: git config --global core.autocrlf false
+      - name: Preserve source bytes and enable long paths on Windows
+        if: runner.os == 'Windows'
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.longpaths true
       - uses: actions/checkout@v5
         with:
           ref: ${{ github.sha }}
@@ -361,8 +367,9 @@ jobs:
         timeout-minutes: 115
         shell: bash
         env:
-          VOLCENGINE_API_KEY: ${{ inputs.provider != 'openai' && (inputs.fresh_volcengine_round && secrets.VOLCENGINE_VERIFY01_API_KEY || secrets.CC_LLM_API_KEY) || '' }}
+          VOLCENGINE_API_KEY: ${{ inputs.provider == 'volcengine' && (inputs.fresh_volcengine_round && secrets.VOLCENGINE_VERIFY01_API_KEY || secrets.CC_LLM_API_KEY) || '' }}
           OPENAI_API_KEY: ${{ inputs.provider == 'openai' && secrets.OPENAI_API_KEY || '' }}
+          CC_API_KEY: ${{ inputs.provider == 'lk' && secrets.LK_VERIFY01_API_KEY || '' }}
           NATIVE_ENTRY: ${{ matrix.entry }}
           EXECUTION_SOURCE_SHA: ${{ github.sha }}
           NATIVE_SAMPLES: ${{ matrix.sample_ids || inputs.sample_ids }}
@@ -475,7 +482,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ inputs.accept_existing_run || github.run_id }}
       - name: Bind fresh provider delivery identity before acceptance
-        if: inputs.provider == 'openai' || inputs.fresh_volcengine_round
+        if: inputs.provider == 'openai' || inputs.provider == 'lk' || inputs.fresh_volcengine_round
         env:
           EXPECTED_DELIVERY_SHA: ${{ inputs.accept_existing_commit || github.sha }}
           NATIVE_PROJECT_REVISION_FILE: ${{ inputs.project_revision_file || '' }}

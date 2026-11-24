@@ -1,0 +1,15 @@
+{
+  "schema": "chainlesschain.native-package-set/v1",
+  "versions": {
+    "cli": "0.166.162",
+    "vscode": "0.37.197",
+    "jetbrains": "0.4.212",
+    "vscodeHost": "1.132.0",
+    "jetbrainsHost": "2025.2"
+  },
+  "releaseSourceCommits": {
+    "cli": "03cb502b0e0e3facfbce79ef336fec7861a5554c",
+    "openVsx": "009e5f3a3cfb65e4210b59725887071206766c7d",
+    "jetbrains": "009e5f3a3cfb65e4210b59725887071206766c7d"
+  }
+}

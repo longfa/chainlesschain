@@ -1,5 +1,9 @@
 # Changelog — ChainlessChain IDE Bridge (JetBrains)
 
+## [0.4.213] - CLI 0.166.163 pairing (candidate, 2026-11-24)
+
+- Recommend CLI `0.166.163` for improved search diagnostics and recovery from a timed-out Windows credential read.
+
 ## [0.4.212] - CLI 0.166.162 pairing (candidate, 2026-11-23)
 
 - Recommend CLI `0.166.162`, which preserves approved plan permissions across resumed sessions and returns structured headless failure receipts.

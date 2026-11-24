@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
+import { executionBroker } from "../../src/lib/process-execution-broker/index.js";
 import {
   chooseBackend,
   createSecretStore,
@@ -103,6 +104,52 @@ describe("secret-store", () => {
       /invalid JSON/,
     );
     expect(writeFile).not.toHaveBeenCalled();
+  });
+
+  it("reports a DPAPI launch timeout without carrying subprocess output", () => {
+    const runner = vi.spyOn(executionBroker, "spawnSync").mockReturnValue({
+      status: null,
+      signal: "SIGTERM",
+      stdout: "sensitive subprocess output",
+      stderr: "sensitive subprocess diagnostics",
+      error: Object.assign(new Error("sensitive spawn failure"), {
+        code: "ETIMEDOUT",
+      }),
+    });
+    try {
+      const store = createSecretStore({
+        backend: "dpapi",
+        file: "C:\\private\\secrets.json",
+        readFile: () => JSON.stringify({ "config/apiKey": "encrypted-blob" }),
+      });
+      expect(() => store.get("config/apiKey")).toThrow(
+        expect.objectContaining({
+          code: "ETIMEDOUT",
+          message: "secret store command timed out (ETIMEDOUT)",
+        }),
+      );
+      expect(runner).toHaveBeenCalledTimes(2);
+    } finally {
+      runner.mockRestore();
+    }
+  });
+
+  it("recovers a transient DPAPI read timeout using the same encrypted bytes", () => {
+    const runner = vi
+      .fn()
+      .mockImplementationOnce(() => {
+        throw Object.assign(new Error("timeout"), { code: "ETIMEDOUT" });
+      })
+      .mockReturnValueOnce(Buffer.from("fixture secret").toString("base64"));
+    const store = createSecretStore({
+      backend: "dpapi",
+      file: "C:\\private\\secrets.json",
+      readFile: () => JSON.stringify({ "config/apiKey": "encrypted-blob" }),
+      runner,
+    });
+    expect(store.get("config/apiKey")).toBe("fixture secret");
+    expect(runner).toHaveBeenCalledTimes(2);
+    expect(runner.mock.calls[0]).toEqual(runner.mock.calls[1]);
   });
 
   it("uses macOS Keychain interactive stdin instead of secret argv", () => {

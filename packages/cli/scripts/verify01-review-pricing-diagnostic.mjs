@@ -32,6 +32,9 @@ const originalCompressedDigest =
 const pricingPath = "packages/cli/src/lib/llm-pricing.js";
 const engineeringPath =
   "packages/cli/__tests__/unit/usage-pricing-context.test.js";
+const engineeringSourceCommit = "fcee60cd4cc29cc524f561264e8d9f2b26032894";
+const engineeringControlDigest =
+  "sha256:fa4ddc942cedb404bd9180cccead2f33c3d1ffd3eb91e5fca53a742f330c95cb";
 const hash = (bytes) =>
   "sha256:" + createHash("sha256").update(bytes).digest("hex");
 const json = (file) => JSON.parse(fs.readFileSync(file, "utf8"));
@@ -84,6 +87,18 @@ export function readOriginalPricingCandidate(root = repository) {
   return bytes;
 }
 
+export function readEngineeringPricingControl(root = repository) {
+  // Later product tests follow the current pricing bucket contract. This
+  // diagnostic executes its control against the frozen implementation.
+  const bytes = execFileSync(
+    "git",
+    ["-C", root, "show", `${engineeringSourceCommit}:${engineeringPath}`],
+    { timeout: 30000, maxBuffer: 64 * 1024, windowsHide: true },
+  );
+  assert.equal(hash(bytes), engineeringControlDigest);
+  return bytes;
+}
+
 /** A known semantic survivor is distinct from a test/import/deadline failure.
  * Only fully executed, passing candidate assertions can establish survival.
  */
@@ -93,7 +108,7 @@ export function classifyPricingReceipt(receipt, mutant) {
   assert.equal(receipt.productionAttested, false);
   assert.ok(
     receipt.tests?.some((test) => test.kind === "candidate" && test.total > 0),
-    "candidate assertions were not executed; semantic outcome cannot be established",
+    `candidate check did not pass; semantic outcome cannot be established: ${receipt.detail || "no passing candidate result"}`,
   );
   assert.deepEqual(
     receipt.tests.map((test) => test.kind),
@@ -158,7 +173,7 @@ export function runPricingDiagnostic({ outputDir, imageId, sourceSha }) {
   assert.equal(image.Id, imageId);
   assert.ok(image.RepoTags?.includes(REVIEW_IMAGE));
   const candidate = readOriginalPricingCandidate();
-  const engineering = fs.readFileSync(path.join(repository, engineeringPath));
+  const engineering = readEngineeringPricingControl();
   fs.mkdirSync(root, { recursive: true });
   const pack = generateReviewPack({
     outputDir: path.join(root, "pack"),
@@ -190,6 +205,7 @@ export function runPricingDiagnostic({ outputDir, imageId, sourceSha }) {
     ),
     diagnosticMutants: PRICING_SEMANTIC_MUTANTS,
     originalCandidateDigest: hash(candidate),
+    engineeringSourceCommit,
     engineeringTestDigest: hash(engineering),
     rows: [],
     calibrationPassed: false,

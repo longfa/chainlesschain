@@ -1053,6 +1053,11 @@ export async function createBoundedDiagnosticBroker(options, profile) {
     async close() {
       await new Promise((resolve) => server.close(resolve));
       const known = receipts.filter((r) => r.usage !== null);
+      const knownEstimate = known.every((r) =>
+        Number.isFinite(r[profile.estimateField]),
+      )
+        ? known.reduce((s, r) => s + r[profile.estimateField], 0)
+        : null;
       const result = {
         formalSample: false,
         physicalRequestsStarted: receipts.length,
@@ -1062,14 +1067,11 @@ export async function createBoundedDiagnosticBroker(options, profile) {
         [profile.billedField]: null,
         [profile.estimateField]:
           known.length === receipts.length && receipts.length > 0
-            ? known.reduce((s, r) => s + r[profile.estimateField], 0)
+            ? knownEstimate
             : null,
         [profile.estimateField === "tokenOnlyEstimateCny"
           ? "knownTokenOnlyEstimateCny"
-          : "knownTokenOnlyEstimateUsd"]: known.reduce(
-          (s, r) => s + r[profile.estimateField],
-          0,
-        ),
+          : "knownTokenOnlyEstimateUsd"]: knownEstimate,
         fxRate: null,
       };
       save("summary.json", result);

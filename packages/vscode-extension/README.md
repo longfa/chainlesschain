@@ -4,7 +4,7 @@ ChainlessChain agent workspace for VS Code-compatible editors with streaming cha
 
 ## Release pairing
 
-Version **0.37.197** recommends CLI **0.166.162**. Session forks open in a separate chat tab and preserve the source conversation. Configure LLM can refresh the LK catalog and includes GPT-6.2 Sol and GPT-6.2 Astra offline.
+Version **0.37.198** recommends CLI **0.166.163**. Session forks open in a separate chat tab and preserve the source conversation. Configure LLM can refresh the LK catalog and includes GPT-6.2 Sol and GPT-6.2 Astra offline.
 
 ## Current release
 

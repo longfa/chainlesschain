@@ -2,15 +2,98 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import {
   classifyPricingReceipt,
   ORIGINAL_CANDIDATE_DIGEST,
   PRICING_SEMANTIC_MUTANTS,
+  readEngineeringPricingControl,
   readOriginalPricingCandidate,
 } from "../scripts/verify01-review-pricing-diagnostic.mjs";
-import { applyReviewMutation } from "../scripts/verify01-review-runtime.mjs";
+import {
+  applyReviewMutation,
+  runReviewStage,
+} from "../scripts/verify01-review-runtime.mjs";
 
 const mutant = PRICING_SEMANTIC_MUTANTS[0];
+
+test(
+  "an independent check retains the failed mutation and restores the source",
+  { skip: process.platform !== "linux" },
+  (t) => {
+    const workspace = fs.mkdtempSync(
+      path.join(os.tmpdir(), "verify01-mutant-"),
+    );
+    t.after(() => fs.rmSync(workspace, { recursive: true, force: true }));
+    const original = "export const count = 1;\n";
+    const source = path.join(workspace, "source.js");
+    fs.writeFileSync(source, original);
+    fs.writeFileSync(path.join(workspace, "baseline.test.js"), "fixture");
+    fs.writeFileSync(path.join(workspace, "candidate.test.js"), "fixture");
+    const report = JSON.stringify({
+      success: true,
+      numTotalTests: 1,
+      numPassedTests: 1,
+      numFailedTests: 0,
+      numPendingTests: 0,
+      testResults: [{ assertionResults: [{ status: "passed" }] }],
+    });
+    const spec = {
+      taskId: "verify-10",
+      imageId: `sha256:${"a".repeat(64)}`,
+      sourcePath: "source.js",
+      expectedFiles: ["candidate.test.js"],
+      baselineTests: ["baseline.test.js"],
+      testSupport: [],
+      mutants: [
+        { name: "wrong-count", find: "count = 1", replace: "count = 2" },
+      ],
+    };
+    const receipt = runReviewStage(workspace, spec, "check", {
+      execute: (_command, args) => ({
+        status: 0,
+        stdout: args.includes("--version") ? "v22.12.0" : report,
+      }),
+    });
+    assert.equal(receipt.pass, false);
+    assert.deepEqual(receipt.mutations, []);
+    assert.equal(receipt.failedMutation.name, "wrong-count");
+    assert.match(
+      receipt.failedMutation.failure,
+      /did not reject the behavioral mutant/u,
+    );
+    assert.equal(fs.readFileSync(source, "utf8"), original);
+
+    // The timed-out client can race Docker's automatic removal of --rm jobs.
+    for (const removed of [true, false]) {
+      const timedOut = runReviewStage(workspace, spec, "check", {
+        execute: (_command, args) => {
+          if (args[0] === "rm" || args.includes("--check")) {
+            return { status: null, error: new Error("ETIMEDOUT") };
+          }
+          if (args[0] === "container") {
+            return {
+              status: 1,
+              stderr: `Error response from daemon: No such container: ${removed ? args[2] : "another-container"}\n`,
+            };
+          }
+          return {
+            status: 0,
+            stdout: args.includes("--version") ? "v22.12.0" : report,
+          };
+        },
+      });
+      assert.equal(timedOut.pass, false);
+      assert.equal(timedOut.failedMutation.name, "wrong-count");
+      assert.ok(timedOut.executions.some(({ error }) => error === "ETIMEDOUT"));
+      assert.equal(Boolean(timedOut.cleanupFailure), !removed);
+      assert.equal(fs.readFileSync(source, "utf8"), original);
+    }
+  },
+);
+
 function survivor() {
   return {
     stage: "check",
@@ -52,6 +135,20 @@ test("replays exactly the original archived candidate, without changing its impo
     ORIGINAL_CANDIDATE_DIGEST,
   );
   assert.equal(candidate.length, 4924);
+});
+
+test("loads the engineering control calibrated for the frozen pricing implementation", () => {
+  assert.deepEqual(
+    readEngineeringPricingControl(),
+    execFileSync(
+      "git",
+      [
+        "show",
+        "fcee60cd4cc29cc524f561264e8d9f2b26032894:packages/cli/__tests__/unit/usage-pricing-context.test.js",
+      ],
+      { windowsHide: true },
+    ),
+  );
 });
 
 test("each semantic mutation has one syntax-valid match in the frozen pricing implementation", () => {
@@ -105,7 +202,7 @@ test("an empty candidate with a passing baseline cannot establish any semantic o
     });
     assert.throws(
       () => classifyPricingReceipt(receipt, semanticMutant),
-      /candidate assertions were not executed; semantic outcome cannot be established/u,
+      /candidate check did not pass; semantic outcome cannot be established/u,
     );
   }
 });

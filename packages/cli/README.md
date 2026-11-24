@@ -1,5 +1,9 @@
 # chainlesschain CLI
 
+## CLI 0.166.163 candidate
+
+The candidate improves file-search diagnostics, retries a timed-out Windows credential read once, and asks coding agents to verify workspace changes before reporting delivery. Canonical compaction retains summaries that fit the available conversation budget. The planned pairing is Open VSX **0.37.198** and JetBrains **0.4.213**. The public pairing and install command are below.
+
 ## Public CLI 0.166.162 and IDE pairing
 
 CLI **0.166.162** is public on npm from exact source `03cb502b0e0e3facfbce79ef336fec7861a5554c`. GitHub Actions verified the public archive and signed provenance after CLI CI, Strict Sandbox, and the child package checks passed. Install `npm i -g chainlesschain@0.166.162 --registry https://registry.npmjs.org`, restart the CLI and IDE hosts, then run `cc --version` and `cc doctor`. [OIDC publication](https://github.com/longfa/chainlesschain/actions/runs/45306343051)

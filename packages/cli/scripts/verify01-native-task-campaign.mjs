@@ -168,7 +168,14 @@ export function archiveExtractor(
   return executable;
 }
 
-export function extractNativeArchive(archive, workspace) {
+export const NATIVE_ARCHIVE_PREPARATION_TIMEOUT_MS = 10 * 60 * 1000;
+
+export function extractNativeArchive(archive, workspace, deadline = Infinity) {
+  const timeout = Math.min(
+    NATIVE_ARCHIVE_PREPARATION_TIMEOUT_MS,
+    deadline - Date.now(),
+  );
+  assert.ok(timeout > 0, "sample deadline expired before archive extraction");
   // Windows bsdtar can corrupt header paths or reject them depending on its
   // version and active code page, even with hdrcharset=UTF-8. Decode the frozen
   // git archive explicitly and use Unicode filesystem calls instead.
@@ -184,11 +191,11 @@ export function extractNativeArchive(archive, workspace) {
         archive,
         workspace,
       ],
-      { timeout: 120000 },
+      { timeout },
     );
   } else {
     execFileSync(archiveExtractor(), ["-xf", archive, "-C", workspace], {
-      timeout: 120000,
+      timeout,
     });
   }
 }
@@ -349,7 +356,8 @@ export function nativeEnvironment(
     NO_COLOR: "1",
     LANG: "C.UTF-8",
     CC_FORMAL_QUALITY_EVAL_HERMETIC: "1",
-    CC_FORMAL_QUALITY_EVAL_PROVIDER: providerProfile.provider,
+    CC_FORMAL_QUALITY_EVAL_PROVIDER:
+      providerProfile.runtimeProvider ?? providerProfile.provider,
     CC_FORMAL_QUALITY_EVAL_ISOLATION_ROOT: root,
     CC_FORMAL_QUALITY_EVAL_ALLOWED_FILES: JSON.stringify(expectedFiles),
     [providerProfile.keyEnvironment]: capability,
@@ -520,7 +528,10 @@ export async function runVSCodeNativeTask({
       cwd: repository,
       env: environment,
       deadline,
-      secret: environment.VOLCENGINE_API_KEY,
+      secret:
+        environment.CC_API_KEY ||
+        environment.OPENAI_API_KEY ||
+        environment.VOLCENGINE_API_KEY,
       outputPrefix: path.join(outputDir, "commands/host-ui"),
     },
   );
@@ -551,7 +562,8 @@ export async function runVSCodeNativeTask({
   };
 }
 
-export function protocolStream(captureDir) {
+export function protocolStream(captureDir, { allowMissing = false } = {}) {
+  if (allowMissing && (!captureDir || !fs.existsSync(captureDir))) return "";
   const protocol = path.join(captureDir, "protocol.json");
   if (fs.existsSync(protocol))
     return (
@@ -569,6 +581,7 @@ export function protocolStream(captureDir) {
         f !== "ui.ndjson" &&
         f !== "cdp-discovery.ndjson",
     );
+  if (allowMissing && files.length === 0) return "";
   assert.equal(files.length, 1, "exactly one raw protocol generation required");
   return (
     fs
@@ -652,6 +665,8 @@ export async function runNativeCampaign(options) {
     : null;
   const budgets = nativeExecutionBudgets(packageManifest, provider);
   providerProfile = nativeProviderProfile(provider, { budgets });
+  const runtimeProvider =
+    providerProfile.runtimeProvider ?? providerProfile.provider;
   const candidatePackages = readPrereleasePackages(
     packageManifest,
     process.env.CC_VERIFY01_PRERELEASE_DIRECTORY,
@@ -671,11 +686,12 @@ export async function runNativeCampaign(options) {
     );
   assert.ok(key?.trim());
   assert.match(sourceSha || "", /^[a-f0-9]{40}$/u);
-  const git = (args) =>
+  const git = (args, options) =>
     execFileSync("git", args, {
       cwd: repository,
       encoding: "utf8",
       maxBuffer: 32 * 1024 * 1024,
+      ...options,
     });
   assert.equal(
     git(["rev-parse", "HEAD"]).trim(),
@@ -705,6 +721,11 @@ export async function runNativeCampaign(options) {
     `${planRoot}/comparison-bindings.json`,
     `${planRoot}/plan.sha256`,
   ];
+  if (provider === "lk")
+    bindingFiles.push(
+      "packages/cli/scripts/verify01-lk-diagnostic-broker.mjs",
+      "packages/cli/src/lib/llm-channel-presets.js",
+    );
   if (projectRevisionFile) bindingFiles.push(projectRevisionFile);
   const fetchPreloadSource =
     "packages/cli/scripts/verify01-fetch-diagnostics-preload.cjs";
@@ -842,14 +863,17 @@ export async function runNativeCampaign(options) {
   const install = path.join(scratch, "install");
   mkdir(install);
   const archive = path.join(scratch, "frozen.tar");
-  git([
-    "archive",
-    "--format=tar",
-    "--output",
-    archive,
-    projectCommit,
-    ...nativeProjectArchivePaths(revisionBinding),
-  ]);
+  git(
+    [
+      "archive",
+      "--format=tar",
+      "--output",
+      archive,
+      projectCommit,
+      ...nativeProjectArchivePaths(revisionBinding),
+    ],
+    { timeout: NATIVE_ARCHIVE_PREPARATION_TIMEOUT_MS },
+  );
   const summary = {
     schema: "chainlesschain.verify01-native-task-campaign/v1",
     executionSourceCommit: sourceSha,
@@ -866,6 +890,7 @@ export async function runNativeCampaign(options) {
     versions,
     modelTransport: {
       provider: providerProfile.provider,
+      ...(providerProfile.runtimeProvider ? { runtimeProvider } : {}),
       model: providerProfile.model,
       endpoint: providerProfile.policy.endpoint,
       policyDigest: hash(JSON.stringify(providerProfile.policy)),
@@ -900,9 +925,10 @@ export async function runNativeCampaign(options) {
       ? "volcengine-runtime-repair-frozen-project"
       : revisionBinding
         ? "repaired-source-followup"
-        : providerProfile.provider === "openai"
-          ? "new-openai-provider-diagnostic"
-          : "volcengine-native-diagnostic",
+        : (providerProfile.cohortKind ??
+          (providerProfile.provider === "openai"
+            ? "new-openai-provider-diagnostic"
+            : "volcengine-native-diagnostic")),
     executionIdentityDigest: hash(
       JSON.stringify({
         sourceSha,
@@ -1058,7 +1084,7 @@ export async function runNativeCampaign(options) {
         row.skipReason = "HOST_CLEANUP_UNCONFIRMED";
       }
       hostGuard.assertReady();
-      extractNativeArchive(archive, workspace);
+      extractNativeArchive(archive, workspace, deadline);
       for (const file of task.expectedFiles) {
         assert.ok(!path.isAbsolute(file) && !file.split("/").includes(".."));
         mkdir(path.dirname(path.join(workspace, file)));
@@ -1271,7 +1297,7 @@ export async function runNativeCampaign(options) {
       }
       broker.beginTask(sample.id);
       for (const [field, value] of Object.entries({
-        provider: providerProfile.provider,
+        provider: runtimeProvider,
         model: providerProfile.model,
         baseUrl: childBaseUrl,
       }))
@@ -1296,7 +1322,7 @@ export async function runNativeCampaign(options) {
       ]);
       assert.ok(readback.ok);
       const configured = JSON.parse(readback.stdout).value;
-      assert.equal(configured.provider, providerProfile.provider);
+      assert.equal(configured.provider, runtimeProvider);
       assert.equal(configured.model, providerProfile.model);
       assert.equal(configured.baseUrl, childBaseUrl);
       row.configure = {
@@ -1329,7 +1355,7 @@ export async function runNativeCampaign(options) {
         pluginDigest,
         versions,
         reviewChanges,
-        provider: providerProfile.provider,
+        provider: runtimeProvider,
         model: providerProfile.model,
         maxTurns: budgets.modelTurns,
         ...packageBinding,
@@ -1343,7 +1369,7 @@ export async function runNativeCampaign(options) {
           "-p",
           prompt,
           "--provider",
-          providerProfile.provider,
+          runtimeProvider,
           "--model",
           providerProfile.model,
           "--base-url",
@@ -1388,7 +1414,9 @@ export async function runNativeCampaign(options) {
           fs.cpSync(result.captureDir, destination, { recursive: true });
         row.capturePath = `${sample.id}/capture`;
       }
-      const stream = result.stdout || protocolStream(result.captureDir);
+      const stream =
+        result.stdout ||
+        protocolStream(result.captureDir, { allowMissing: !result.ok });
       save(`${sample.id}/model-stream.ndjson`, redact(stream));
       row.changeReview = inspectNativeChangeReview(stream, reviewChanges);
       const inspected = inspectionStream(stream, workspace);
@@ -1398,7 +1426,7 @@ export async function runNativeCampaign(options) {
         inspected.workspace,
         {
           allowSessionEnd: entry !== "cli",
-          expectedProvider: providerProfile.provider,
+          expectedProvider: runtimeProvider,
           expectedModel: providerProfile.model,
         },
       );
@@ -1409,6 +1437,16 @@ export async function runNativeCampaign(options) {
       row.brokerStatus = broker.taskStatus(sample.id);
       row.generationPassed =
         result.ok && row.model.pass && row.brokerStatus.passed;
+      const brokerFailure =
+        row.brokerStatus.poisoned ?? row.brokerStatus.errorCode;
+      const failure = [
+        row.host.failure,
+        brokerFailure,
+        row.model.pass ? undefined : row.model.failureCategory,
+      ]
+        .filter(Boolean)
+        .join("\n");
+      if (failure) row.failure = redact(failure);
     } catch (error) {
       row.failure = redact(
         [row.host?.failure, error.stack || error.message]

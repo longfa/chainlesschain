@@ -24,6 +24,8 @@ import {
   inspectNativeScope,
   snapshotNativeTree,
   loadNativePackageSet,
+  NATIVE_ARCHIVE_PREPARATION_TIMEOUT_MS,
+  extractNativeArchive,
   validateNativeProjectSelection,
 } from "./verify01-native-task-campaign.mjs";
 import {
@@ -92,7 +94,7 @@ export function artifactFile(root, relative) {
   return file;
 }
 
-export function validateNativeCandidate(root, row, task) {
+export function validateNativeCandidate(root, row, task, initialTree) {
   assert.deepEqual(row.expectedFiles, task.expectedFiles);
   assert.equal(
     row.candidates.length,
@@ -107,6 +109,11 @@ export function validateNativeCandidate(root, row, task) {
     const bytes = fs.readFileSync(artifactFile(root, candidate.path));
     assert.equal(hash(bytes), candidate.digest, "candidate digest mismatch");
     assert.equal(bytes.length, candidate.bytes);
+    assert.notEqual(
+      initialTree?.[file]?.digest,
+      candidate.digest,
+      `candidate unchanged from initial workspace: ${file}`,
+    );
     assert.ok(
       bytes.length > 0 && bytes.length <= 1024 * 1024,
       "invalid candidate size",
@@ -382,8 +389,13 @@ export async function checkNativeCampaign({
       projectCommit,
       ...nativeProjectArchivePaths(revisionBinding),
     ],
-    { cwd: repository, timeout: 120000 },
+    { cwd: repository, timeout: NATIVE_ARCHIVE_PREPARATION_TIMEOUT_MS },
   );
+  const frozenWorkspace = path.join(scratch, "frozen");
+  fs.mkdirSync(frozenWorkspace);
+  extractNativeArchive(archive, frozenWorkspace);
+  const canonicalSnapshot = snapshotNativeTree(frozenWorkspace);
+  let archiveContents;
   const summary = {
     schema: "chainlesschain.verify01-native-task-acceptance/v1",
     executionSourceCommit: checkerSourceSha,
@@ -433,7 +445,6 @@ export async function checkNativeCampaign({
     summary.samples.push(row);
     const workspace = path.join(scratch, sample.id),
       deadline = Date.now() + 20 * 60 * 1000;
-    fs.mkdirSync(workspace);
     try {
       assert.equal(native.executionSourceCommit, sourceSha);
       assert.equal(native.projectCommit, projectCommit);
@@ -442,7 +453,6 @@ export async function checkNativeCampaign({
       assert.equal(native.taskId, sample.taskId);
       assert.equal(native.kind, sample.kind);
       assert.equal(native.stratum, sample.stratum);
-      const candidates = validateNativeCandidate(input, native, task);
       const streamPath = `${sample.id}/model-stream.ndjson`;
       row.generationAssessment = fs.existsSync(path.join(input, streamPath))
         ? assessNativeGeneration(
@@ -458,6 +468,7 @@ export async function checkNativeCampaign({
       row.generationPassed = row.generationAssessment.passed;
       const before = json(artifactFile(input, `${sample.id}/tree-before.json`)),
         after = json(artifactFile(input, `${sample.id}/tree-after.json`));
+      const candidates = validateNativeCandidate(input, native, task, before);
       const scope = inspectNativeScope(before, after, task.expectedFiles);
       assert.deepEqual(native.changedPaths, scope.changedPaths);
       assert.equal(native.sourceScopePassed, scope.sourceScopePassed);
@@ -469,10 +480,24 @@ export async function checkNativeCampaign({
         assert.equal(after[c.file]?.digest, c.digest);
         assert.equal(after[c.file]?.bytes, c.bytes.length);
       }
-      execFileSync("tar", ["-xf", archive, "-C", workspace], {
-        timeout: 120000,
-      });
-      const canonicalSnapshot = snapshotNativeTree(workspace);
+      const preparationTime = Math.min(
+        NATIVE_ARCHIVE_PREPARATION_TIMEOUT_MS,
+        deadline - Date.now(),
+      );
+      assert.ok(
+        preparationTime > 0,
+        "sample deadline expired before workspace copy",
+      );
+      // A reflink is copy-on-write. Fallback copies also keep sample writes
+      // away from the frozen source and other samples.
+      execFileSync(
+        "cp",
+        ["-a", "--reflink=auto", "--", frozenWorkspace, workspace],
+        {
+          timeout: preparationTime,
+        },
+      );
+      assert.deepEqual(snapshotNativeTree(workspace), canonicalSnapshot);
       for (const file of task.expectedFiles) {
         assert.ok(!fs.existsSync(path.join(workspace, file)));
         fs.mkdirSync(path.dirname(path.join(workspace, file)), {
@@ -491,7 +516,9 @@ export async function checkNativeCampaign({
           before,
           source.platform,
           {
-            archiveBytes: fs.readFileSync(archive),
+            get archiveBytes() {
+              return (archiveContents ??= fs.readFileSync(archive));
+            },
             canonicalSnapshot,
             expectedFiles: task.expectedFiles,
           },
@@ -534,8 +561,20 @@ export async function checkNativeCampaign({
             outputPrefix: path.join(output, sample.id, name),
           },
         );
-        assert.ok(result.ok, `${name} process failed`);
+        // A setup rejection writes a digest-bound receipt before exiting 1.
+        // Interrupted or truncated processes cannot supply a valid verdict.
+        const setupRejected =
+          name === "setup" &&
+          result.exitCode === 1 &&
+          result.signal === null &&
+          !result.timedOut &&
+          !result.outputLimit &&
+          !result.aborted &&
+          !result.error &&
+          result.stdout.trim().length > 0;
+        assert.ok(result.ok || setupRejected, `${name} process failed`);
         const verdict = JSON.parse(result.stdout.trim());
+        if (setupRejected) assert.equal(verdict.pass, false);
         assert.match(
           verdict.receipt,
           new RegExp(`^${task.id}-${name}-[a-f0-9-]+\\.json$`, "u"),
@@ -554,11 +593,17 @@ export async function checkNativeCampaign({
           receiptPath: `pack/acceptance-evidence/${verdict.receipt}`,
           tests: receipt.tests,
           mutations: receipt.mutations,
+          failedMutation: receipt.failedMutation,
+          cleanupFailure: receipt.cleanupFailure,
           detail: receipt.detail,
         };
       }
       row.setup = await stage("setup");
-      assert.equal(row.setup.pass, true, "trusted checker setup failed");
+      assert.equal(
+        row.setup.pass,
+        true,
+        row.setup.detail || "trusted checker setup failed",
+      );
       for (const c of candidates) {
         const target = path.join(workspace, c.file);
         assert.ok(!fs.existsSync(target));

@@ -148,6 +148,21 @@ describe("coding-agent contract", () => {
     ]);
   });
 
+  it("advertises a nonempty search pattern and paged reads for file inspection", () => {
+    const [search] = getCodingAgentFunctionToolDefinitions({
+      names: ["search_files"],
+    });
+
+    expect(search.function.parameters.required).toContain("pattern");
+    expect(search.function.parameters.properties.pattern).toMatchObject({
+      type: "string",
+      minLength: 1,
+    });
+    expect(search.function.description).toContain(
+      "use read_file with path, offset, and limit",
+    );
+  });
+
   it("exposes the optional IANA time zone on the schedule tool contract", () => {
     const [definition] = getCodingAgentFunctionToolDefinitions({
       names: ["schedule"],

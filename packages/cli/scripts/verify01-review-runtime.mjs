@@ -44,8 +44,8 @@ function regularFile(root, relative) {
   return current;
 }
 
-/** The Docker client gets only platform plumbing, never account credentials or
- * NODE_OPTIONS. No host environment variables are forwarded to the container.
+/** Allow host paths and Docker settings for the evaluator subprocess. The
+ * container receives its own fixed environment.
  */
 export function reviewEnvironment(input = process.env) {
   const result = {};
@@ -55,8 +55,10 @@ export function reviewEnvironment(input = process.env) {
     "PATH",
     "TEMP",
     "TMP",
+    "TMPDIR",
     "DOCKER_HOST",
     "DOCKER_CONTEXT",
+    "CC_VERIFY01_NPM_CACHE_DIR",
   ])
     if (input[key]) result[key] = input[key];
   return result;
@@ -72,6 +74,7 @@ export function reviewDockerArgs({
   uid,
   gid,
   timeoutMs = MAX_STAGE_MS,
+  npmCacheDir,
 }) {
   requireCondition(
     /^sha256:[a-f0-9]{64}$/u.test(imageId || ""),
@@ -84,15 +87,22 @@ export function reviewDockerArgs({
     ),
     "acceptance requires the Linux operator's numeric UID and GID",
   );
+  const mountPaths = npmCacheDir
+    ? [workspace, control, npmCacheDir]
+    : [workspace, control];
   requireCondition(
-    path.isAbsolute(workspace) && path.isAbsolute(control),
+    mountPaths.every((value) => path.isAbsolute(value)),
     "Docker mounts must be absolute",
   );
   requireCondition(
-    ![workspace, control].some(
+    !mountPaths.some(
       (value) => /[,\r\n]/u.test(value) || value.includes("\u0000"),
     ),
     "unsupported Docker mount path",
+  );
+  requireCondition(
+    !npmCacheDir || (setup && command[0] === "npm" && command[1] === "ci"),
+    "the npm cache is available only during locked dependency installation",
   );
   requireCondition(
     Number.isSafeInteger(timeoutMs) &&
@@ -129,6 +139,9 @@ export function reviewDockerArgs({
     `type=bind,source=${workspace},target=/workspace${setup ? "" : ",readonly"}`,
     "--mount",
     `type=bind,source=${control},target=/review,readonly`,
+    ...(npmCacheDir
+      ? ["--mount", `type=bind,source=${npmCacheDir},target=/tmp/npm-cache`]
+      : []),
     "--workdir",
     "/workspace",
     "--env",
@@ -294,7 +307,7 @@ function controller(workspace, spec, execute = spawnSync, externalDeadline) {
     /^sha256:[a-f0-9]{64}$/u.test(spec.imageId || ""),
     "acceptance requires an externally pinned Docker image ID",
   );
-  function run(command, { setup = false } = {}) {
+  function run(command, { setup = false, npmCacheDir } = {}) {
     const containerName = `cc-verify01-${randomUUID()}`;
     const started = Date.now();
     const timeoutMs = deadline - started;
@@ -312,6 +325,7 @@ function controller(workspace, spec, execute = spawnSync, externalDeadline) {
         uid: process.getuid(),
         gid: process.getgid(),
         timeoutMs,
+        npmCacheDir,
       }),
       {
         env: reviewEnvironment(),
@@ -333,18 +347,27 @@ function controller(workspace, spec, execute = spawnSync, externalDeadline) {
       error: result.error?.message || null,
     });
     if (result.error || result.signal) {
-      const fence = execute("docker", ["rm", "--force", containerName], {
-        env: reviewEnvironment(),
-        encoding: "utf8",
-        shell: false,
-        timeout: 30000,
-        maxBuffer: MAX_OUTPUT,
-        windowsHide: true,
-      });
-      requireCondition(
-        fence.status === 0 && !fence.error,
-        "acceptance container cleanup is unconfirmed",
-      );
+      const fence = (args) =>
+        execute("docker", args, {
+          env: reviewEnvironment(),
+          encoding: "utf8",
+          shell: false,
+          timeout: 15000,
+          maxBuffer: MAX_OUTPUT,
+          windowsHide: true,
+        });
+      const removal = fence(["rm", "--force", containerName]);
+      if (removal.status !== 0 || removal.error || removal.signal) {
+        const inspection = fence(["container", "inspect", containerName]);
+        requireCondition(
+          !inspection.error &&
+            !inspection.signal &&
+            inspection.status === 1 &&
+            String(inspection.stderr || "").trim() ===
+              `Error response from daemon: No such container: ${containerName}`,
+          "acceptance container cleanup is unconfirmed",
+        );
+      }
     }
     containerNames.delete(containerName);
     return result;
@@ -520,6 +543,7 @@ export function runReviewStage(
         ),
         "setup must not preinstall answer deliverables",
       );
+      const npmCacheDir = process.env.CC_VERIFY01_NPM_CACHE_DIR;
       const installation = runner.run(
         [
           "npm",
@@ -537,10 +561,11 @@ export function runReviewStage(
           "--no-fund",
           "--cache",
           "/tmp/npm-cache",
+          ...(npmCacheDir ? ["--prefer-offline"] : []),
           "--userconfig",
           "/dev/null",
         ],
-        { setup: true },
+        { setup: true, npmCacheDir },
       );
       requireCondition(
         installation.status === 0 &&
@@ -605,22 +630,31 @@ export function runReviewStage(
         "behavioral mutants are required",
       );
       for (const mutant of spec.mutants) {
-        const changed = applyReviewMutation(original.toString("utf8"), mutant);
-        fs.writeFileSync(sourceFile, changed);
-        const syntax = runner.run([
-          "node",
-          "--check",
-          `/workspace/${spec.sourcePath}`,
-        ]);
-        requireCondition(
-          syntax.status === 0 && !syntax.error && !syntax.signal,
-          "behavioral mutation has invalid syntax",
-        );
-        receipt.mutations.push({
-          name: mutant.name,
-          sourceSha256: hash(Buffer.from(changed)),
-          ...runner.tests(spec.expectedFiles, true),
-        });
+        const mutation = { name: mutant.name };
+        try {
+          const changed = applyReviewMutation(
+            original.toString("utf8"),
+            mutant,
+          );
+          mutation.sourceSha256 = hash(Buffer.from(changed));
+          fs.writeFileSync(sourceFile, changed);
+          const syntax = runner.run([
+            "node",
+            "--check",
+            `/workspace/${spec.sourcePath}`,
+          ]);
+          requireCondition(
+            syntax.status === 0 && !syntax.error && !syntax.signal,
+            "behavioral mutation has invalid syntax",
+          );
+          receipt.mutations.push({
+            ...mutation,
+            ...runner.tests(spec.expectedFiles, true),
+          });
+        } catch (error) {
+          receipt.failedMutation = { ...mutation, failure: error.message };
+          throw error;
+        }
         fs.writeFileSync(sourceFile, original);
       }
     }
@@ -638,7 +672,15 @@ export function runReviewStage(
       );
       fs.writeFileSync(sourceFile, original);
     }
-    runner.close();
+    try {
+      runner.close();
+    } catch (error) {
+      receipt.cleanupFailure = error.message;
+      receipt.detail = [receipt.pass ? null : receipt.detail, error.message]
+        .filter(Boolean)
+        .join("\n");
+      receipt.pass = false;
+    }
   }
   return receipt;
 }
