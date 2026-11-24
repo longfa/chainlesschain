@@ -185,6 +185,12 @@ test("native extraction preserves git archive UTF-8 paths and frozen bytes", (t)
     );
   }
 });
+test("native extraction refuses an expired sample deadline before spawning", () => {
+  assert.throws(
+    () => extractNativeArchive("unused.tar", "unused", Date.now() - 1),
+    /sample deadline expired before archive extraction/,
+  );
+});
 test("nine native strata select exactly 36 ordinary and nine independent first samples", () => {
   const all = ["win32", "linux", "darwin"].flatMap((platform) =>
     ["cli", "vscode", "jetbrains"].flatMap((entry) =>
@@ -496,6 +502,8 @@ test("failed JetBrains capture reads one raw JSONL stream and rejects ambiguous 
       .map((record) => JSON.stringify(record))
       .join("\n") + "\n";
   fs.writeFileSync(path.join(root, "unrelated.jsonl"), "not a protocol");
+  assert.equal(protocolStream(root, { allowMissing: true }), "");
+  assert.equal(protocolStream(undefined, { allowMissing: true }), "");
   assert.throws(
     () => protocolStream(root),
     /exactly one raw protocol generation/,
@@ -506,7 +514,7 @@ test("failed JetBrains capture reads one raw JSONL stream and rejects ambiguous 
   const other = path.join(root, "protocol-generation-two.jsonl");
   fs.writeFileSync(other, bytes);
   assert.throws(
-    () => protocolStream(root),
+    () => protocolStream(root, { allowMissing: true }),
     /exactly one raw protocol generation/,
   );
   fs.unlinkSync(other);
@@ -561,9 +569,8 @@ test("native child storage recognizes its isolated profile and keeps ACL verific
   const env = nativeEnvironment(root, profileHome, profile, []);
   const require = createRequire(import.meta.url);
   const storage = require.resolve("../../session-core/lib/private-storage.js");
-  const host = require.resolve(
-    "../../session-core/lib/host-storage-environment.js",
-  );
+  const host =
+    require.resolve("../../session-core/lib/host-storage-environment.js");
   const script = `
     const storage = require(${JSON.stringify(storage)});
     const host = require(${JSON.stringify(host)});

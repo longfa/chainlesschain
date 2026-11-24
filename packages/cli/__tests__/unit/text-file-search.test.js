@@ -126,6 +126,22 @@ describe("long text file keyword search", () => {
     expect((await searchTextFile(file, { pattern: "needle" })).count).toBe(1);
   });
 
+  it("directs empty single-file searches to paged reads without searching", async () => {
+    const { dir } = fixture("needle");
+    const result = await executeTool(
+      "search_files",
+      { path: "long.txt", pattern: "" },
+      { cwd: dir },
+    );
+    expect(result).toMatchObject({
+      code: "ERR_TEXT_SEARCH_OPTIONS",
+      hint: expect.stringContaining(
+        "use read_file with path, offset, and limit",
+      ),
+    });
+    expect(result.matches).toBeUndefined();
+  });
+
   it("explains literal alternation misses without silently changing search semantics", async () => {
     const { file } = fixture(
       "const startService = () => {};\nconst waitForLine = () => {};",

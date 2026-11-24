@@ -24,6 +24,8 @@ import {
   inspectNativeScope,
   snapshotNativeTree,
   loadNativePackageSet,
+  NATIVE_ARCHIVE_PREPARATION_TIMEOUT_MS,
+  extractNativeArchive,
   validateNativeProjectSelection,
 } from "./verify01-native-task-campaign.mjs";
 import {
@@ -382,7 +384,7 @@ export async function checkNativeCampaign({
       projectCommit,
       ...nativeProjectArchivePaths(revisionBinding),
     ],
-    { cwd: repository, timeout: 120000 },
+    { cwd: repository, timeout: NATIVE_ARCHIVE_PREPARATION_TIMEOUT_MS },
   );
   const summary = {
     schema: "chainlesschain.verify01-native-task-acceptance/v1",
@@ -469,9 +471,7 @@ export async function checkNativeCampaign({
         assert.equal(after[c.file]?.digest, c.digest);
         assert.equal(after[c.file]?.bytes, c.bytes.length);
       }
-      execFileSync("tar", ["-xf", archive, "-C", workspace], {
-        timeout: 120000,
-      });
+      extractNativeArchive(archive, workspace, deadline);
       const canonicalSnapshot = snapshotNativeTree(workspace);
       for (const file of task.expectedFiles) {
         assert.ok(!fs.existsSync(path.join(workspace, file)));

@@ -168,7 +168,14 @@ export function archiveExtractor(
   return executable;
 }
 
-export function extractNativeArchive(archive, workspace) {
+export const NATIVE_ARCHIVE_PREPARATION_TIMEOUT_MS = 10 * 60 * 1000;
+
+export function extractNativeArchive(archive, workspace, deadline = Infinity) {
+  const timeout = Math.min(
+    NATIVE_ARCHIVE_PREPARATION_TIMEOUT_MS,
+    deadline - Date.now(),
+  );
+  assert.ok(timeout > 0, "sample deadline expired before archive extraction");
   // Windows bsdtar can corrupt header paths or reject them depending on its
   // version and active code page, even with hdrcharset=UTF-8. Decode the frozen
   // git archive explicitly and use Unicode filesystem calls instead.
@@ -184,11 +191,11 @@ export function extractNativeArchive(archive, workspace) {
         archive,
         workspace,
       ],
-      { timeout: 120000 },
+      { timeout },
     );
   } else {
     execFileSync(archiveExtractor(), ["-xf", archive, "-C", workspace], {
-      timeout: 120000,
+      timeout,
     });
   }
 }
@@ -555,7 +562,8 @@ export async function runVSCodeNativeTask({
   };
 }
 
-export function protocolStream(captureDir) {
+export function protocolStream(captureDir, { allowMissing = false } = {}) {
+  if (allowMissing && (!captureDir || !fs.existsSync(captureDir))) return "";
   const protocol = path.join(captureDir, "protocol.json");
   if (fs.existsSync(protocol))
     return (
@@ -573,6 +581,7 @@ export function protocolStream(captureDir) {
         f !== "ui.ndjson" &&
         f !== "cdp-discovery.ndjson",
     );
+  if (allowMissing && files.length === 0) return "";
   assert.equal(files.length, 1, "exactly one raw protocol generation required");
   return (
     fs
@@ -677,11 +686,12 @@ export async function runNativeCampaign(options) {
     );
   assert.ok(key?.trim());
   assert.match(sourceSha || "", /^[a-f0-9]{40}$/u);
-  const git = (args) =>
+  const git = (args, options) =>
     execFileSync("git", args, {
       cwd: repository,
       encoding: "utf8",
       maxBuffer: 32 * 1024 * 1024,
+      ...options,
     });
   assert.equal(
     git(["rev-parse", "HEAD"]).trim(),
@@ -853,14 +863,17 @@ export async function runNativeCampaign(options) {
   const install = path.join(scratch, "install");
   mkdir(install);
   const archive = path.join(scratch, "frozen.tar");
-  git([
-    "archive",
-    "--format=tar",
-    "--output",
-    archive,
-    projectCommit,
-    ...nativeProjectArchivePaths(revisionBinding),
-  ]);
+  git(
+    [
+      "archive",
+      "--format=tar",
+      "--output",
+      archive,
+      projectCommit,
+      ...nativeProjectArchivePaths(revisionBinding),
+    ],
+    { timeout: NATIVE_ARCHIVE_PREPARATION_TIMEOUT_MS },
+  );
   const summary = {
     schema: "chainlesschain.verify01-native-task-campaign/v1",
     executionSourceCommit: sourceSha,
@@ -1071,7 +1084,7 @@ export async function runNativeCampaign(options) {
         row.skipReason = "HOST_CLEANUP_UNCONFIRMED";
       }
       hostGuard.assertReady();
-      extractNativeArchive(archive, workspace);
+      extractNativeArchive(archive, workspace, deadline);
       for (const file of task.expectedFiles) {
         assert.ok(!path.isAbsolute(file) && !file.split("/").includes(".."));
         mkdir(path.dirname(path.join(workspace, file)));
@@ -1401,7 +1414,9 @@ export async function runNativeCampaign(options) {
           fs.cpSync(result.captureDir, destination, { recursive: true });
         row.capturePath = `${sample.id}/capture`;
       }
-      const stream = result.stdout || protocolStream(result.captureDir);
+      const stream =
+        result.stdout ||
+        protocolStream(result.captureDir, { allowMissing: !result.ok });
       save(`${sample.id}/model-stream.ndjson`, redact(stream));
       row.changeReview = inspectNativeChangeReview(stream, reviewChanges);
       const inspected = inspectionStream(stream, workspace);
@@ -1424,7 +1439,10 @@ export async function runNativeCampaign(options) {
         result.ok && row.model.pass && row.brokerStatus.passed;
       const brokerFailure =
         row.brokerStatus.poisoned ?? row.brokerStatus.errorCode;
-      if (brokerFailure) row.failure = brokerFailure;
+      const failure = [row.host.failure, brokerFailure]
+        .filter(Boolean)
+        .join("\n");
+      if (failure) row.failure = redact(failure);
     } catch (error) {
       row.failure = redact(
         [row.host?.failure, error.stack || error.message]

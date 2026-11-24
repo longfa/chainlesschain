@@ -12,9 +12,14 @@ export function searchTextFile(file, options = {}) {
     timeout = 5000,
     encoding = "utf8",
   } = options;
+  if (typeof pattern !== "string" || !pattern) {
+    return Promise.resolve({
+      error: "A nonempty pattern is required for text search",
+      code: "ERR_TEXT_SEARCH_OPTIONS",
+      hint: "Supply the text you want to find as pattern. To inspect a known file without a search term, use read_file with path, offset, and limit.",
+    });
+  }
   if (
-    typeof pattern !== "string" ||
-    !pattern ||
     pattern.length > 2048 ||
     !Number.isSafeInteger(offset) ||
     offset < 0 ||

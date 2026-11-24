@@ -390,13 +390,15 @@ const CODING_AGENT_TOOL_CONTRACTS = Object.freeze([
     kind: "filesystem",
     tier: "mvp",
     description:
-      "Search for files by name pattern or content. For a long text file, pass path and pattern: returns matching line/column positions, nearby context, and nextRead arguments for read_file. This streams the file instead of loading it into model context. Continue capped results with nextOffset as offset. Omit path for the existing directory search.",
+      "Find files by name or search for matching text. For one text file, supply path and a nonempty pattern to get line/column positions, nearby text, and nextRead arguments. Continue capped results with nextOffset as offset. To inspect a known file without a search term, use read_file with path, offset, and limit. For a directory search, omit path and set content_search:true to search file contents.",
     inputSchema: {
       type: "object",
       properties: {
         pattern: {
           type: "string",
-          description: "Glob pattern or search string",
+          minLength: 1,
+          description:
+            "Nonempty filename pattern or text to match. For a single file, use at most 2048 characters.",
         },
         path: {
           type: "string",
