@@ -323,6 +323,14 @@ Claude 2.1.330 让子代理的模型回退（fallback）**传导**给它派生�
 - 2026-11-24 复验定位到旧夹具跨源码和 npm 安装包传递 Windows 文件系统适配器。安装包将该适配器识别为自定义文件系统，诊断捕获 119 次耗时超过 350 毫秒的 PowerShell ACL 调用。改用安装包内建的本地 Evolution 配置后，离线对照在 49.216 秒成功，诊断中的 PowerShell ACL 调用为 0。
 - 使用相同安装包配置和生产 LK 账户复验。一次上游 HTTP 400 由 CLI 输出错误 `result` 并退出 5。下一次真实回退链按 404、200、200、404、200 返回。父任务与子代理均得到预期文本，CLI 在 36.041 秒完成，stdout 发出 `result`、`subtype: "success"`、`is_error: false`，退出码 0。
 
+### 2026-11-24 LK 36+9 复验
+
+- 保留冻结的 36 个任务和 9 个独立首次旅程，按 Windows、Linux、macOS 的 CLI、VS Code、JetBrains 九组执行。以 CLI `0.166.162`、Open VSX `0.37.197`、JetBrains `0.4.212` 和既有宿主版本为基线。LK 这一轮使用 `gpt-6.1-sol`，CLI 通过 `custom` 协议路由，报告保留 LK 的独立供应商身份。交付由无网络的 Linux 校验器验收。[冻结计划](../../cli/verify01-plan-2026-10-13-volcengine/README.md) · [精确版本清单](../../cli/verify01-package-sets/2026-11-24-lk-public162.json) · [接入提交](https://github.com/longfa/chainlesschain/commit/6215c894488048ff6ed030c20b45d1c35bf809e4)
+- 本机凭据用于本地代理。CLI 和 IDE 子进程只获得任务代理的访问凭据。生产短探针两次通过，JSON 与流式响应都具备完整用量。用量已确认的请求仍保留平台账单未知状态。
+- Windows CLI 首次旅程完成三次模型请求，随后一次在请求已发出的情况下等待响应头 180 秒超时。独立普通样本 `verify-01` 遇到请求已发出后的 `ECONNRESET`。两次失败的实际用量未确认。Windows VS Code 首轮在宿主准备阶段缺少 `1.132.0`，该宿主已经下载。JetBrains 首轮使用了机器默认的 Java 11，在编译准备阶段失败，JDK 21 和 Gradle 8.7 已复验并用于重跑。
+- Windows CLI 首轮五个样本已结束。三项 `verify-10`、`verify-19`、`verify-28` 通过生成、模型回执和改动范围判定，独立行为校验待读回。Windows 与 Linux 的其余组继续执行。macOS 的 15 个原生样本等待同意用于本次复验的宿主。
+- Linux CLI 的独立首次旅程已通过生成判定。Linux JetBrains 起初在 Gradle 发行包下载阶段超时，已单独下载官方 `8.7` 压缩包、比对 SHA-256 并重新启动。测试报告已修正，可在样本的失败字段直接看到代理记录的上游错误码。
+
 ### 2026-11-23 晚间验收
 
 - 单次 headless 原先会在拒绝删除后被模型的最终回复覆盖为成功。本轮默认模式与 `--unattended` 均保留 `dangerous-delete` 拒绝记录，返回退出码 1、`is_error: true` 和 `CC_DESTRUCTIVE_SHELL_DENIED`。测试只使用临时用户目录，拒绝后标记文件完整。即使模型最后给出满足 Schema 的对象，流式外层进程也返回同一退出码。Schema 重试仅在运行成功且输出校验失败时继续。[进程级回归](../../../../packages/cli/__tests__/e2e/headless-destructive-denial.test.js)

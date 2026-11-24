@@ -1422,6 +1422,9 @@ export async function runNativeCampaign(options) {
       row.brokerStatus = broker.taskStatus(sample.id);
       row.generationPassed =
         result.ok && row.model.pass && row.brokerStatus.passed;
+      const brokerFailure =
+        row.brokerStatus.poisoned ?? row.brokerStatus.errorCode;
+      if (brokerFailure) row.failure = brokerFailure;
     } catch (error) {
       row.failure = redact(
         [row.host?.failure, error.stack || error.message]
