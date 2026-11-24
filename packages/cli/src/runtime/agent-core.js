@@ -220,6 +220,8 @@ import {
 import { buildSearchCommand } from "../lib/search-command.js";
 import { discoverCommands } from "../lib/slash-commands.js";
 import {
+  CHAT_COMPLETIONS_STREAM_FAILED,
+  cancelProviderStreamReader,
   isRetryableStreamError,
   STREAM_RETRY_BASE_MS,
   resolveStreamRetryMax,
@@ -13666,6 +13668,10 @@ async function _chatOpenAIStreaming(
     }
   } catch (err) {
     attachStreamRetryMetadata(err, retryMetadata);
+    if (err?.code === CHAT_COMPLETIONS_STREAM_FAILED) {
+      cancelProviderStreamReader(reader);
+      throw err;
+    }
     if (!ui.hasVisibleOutput() && !state.text && state.tools.length)
       err.noReplay = true;
     if (

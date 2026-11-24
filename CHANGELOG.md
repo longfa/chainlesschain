@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Preserve OS credential command failures and retry a timed-out Windows DPAPI read once.
 - Ask coding sessions to verify workspace changes against tool receipts before reporting delivery.
 - Let canonical compaction retain a handoff that fits the available conversation budget while enforcing the total context limit.
+- Report Chat Completions stream errors in the agent, chat, and token-stream commands and stop the failed response.
 - Pair with Open VSX 0.37.198 and JetBrains 0.4.213 after the exact-source release gates pass.
 
 ### Fixed - cc CLI 0.166.162 and IDE pairing (candidate, 2026-11-23)

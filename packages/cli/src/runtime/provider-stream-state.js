@@ -8,6 +8,7 @@ import {
   projectUsagePricingContext,
   projectEnvelopePricingContext,
 } from "../lib/usage-pricing-context.js";
+import { createChatCompletionsStreamError } from "../lib/stream-retry.js";
 
 export function _isNonNegativeSafeInteger(value) {
   return Number.isSafeInteger(value) && value >= 0;
@@ -321,7 +322,8 @@ export function _openaiReduceLine(state, raw, onToken) {
     state.terminationInvalid = true;
     return state;
   }
-  if (state.streamDone || obj.error) state.terminationInvalid = true;
+  if (obj?.error) throw createChatCompletionsStreamError();
+  if (state.streamDone) state.terminationInvalid = true;
   if (!Array.isArray(obj.choices) || obj.choices.length > 1) {
     state.terminationInvalid = true;
   }

@@ -24,6 +24,26 @@ import { isFormalBudgetError } from "./formal-budget-errors.js";
 export const STREAM_RETRY_MAX = 2;
 export const STREAM_RETRY_BASE_MS = 400;
 export const STREAM_RETRY_MAX_DELAY_MS = 60_000;
+export const CHAT_COMPLETIONS_STREAM_FAILED =
+  "CC_CHAT_COMPLETIONS_STREAM_FAILED";
+
+export function createChatCompletionsStreamError() {
+  return Object.assign(
+    new Error("OpenAI-compatible stream returned a provider error"),
+    {
+      code: CHAT_COMPLETIONS_STREAM_FAILED,
+      noReplay: true,
+    },
+  );
+}
+
+export function cancelProviderStreamReader(reader) {
+  try {
+    void Promise.resolve(reader.cancel?.()).catch(() => {});
+  } catch {
+    // Preserve the provider error even if the transport cannot be cancelled.
+  }
+}
 
 function isFailureStatus(status) {
   return Number.isInteger(status) && status >= 400 && status <= 599;

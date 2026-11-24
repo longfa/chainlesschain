@@ -174,10 +174,11 @@ describe("chatWithTools — streaming connection-drop resilience", () => {
     );
   };
 
-  const stubFiniteFetch = (chunks) => {
+  const stubFiniteFetch = (chunks, cancel = vi.fn()) => {
     let i = 0;
     let reads = 0;
     const reader = {
+      cancel,
       read: async () => {
         reads += 1;
         return i < chunks.length
@@ -265,6 +266,30 @@ describe("chatWithTools — streaming connection-drop resilience", () => {
         baseOpts({ onToken: () => Promise.reject(outputError) }),
       ),
     ).rejects.toBe(outputError);
+  });
+
+  it("fails on an upstream error after partial output and stops reading the response", async () => {
+    const cancel = vi.fn();
+    const reads = stubFiniteFetch(
+      [
+        'data: {"choices":[{"delta":{"content":"partial"}}]}\n',
+        'data: {"choices":null,"usage":null}\n' +
+          'data: {"error":{"message":"upstream connection reset"}}\n',
+        'data: {"choices":[{"delta":{"content":"late"}}]}\n',
+      ],
+      cancel,
+    );
+    const tokens = [];
+    await expect(
+      chatWithTools(
+        [{ role: "user", content: "hi" }],
+        baseOpts({ onToken: (token) => tokens.push(token) }),
+      ),
+    ).rejects.toMatchObject({ code: "CC_CHAT_COMPLETIONS_STREAM_FAILED" });
+    expect(tokens).toEqual(["partial"]);
+    expect(reads()).toBe(2);
+    expect(cancel).toHaveBeenCalledOnce();
+    expect(globalThis.fetch).toHaveBeenCalledOnce();
   });
 
   it("drops a half-streamed tool_call when preserving a truncated answer", async () => {

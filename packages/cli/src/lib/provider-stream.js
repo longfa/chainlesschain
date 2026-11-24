@@ -12,6 +12,10 @@ import { resolveProviderDefinition } from "./llm-providers.js";
 import { normalizeOllamaBaseUrl } from "./ollama-base-url.js";
 import { ollamaProviderFetch } from "./ollama-provider-fetch.js";
 import {
+  CHAT_COMPLETIONS_STREAM_FAILED,
+  createChatCompletionsStreamError,
+} from "./stream-retry.js";
+import {
   assertCustomProviderConnection,
   geminiGenerateContentUrl,
   geminiRequestBody,
@@ -139,12 +143,12 @@ export async function* openAIStream({
     }
     try {
       const obj = JSON.parse(payload);
-      if (requireCompletion && obj.error)
-        throw new Error("OpenAI stream returned an error");
+      if (obj?.error) throw createChatCompletionsStreamError();
       const delta = obj?.choices?.[0]?.delta?.content;
       if (delta) yield delta;
     } catch (error) {
-      if (requireCompletion) throw error;
+      if (requireCompletion || error?.code === CHAT_COMPLETIONS_STREAM_FAILED)
+        throw error;
       /* skip */
     }
   }
