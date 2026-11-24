@@ -72,7 +72,9 @@ test("LK validates stream completion, tool names and usage", () => {
     choices: [
       {
         index: 0,
-        delta: { tool_calls: [{ index: 0, function: { name: "file" } }] },
+        delta: {
+          tool_calls: [{ index: 0, type: null, function: { name: "file" } }],
+        },
         finish_reason: "tool_calls",
       },
     ],
@@ -94,6 +96,14 @@ test("LK validates stream completion, tool names and usage", () => {
         { max_tokens: 5 },
       ),
     /OUTPUT_TOOL_FORBIDDEN/,
+  );
+  assert.throws(
+    () =>
+      lkDiagnosticStreamUsage(
+        event(more) + event(terminal) + "data: [DONE]\n\n",
+        { max_tokens: 5 },
+      ),
+    /TOOL_DELTA_INVALID/,
   );
 });
 

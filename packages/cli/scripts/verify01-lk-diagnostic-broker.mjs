@@ -18,6 +18,7 @@ export const LK_BROKER = Object.freeze({
   timeoutMs: 180000,
   connectionAttemptTimeoutMs: 5000,
   usageAccounting: "completion-with-optional-separate-reasoning/v1",
+  allowNullTypeOnToolContinuation: true,
   formalSample: false,
 });
 
@@ -211,7 +212,11 @@ export function lkDiagnosticStreamUsage(raw, body) {
       for (const call of choice.delta?.tool_calls || []) {
         check(
           count(call?.index) &&
-            (call.type === undefined || call.type === "function"),
+            (call.type === undefined ||
+              call.type === "function" ||
+              (LK_BROKER.allowNullTypeOnToolContinuation &&
+                call.type === null &&
+                toolNames.has(call.index))),
           "TOOL_DELTA_INVALID",
         );
         const name = call.function?.name ?? "";
