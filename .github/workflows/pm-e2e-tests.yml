@@ -43,6 +43,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+env:
+  ONNXRUNTIME_NODE_INSTALL_CUDA: "skip"
+  npm_config_onnxruntime_node_install_cuda: "skip"
+
 jobs:
   build:
     name: Build Electron App
