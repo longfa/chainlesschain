@@ -96,16 +96,14 @@ describe("E2E: Agent v0.42.0 Enhancements", () => {
       expect(replContent).toContain('options.model || "qwen2.5:7b"');
     });
 
-    it("warns on deprecated model when switching via /model (Claude-Code 2.1.183 parity)", () => {
-      // The interactive /model switch must surface the same provider-retired /
-      // deprecated-snapshot warning the headless paths already emit, so a user
-      // can't silently switch to a retired id mid-session. Locks the wiring in
-      // the `/model` handler (agent-repl.js) so a refactor can't drop it.
+    it("routes both /model choices through the deprecation warning", () => {
       replContent = replContent || readFileSync(agentReplPath, "utf8");
+      expect(replContent).toContain('"../lib/model-deprecation.js"');
       expect(replContent).toMatch(
-        /import\(\s*["']\.\.\/lib\/model-deprecation\.js["']\s*,?\s*\)/,
+        /const selectModel = \(next, defer\) => \{[\s\S]*?maybeWarnDeprecatedModel\(\{ model: next \}\);/,
       );
-      expect(replContent).toContain("maybeWarnDeprecatedModel({ model })");
+      expect(replContent).toContain("selectModel(arg, concurrent");
+      expect(replContent).toContain("selectModel(next, _processingLine)");
     });
 
     it("should use IterationBudget in agent-core", () => {
@@ -211,9 +209,8 @@ describe("E2E: Agent v0.42.0 Enhancements", () => {
     });
 
     it("isValidPackageName is importable and callable", async () => {
-      const { isValidPackageName } = await import(
-        "../../src/lib/agent-core.js"
-      );
+      const { isValidPackageName } =
+        await import("../../src/lib/agent-core.js");
       expect(typeof isValidPackageName).toBe("function");
 
       expect(isValidPackageName("numpy")).toBe(true);
@@ -221,9 +218,8 @@ describe("E2E: Agent v0.42.0 Enhancements", () => {
     });
 
     it("getEnvironmentInfo() returns expected fields", async () => {
-      const { getEnvironmentInfo } = await import(
-        "../../src/lib/agent-core.js"
-      );
+      const { getEnvironmentInfo } =
+        await import("../../src/lib/agent-core.js");
       const info = getEnvironmentInfo();
       expect(info).toHaveProperty("os");
       expect(info).toHaveProperty("arch");
@@ -270,9 +266,8 @@ describe("E2E: Agent v0.42.0 Enhancements", () => {
 
   describe("upgraded task-model-selector", () => {
     it("should be importable and return upgraded models", async () => {
-      const { detectTaskType, selectModelForTask, TaskType } = await import(
-        "../../src/lib/task-model-selector.js"
-      );
+      const { detectTaskType, selectModelForTask, TaskType } =
+        await import("../../src/lib/task-model-selector.js");
 
       // Ollama models should be upgraded
       expect(selectModelForTask("ollama", TaskType.CHAT)).toBe("qwen2.5:7b");
@@ -297,9 +292,8 @@ describe("E2E: Agent v0.42.0 Enhancements", () => {
 
   describe("upgraded llm-providers", () => {
     it("ollama provider should include qwen2.5 models", async () => {
-      const { BUILT_IN_PROVIDERS } = await import(
-        "../../src/lib/llm-providers.js"
-      );
+      const { BUILT_IN_PROVIDERS } =
+        await import("../../src/lib/llm-providers.js");
       const ollama = BUILT_IN_PROVIDERS.ollama;
       expect(ollama.models).toContain("qwen2.5:7b");
       expect(ollama.models).toContain("qwen2.5:14b");
