@@ -8,6 +8,23 @@ Version **0.37.198** recommends CLI **0.166.163**. Session forks open in a separ
 
 ## Current release
 
+<!-- release163-status -->
+
+Open VSX version **0.37.198** pairs with public CLI `0.166.163`.
+Immutable tag `ide-vscode-v0.37.198` identifies this pairing.
+
+| Component                 | Current public status                                       |
+| ------------------------- | ----------------------------------------------------------- |
+| VS Code extension         | **0.37.198**; verified public Open VSX release              |
+| Recommended CLI           | **`chainlesschain@0.166.163`**; verified public npm package |
+| Base bridge compatibility | `cc >= 0.162.190`; newer features require the paired CLI    |
+
+The Linux, Windows, macOS, browser, and Remote SSH gates passed. The public VSIX matches the tagged build. [Open VSX publication](https://github.com/longfa/chainlesschain/actions/runs/45537934622) · [Download the verified VSIX](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.198/file/chainlesschain.chainlesschain-ide-0.37.198.vsix)
+
+Using `@0.166.163` selects this pairing. Install `npm i -g chainlesschain@0.166.163 --registry https://registry.npmjs.org`, restart the host, and run `cc --version` and `cc doctor`.
+
+### Previous verified release (0.37.197)
+
 <!-- release162-status -->
 
 Open VSX version **0.37.197** pairs with public CLI `0.166.162`.

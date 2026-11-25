@@ -1,6 +1,16 @@
 # Agent Platform 发布与升级指南
 
-## 当前公开版本与源码核对（2026-11-19）
+## CLI 0.166.163（2026-11-25）
+
+CLI **0.166.163** 是 npm `latest`。发布标签 `v-npm-0-166-163` 绑定源码 `b06b3bfe0f1bf91d40617f3a0c83d918795d4fe6`。CLI CI 的 74 个必需作业、Strict Sandbox 的 6 个作业和六目标原生验证均通过。公开归档和签名来源由 OIDC 发布工作流核验。 [发布证据](https://github.com/longfa/chainlesschain/actions/runs/45535193598)
+
+运行 `npm i -g chainlesschain@0.166.163 --registry https://registry.npmjs.org` 安装。重启 CLI 和 IDE 宿主后，用 `cc --version` 确认版本，再运行 `cc doctor` 核对实际加载的 CLI。
+
+本版修复文件正文已经送达时的读取保护、超预算的本地压缩交接和轮次中断后的审批清理。Chat Completions 的流错误会终止该轮。配套 Open VSX **0.37.198** 已公开，商店 VSIX 内容与标签制品一致。JetBrains **0.4.213** 推荐同一 CLI，发布工作流正在运行。 [Open VSX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide) · [发布验证](https://github.com/longfa/chainlesschain/actions/runs/45537934622) · [JetBrains 工作流](https://github.com/longfa/chainlesschain/actions/runs/45537935036)
+
+发行边界为付费准入 `NOT_PAID_READY`、原生准入 `NOT_ADMITTED` 和自动晋级 `HOLD`。
+
+## 历史公开版本与源码核对（2026-11-19）
 
 已验证公开 **CLI 0.166.159 / Open VSX 0.37.194 / JetBrains 0.4.208**，两款 IDE 推荐 CLI .156；JetBrains 已审核公开，公开安装包已与正式候选核对。安装 `npm i -g chainlesschain@0.166.159 --registry https://registry.npmjs.org`，重启宿主后运行 `cc --version`、`cc doctor`。
 JetBrains **0.4.209** 已上传并等待 Marketplace 审批/上架；公开列表仍为 **0.4.208**。
