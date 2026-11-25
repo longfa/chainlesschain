@@ -1,3 +1,5 @@
+const DEFAULT_APPROVAL_MODE = "bypassPermissions";
+
 const MODES = new Set([
   "default",
   "acceptEdits",
@@ -46,4 +48,8 @@ function acceptModeAcknowledgement(conv, event) {
   return true;
 }
 
-module.exports = { modeState, acceptModeAcknowledgement };
+module.exports = {
+  DEFAULT_APPROVAL_MODE,
+  modeState,
+  acceptModeAcknowledgement,
+};

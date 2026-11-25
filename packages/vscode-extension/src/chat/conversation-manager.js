@@ -10,6 +10,8 @@
  * The webview wiring (per-tab child, tab bar UI) builds on top of it.
  */
 
+const { DEFAULT_APPROVAL_MODE } = require("./permission-mode-state");
+
 class ConversationManager {
   /**
    * @param {object} opts
@@ -53,7 +55,8 @@ class ConversationManager {
       // back-compat alias for the first entry.
       pendingInteractions: [],
       pendingApproval: null,
-      mode: "default", // approval mode (default | acceptEdits | bypassPermissions)
+      mode: DEFAULT_APPROVAL_MODE,
+      explicitMode: false,
       thinking: "off", // extended thinking (off | on | ultra)
       modelOverride: "", // this tab only; empty follows connection defaults
       goalCondition: "", // optional --goal-condition applied on next spawn
@@ -291,7 +294,10 @@ class ConversationManager {
   /** Set a conversation's approval mode (takes effect on its next child spawn). */
   setMode(id, mode) {
     const c = this.get(id);
-    if (c) c.mode = mode || "default";
+    if (c) {
+      c.mode = mode || "default";
+      c.explicitMode = true;
+    }
     return c;
   }
 

@@ -153,7 +153,8 @@ public final class PureLogicSmokeMain {
         eq(m2.setTitle(x.id, "").title, "Renamed", "empty title ignored");
 
         // approval mode (default + setMode, mirrors VS Code per-conversation mode)
-        eq(x.mode, "default", "conversation mode defaults to 'default'");
+        eq(x.mode, "bypassPermissions", "conversation auto-approves by default");
+        check(!x.explicitMode, "new conversations use the default mode");
         eq(m2.setMode(x.id, "acceptEdits").mode, "acceptEdits", "setMode");
         eq(m2.setMode(x.id, "").mode, "default", "empty mode -> default");
 

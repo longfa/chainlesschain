@@ -238,11 +238,17 @@ function applyManagedPermissionPolicy(baseRules, managed, sources = {}) {
   return rules;
 }
 
+function defaultInteractivePermissionMode(managed) {
+  return managed?.disableBypassPermissionsMode === true ||
+    managed?.disableBypassPermissionsMode === "disable"
+    ? "default"
+    : "bypassPermissions";
+}
+
 function assertManagedPermissionMode(mode, managed) {
   if (
     mode === "bypassPermissions" &&
-    (managed?.disableBypassPermissionsMode === true ||
-      managed?.disableBypassPermissionsMode === "disable")
+    defaultInteractivePermissionMode(managed) === "default"
   ) {
     throw new Error(
       'permission mode "bypassPermissions" is disabled by managed settings',
@@ -752,6 +758,7 @@ module.exports = {
   loadManagedSettings,
   applyManagedPermissionPolicy,
   assertManagedPermissionMode,
+  defaultInteractivePermissionMode,
   parseEnvList,
   mergeSandboxSettings,
   ruleSource,

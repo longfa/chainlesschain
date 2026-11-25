@@ -1,5 +1,10 @@
 # Changelog — ChainlessChain IDE Bridge (VS Code)
 
+## [0.37.199] - CLI 0.166.164 pairing (candidate, 2026-11-26)
+
+- Automatically approve routine tool use in new chats. Managed policy determines the effective mode and `/normal` restores regular approval prompts.
+- Recommend CLI `0.166.164`.
+
 ## [0.37.198] - CLI 0.166.163 pairing (candidate, 2026-11-24)
 
 - Recommend CLI `0.166.163` for improved search diagnostics and recovery from a timed-out Windows credential read.

@@ -455,7 +455,9 @@ describe("chat tabs — persistence across reload", () => {
     expect(tabs[1].sessionId).toBe("sess-2");
     expect(tabs[1].active).toBe(true); // tab 2 was active at "reload"
     expect(p2._convs.get(tabs[1].id).mode).toBe("bypassPermissions");
-    expect(p2._convs.get(tabs[0].id).mode).toBe("default");
+    expect(p2._convs.get(tabs[0].id).mode).toBe("bypassPermissions");
+    expect(p2._convs.get(tabs[0].id).explicitMode).toBe(false);
+    expect(p2._convs.get(tabs[1].id).explicitMode).toBe(true);
   });
 
   it("falls back to the legacy single-session key when no tab set was saved", () => {

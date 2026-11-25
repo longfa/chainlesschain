@@ -2311,6 +2311,16 @@ async function runAgentHeadlessStreamInWorkspace(
 
   let pm = deps.planManager || new PlanModeManager();
   let restoredPlanMode = false;
+  // The IDE supplies the flag for older CLIs as well. Its implicit selection
+  // yields to a verified plan or to an organization that disables bypass.
+  const idePermissionFallback =
+    options.interactiveApprovals === true &&
+    options.permissionMode === "bypassPermissions" &&
+    process.env.CC_IDE_DEFAULT_PERMISSION_MODE === "1" &&
+    process.env.CC_IDE_REQUESTED_MODE === "bypassPermissions" &&
+    /^[a-zA-Z0-9-]{1,80}$/.test(process.env.CC_IDE_MODE_REQUEST_ID || "");
+  if (idePermissionFallback)
+    options = { ...options, permissionMode: undefined };
   if (persist && !hasInjectedSessionStore && !deps.planManager) {
     try {
       const plan = openSessionPlan(sessionId, options.permissionMode);
@@ -2334,9 +2344,15 @@ async function runAgentHeadlessStreamInWorkspace(
     }
   }
 
-  if (managedSettings) {
-    const { assertManagedPermissionMode } =
+  if (managedSettings || idePermissionFallback) {
+    const { assertManagedPermissionMode, defaultInteractivePermissionMode } =
       await import("../lib/settings-loader.cjs");
+    if (idePermissionFallback && options.permissionMode == null) {
+      options = {
+        ...options,
+        permissionMode: defaultInteractivePermissionMode(managedSettings),
+      };
+    }
     assertManagedPermissionMode(options.permissionMode, managedSettings);
   }
   const perm = resolvePermissionMode(options.permissionMode);

@@ -3,6 +3,19 @@
   "releases": [
     {
       "productVersion": null,
+      "cliVersion": "0.166.164",
+      "cliVersions": ["0.166.164"],
+      "date": "2026-11-26",
+      "title": "",
+      "sections": [
+        {
+          "heading": "Added - cc CLI 0.166.164 and IDE pairing (candidate, 2026-11-26)",
+          "body": "- Open interactive Agent sessions in a terminal window with a fixed composer, searchable slash commands, and queued follow-ups.\n- Switch models with a searchable `/model` picker or an exact model ID. Selections made during a turn apply to the next turn.\n- Use automatic routine tool approvals in new CLI, VS Code and JetBrains interactive sessions while honoring managed permission policies, explicit rules, and approved plans.\n- Pair CLI 0.166.164 with Open VSX 0.37.199 and JetBrains 0.4.214."
+        }
+      ]
+    },
+    {
+      "productVersion": null,
       "cliVersion": "0.166.163",
       "cliVersions": ["0.166.163"],
       "date": "2026-11-24",

@@ -1,5 +1,9 @@
 # chainlesschain CLI
 
+## CLI 0.166.164 candidate
+
+The candidate adds a fullscreen Agent composer, live slash commands, a `/model` picker and automatic routine tool approvals for new interactive sessions. The planned pairing is Open VSX **0.37.199** and JetBrains **0.4.214**. The current public install command is below.
+
 ## Public CLI 0.166.163
 
 CLI **0.166.163** is available on npm from source `b06b3bfe0f1bf91d40617f3a0c83d918795d4fe6`. GitHub Actions published it through OIDC after CLI CI and Strict Sandbox passed on Linux, Windows, and macOS, then verified the public archive and signed provenance. Install `npm i -g chainlesschain@0.166.163 --registry https://registry.npmjs.org`, restart the CLI and IDE hosts, and run `cc --version` and `cc doctor`. [npm publication](https://github.com/longfa/chainlesschain/actions/runs/45535193598)
@@ -330,6 +334,14 @@ Exact source `dfa158e36171e347a40e23356c2ed7bd04e0c061` passed complete Linux, W
 ## Current command and configuration references
 
 The current [Agent reference](https://docs.chainlesschain.com/chainlesschain/cli-agent.html) covers optional delivery review and Goal recovery. [IDE configuration](https://docs.chainlesschain.com/chainlesschain/ide-plugin.html) documents conversation model overrides and unreadable configuration. [MCP Tool Search](https://docs.chainlesschain.com/chainlesschain/cli-tool-search.html), [Skills](https://docs.chainlesschain.com/chainlesschain/cli-skill.html), and [Memory](https://docs.chainlesschain.com/chainlesschain/cli-memory.html) describe discovery, defaults and query limits. Published behavior follows its frozen release source. Post-release main d9f2511b95 adds explicit review forwarding to evaluation drivers; its campaign is PREPARED_NOT_DISPATCHED and adds no independent acceptance.
+
+### Interactive Agent in this checkout
+
+Run `cc agent` in a terminal to open the conversation window with a fixed input area. Type `/` to filter commands, use the arrow keys to select one, and press Enter to run it or Tab to complete its name. During a turn, Enter queues follow-up messages. Press Up in an empty input area to retrieve the latest queued message for editing. `/status`, `/cost`, `/help` and `/btw <question>` respond while the turn runs. Esc or `/interrupt` interrupts the active model turn. Use Alt+Enter for a newline, Page Up and Page Down for earlier output, and `/tui default` for terminal scrollback.
+
+New interactive CLI, VS Code and JetBrains Agent sessions use automatic routine tool approvals. Managed permission settings, explicit permission rules, and approved plan restrictions still apply. Choose `/permissions strict` in the CLI or `/normal` in either IDE to require normal approvals.
+
+Use `/model` to pick a model for the current provider. Type to filter the list, use the arrow keys to select, and press Enter to apply. You can also enter an exact ID with `/model <model-id>`. A selection made during a turn applies to the next turn.
 
 ## CLI 0.166.127 — optional self-evolution (2026-10-27)
 
