@@ -190,18 +190,17 @@ try {
     provider: base.provider,
   });
   const historyCount = thresholds.maxMessages + 8;
-  // Exceed both genuine count and token budgets without patching the compressor.
-  // Five large assistant turns exceed the conversation partition and trigger
-  // semantic summarization. Give them disjoint character sets: different hex
-  // hashes still have the same alphabet and fuzzy dedup would collapse them to
-  // one oversized turn, preventing a summary that fits the recovery budget.
+  const largeAssistantTurns = 12;
+  // The planner can retain some large turns in the conversation budget. Leave
+  // enough distinct history in the dropped subset to trigger a provider summary.
+  // Distinct character sets keep fuzzy deduplication from collapsing the turns.
   // These are inert historical user/assistant messages, not tool evidence.
   const history = Array.from({ length: historyCount }, (_, index) => ({
     role: index % 2 === 0 ? "user" : "assistant",
     content:
       index % 2 === 0
         ? `Historical question ${index}`
-        : index >= 10
+        : index >= largeAssistantTurns * 2
           ? `Historical answer ${index}`
           : String.fromCharCode(65 + index).repeat(thresholds.maxTokens * 2),
   }));
