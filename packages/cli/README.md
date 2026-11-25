@@ -1,8 +1,14 @@
 # chainlesschain CLI
 
-## CLI 0.166.163 candidate
+## Public CLI 0.166.163
 
-The candidate improves file-search diagnostics, retries a timed-out Windows credential read once, and asks coding agents to verify workspace changes before reporting delivery. When the model receives a requested source page, the CLI clears the consecutive delivery failures for that file. Canonical compaction retains full handoffs that fit the conversation budget and can use a shorter local handoff with file read positions when needed. Chat Completions provider errors stop the stream and fail the turn. Interrupting a turn closes its pending approvals. The planned pairing is Open VSX **0.37.198** and JetBrains **0.4.213**. The public pairing and install command are below.
+CLI **0.166.163** is available on npm from source `b06b3bfe0f1bf91d40617f3a0c83d918795d4fe6`. GitHub Actions published it through OIDC after CLI CI and Strict Sandbox passed on Linux, Windows, and macOS, then verified the public archive and signed provenance. Install `npm i -g chainlesschain@0.166.163 --registry https://registry.npmjs.org`, restart the CLI and IDE hosts, and run `cc --version` and `cc doctor`. [npm publication](https://github.com/longfa/chainlesschain/actions/runs/45535193598)
+
+This release improves file-search diagnostics, retries a timed-out Windows credential read once, and asks coding agents to verify workspace changes before reporting delivery. File reads recover when the requested page reaches the model. Canonical compaction can shorten a local handoff while retaining file read positions. Chat Completions stream errors fail the turn, and interrupting a turn closes its pending approvals.
+
+Open VSX **0.37.198** is public and recommends CLI `0.166.163`. JetBrains **0.4.213** pairs with the same CLI and its publication workflow is in progress. [Open VSX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide) · [JetBrains workflow](https://github.com/longfa/chainlesschain/actions/runs/45537935036)
+
+The release limits are `NOT_PAID_READY` for paid readiness, `NOT_ADMITTED` for native admission, and `HOLD` for automatic promotion.
 
 ## Public CLI 0.166.162 and IDE pairing
 

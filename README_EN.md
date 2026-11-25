@@ -1,12 +1,18 @@
 # ChainlessChain - Personal Mobile AI Management System Based on USB Key and SIMKey
 
-## Current public release (2026-11-24)
+## Current public release (2026-11-25)
+
+CLI **0.166.163** is public on npm. GitHub Actions published it through OIDC and verified the public archive and signed provenance. Install `npm i -g chainlesschain@0.166.163 --registry https://registry.npmjs.org`, restart the host, and run `cc --version` and `cc doctor`. [npm publication evidence](https://github.com/longfa/chainlesschain/actions/runs/45535193598)
+
+This release restores file-read delivery, bounds oversized compaction handoffs, and closes pending approvals when a turn is interrupted. Chat Completions stream errors fail the current turn. The paired Open VSX **0.37.198** is public. JetBrains **0.4.213** passed its three-platform host matrix and is in the publication workflow. [Open VSX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide) · [Installation and upgrades](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-25-163.html) · [Design and verification](https://design.chainlesschain.com/release-runtime-update-2026-11-25-163.html)
+
+## Public release (2026-11-24)
 
 CLI **0.166.162** is public on npm. GitHub Actions published the exact source through OIDC after the Linux, Windows, and macOS gates passed, then verified the public archive and signed provenance. Install `npm i -g chainlesschain@0.166.162 --registry https://registry.npmjs.org`, restart the host, then run `cc --version` and `cc doctor`. [npm publication evidence](https://github.com/longfa/chainlesschain/actions/runs/45306343051)
 
 This release restores approved plan permissions across resumes, returns JSON receipts for headless startup and Git installation outcomes, and shows task deadlines and next run times. Open VSX **0.37.197** and JetBrains **0.4.212** are publicly downloadable, and both recommend CLI **0.166.162**. [Installation and upgrades](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-24-162.html) · [Design and verification](https://design.chainlesschain.com/release-runtime-update-2026-11-24-162.html)
 
-## Previous public release (2026-11-23)
+## Public release (2026-11-23)
 
 CLI **0.166.161** is public on npm from exact source `22f4dfea080546d586f75652fd5075671019ffb8`. GitHub Actions published it through OIDC and verified the public installation, archive and signed provenance. Install `npm i -g chainlesschain@0.166.161 --registry https://registry.npmjs.org`, restart the host, and check `cc --version`. [npm publication evidence](https://github.com/longfa/chainlesschain/actions/runs/45084688787)
 

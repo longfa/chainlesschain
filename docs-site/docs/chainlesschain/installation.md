@@ -1,6 +1,6 @@
 # ChainlessChain 安装部署
 
-> CLI **0.166.162** 与配套 Open VSX **0.37.197**、JetBrains **0.4.212** 已公开。最后已核验的客户端 **v5.0.3.145** 的旧安装包下载源暂不可用。 [升级指南与商店状态](./cli-ide-update-2026-11-24-162)
+> CLI **0.166.163** 与 Open VSX **0.37.198** 已公开。最后已核验的客户端 **v5.0.3.145** 的旧安装包下载源暂不可用。 [IDE 配对与商店状态](./cli-ide-update-2026-11-25-163)
 
 > **2026-11-09 历史核对**：当时公开组合为 CLI **0.166.145**、Open VSX **0.37.181**、JetBrains **0.4.198**，两款 IDE 推荐 CLI .145；产品 **v5.0.3.145** 独立发行。以下 .145 文件名、系统要求与旧门禁记录保留历史范围，不证明当前旧下载源仍可用。
 
@@ -8,7 +8,7 @@
 
 先选择需要的入口：终端 Agent 安装 npm CLI；浏览器工作台由 `cc ui` 启动；IDE 插件另外安装并连接 CLI。桌面与移动客户端需要独立安装包，当前旧下载源不可用，可使用已有且已核验的本地资产或按源码开发说明构建。仅使用 CLI 和云端模型时，不需要先部署整套 Docker 后端。
 
-[系统概述](./overview) · [本轮升级指南](./cli-ide-update-2026-11-24-162) · [配置说明](./configuration)
+[系统概述](./overview) · [本轮升级指南](./cli-ide-update-2026-11-25-163) · [配置说明](./configuration)
 
 ## 核心特性
 
@@ -49,11 +49,11 @@ Android / iOS 要求按历史产品 .145 的发行源码核对，不能从源码
 ```bash
 node --version
 npm --version
-npm i -g chainlesschain@0.166.162 --registry https://registry.npmjs.org
+npm i -g chainlesschain@0.166.163 --registry https://registry.npmjs.org
 cc --version
 ```
 
-安装后应显示 `0.166.162`。若 `cc` 指向系统 C 编译器或另一个工具，使用完整命令 `chainlesschain --version`，并核对 npm 全局可执行目录是否在当前终端的 PATH 中。
+安装后应显示 `0.166.163`。若 `cc` 指向系统 C 编译器或另一个工具，使用完整命令 `chainlesschain --version`，并核对 npm 全局可执行目录是否在当前终端的 PATH 中。
 
 ### 2. 初始化 CLI
 
@@ -111,10 +111,10 @@ sudo apt install ./chainlesschain-desktop-vue_5.0.3-alpha.145_amd64.deb
 
 | IDE                | 配套插件版本          | 商店入口                                                                                      |
 | ------------------ | --------------------- | --------------------------------------------------------------------------------------------- |
-| VS Code 兼容编辑器 | Open VSX **0.37.195** | [Open VSX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide)                  |
-| JetBrains          | **0.4.209**           | [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/32208-chainlesschain-ide-bridge) |
+| VS Code 兼容编辑器 | Open VSX **0.37.198** | [Open VSX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide)                  |
+| JetBrains          | **0.4.212**           | [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/32208-chainlesschain-ide-bridge) |
 
-Open VSX **0.37.197** 和 JetBrains **0.4.212** 均推荐 CLI **0.166.162**。升级后重启宿主，通过 Doctor 核对 CLI 路径。 [公开下载状态](./cli-ide-update-2026-11-24-162) · [IDE 指南](./ide-plugin)
+Open VSX **0.37.198** 推荐 CLI **0.166.163**，已公开的 JetBrains **0.4.212** 推荐 CLI **0.166.162**。升级后重启宿主，通过 Doctor 核对 CLI 路径。 [最新商店状态](./cli-ide-update-2026-11-25-163) · [IDE 指南](./ide-plugin)
 
 ## 移动端安装
 
@@ -176,7 +176,7 @@ CLI 默认配置在 `~/.chainlesschain/config.json`；桌面端还存在 Electro
 ### 更新到本页核对的公开组合
 
 ```bash
-npm i -g chainlesschain@0.166.162 --registry https://registry.npmjs.org
+npm i -g chainlesschain@0.166.163 --registry https://registry.npmjs.org
 chainlesschain --version
 chainlesschain doctor
 ```

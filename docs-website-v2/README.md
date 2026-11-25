@@ -1,5 +1,9 @@
 # ChainlessChain 官方网站
 
+## 2026-11-25 文档与网站同步
+
+官网记录了 `b06b3bfe0f1bf91d40617f3a0c83d918795d4fe6` 的 CLI **0.166.163** 与 Open VSX **0.37.198** 公开状态。JetBrains **0.4.213** 通过三平台实机矩阵，商店发布进行中。官网中英文首页说明了文件读取恢复、压缩预算和中断审批的变化。 [用户升级指南](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-25-163.html) · [设计与验证](https://design.chainlesschain.com/release-runtime-update-2026-11-25-163.html)
+
 ## 2026-11-19 文档与网站同步
 
 按最新源码 `8c937cbe9bc4b82f87479c124375401fa2fb3a72` 与 Git 记录核对。CLI **0.166.156**、Open VSX **0.37.192**、JetBrains **0.4.207** 均已公开验证，两款 IDE 推荐 CLI .156；发行来源为 `a8cae89288d3a6119b152e04b750e10d726a5c5f`，与网站部署提交分别记录。LK 主备为 `api.vv666.ai` / `api.lk666.ai`，默认 OpenAI 兼容模型 `gpt-6.1-sol`，目录为 **202 项 / 86 项对话模型**，支持动态算力价格与实际 API 账单。
