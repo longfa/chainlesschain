@@ -4,7 +4,7 @@
 
 CLI **0.166.163** is public on npm. GitHub Actions published it through OIDC and verified the public archive and signed provenance. Install `npm i -g chainlesschain@0.166.163 --registry https://registry.npmjs.org`, restart the host, and run `cc --version` and `cc doctor`. [npm publication evidence](https://github.com/longfa/chainlesschain/actions/runs/45535193598)
 
-This release restores file-read delivery, bounds oversized compaction handoffs, and closes pending approvals when a turn is interrupted. Chat Completions stream errors fail the current turn. The paired Open VSX **0.37.198** is public. JetBrains **0.4.213** publication is in progress. [Open VSX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide) · [Installation and upgrades](https://docs.chainlesschain.com/chainlesschain/agent-platform-release.html)
+This release restores file-read delivery, bounds oversized compaction handoffs, and closes pending approvals when a turn is interrupted. Chat Completions stream errors fail the current turn. The paired Open VSX **0.37.198** is public. JetBrains **0.4.213** passed its three-platform host matrix and is in the publication workflow. [Open VSX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide) · [Installation and upgrades](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-25-163.html) · [Design and verification](https://design.chainlesschain.com/release-runtime-update-2026-11-25-163.html)
 
 ## Public release (2026-11-24)
 

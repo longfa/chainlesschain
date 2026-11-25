@@ -13,7 +13,7 @@
   "sourceHeadCommit": "b06b3bfe0f1bf91d40617f3a0c83d918795d4fe6",
   "documentedDesktopCommit": "93917e15d6fd65a4a0147f2e5b5aace1bc87294a",
   "postReleaseDesktopGovernanceCommit": "3fa3a4b258bbcb60b23b4298cec375661ad6f410",
-  "sourceMainStatus": "CLI 0.166.163 and Open VSX 0.37.198 are public and verified. JetBrains 0.4.213 is in release validation.",
+  "sourceMainStatus": "CLI 0.166.163 and Open VSX 0.37.198 are public and verified. JetBrains 0.4.213 passed its three-platform host matrix and is in the publication workflow.",
   "agentSdkVersion": "0.2.18",
   "pythonAgentSdkVersion": "0.2.9",
   "agentProtocolVersion": "0.1.13",
@@ -55,8 +55,8 @@
     "0.166.134",
     "0.166.137"
   ],
-  "jetBrainsCandidateStatus": "JetBrains 0.4.213 recommends CLI 0.166.163 and is in release validation. JetBrains 0.4.212 is publicly downloadable.",
-  "jetBrainsCandidateStatusZh": "JetBrains 0.4.213 推荐 CLI 0.166.163，正在进行发布验证。JetBrains 0.4.212 可公开下载。",
+  "jetBrainsCandidateStatus": "JetBrains 0.4.213 recommends CLI 0.166.163 and passed the three-platform host matrix. JetBrains 0.4.212 is publicly downloadable.",
+  "jetBrainsCandidateStatusZh": "JetBrains 0.4.213 推荐 CLI 0.166.163，已通过三平台实机矩阵，正在发布。JetBrains 0.4.212 可公开下载。",
   "sourceSessionCoreVersion": "0.3.27",
   "sourcePersonalDataHubVersion": "0.4.66",
   "productVersion": "v5.0.3.145",
@@ -130,9 +130,9 @@
   },
   "jetBrainsUpdateId": 1227765,
   "historicalTaskRetestRelease": "0.166.138",
-  "upgradeGuide": "https://docs.chainlesschain.com/chainlesschain/agent-platform-release.html",
+  "upgradeGuide": "https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-25-163.html",
   "recoveryGuide": "https://docs.chainlesschain.com/chainlesschain/agent-input-and-recovery.html",
-  "runtimeDesign": "https://design.chainlesschain.com/release-runtime-update-2026-11-24-162.html",
+  "runtimeDesign": "https://design.chainlesschain.com/release-runtime-update-2026-11-25-163.html",
   "release117Channels": {
     "cli": {
       "version": "0.166.117",

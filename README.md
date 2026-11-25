@@ -4,7 +4,7 @@
 
 CLI **0.166.163** 已通过 GitHub Actions OIDC 发布到 npm，并核验公开归档和签名来源。运行 `npm i -g chainlesschain@0.166.163 --registry https://registry.npmjs.org` 安装，重启宿主后运行 `cc --version` 和 `cc doctor`。 [npm 发布证据](https://github.com/longfa/chainlesschain/actions/runs/45535193598)
 
-本版修复文件读取恢复、超预算的压缩交接和中断后遗留的待审批项。Chat Completions 流出错时会结束当前轮次。配套 Open VSX **0.37.198** 已公开，JetBrains **0.4.213** 正在发布。 [Open VSX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide) · [安装与升级](https://docs.chainlesschain.com/chainlesschain/agent-platform-release.html)
+本版修复文件读取恢复、超预算的压缩交接和中断后遗留的待审批项。Chat Completions 流出错时会结束当前轮次。配套 Open VSX **0.37.198** 已公开，JetBrains **0.4.213** 已通过三平台实机矩阵，正在发布。 [Open VSX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide) · [安装与升级](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-25-163.html) · [设计与验证](https://design.chainlesschain.com/release-runtime-update-2026-11-25-163.html)
 
 ## 2026-11-24 公开版本
 

@@ -137,6 +137,10 @@ export default defineConfig({
             link: "/modules/110-agent-platform-release-boundaries",
           },
           {
+            text: "CLI .163 / 读取恢复、压缩与轮次隔离",
+            link: "/release-runtime-update-2026-11-25-163",
+          },
+          {
             text: "CLI .162 / 会话恢复与任务生命周期",
             link: "/release-runtime-update-2026-11-24-162",
           },

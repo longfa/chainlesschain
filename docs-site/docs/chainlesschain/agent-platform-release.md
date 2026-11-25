@@ -8,7 +8,7 @@ CLI **0.166.163** 是 npm `latest`。发布标签 `v-npm-0-166-163` 绑定源码
 
 本版修复文件正文已经送达时的读取保护、超预算的本地压缩交接和轮次中断后的审批清理。Chat Completions 的流错误会终止该轮。配套 Open VSX **0.37.198** 已公开，商店 VSIX 内容与标签制品一致。JetBrains **0.4.213** 推荐同一 CLI，发布工作流正在运行。 [Open VSX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide) · [发布验证](https://github.com/longfa/chainlesschain/actions/runs/45537934622) · [JetBrains 工作流](https://github.com/longfa/chainlesschain/actions/runs/45537935036)
 
-发行边界为付费准入 `NOT_PAID_READY`、原生准入 `NOT_ADMITTED` 和自动晋级 `HOLD`。
+发行边界为付费准入 `NOT_PAID_READY`、原生准入 `NOT_ADMITTED` 和自动晋级 `HOLD`。 [本版升级指南](./cli-ide-update-2026-11-25-163) · [运行时设计](https://design.chainlesschain.com/release-runtime-update-2026-11-25-163.html)
 
 ## 历史公开版本与源码核对（2026-11-19）
 

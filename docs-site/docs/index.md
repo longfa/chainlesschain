@@ -102,7 +102,7 @@ features:
 
 ## 当前公开版本（2026-11-25）
 
-CLI **0.166.163** 已通过 npm 公开下载、归档完整性和签名来源校验。运行 `npm i -g chainlesschain@0.166.163 --registry https://registry.npmjs.org` 安装，重启宿主后运行 `cc --version` 和 `cc doctor`。 [升级指南与商店状态](/chainlesschain/agent-platform-release)
+CLI **0.166.163** 已通过 npm 公开下载、归档完整性和签名来源校验。运行 `npm i -g chainlesschain@0.166.163 --registry https://registry.npmjs.org` 安装，重启宿主后运行 `cc --version` 和 `cc doctor`。 [升级指南与商店状态](/chainlesschain/cli-ide-update-2026-11-25-163)
 
 ## 历史发行与源码核对（2026-11-21）
 

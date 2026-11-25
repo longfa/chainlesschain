@@ -1,11 +1,11 @@
 # 简介
 
-> CLI **0.166.162** 与配套 Open VSX **0.37.197**、JetBrains **0.4.212** 已公开。可通过 `cc ui` 打开浏览器工作台。 [升级指南与商店状态](../chainlesschain/cli-ide-update-2026-11-24-162)
+> CLI **0.166.163** 与 Open VSX **0.37.198** 已公开。可通过 `cc ui` 打开浏览器工作台。 [IDE 配对与商店状态](../chainlesschain/cli-ide-update-2026-11-25-163)
 
 当前推荐安装入口：
 
 ```bash
-npm install -g chainlesschain@0.166.162 --registry https://registry.npmjs.org
+npm install -g chainlesschain@0.166.163 --registry https://registry.npmjs.org
 cc setup --skip-download --skip-services
 cc ui
 ```
