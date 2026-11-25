@@ -318,7 +318,7 @@ See the [verified publication evidence](https://github.com/longfa/chainlesschain
 
 ## Release compatibility
 
-Plugin **0.4.213** recommends `chainlesschain@0.166.163`. The model menu reads the online LK catalog through this CLI and includes GPT-6.2 Sol and GPT-6.2 Astra in its offline catalog. The candidate is awaiting release verification.
+Plugin **0.4.214** is the current release candidate. It recommends `chainlesschain@0.166.164` and automatically approves routine tool use in new chats. Use `/normal` to require regular approval prompts.
 
 ## Previous candidates and development notes
 

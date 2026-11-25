@@ -1,4 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { EventEmitter } from "node:events";
+import { createInterface } from "node:readline";
+import { PassThrough } from "node:stream";
+import { describe, it, expect, vi } from "vitest";
+import { createTerminalWindow } from "../../src/repl/terminal-window.js";
+import { createReplQuestionQueue } from "../../src/repl/permission-prompt.js";
 import {
   TUI_MODES,
   DEFAULT_TUI_MODE,
@@ -13,6 +18,125 @@ import {
   supportsHyperlinks,
   renderTuiStatus,
 } from "../../src/repl/fullscreen-tui.js";
+
+it("keeps the draft editable while streaming and supports slash and model selection", () => {
+  vi.useFakeTimers();
+  const input = Object.assign(new PassThrough(), {
+    isTTY: true,
+    setRawMode() {},
+  });
+  const writes = [];
+  const stdout = Object.assign(new EventEmitter(), {
+    columns: 40,
+    rows: 12,
+    isTTY: true,
+    write(value) {
+      writes.push(value);
+      return true;
+    },
+  });
+  const terminal = createTerminalWindow({
+    input,
+    stdout,
+    stderr: { isTTY: false },
+    waitForOutput: async () => true,
+    getStatus: () => "Working",
+    getSlashSuggestions: (line) =>
+      ["/help", "/status"].filter(
+        (command) => line && command.startsWith(line),
+      ),
+  });
+  const rl = createInterface({
+    input,
+    output: terminal.readlineOutput,
+    terminal: true,
+    prompt: "> ",
+  });
+  const submitted = [];
+  rl.on("line", (line) => submitted.push(line));
+  terminal.bind(rl);
+  try {
+    terminal.enable();
+    rl.write("draft");
+    vi.runOnlyPendingTimers();
+    expect(writes.at(-1)).toContain("> draft");
+    expect(writes.at(-1)).not.toContain("\x1b[1;1H\x1b[2Kdraft");
+    stdout.write("Working on the first task\n");
+    vi.runOnlyPendingTimers();
+    expect(writes.at(-1)).toContain("Working on the first task");
+    expect(rl.line).toBe("draft");
+    expect(submitted).toEqual([]);
+
+    rl.line = "/";
+    rl.cursor = 1;
+    expect(terminal.handleSlashKey({ name: "down" })).toBe(true);
+    vi.runOnlyPendingTimers();
+    expect(writes.at(-1)).toContain("› /status");
+    expect(terminal.handleSlashKey({ name: "return" })).toBe(false);
+    rl.write(null, { name: "return", sequence: "\r" });
+    expect(submitted).toEqual(["/status"]);
+
+    rl.write("draft after /status");
+    const onSelect = vi.fn();
+    const picker = {
+      title: "Select model",
+      choices: ["first-model", "other-model", "other-fast"],
+      selected: "first-model",
+      onSelect,
+    };
+    terminal.showPicker(picker);
+    vi.runOnlyPendingTimers();
+    expect(writes.at(-1)).toContain("first-model (current)");
+    expect(terminal.handlePickerKey("other", { name: "o" })).toBe(true);
+    expect(terminal.handlePickerKey("", { name: "down" })).toBe(true);
+    expect(terminal.handlePickerKey("", { name: "return" })).toBe(true);
+    expect(onSelect).toHaveBeenCalledExactlyOnceWith("other-fast");
+    expect(rl.line).toBe("draft after /status");
+
+    terminal.showPicker(picker);
+    expect(terminal.handlePickerKey("", { name: "escape" })).toBe(true);
+    expect(onSelect).toHaveBeenCalledTimes(1);
+    expect(rl.line).toBe("draft after /status");
+  } finally {
+    terminal.dispose();
+    rl.close();
+    vi.useRealTimers();
+  }
+  expect(writes.at(-1)).toContain(ALT_SCREEN_LEAVE);
+});
+
+it("restores the composed draft after answering or canceling an approval", async () => {
+  const input = new PassThrough();
+  const output = new PassThrough();
+  const rl = createInterface({ input, output, terminal: true, prompt: "> " });
+  const questions = createReplQuestionQueue(rl, () => {});
+  const submitted = [];
+  rl.on("line", (line) => submitted.push(line));
+  try {
+    rl.line = "unfinished follow-up";
+    rl.cursor = 6;
+    const first = questions.create();
+    const answer = first.ask("Proceed? ");
+    await Promise.resolve();
+    expect(rl.line).toBe("");
+    rl.write("n");
+    rl.write(null, { name: "return", sequence: "\r" });
+    expect(await answer).toBe("n");
+    expect(rl.line).toBe("unfinished follow-up");
+    expect(rl.cursor).toBe(6);
+
+    const pending = questions.create();
+    const reply = pending.ask("Proceed? ");
+    await Promise.resolve();
+    pending.cancel();
+    expect(await reply).toBeNull();
+    expect(rl.line).toBe("unfinished follow-up");
+    expect(rl.cursor).toBe(6);
+    expect(submitted).toEqual([]);
+  } finally {
+    rl.close();
+  }
+});
 
 describe("resolveTuiMode precedence", () => {
   it("defaults to default when nothing is set", () => {

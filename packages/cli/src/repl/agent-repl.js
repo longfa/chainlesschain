@@ -138,6 +138,9 @@ import {
   selectModelForTask,
 } from "../lib/task-model-selector.js";
 import { runnableTaskModel, hasUsableKey } from "../lib/runnable-provider.js";
+import { resolveProviderDefinition } from "../lib/llm-providers.js";
+import { isLkEndpoint, LK_MODELS } from "../lib/llm-channel-presets.js";
+import { maybeWarnDeprecatedModel } from "../lib/model-deprecation.js";
 import { CLIPermanentMemory } from "../lib/permanent-memory.js";
 import { resolveClaudeProjectAutoMemory } from "../lib/claude-project-auto-memory.js";
 import { CLIAutonomousAgent, GoalStatus } from "../lib/autonomous-agent.js";
@@ -225,11 +228,11 @@ import {
   buildPermissionPrompt,
   resolveAskIdleTimeoutMs,
   questionWithIdleTimeout,
+  createReplQuestionQueue,
 } from "./permission-prompt.js";
 import { describeAskContext, raceLocalAndRemote } from "./remote-approval.js";
 import { runWithHostHooksV2Workspace } from "../lib/hooks-v2-workspace-context.js";
 import {
-  parsePermissionTier,
   parsePermissionModeArg,
   permissionModeForTier,
   describeTier,
@@ -3182,6 +3185,7 @@ export async function startAgentRepl(options = {}) {
 async function startAgentReplInWorkspace(options = {}, startupAdmission) {
   let failureHandler = null;
   let disposePipeSafety = null;
+  let disposeTerminalWindow = null;
   const flow = installOutputBackpressure({
     stdout: process.stdout,
     stderr: process.stderr,
@@ -3197,9 +3201,13 @@ async function startAgentReplInWorkspace(options = {}, startupAdmission) {
     setPipeDisposer(disposer) {
       disposePipeSafety = disposer;
     },
+    setTerminalDisposer(disposer) {
+      disposeTerminalWindow = disposer;
+    },
     restore() {
       if (restored) return;
       restored = true;
+      disposeTerminalWindow?.();
       disposePipeSafety?.();
       flow.restore();
     },
@@ -3358,7 +3366,7 @@ async function startAgentReplInWorkspaceOwned(
   // clear steering immediately so queued work cannot start another paid call.
   let _processingLine = false;
   let _lineSettled = null;
-  const _activeBtwCalls = new Set();
+  const _activeConcurrentCalls = new Set();
   const _mcpTaskTrackers = new Map();
   const _mcpTaskAutoWakeQueue = [];
   let _mcpTaskAutoWakeRunning = false;
@@ -3459,6 +3467,7 @@ async function startAgentReplInWorkspaceOwned(
     }
   };
   let model = options.model || "qwen2.5:7b";
+  let pendingModel = null;
   let provider = options.provider || "ollama";
   // Extended thinking (Anthropic; opt-in via --think/--ultrathink). Carried from
   // the runtime policy into the agent-loop options below. Mutable so the
@@ -3823,6 +3832,8 @@ async function startAgentReplInWorkspaceOwned(
   // (strict / trusted / autopilot).
   let _renderStatus = null;
   let _managedSettings = null;
+  let _replQuestions;
+  let baseApprovalGate;
   try {
     const { getApprovalGate } =
       await import("../lib/session-core-singletons.js");
@@ -3831,6 +3842,7 @@ async function startAgentReplInWorkspaceOwned(
       _approvalGate?.createSessionScope?.(
         sessionId || `repl-scope:${randomUUID()}`,
       ) || _approvalGate;
+    baseApprovalGate = _approvalGate;
     _approvalGate?.setAuthorizationConsumer?.(null);
     // autoMode.decisions: wrap the gate with the configurable classifier
     // BEFORE setConfirmer so the wrapper captures the interactive confirmer.
@@ -3861,12 +3873,7 @@ async function startAgentReplInWorkspaceOwned(
       // the device answers first, and `canceled` mutes the stranded
       // idle-timeout leg so it can't print "auto-denied" after the fact.
       const askGateApprovalLocally = ({ tool, args, riskLevel }) => {
-        const rlConfirm = readline.createInterface({
-          input: process.stdin,
-          output: process.stdout,
-        });
-        let canceled = false;
-        const q = (p) => new Promise((res) => rlConfirm.question(p, res));
+        const question = _replQuestions.create();
         const cmd = args?.command ? ` ${args.command}` : "";
         const promise = (async () => {
           const status = _renderStatus?.({
@@ -3875,16 +3882,16 @@ async function startAgentReplInWorkspaceOwned(
           });
           if (status) process.stdout.write(status + "\n");
           const res = await questionWithIdleTimeout(
-            q,
+            question.ask,
             chalk.yellow(
               `\n[ApprovalGate] ${riskLevel || "medium"} risk command:${cmd}\n` +
                 `  Proceed? [y]es once / [a]lways allow / [N]o: `,
             ),
             _askIdleTimeoutMs,
           );
-          rlConfirm.close();
-          if (canceled) return false; // raced out — the device already decided
+          if (question.canceled) return false;
           if (res.timedOut) {
+            question.cancel();
             process.stdout.write(
               chalk.yellow(
                 `\n  ⏱ no response in ${_askIdleTimeoutMs}ms — auto-denied\n`,
@@ -3892,7 +3899,7 @@ async function startAgentReplInWorkspaceOwned(
             );
             return false;
           }
-          const ans = res.answer.trim().toLowerCase();
+          const ans = (res.answer || "").trim().toLowerCase();
           if (ans === "a" || ans === "always") {
             const saved = await _persistAlwaysAllow(tool || "run_shell", args);
             if (saved) {
@@ -3908,10 +3915,7 @@ async function startAgentReplInWorkspaceOwned(
         })();
         return {
           promise,
-          cancel: () => {
-            canceled = true;
-            rlConfirm.close();
-          },
+          cancel: question.cancel,
         };
       };
       _approvalGate.setConfirmer(
@@ -3972,7 +3976,11 @@ async function startAgentReplInWorkspaceOwned(
     const { readBooleanSetting } = await import("../lib/settings-loader.cjs");
     const { createPermissionRulesProvider, loadPermissionAuthority } =
       await import("../lib/permission-authority.js");
-    const permissionAuthorityOptions = { cwd: process.cwd() };
+    const permissionAuthorityOptions = {
+      cwd: process.cwd(),
+      settingsFile: options.settingsFile,
+      managedSettingsFile: options.managedSettingsFile,
+    };
     const loaded = loadPermissionAuthority(permissionAuthorityOptions);
     _managedSettings = loaded.managed;
     _permissionRulesProvider = createPermissionRulesProvider(
@@ -3998,25 +4006,20 @@ async function startAgentReplInWorkspaceOwned(
     // Local prompt as a cancelable handle (same shape as the gate confirmer
     // above) so /remote-control can race it against a paired device.
     const askPermissionLocally = ({ tool, args, rule, reason }) => {
-      const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-      });
-      let canceled = false;
-      const q = (p) => new Promise((res) => rl.question(p, res));
+      const question = _replQuestions.create();
       // Picks the right phrasing whether the caller passed a `rule`
       // (settings/hook ask) or a `reason` (destructive-git / sensitive-file
       // guards) — avoids the literal "null" the old template printed.
       const header = buildPermissionPrompt({ tool, args, rule, reason });
       const promise = (async () => {
         const res = await questionWithIdleTimeout(
-          q,
+          question.ask,
           chalk.yellow(`\n${header}\n  Proceed? (y/N) `),
           _askIdleTimeoutMs,
         );
-        rl.close();
-        if (canceled) return false; // raced out — the device already decided
+        if (question.canceled) return false;
         if (res.timedOut) {
+          question.cancel();
           process.stdout.write(
             chalk.yellow(
               `\n  ⏱ no response in ${_askIdleTimeoutMs}ms — auto-denied\n`,
@@ -4024,15 +4027,12 @@ async function startAgentReplInWorkspaceOwned(
           );
           return false;
         }
-        const ans = res.answer.trim().toLowerCase();
+        const ans = (res.answer || "").trim().toLowerCase();
         return ans === "y" || ans === "yes";
       })();
       return {
         promise,
-        cancel: () => {
-          canceled = true;
-          rl.close();
-        },
+        cancel: question.cancel,
       };
     };
     // Confirmer is shared by permission `ask` rules AND hook `ask` decisions,
@@ -4951,43 +4951,30 @@ async function startAgentReplInWorkspaceOwned(
     }
   }
 
-  // Apply bundle approval policy to this session (after both gate and sessionId are ready)
-  const { assertManagedPermissionMode } =
+  const { assertManagedPermissionMode, defaultInteractivePermissionMode } =
     await import("../lib/settings-loader.cjs");
-  if (planPermissionMode)
-    assertManagedPermissionMode(planPermissionMode, _managedSettings);
-  if (
-    !planManager.executionLock &&
-    _bundleResolved?.approvalPolicy?.default &&
-    _approvalGate &&
-    sessionId
-  ) {
-    try {
-      await _approvalGate.setSessionPolicy(
-        sessionId,
-        _bundleResolved.approvalPolicy.default,
-      );
-      await _approvalGate.awaitPersistence?.();
-      // Mirror it so Shift+Tab cycling starts from the real tier.
-      const applied = parsePermissionTier(
-        _bundleResolved.approvalPolicy.default,
-      );
-      if (applied) setSessionTier(applied);
-    } catch (error) {
-      logger.warn(`Bundle approval policy was not persisted: ${error.message}`);
-    }
-  }
-
-  // --permission-mode for the interactive session (headless parity): manual →
-  // strict, acceptEdits → trusted, bypassPermissions → autopilot, and auto →
-  // trusted tier + the autoMode.decisions classifier. An explicit flag wins
-  // over the bundle's approvalPolicy default. Unknown values are ignored here
-  // (headless validates them; interactively we just keep the default tier).
-  if ((planPermissionMode || options.permissionMode) && sessionId) {
+  const assertSessionTier = (tier) =>
+    assertManagedPermissionMode(permissionModeForTier(tier), _managedSettings);
+  const fallbackPermissionMode =
+    defaultInteractivePermissionMode(_managedSettings);
+  const savedPermissionMode = (sid) => {
+    const saved = baseApprovalGate?.getAuthorizationPolicySnapshot?.(sid);
+    if (!saved?.revision) return fallbackPermissionMode;
+    return saved.policy === "autopilot" && fallbackPermissionMode === "default"
+      ? "default"
+      : saved.policy;
+  };
+  if (sessionId) {
+    const requested =
+      planPermissionMode ||
+      options.permissionMode ||
+      _bundleResolved?.approvalPolicy?.default;
     const parsed = parsePermissionModeArg(
-      planPermissionMode || options.permissionMode,
+      requested || savedPermissionMode(sessionId),
     );
-    if (parsed && typeof _approvalGate?.setSessionPolicy === "function") {
+    if (!parsed) throw new Error(`Invalid permission mode "${requested}"`);
+    assertSessionTier(parsed.tier);
+    if (typeof _approvalGate?.setSessionPolicy === "function") {
       try {
         await _approvalGate.setSessionPolicy(sessionId, parsed.tier);
         await _approvalGate.awaitPersistence?.();
@@ -5001,11 +4988,6 @@ async function startAgentReplInWorkspaceOwned(
     } else if (planManager.executionLock) {
       throw new Error("Cannot apply the approved plan's permission mode");
     }
-  } else if (_approvalGate && sessionId) {
-    const tier = parsePermissionTier(
-      _approvalGate.getSessionPolicy?.(sessionId),
-    );
-    if (tier) setSessionTier(tier);
   }
 
   // Phase G #5 — inject top-K memory recall into system prompt for new sessions
@@ -5250,46 +5232,33 @@ async function startAgentReplInWorkspaceOwned(
   if (_screenReaderMode) _theme = "mono";
   applyThemeChalk(_theme, chalk, _chalkBaselineLevel);
 
-  // Fullscreen / no-flicker TUI mode (Claude-Code `/tui` parity). Resolve from
-  // CC_NO_FLICKER (forces fullscreen) or persisted `cli.tuiMode`; switchable at
-  // runtime via `/tui fullscreen|default`. Screen-reader mode forces default —
-  // an alternate screen buffer breaks readers. The heavy renderer lives in
-  // fullscreen-tui.js; here we just track the mode and toggle the alt buffer.
-  const {
-    resolveTuiMode: _resolveTuiMode,
-    renderTuiStatus: _renderTuiStatus,
-    ALT_SCREEN_ENTER: _ALT_ENTER,
-    ALT_SCREEN_LEAVE: _ALT_LEAVE,
-  } = await import("./fullscreen-tui.js");
+  // A real terminal gets the interactive window by default. Keep scrollback
+  // for screen-reader mode, redirection and an explicit /tui default.
+  const { resolveTuiMode: _resolveTuiMode, renderTuiStatus: _renderTuiStatus } =
+    await import("./fullscreen-tui.js");
+  const canUseTerminalWindow = Boolean(
+    process.stdin.isTTY &&
+    process.stdout.isTTY &&
+    process.env.TERM !== "dumb" &&
+    !_screenReaderMode,
+  );
   let _tuiMode = "default";
-  try {
-    const { getConfigValue } = await import("../lib/config-manager.js");
-    _tuiMode = _resolveTuiMode({
-      env: process.env.CC_NO_FLICKER,
-      setting: getConfigValue("cli.tuiMode"),
-    });
-  } catch (_e) {
-    _tuiMode = _resolveTuiMode({ env: process.env.CC_NO_FLICKER });
-  }
-  if (_screenReaderMode) _tuiMode = "default";
-  const _setTuiMode = (next) => {
-    if (next === _tuiMode) return;
-    // Enter/leave the alternate screen buffer so the user's scrollback is
-    // preserved either way. Only touch a real TTY.
-    if (process.stdout.isTTY) {
-      process.stdout.write(next === "fullscreen" ? _ALT_ENTER : _ALT_LEAVE);
+  if (canUseTerminalWindow) {
+    let setting = "fullscreen";
+    try {
+      const { getConfigValue } = await import("../lib/config-manager.js");
+      setting = getConfigValue("cli.tuiMode") || setting;
+    } catch {
+      // Optional configuration.
     }
-    _tuiMode = next;
-  };
-  if (_tuiMode === "fullscreen" && process.stdout.isTTY) {
-    process.stdout.write(_ALT_ENTER);
+    _tuiMode = _resolveTuiMode({ env: process.env.CC_NO_FLICKER, setting });
   }
 
   // Fast mode (Claude-Code `/fast` parity, generalized to a latency profile).
   // When on, the next turn minimizes reasoning and — unless the user pinned a
   // model this session — swaps to the provider's low-latency model. Resolved
   // from config `cli.fastMode`; toggled at runtime via `/fast`. `_modelPinned`
-  // tracks an explicit `/model x` so fast mode never overrides a chosen model.
+  // tracks an explicit `/model x` so automatic routing keeps that choice.
   const {
     parseFastCommand: _parseFastCommand,
     resolveFastPlan: _resolveFastPlan,
@@ -5387,6 +5356,7 @@ async function startAgentReplInWorkspaceOwned(
           "/hooks",
           "/ide",
           "/init",
+          "/interrupt",
           "/mcp",
           "/mcp-watch",
           "/memory",
@@ -5461,9 +5431,55 @@ async function startAgentReplInWorkspaceOwned(
     },
   });
 
+  const { createTerminalWindow } = await import("./terminal-window.js");
+  const liveSlashCommands = new Set([
+    "/cost",
+    "/help",
+    "/model",
+    "/permissions",
+    "/status",
+    "/tasks",
+    "/todos",
+    "/tui",
+  ]);
+  const isModelCommand = (line) => /^\/model(?:\s|$)/u.test(line);
+  const terminalWindow = canUseTerminalWindow
+    ? createTerminalWindow({
+        input: process.stdin,
+        stdout: process.stdout,
+        stderr: process.stderr,
+        waitForOutput: _waitForReplOutput,
+        getStatus: () =>
+          [
+            _replQuestions.isActive()
+              ? "Waiting for input"
+              : _processingLine
+                ? "Working · Esc to interrupt"
+                : "Ready",
+            `Permissions ${_sessionTier}`,
+            pendingModel ? `Next model ${pendingModel}` : `Model ${model}`,
+            _pendingLines.length && `${_pendingLines.length} queued`,
+            !_slashCommandsDisabled && "/help",
+          ]
+            .filter(Boolean)
+            .join("  ·  "),
+        getSlashSuggestions: (line) => {
+          if (_replQuestions.isActive() || !/^\/[\w:.-]*$/.test(line))
+            return [];
+          const commands = atCompleter(line)[0];
+          if (line !== "/" || !_processingLine) return commands;
+          return commands.sort(
+            (a, b) =>
+              Number(liveSlashCommands.has(b)) -
+              Number(liveSlashCommands.has(a)),
+          );
+        },
+        isQuestionActive: () => _replQuestions.isActive(),
+      })
+    : null;
   const rl = readline.createInterface({
     input: process.stdin,
-    output: process.stdout,
+    output: terminalWindow?.readlineOutput || process.stdout,
     prompt: getPrompt(),
     terminal: true,
     completer: atCompleter,
@@ -5471,6 +5487,25 @@ async function startAgentReplInWorkspaceOwned(
   // Let the EPIPE guard route a broken pipe through this interface's graceful
   // "close" cleanup instead of a bare exit.
   _replRl = rl;
+  _replQuestions = createReplQuestionQueue(rl, (text) =>
+    process.stdout.write(text),
+  );
+  terminalWindow?.bind(rl);
+  const disposeTerminal = () => {
+    terminalWindow?.dispose();
+    process.removeListener("exit", disposeTerminal);
+  };
+  if (terminalWindow) {
+    outputScope.setTerminalDisposer(disposeTerminal);
+    process.once("exit", disposeTerminal);
+    if (_tuiMode === "fullscreen") terminalWindow.enable();
+  }
+  const _setTuiMode = (next) => {
+    if (next === _tuiMode) return;
+    if (next === "fullscreen") terminalWindow?.enable();
+    else terminalWindow?.disable();
+    _tuiMode = next;
+  };
 
   // Prompt-side interaction modules share the production readline surface.
   // A per-REPL registry avoids singleton handlers retaining an old session.
@@ -5510,58 +5545,43 @@ async function startAgentReplInWorkspaceOwned(
   );
   for (const client of mcpElicitationClients) {
     client.setElicitationHandler(
-      (request) =>
-        new Promise((resolve) => {
-          const label =
-            request.message || "MCP server requests additional input";
-          if (request.mode === "url") {
-            rl.question(
-              chalk.yellow(
-                `\n  MCP [${request.server}] ${label}\n` +
-                  `  Host: ${request.urlHost}\n` +
-                  `  URL: ${request.url}\n` +
-                  "  Open this secure page? [y/N] ",
-              ),
-              async (answer) => {
-                const approved = /^(y|yes)$/i.test(String(answer || "").trim());
-                if (!approved) {
-                  resolve({ action: "decline" });
-                  rl.prompt();
-                  return;
-                }
-                try {
-                  const { defaultOpenBrowser } =
-                    await import("../lib/mcp-oauth.js");
-                  const opened = defaultOpenBrowser(request.url);
-                  resolve(opened ? { action: "accept" } : { action: "cancel" });
-                } catch {
-                  resolve({ action: "cancel" });
-                }
-                rl.prompt();
-              },
-            );
-            return;
-          }
-          rl.question(
-            chalk.yellow(`\n  MCP [${request.server}] ${label}\n  > `),
-            (answer) => {
-              const trimmed = String(answer || "").trim();
-              if (!trimmed) {
-                resolve({ action: "cancel" });
-              } else {
-                let content = { value: trimmed };
-                try {
-                  const parsed = JSON.parse(trimmed);
-                  if (parsed && typeof parsed === "object") content = parsed;
-                } catch {
-                  // Plain text remains a valid single-field elicitation answer.
-                }
-                resolve({ action: "accept", content });
-              }
-              rl.prompt();
-            },
+      async (request) => {
+        const label = request.message || "MCP server requests additional input";
+        const question = _replQuestions.create();
+        if (request.mode === "url") {
+          const answer = await question.ask(
+            chalk.yellow(
+              `\n  MCP [${request.server}] ${label}\n` +
+                `  Host: ${request.urlHost}\n` +
+                `  URL: ${request.url}\n` +
+                "  Open this secure page? [y/N] ",
+            ),
           );
-        }),
+          if (answer === null) return { action: "cancel" };
+          if (!/^(y|yes)$/i.test(answer.trim())) return { action: "decline" };
+          try {
+            const { defaultOpenBrowser } = await import("../lib/mcp-oauth.js");
+            return {
+              action: defaultOpenBrowser(request.url) ? "accept" : "cancel",
+            };
+          } catch {
+            return { action: "cancel" };
+          }
+        }
+        const answer = await question.ask(
+          chalk.yellow(`\n  MCP [${request.server}] ${label}\n  > `),
+        );
+        const trimmed = answer?.trim();
+        if (!trimmed) return { action: "cancel" };
+        let content = { value: trimmed };
+        try {
+          const parsed = JSON.parse(trimmed);
+          if (parsed && typeof parsed === "object") content = parsed;
+        } catch {
+          // Plain text is a valid single-field answer.
+        }
+        return { action: "accept", content };
+      },
       { timeoutMs: options.mcpElicitationTimeoutMs },
     );
   }
@@ -5676,42 +5696,57 @@ async function startAgentReplInWorkspaceOwned(
   // Idle Esc presses (no active turn) are ignored, and escape-prefixed key
   // sequences (arrows etc.) never reach here as bare "escape".
   _turnAbort = null;
+  const interruptTurn = () => {
+    if (!_turnAbort || _turnAbort.signal.aborted) return false;
+    process.stdout.write(chalk.yellow("\n⎋ interrupting…\n"));
+    _turnAbort.abort();
+    _replQuestions.cancelActive();
+    if (_settingsHooks) {
+      import("../lib/settings-hook-events.js")
+        .then(({ runObserveHooks }) =>
+          runObserveHooks(
+            _settingsHooks,
+            "SessionPause",
+            {
+              session_id: sessionId,
+              reason: "user-interrupt",
+              cwd: process.cwd(),
+            },
+            { cwd: process.cwd() },
+          ),
+        )
+        .catch(() => {});
+    }
+    return true;
+  };
   let _lastIdleEscAt = 0;
   let _replKeypressHandler = null;
   if (process.stdin.isTTY) {
     _replKeypressHandler = async (_str, key) => {
       const k = key || {};
-      // 1) Turn abort always wins, regardless of vim mode.
-      if (k.name === "escape" && !k.meta && _turnAbort) {
+      if (terminalWindow?.handlePickerKey(_str, k)) {
         _consumeReadlineKeypress(key);
-        process.stdout.write(chalk.yellow("\n⎋ interrupting…\n"));
-        try {
-          _turnAbort.abort();
-        } catch {
-          /* already aborted */
-        }
-        _turnAbort = null;
-        // settings.json SessionPause hooks: the user interrupted the in-flight
-        // turn — the session stays open, the current work is suspended. The
-        // keypress handler can't await, so fire observe-only fire-and-forget.
-        if (_settingsHooks) {
-          import("../lib/settings-hook-events.js")
-            .then(({ runObserveHooks }) =>
-              runObserveHooks(
-                _settingsHooks,
-                "SessionPause",
-                {
-                  session_id: sessionId,
-                  reason: "user-interrupt",
-                  cwd: process.cwd(),
-                },
-                { cwd: process.cwd() },
-              ),
-            )
-            .catch(() => {});
-        }
         return;
       }
+      // 1) Turn abort always wins, regardless of vim mode.
+      if (
+        k.name === "escape" &&
+        !k.meta &&
+        (_turnAbort || _replQuestions.isActive())
+      ) {
+        _consumeReadlineKeypress(key);
+        if (!interruptTurn()) _replQuestions.cancelActive();
+        return;
+      }
+      if (
+        _tuiMode === "fullscreen" &&
+        (k.name === "pageup" || k.name === "pagedown")
+      ) {
+        _consumeReadlineKeypress(key);
+        terminalWindow.scroll(k.name === "pageup" ? 1 : -1);
+        return;
+      }
+      if (_replQuestions.isActive()) return;
 
       // 1.5) Shift+Tab cycles the session approval tier (Claude-Code mode
       // cycling): strict → trusted → autopilot → strict. Drives the existing
@@ -5728,7 +5763,9 @@ async function startAgentReplInWorkspaceOwned(
         ) {
           // "auto" rides the trusted tier, so it cycles as trusted → autopilot
           // (cycling is also how you exit auto mode without /permissions).
-          const next = nextTier(gateTierFor(_sessionTier));
+          let next = nextTier(gateTierFor(_sessionTier));
+          if (next === "autopilot" && fallbackPermissionMode === "default")
+            next = nextTier(next);
           try {
             await _approvalGate.setSessionPolicy(sessionId, next);
             await _approvalGate.awaitPersistence?.();
@@ -5748,6 +5785,39 @@ async function startAgentReplInWorkspaceOwned(
           process.stdout.write("\x07"); // no gate this session
         }
         return;
+      }
+
+      if (_tuiMode === "fullscreen" && !_vim) {
+        if (
+          (k.meta || k.shift) &&
+          (k.name === "return" || k.name === "enter")
+        ) {
+          _consumeReadlineKeypress(key);
+          rl.line =
+            rl.line.slice(0, rl.cursor) + "\n" + rl.line.slice(rl.cursor);
+          rl.cursor++;
+          terminalWindow.schedule();
+          return;
+        }
+        if (terminalWindow.handleSlashKey(k)) {
+          _consumeReadlineKeypress(key);
+          return;
+        }
+        if (
+          k.name === "up" &&
+          !k.ctrl &&
+          !k.meta &&
+          !k.shift &&
+          _processingLine &&
+          !rl.line &&
+          _pendingLines.length
+        ) {
+          _consumeReadlineKeypress(key);
+          rl.line = _pendingLines.pop();
+          rl.cursor = rl.line.length;
+          terminalWindow.schedule();
+          return;
+        }
       }
 
       // 1.75) Prompt interaction keybindings share the controller used by
@@ -5896,6 +5966,48 @@ async function startAgentReplInWorkspaceOwned(
   let _ctxRequestWindow = null;
   let _turnCount = 0;
   const _costStore = newCostStore(); // running token spend for `/cost`
+
+  const recentModels = new Map();
+  const applyPendingModel = () => {
+    if (!pendingModel) return;
+    model = pendingModel;
+    pendingModel = null;
+    _curModel = model;
+    _ctxRequestWindow = null;
+    _modelPinned = true;
+    terminalWindow?.schedule();
+  };
+  const selectModel = (next, defer) => {
+    pendingModel = next;
+    if (!defer) applyPendingModel();
+    if (!recentModels.has(provider)) recentModels.set(provider, new Set());
+    recentModels.get(provider).add(next);
+    logger.info(
+      defer
+        ? `Next turn will use ${chalk.cyan(next)}`
+        : `Model: ${chalk.cyan(next)}`,
+    );
+    maybeWarnDeprecatedModel({ model: next });
+  };
+  const modelChoices = (selected) => {
+    // The gateway catalog distinguishes chat models by compatible wire API.
+    const protocol = provider === "custom" ? "openai" : provider;
+    const known = isLkEndpoint(baseUrl)
+      ? LK_MODELS.filter(
+          (entry) =>
+            entry.type === "chat" &&
+            entry.compatibleProtocols.includes(protocol),
+        ).map((entry) => entry.id)
+      : resolveProviderDefinition(provider)?.models || [];
+    return [
+      ...new Set([
+        selected,
+        model,
+        ...(recentModels.get(provider) || []),
+        ...known,
+      ]),
+    ];
+  };
   try {
     const slm = await import("../lib/status-line.js");
     const _sl = slm.default || slm;
@@ -5938,6 +6050,7 @@ async function startAgentReplInWorkspaceOwned(
   }
 
   const prompt = () => {
+    if (_replQuestions.isActive()) return;
     if (_statusLineEnabled && _renderStatus) {
       const line = _renderStatus();
       // Built-in line is dimmed; a custom command may carry its own ANSI.
@@ -5945,7 +6058,7 @@ async function startAgentReplInWorkspaceOwned(
         process.stdout.write((_customStatus ? line : chalk.dim(line)) + "\n");
     }
     rl.setPrompt(getPrompt());
-    rl.prompt();
+    rl.prompt(true);
   };
 
   // Fire SessionStart hook (fire-and-forget; hook failures never break REPL)
@@ -6060,6 +6173,7 @@ async function startAgentReplInWorkspaceOwned(
         }
       } finally {
         _processingLine = false;
+        if (!_replClosing) applyPendingModel();
         settleLine();
         _lineSettled = null;
         _mcpTaskAutoWakeRunning = false;
@@ -6081,7 +6195,8 @@ async function startAgentReplInWorkspaceOwned(
     kickMcpTaskAutoWake();
     return true;
   };
-  const handleLine = async (input) => {
+  const handleLine = async (input, concurrent = false) => {
+    if (!concurrent) applyPendingModel();
     let mcpAutoWakeDelivery =
       input === _mcpTaskAutoWakeSentinel
         ? _mcpTaskAutoWakeQueue.shift() || null
@@ -6106,16 +6221,18 @@ async function startAgentReplInWorkspaceOwned(
       }
     }
     // Backslash continuation — accumulate and re-prompt without firing a turn.
-    const _cont = analyzeContinuation(input);
-    if (_cont.continued) {
-      _mlBuffer.push(_cont.text);
-      rl.setPrompt(chalk.dim("... "));
-      rl.prompt();
-      return;
-    }
-    if (_mlBuffer.length) {
-      input = joinContinuation(_mlBuffer, input);
-      _mlBuffer.length = 0;
+    if (!concurrent) {
+      const continuation = analyzeContinuation(input);
+      if (continuation.continued) {
+        _mlBuffer.push(continuation.text);
+        rl.setPrompt(chalk.dim("... "));
+        rl.prompt(true);
+        return;
+      }
+      if (_mlBuffer.length) {
+        input = joinContinuation(_mlBuffer, input);
+        _mlBuffer.length = 0;
+      }
     }
 
     const rawLine = input.trim();
@@ -6218,6 +6335,11 @@ async function startAgentReplInWorkspaceOwned(
       rl.close();
       return;
     }
+    if (trimmed === "/interrupt") {
+      if (!interruptTurn()) logger.info("No active model turn to interrupt.");
+      prompt();
+      return;
+    }
 
     // The interaction commands are registered through the shared registry,
     // while the mature REPL handlers below remain on their existing direct
@@ -6235,6 +6357,9 @@ async function startAgentReplInWorkspaceOwned(
     if (trimmed === "/help") {
       logger.log(chalk.bold("\nCommands:"));
       logger.log(
+        `  ${chalk.cyan("/interrupt")}  Stop the current turn without closing the session`,
+      );
+      logger.log(
         `  ${chalk.cyan("! <cmd>")}     Run a shell command directly (output joins context)`,
       );
       logger.log(
@@ -6247,7 +6372,7 @@ async function startAgentReplInWorkspaceOwned(
         `  ${chalk.cyan("/exit")}       Exit the agent (alias: /quit)`,
       );
       logger.log(
-        `  ${chalk.cyan("/model")}      Show/change model (/model <name>)`,
+        `  ${chalk.cyan("/model")}      Select a model or enter /model <id>`,
       );
       logger.log(`  ${chalk.cyan("/provider")}   Show/change provider`);
       logger.log(
@@ -6723,27 +6848,35 @@ async function startAgentReplInWorkspaceOwned(
       return;
     }
 
-    if (trimmed.startsWith("/model")) {
+    if (isModelCommand(trimmed)) {
       const arg = trimmed.slice(6).trim();
       if (arg) {
-        model = arg;
-        _curModel = model; // keep the status-line readout in sync
-        _modelPinned = true; // explicit choice — fast mode must not override it
-        logger.info(`Model: ${chalk.cyan(model)}`);
-        // Claude-Code 2.1.183 parity: warn when the newly-selected model is a
-        // provider-retired/deprecated snapshot. Headless paths already warn via
-        // maybeWarnDeprecatedModel; the interactive /model switch did not, so a
-        // user could silently switch to a retired id and only learn of it when
-        // the next turn fails with an opaque "model not found".
-        try {
-          const { maybeWarnDeprecatedModel } =
-            await import("../lib/model-deprecation.js");
-          maybeWarnDeprecatedModel({ model });
-        } catch {
-          // deprecation notice is best-effort
-        }
+        if (arg.length > 256 || /[\s\p{Cc}]/u.test(arg))
+          logger.info("Usage: /model <model-id>");
+        else selectModel(arg, concurrent && _processingLine);
       } else {
-        logger.info(`Current model: ${chalk.cyan(model)}`);
+        const selected = pendingModel || model;
+        const choices = modelChoices(selected);
+        if (_tuiMode === "fullscreen") {
+          const pickerProvider = provider;
+          terminalWindow.showPicker({
+            title: `Select model · ${pickerProvider}`,
+            choices,
+            selected,
+            current: model,
+            onSelect: (next) => {
+              if (provider === pickerProvider)
+                selectModel(next, _processingLine);
+              else logger.info("Provider changed. Run /model again.");
+            },
+          });
+        } else {
+          logger.info(`Current model: ${chalk.cyan(model)}`);
+          if (pendingModel)
+            logger.info(`Next model: ${chalk.cyan(pendingModel)}`);
+          logger.info(`Models for ${provider}: ${choices.join(", ")}`);
+          logger.info("Use /model <model-id> to switch.");
+        }
       }
       prompt();
       return;
@@ -7023,10 +7156,10 @@ async function startAgentReplInWorkspaceOwned(
         prompt();
         return;
       }
-      if (_screenReaderMode && next === "fullscreen") {
+      if (!canUseTerminalWindow && next === "fullscreen") {
         logger.info(
           chalk.gray(
-            "Screen-reader mode is on — staying in default (scrollback) view.",
+            "Fullscreen requires an interactive terminal with screen-reader mode off.",
           ),
         );
         prompt();
@@ -7520,12 +7653,13 @@ async function startAgentReplInWorkspaceOwned(
             if (rewindConversation)
               pruneMarksAfter(_checkpointMarks, turnIndex);
             if (cp) {
-              const q = (p) => new Promise((r) => rl.question(p, r));
               const promptText = rewindConversation
                 ? `  Also restore files to before this turn? (checkpoint ${cp.id}) [Y/n] `
                 : `  Restore files to before this turn? (checkpoint ${cp.id}) [Y/n] `;
-              const ans = (await q(chalk.yellow(promptText)))
-                .trim()
+              const ans = (
+                await _replQuestions.create().ask(chalk.yellow(promptText))
+              )
+                ?.trim()
                 .toLowerCase();
               if (ans === "" || ans === "y" || ans === "yes") {
                 try {
@@ -7991,7 +8125,7 @@ async function startAgentReplInWorkspaceOwned(
                 targetPlan.permissionMode ||
                   (reuseCurrentLease
                     ? _sessionTier
-                    : _approvalGate?.getSessionPolicy?.(prepared.sessionId)) ||
+                    : savedPermissionMode(prepared.sessionId)) ||
                   "strict",
               );
               if (typeof _approvalGate?.setSessionPolicy === "function") {
@@ -9415,6 +9549,7 @@ async function startAgentReplInWorkspaceOwned(
           );
         } else {
           try {
+            assertSessionTier(parsed.tier);
             await _approvalGate.setSessionPolicy(sessionId, parsed.tier);
             await _approvalGate.awaitPersistence?.();
             setSessionTier(
@@ -10055,7 +10190,11 @@ async function startAgentReplInWorkspaceOwned(
     // get a 401). Runnable-first: keep the configured (working) model instead.
     let activeModel = model;
     const taskDetection = detectTaskType(promptText);
-    if (taskDetection.confidence > 0.3 && !mcpContinuationStarted) {
+    if (
+      !_modelPinned &&
+      taskDetection.confidence > 0.3 &&
+      !mcpContinuationStarted
+    ) {
       const recommended = selectModelForTask(provider, taskDetection.taskType);
       const switchTo = runnableTaskModel({
         provider,
@@ -10796,6 +10935,11 @@ async function startAgentReplInWorkspaceOwned(
   rl.on("line", async (input) => {
     if (!(await _waitForReplOutput())) return;
     if (_replClosing) return;
+    const submitted = input.trim();
+    if (_tuiMode === "fullscreen" && submitted) {
+      terminalWindow.follow();
+      terminalWindow.append(`\n> ${input}\n`);
+    }
     if (_runtimeLedgerTerminalLatch.isTripped()) {
       const terminalInput = input.trim();
       if (terminalInput === "/exit" || terminalInput === "/quit") {
@@ -10809,21 +10953,29 @@ async function startAgentReplInWorkspaceOwned(
     if (_processingLine) {
       const concurrentBtw = _slashCommandsDisabled
         ? null
-        : parseBtwCommand(input.trim());
-      if (concurrentBtw) {
-        // Intentionally do not await: the main turn keeps streaming while this
-        // independent, tool-free snapshot call runs alongside it.
-        const sideCall = runBtwSideQuestion(concurrentBtw, {
-          concurrent: true,
-        });
-        _activeBtwCalls.add(sideCall);
+        : parseBtwCommand(submitted);
+      const liveCommand =
+        submitted === "/exit" ||
+        submitted === "/quit" ||
+        (!_slashCommandsDisabled &&
+          (submitted === "/interrupt" ||
+            isModelCommand(submitted) ||
+            liveSlashCommands.has(submitted)));
+      if (liveCommand || concurrentBtw) {
+        const sideCall = liveCommand
+          ? handleLine(input, true)
+          : runBtwSideQuestion(concurrentBtw, { concurrent: true });
+        _activeConcurrentCalls.add(sideCall);
         void sideCall.then(
-          () => _activeBtwCalls.delete(sideCall),
-          () => _activeBtwCalls.delete(sideCall),
+          () => _activeConcurrentCalls.delete(sideCall),
+          (error) => {
+            _activeConcurrentCalls.delete(sideCall);
+            if (!_replClosing) logger.error(error.message);
+          },
         );
         return;
       }
-      if (input.trim()) {
+      if (submitted) {
         _pendingLines.push(input);
         logger.log(
           chalk.gray(
@@ -10853,6 +11005,8 @@ async function startAgentReplInWorkspaceOwned(
       }
     } finally {
       _processingLine = false;
+      if (!_replClosing) applyPendingModel();
+      terminalWindow?.schedule();
       settleLine();
       _lineSettled = null;
       kickMcpTaskAutoWake();
@@ -10871,6 +11025,7 @@ async function startAgentReplInWorkspaceOwned(
     if (_replCleanupStarted) return;
     _replCleanupStarted = true;
     _replClosing = true;
+    disposeTerminal();
     _pendingLines.length = 0;
     _mcpTaskAutoWakeQueue.length = 0;
     // Do not certify a Run while its model/tool or auxiliary usage settlement
@@ -10893,7 +11048,7 @@ async function startAgentReplInWorkspaceOwned(
     const autonomousShutdown = autonomousAgent.shutdown();
     void autonomousShutdown.catch(() => {});
     await _lineSettled;
-    await Promise.allSettled([..._activeBtwCalls]);
+    await Promise.allSettled([..._activeConcurrentCalls]);
     try {
       const { interrupted } = await autonomousShutdown;
       if (interrupted > 0 && _evolutionSession !== null) {
@@ -10911,15 +11066,6 @@ async function startAgentReplInWorkspaceOwned(
       }
       for (const listener of _rlKeypressListeners) {
         process.stdin.removeListener("keypress", listener);
-      }
-    }
-    // Leave the alternate screen buffer first so the terminal is restored to
-    // the user's scrollback no matter how the REPL exits.
-    if (_tuiMode === "fullscreen" && process.stdout.isTTY) {
-      try {
-        process.stdout.write(_ALT_LEAVE);
-      } catch (_err) {
-        // best-effort restore
       }
     }
     // Stop inbound channel listeners before anything else — no new external

@@ -51,11 +51,12 @@ class PermissionModeStateTest {
     @Test void oldCliMalformedAcknowledgementsAndTimeoutNeverPretendToBeEffective() {
         PermissionModeState state = new PermissionModeState();
         Object owner = new Object();
-        String id = state.starting(0, "default", "s", owner);
+        assertEquals("bypassPermissions", state.snapshot().requested());
+        String id = state.starting(0, "bypassPermissions", "s", owner);
         assertFalse(state.acknowledge(owner, Map.of("session_id", "s")));
         assertEquals("unconfirmed", state.snapshot().status());
         assertFalse(state.acknowledge(owner, ack(id, "auto", "default", "s")));
-        assertFalse(state.acknowledge(owner, ack(id, "default", "unknown", "s")));
+        assertFalse(state.acknowledge(owner, ack(id, "bypassPermissions", "unknown", "s")));
         assertNull(state.snapshot().effective());
         state.request("acceptEdits");
         state.starting(1, "acceptEdits", "s", owner);

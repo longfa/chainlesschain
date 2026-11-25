@@ -8,7 +8,10 @@ import "../helpers/test-model-egress.js";
  *   - the ApprovalGate confirmer is swapped only when the flag is on
  * The pump handles approval verdicts immediately, mid-turn, like interrupts.
  */
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { PassThrough } from "node:stream";
 import {
   runAgentHeadlessStream,
@@ -209,6 +212,46 @@ describe("interactive approvals round-trip", () => {
           .map((l) => JSON.parse(l)),
     };
   }
+
+  it.each([
+    [false, "bypassPermissions"],
+    [true, "default"],
+  ])(
+    "reports effective IDE default approvals under managed bypass disabled=%s",
+    async (disabled, effective) => {
+      const root = mkdtempSync(join(tmpdir(), "cc-ide-default-mode-"));
+      const managedSettingsFile = join(root, "managed-settings.json");
+      writeFileSync(
+        managedSettingsFile,
+        JSON.stringify({ disableBypassPermissionsMode: disabled }),
+      );
+      vi.stubEnv("CC_IDE_MODE_REQUEST_ID", "ide-default-approval");
+      vi.stubEnv("CC_IDE_REQUESTED_MODE", "bypassPermissions");
+      vi.stubEnv("CC_IDE_DEFAULT_PERMISSION_MODE", "1");
+      try {
+        const h = harness({
+          inputGen: async function* () {},
+          options: {
+            permissionMode: "bypassPermissions",
+            ephemeral: true,
+            managedSettingsFile,
+          },
+        });
+        await h.run();
+        expect(
+          h.events().find((event) => event.subtype === "init"),
+        ).toMatchObject({
+          permission_mode_state: {
+            requested: "bypassPermissions",
+            effective,
+          },
+        });
+      } finally {
+        vi.unstubAllEnvs();
+        rmSync(root, { recursive: true, force: true });
+      }
+    },
+  );
 
   it("approve: the blocked tool gets true; request + resolution are emitted", async () => {
     const h = harness({

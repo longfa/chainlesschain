@@ -7,10 +7,11 @@ import java.util.UUID;
 
 /** Display evidence only. The CLI remains the permission authority. */
 public final class PermissionModeState {
+    public static final String DEFAULT_APPROVAL_MODE = "bypassPermissions";
     private static final Set<String> EFFECTIVE_MODES = Set.of(
             "default", "acceptEdits", "auto", "bypassPermissions", "dontAsk", "plan");
     private long revision;
-    private String requested = "default";
+    private String requested = DEFAULT_APPROVAL_MODE;
     private String effective;
     private String policyRevision;
     private String status = "pending";

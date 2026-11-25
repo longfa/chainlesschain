@@ -270,7 +270,7 @@ class ChatViewProvider {
         draftKey: this._draftKey(c),
         sessionId: c.sessionId || null,
         title: c.title,
-        mode: c.mode || "default",
+        ...(c.explicitMode ? { mode: c.mode } : {}),
         thinking: c.thinking || "off",
         modelOverride: c.modelOverride || "",
         goalCondition: c.goalCondition || "",
@@ -2422,6 +2422,7 @@ class ChatViewProvider {
           CC_INTERACTIVE_QUESTIONS: "1",
           CC_IDE_MODE_REQUEST_ID: conv.modeRequestId,
           CC_IDE_REQUESTED_MODE: conv.mode || "default",
+          CC_IDE_DEFAULT_PERMISSION_MODE: conv.explicitMode ? "" : "1",
           CC_TASK_WORKLOG: "1",
           CC_TOOL_ADMISSION: JSON.stringify(
             buildIdeToolAdmission("vscode-extension"),

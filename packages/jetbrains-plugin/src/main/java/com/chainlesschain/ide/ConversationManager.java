@@ -34,7 +34,8 @@ public final class ConversationManager {
         public volatile String sessionId;   // resume id (nullable)
         public volatile Object session;      // opaque AgentChatSession handle (nullable)
         public volatile Object turnState;
-        public volatile String mode = "default"; // approval mode (default|acceptEdits|bypassPermissions)
+        public volatile String mode = PermissionModeState.DEFAULT_APPROVAL_MODE;
+        public volatile boolean explicitMode;
         public final PermissionModeState modeState = new PermissionModeState();
         public volatile String thinking = "off"; // extended thinking (off|on|ultra)
         public volatile String modelOverride = ""; // this conversation only
@@ -193,6 +194,7 @@ public final class ConversationManager {
         Conversation c = get(id);
         if (c != null) {
             c.mode = (mode == null || mode.trim().isEmpty()) ? "default" : mode;
+            c.explicitMode = true;
             c.modeState.request(c.mode);
         }
         return c;

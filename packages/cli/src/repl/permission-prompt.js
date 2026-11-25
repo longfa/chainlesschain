@@ -19,7 +19,8 @@ import { redactSecrets } from "../lib/secret-scan.js";
 
 export function visualizePermissionText(value) {
   return String(value ?? "").replace(
-    /[\u0000-\u001f\u007f-\u009f\u00ad\u034f\u061c\u115f\u1160\u17b4\u17b5\u180b-\u180f\u200b-\u200f\u202a-\u202e\u2060-\u206f\u3164\ufeff\uffa0]/gu,
+    // eslint-disable-next-line no-misleading-character-class -- Match each invisible character on its own.
+    /[\p{Cc}\u00ad\u034f\u061c\u115f\u1160\u17b4\u17b5\u180b-\u180f\u200b-\u200f\u202a-\u202e\u2060-\u206f\u3164\ufeff\uffa0]/gu,
     (character) => {
       if (character === "\t") return "<TAB>";
       if (character === "\n") return "<LF>";
@@ -75,11 +76,10 @@ export function resolveAskIdleTimeoutMs({ env, config } = {}) {
 /**
  * Race an interactive question against an idle timeout.
  *
- * `ask` is the readline-question-as-promise (never rejects). On timeout the
- * caller must still close its readline interface; the stranded question
- * callback becomes a no-op once the interface is closed.
+ * `ask` is the readline question as a promise. On timeout the caller cancels
+ * the question so the input can return to the conversation.
  *
- * @param {(prompt: string) => Promise<string>} ask
+ * @param {(prompt: string) => Promise<string|null>} ask
  * @param {string} prompt
  * @param {number} timeoutMs - 0/negative = no timeout (plain await)
  * @returns {Promise<{answer: string|null, timedOut: boolean}>}
@@ -102,4 +102,61 @@ export async function questionWithIdleTimeout(ask, prompt, timeoutMs) {
   } finally {
     if (timer) clearTimeout(timer);
   }
+}
+
+// All terminal questions share readline with the composer. Suspending the
+// draft keeps an approval response separate from the next user message.
+export function createReplQuestionQueue(readline, write) {
+  let tail = Promise.resolve();
+  let current = null;
+  let closed = false;
+  readline.once("close", () => {
+    closed = true;
+    current?.abort();
+  });
+
+  return {
+    isActive: () => current !== null,
+    cancelActive: () => current?.abort(),
+    create() {
+      const controller = new AbortController();
+      const { signal } = controller;
+      return {
+        get canceled() {
+          return signal.aborted;
+        },
+        cancel: () => controller.abort(),
+        ask(text) {
+          const answer = tail.then(() => {
+            if (closed || signal.aborted) return null;
+            return new Promise((resolve) => {
+              current = controller;
+              const { line, cursor } = readline;
+              readline.line = "";
+              readline.cursor = 0;
+              const split = text.lastIndexOf("\n") + 1;
+              if (split) write(text.slice(0, split));
+              const finish = (value) => {
+                signal.removeEventListener("abort", onAbort);
+                current = null;
+                if (!closed) {
+                  readline.line = line;
+                  readline.cursor = cursor;
+                  readline.prompt(true);
+                }
+                resolve(value);
+              };
+              // Let readline cancel its callback and restore its prompt
+              // before putting the draft back.
+              const onAbort = () => queueMicrotask(() => finish(null));
+              signal.addEventListener("abort", onAbort, { once: true });
+              readline.question(text.slice(split), { signal }, finish);
+            });
+          });
+          tail = answer;
+          return answer;
+        },
+      };
+    },
+  };
 }

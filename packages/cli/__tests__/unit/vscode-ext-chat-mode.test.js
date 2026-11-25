@@ -65,16 +65,18 @@ describe("buildSessionArgs — permission mode", () => {
 });
 
 describe("ConversationManager — mode field", () => {
-  it("defaults to 'default' and round-trips through setMode + list()", () => {
+  it("auto-approves by default and records an explicit mode selection", () => {
     const cm = new ConversationManager({});
     const c = cm.create({});
-    expect(c.mode).toBe("default");
+    expect(c.mode).toBe("bypassPermissions");
+    expect(c.explicitMode).toBe(false);
     cm.setMode(c.id, "acceptEdits");
     expect(cm.get(c.id).mode).toBe("acceptEdits");
     expect(cm.list()[0].mode).toBe("acceptEdits");
     // falsy → back to default (never an empty mode)
     cm.setMode(c.id, "");
     expect(cm.get(c.id).mode).toBe("default");
+    expect(c.explicitMode).toBe(true);
   });
 });
 
@@ -222,30 +224,31 @@ describe("ChatViewProvider — approval mode", () => {
 
   it("stops the live child so the next turn respawns with the new mode", async () => {
     const { provider, posted, spawns } = makeProvider();
-    // First turn spawns a child in default mode (no flag).
+    // First turn spawns a child with the default automatic approval request.
     provider._handleMessage({ type: "send", text: "hi" });
     expect(spawns).toHaveLength(1);
-    expect(spawns[0].cfg.args).not.toContain("--permission-mode");
+    expect(spawns[0].cfg.args).toEqual(
+      expect.arrayContaining(["--permission-mode", "bypassPermissions"]),
+    );
+    expect(spawns[0].cfg.env.CC_IDE_DEFAULT_PERMISSION_MODE).toBe("1");
     expect(spawns[0].running).toBe(true);
 
-    // Switch to bypass: the live child is stopped, ack mentions next message.
-    provider._handleMessage({ type: "mode", mode: "bypassPermissions" });
+    // An explicit normal mode takes effect on the next launch.
+    provider._handleMessage({ type: "mode", mode: "default" });
     expect(spawns[0].running).toBe(false);
     expect(lastPost(posted).text).toContain("next message");
     await Promise.resolve();
 
-    // Next turn respawns carrying the flag, resuming nothing new (same conv).
     provider._handleMessage({ type: "send", text: "again" });
     expect(spawns).toHaveLength(2);
-    expect(spawns[1].cfg.args).toEqual(
-      expect.arrayContaining(["--permission-mode", "bypassPermissions"]),
-    );
+    expect(spawns[1].cfg.args).not.toContain("--permission-mode");
+    expect(spawns[1].cfg.env.CC_IDE_DEFAULT_PERMISSION_MODE).toBe("");
   });
 
   it("rejects an unknown mode without touching the conversation", () => {
     const { provider, posted } = makeProvider();
     provider._handleMessage({ type: "mode", mode: "wat" });
-    expect(provider._activeConv().mode).toBe("default");
+    expect(provider._activeConv().mode).toBe("bypassPermissions");
     expect(lastPost(posted)).toMatchObject({
       kind: "info",
       text: expect.stringContaining("unknown mode"),

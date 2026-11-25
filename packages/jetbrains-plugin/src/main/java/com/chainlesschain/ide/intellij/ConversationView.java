@@ -611,6 +611,7 @@ final class ConversationView {
         // "plan" isn't a spawn-time approval flag here; map it to default so a
         // deep link never silently arms auto-approval.
         conv.mode = "acceptEdits".equals(mode) ? "acceptEdits" : "default";
+        conv.explicitMode = true;
         restartForModeChange();
         BridgeStatusBarWidgetFactory.refresh(project);
         append("ℹ approval mode → " + conv.mode + " (deep link) — next message applies\n");
@@ -941,18 +942,21 @@ final class ConversationView {
             }
             case "/auto":
                 conv.mode = "acceptEdits";
+                conv.explicitMode = true;
                 restartForModeChange();
                 BridgeStatusBarWidgetFactory.refresh(project);
                 append("ℹ approval mode → auto (accept edits) — next message applies\n");
                 return;
             case "/bypass":
                 conv.mode = "bypassPermissions";
+                conv.explicitMode = true;
                 restartForModeChange();
                 BridgeStatusBarWidgetFactory.refresh(project);
                 append("ℹ approval mode → bypass (skip all approvals) — next message applies\n");
                 return;
             case "/normal":
                 conv.mode = "default";
+                conv.explicitMode = true;
                 restartForModeChange();
                 BridgeStatusBarWidgetFactory.refresh(project);
                 append("ℹ approval mode → normal — next message applies\n");
@@ -2155,6 +2159,7 @@ final class ConversationView {
         o.canDispatch = () -> !disposed && sessionGeneration == generation && conv.modeState.current(modeRevision);
         o.extraEnv.put("CC_IDE_MODE_REQUEST_ID", modeRequestId);
         o.extraEnv.put("CC_IDE_REQUESTED_MODE", requestedMode);
+        o.extraEnv.put("CC_IDE_DEFAULT_PERMISSION_MODE", conv.explicitMode ? "" : "1");
         refreshModeStatus();
         SwingUtilities.invokeLater(() -> {
             if (disposed || sessionGeneration != generation) return;

@@ -1490,7 +1490,7 @@ describe("agent-repl thin wrapper contracts", () => {
     expect(finishAt).toBeGreaterThan(waitAt);
     expect(exitAt).toBeGreaterThan(finishAt);
     expect(content.slice(closeAt, finishAt)).toContain(
-      "await Promise.allSettled([..._activeBtwCalls]);",
+      "await Promise.allSettled([..._activeConcurrentCalls]);",
     );
     expect(content.slice(closeAt, finishAt)).toContain(
       "autonomousAgent.shutdown()",
@@ -4361,11 +4361,11 @@ describe("agent-repl /btw side-question wiring", () => {
 
   it("runs /btw immediately and allows it alongside a main turn", () => {
     expect(content).toContain("await runBtwSideQuestion(btw);");
-    expect(content).toContain("parseBtwCommand(input.trim())");
+    expect(content).toContain("parseBtwCommand(submitted)");
     expect(content).toMatch(
-      /const sideCall = runBtwSideQuestion\(concurrentBtw,\s*\{\s*concurrent: true,?\s*\}\);/u,
+      /runBtwSideQuestion\(concurrentBtw,\s*\{\s*concurrent: true,?\s*\}\);/u,
     );
-    expect(content).toContain("_activeBtwCalls.add(sideCall);");
+    expect(content).toContain("_activeConcurrentCalls.add(sideCall);");
   });
 
   it("queues /note-next guidance and consumes it on send", () => {

@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added - cc CLI 0.166.164 and IDE pairing (candidate, 2026-11-26)
+
+- Open interactive Agent sessions in a terminal window with a fixed composer, searchable slash commands, and queued follow-ups.
+- Switch models with a searchable `/model` picker or an exact model ID. Selections made during a turn apply to the next turn.
+- Use automatic routine tool approvals in new CLI, VS Code and JetBrains interactive sessions while honoring managed permission policies, explicit rules, and approved plans.
+- Pair CLI 0.166.164 with Open VSX 0.37.199 and JetBrains 0.4.214.
+
 ### Fixed - cc CLI 0.166.163 and IDE pairing (candidate, 2026-11-24)
 
 - Require a nonempty file search pattern and direct coding sessions to paginated reads when inspecting a file without a search term.
