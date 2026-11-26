@@ -1,5 +1,9 @@
 # Changelog — ChainlessChain IDE Bridge (JetBrains)
 
+## [0.4.215] - CLI 0.166.165 pairing (candidate, 2026-11-26)
+
+- Recommend CLI `0.166.165` for the terminal Esc fix.
+
 ## [0.4.214] - CLI 0.166.164 pairing (candidate, 2026-11-26)
 
 - Automatically approve routine tool use in new chats. Managed policy determines the effective mode and `/normal` restores regular approval prompts.

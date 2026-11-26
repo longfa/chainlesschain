@@ -13,6 +13,11 @@ const MAX_LINE_LENGTH = 16000;
 const FRAME_INTERVAL_MS = 24;
 const graphemes = new Intl.Segmenter(undefined, { granularity: "grapheme" });
 
+export function isStandaloneEscape(key) {
+  // Node readline sets meta for a lone Esc after the escape-sequence timeout.
+  return key.name === "escape" && (!key.meta || key.sequence === "\x1b");
+}
+
 function terminalText(value) {
   return stripVTControlCharacters(value)
     .replace(/\r\n?/g, "\n")
@@ -283,11 +288,14 @@ export function createTerminalWindow({
     handlePickerKey(text, key) {
       if (!active || !picker || isQuestionActive()) return false;
       if (key.ctrl && key.name === "c") return false;
+      if (isStandaloneEscape(key)) {
+        picker = null;
+        schedule();
+        return true;
+      }
       if (key.ctrl || key.meta) return true;
       const matches = pickerMatches();
-      if (key.name === "escape") {
-        picker = null;
-      } else if (key.name === "up" || key.name === "down") {
+      if (key.name === "up" || key.name === "down") {
         const delta = key.name === "up" ? -1 : 1;
         if (matches.length)
           picker.index =

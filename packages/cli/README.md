@@ -1,8 +1,16 @@
 # chainlesschain CLI
 
-## CLI 0.166.164 candidate
+## CLI 0.166.165 candidate
 
-The candidate adds a fullscreen Agent composer, live slash commands, a `/model` picker and automatic routine tool approvals for new interactive sessions. The planned pairing is Open VSX **0.37.199** and JetBrains **0.4.214**. The current public install command is below.
+The candidate restores the standalone Esc key for closing the model picker and interrupting a running turn. The planned pairing is Open VSX **0.37.200** and JetBrains **0.4.215**.
+
+## Public CLI 0.166.164
+
+CLI **0.166.164** is publicly available from source `80de4089bbc05773a37ff62737b85e39ab8927d3`. GitHub Actions verified CLI CI and Strict Sandbox on Linux, Windows, and macOS and published the npm archive through OIDC. Install `npm i -g chainlesschain@0.166.164 --registry https://registry.npmjs.org`, then run `cc --version` and `cc doctor`. [npm publication](https://github.com/longfa/chainlesschain/actions/runs/45781019483)
+
+The fullscreen Agent adds a fixed input area, live slash commands, queued follow-ups, and a searchable `/model` picker. New interactive sessions automatically approve routine tool use subject to managed policy and explicit rules. This CLI pairs with Open VSX **0.37.199** and JetBrains **0.4.214**. [Open VSX publication](https://github.com/longfa/chainlesschain/actions/runs/45783391508) · [JetBrains publication](https://github.com/longfa/chainlesschain/actions/runs/45783392448)
+
+Release limits are `NOT_PAID_READY`, `NOT_ADMITTED`, and `HOLD` for paid readiness, native admission, and automatic promotion.
 
 ## Public CLI 0.166.163
 

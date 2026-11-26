@@ -5431,7 +5431,8 @@ async function startAgentReplInWorkspaceOwned(
     },
   });
 
-  const { createTerminalWindow } = await import("./terminal-window.js");
+  const { createTerminalWindow, isStandaloneEscape } =
+    await import("./terminal-window.js");
   const liveSlashCommands = new Set([
     "/cost",
     "/help",
@@ -5724,16 +5725,13 @@ async function startAgentReplInWorkspaceOwned(
   if (process.stdin.isTTY) {
     _replKeypressHandler = async (_str, key) => {
       const k = key || {};
+      const escape = isStandaloneEscape(k);
       if (terminalWindow?.handlePickerKey(_str, k)) {
         _consumeReadlineKeypress(key);
         return;
       }
       // 1) Turn abort always wins, regardless of vim mode.
-      if (
-        k.name === "escape" &&
-        !k.meta &&
-        (_turnAbort || _replQuestions.isActive())
-      ) {
+      if (escape && (_turnAbort || _replQuestions.isActive())) {
         _consumeReadlineKeypress(key);
         if (!interruptTurn()) _replQuestions.cancelActive();
         return;
@@ -5855,7 +5853,7 @@ async function startAgentReplInWorkspaceOwned(
       if (_vimEnabled && !_turnAbort) {
         if (!_vim) {
           // INSERT mode — readline owns the keys; Esc switches to NORMAL.
-          if (k.name === "escape" && !k.meta) {
+          if (escape) {
             _consumeReadlineKeypress(key);
             _vimEnterNormal();
           }
@@ -5883,7 +5881,7 @@ async function startAgentReplInWorkspaceOwned(
       }
 
       // 3) Non-vim: double-Esc while idle → rewind picker shortcut.
-      if (k.name !== "escape" || k.meta) return;
+      if (!escape) return;
       _consumeReadlineKeypress(key);
       const nowTs = Date.now();
       if (nowTs - _lastIdleEscAt < 600) {
