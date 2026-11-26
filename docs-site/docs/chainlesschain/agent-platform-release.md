@@ -2,7 +2,7 @@
 
 ## CLI 0.166.164（2026-11-26）
 
-CLI **0.166.164** 与 Open VSX **0.37.199** 已公开。JetBrains **0.4.214** 已上传，等待 Marketplace 审核。当前已核验的公开版为 **0.4.213**，配套 CLI **0.166.163**。 运行 `cc agent` 打开全屏终端。任务期间可继续输入、排队发送消息和使用 `/model` 切换下一轮的模型。新交互会话默认自动批准常规工具调用。 [升级指南](./cli-ide-update-2026-11-26-164) · [npm 发布记录](https://github.com/longfa/chainlesschain/actions/runs/45781019483) · [运行时设计](https://design.chainlesschain.com/release-runtime-update-2026-11-26-164.html)
+CLI **0.166.164** 与 Open VSX **0.37.199** 已公开。JetBrains **0.4.214** 已上架并通过下载核验，推荐 CLI **0.166.164**。 运行 `cc agent` 打开全屏终端。任务期间可继续输入、排队发送消息和使用 `/model` 切换下一轮的模型。新交互会话默认自动批准常规工具调用。 [升级指南](./cli-ide-update-2026-11-26-164) · [npm 发布记录](https://github.com/longfa/chainlesschain/actions/runs/45781019483) · [运行时设计](https://design.chainlesschain.com/release-runtime-update-2026-11-26-164.html)
 
 ## CLI 0.166.163（2026-11-25）
 

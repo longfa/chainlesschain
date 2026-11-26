@@ -27,7 +27,7 @@
   "openVsxDownloadsMilestone": "70,000+",
   "openVsxDownloadsDisplayZh": "7 万+",
   "openVsxDownloadsDisplayEn": "70K+",
-  "jetBrainsMarketplaceVersion": "0.4.213",
+  "jetBrainsMarketplaceVersion": "0.4.214",
   "sourceJetBrainsVersion": "0.4.215",
   "vsCodeReleaseCommit": "80de4089bbc05773a37ff62737b85e39ab8927d3",
   "lastFullyGatedVsCodeVersion": "0.37.199",
@@ -36,8 +36,8 @@
   "contextMemoryKernelVersion": "0.1.12",
   "personalDataHubVersion": "0.4.66",
   "coreDbVersion": "0.1.5",
-  "jetBrainsRecommendedCliVersion": "0.166.163",
-  "jetBrainsReleaseCommit": "b06b3bfe0f1bf91d40617f3a0c83d918795d4fe6",
+  "jetBrainsRecommendedCliVersion": "0.166.164",
+  "jetBrainsReleaseCommit": "80de4089bbc05773a37ff62737b85e39ab8927d3",
   "unpublishedCliVersions": [
     "0.166.23",
     "0.166.27",
@@ -55,17 +55,17 @@
     "0.166.134",
     "0.166.137"
   ],
-  "jetBrainsCandidateStatus": "JetBrains 0.4.214 has been uploaded and is awaiting Marketplace review. The verified public version is 0.4.213, paired with CLI 0.166.163.",
-  "jetBrainsCandidateStatusZh": "JetBrains 0.4.214 已上传，等待 Marketplace 审核。当前已核验的公开版为 0.4.213，配套 CLI 0.166.163。",
+  "jetBrainsCandidateStatus": "JetBrains 0.4.215 is the source candidate paired with CLI 0.166.165.",
+  "jetBrainsCandidateStatusZh": "JetBrains 0.4.215 是源码候选版本，推荐 CLI 0.166.165。",
   "sourceSessionCoreVersion": "0.3.27",
   "sourcePersonalDataHubVersion": "0.4.66",
   "productVersion": "v5.0.3.145",
   "sourceContextMemoryKernelVersion": "0.1.12",
   "productReleaseWorkflowStatus": "Historical verified product v5.0.3.145 at source 93917e15d6fd65a4a0147f2e5b5aace1bc87294a. Original GitHub release and sampled Windows/Android download URLs returned 404 on 2026-11-19. No new native installer release or current availability is claimed.",
-  "jetBrainsCandidateVersion": "0.4.214",
-  "jetBrainsCandidateRecommendedCliVersion": "0.166.164",
-  "jetBrainsCandidateCommit": "80de4089bbc05773a37ff62737b85e39ab8927d3",
-  "jetBrainsPublicationStatus": "uploaded-pending-review",
+  "jetBrainsCandidateVersion": "0.4.215",
+  "jetBrainsCandidateRecommendedCliVersion": "0.166.165",
+  "jetBrainsCandidateCommit": "206e4e72257ec9178ddb66dcc28107e0ce3c43aa",
+  "jetBrainsPublicationStatus": "release-validation",
   "taskRetestStatus": "COMPLETE_VERIFIED_HISTORICAL_PUBLIC140_CORRECTED_ROUND",
   "taskRetestRecords": 45,
   "taskRetestNewAccepted": 1,
@@ -128,7 +128,7 @@
       "receiptUrl": "https://github.com/chainlesschain/chainlesschain/blob/08ffc589ec0f0c7ad5af87eb54c5efcce739a2f9/docs/research/cli/evidence/release108-public/publication.json"
     }
   },
-  "jetBrainsUpdateId": 1228250,
+  "jetBrainsUpdateId": 1228899,
   "historicalTaskRetestRelease": "0.166.138",
   "upgradeGuide": "https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-26-164.html",
   "recoveryGuide": "https://docs.chainlesschain.com/chainlesschain/agent-input-and-recovery.html",
@@ -495,7 +495,7 @@
       "publicListingVerified": true
     }
   },
-  "jetBrainsCandidateArtifactsUrl": "https://github.com/longfa/chainlesschain/actions/runs/45783392448#artifacts",
+  "jetBrainsCandidateArtifactsUrl": "https://github.com/longfa/chainlesschain/actions/runs/45785746596#artifacts",
   "historical138Limits": {
     "paidReadiness": "NOT_PAID_READY",
     "nativeAdmission": "NOT_ADMITTED",
@@ -918,5 +918,5 @@
       "zipEntryContentsIdentical": true
     }
   },
-  "jetBrainsPublicRecommendedCliVersion": "0.166.163"
+  "jetBrainsPublicRecommendedCliVersion": "0.166.164"
 }

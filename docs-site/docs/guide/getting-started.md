@@ -1,6 +1,6 @@
 # 快速开始
 
-> CLI **0.166.164** 与 Open VSX **0.37.199** 已公开。JetBrains **0.4.214** 已上传，等待 Marketplace 审核。当前已核验的公开版为 **0.4.213**，配套 CLI **0.166.163**。 [IDE 配对与商店状态](../chainlesschain/cli-ide-update-2026-11-26-164)
+> CLI **0.166.164** 与 Open VSX **0.37.199** 已公开。JetBrains **0.4.214** 已上架并通过下载核验，推荐 CLI **0.166.164**。 [IDE 配对与商店状态](../chainlesschain/cli-ide-update-2026-11-26-164)
 
 > 2026-10-16 历史公开版本：CLI **0.166.103**、Open VSX **0.37.148**、JetBrains **0.4.165**；两个 IDE 均推荐 CLI `.103`。Session Core **0.3.19**、Kernel **0.1.10**、PDH **0.4.65**，原生产品 **v5.0.3.140** 独立发行。正式预算 **NOT_PAID_READY**，36+9 **NOT_RUN（0/36、0/9）**。 见[升级与故障排查](../chainlesschain/cli-ide-update-2026-10-16)。以下带日期的早期记录保留历史范围。
 

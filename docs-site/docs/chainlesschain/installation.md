@@ -1,6 +1,6 @@
 # ChainlessChain 安装部署
 
-> CLI **0.166.164** 与 Open VSX **0.37.199** 已公开。JetBrains **0.4.214** 已上传，等待 Marketplace 审核。当前已核验的公开版为 **0.4.213**，配套 CLI **0.166.163**。 客户端 **v5.0.3.145** 的旧安装包下载源暂不可用。 [IDE 配对与商店状态](./cli-ide-update-2026-11-26-164)
+> CLI **0.166.164** 与 Open VSX **0.37.199** 已公开。JetBrains **0.4.214** 已上架并通过下载核验，推荐 CLI **0.166.164**。 客户端 **v5.0.3.145** 的旧安装包下载源暂不可用。 [IDE 配对与商店状态](./cli-ide-update-2026-11-26-164)
 
 > **2026-11-09 历史核对**：当时公开组合为 CLI **0.166.145**、Open VSX **0.37.181**、JetBrains **0.4.198**，两款 IDE 推荐 CLI .145；产品 **v5.0.3.145** 独立发行。以下 .145 文件名、系统要求与旧门禁记录保留历史范围，不证明当前旧下载源仍可用。
 
@@ -112,9 +112,9 @@ sudo apt install ./chainlesschain-desktop-vue_5.0.3-alpha.145_amd64.deb
 | IDE                | 配套插件版本          | 商店入口                                                                                      |
 | ------------------ | --------------------- | --------------------------------------------------------------------------------------------- |
 | VS Code 兼容编辑器 | Open VSX **0.37.199** | [Open VSX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide)                  |
-| JetBrains          | **0.4.213**           | [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/32208-chainlesschain-ide-bridge) |
+| JetBrains          | **0.4.214**           | [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/32208-chainlesschain-ide-bridge) |
 
-Open VSX **0.37.199** 推荐 CLI **0.166.164**。JetBrains **0.4.214** 已上传，等待 Marketplace 审核。当前已核验的公开版为 **0.4.213**，配套 CLI **0.166.163**。 升级后重启宿主，通过 Doctor 核对 CLI 路径。 [最新商店状态](./cli-ide-update-2026-11-26-164) · [IDE 指南](./ide-plugin)
+Open VSX **0.37.199** 推荐 CLI **0.166.164**。JetBrains **0.4.214** 已上架并通过下载核验，推荐 CLI **0.166.164**。 升级后重启宿主，通过 Doctor 核对 CLI 路径。 [最新商店状态](./cli-ide-update-2026-11-26-164) · [IDE 指南](./ide-plugin)
 
 ## 移动端安装
 

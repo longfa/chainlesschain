@@ -1,6 +1,6 @@
 # 全屏交互终端、模型切换与授权
 
-公开发行的 CLI **0.166.164** 和 Open VSX **0.37.199** 对应源码 `80de4089bbc05773a37ff62737b85e39ab8927d3`。JetBrains **0.4.214** 已上传并等待审核，公开已核验版为 **0.4.213**。Esc 修复已经合入 `206e4e72257ec9178ddb66dcc28107e0ce3c43aa`，对应源码版本 CLI **0.166.165**、Open VSX **0.37.200** 和 JetBrains **0.4.215**。 [交互终端](https://github.com/longfa/chainlesschain/pull/28) · [Esc 修复](https://github.com/longfa/chainlesschain/pull/32) · [用户升级指南](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-26-164.html)
+公开发行的 CLI **0.166.164** 和 Open VSX **0.37.199** 对应源码 `80de4089bbc05773a37ff62737b85e39ab8927d3`。JetBrains **0.4.214** 也已公开，包内文件与正式构建核对一致。Esc 修复已经合入 `206e4e72257ec9178ddb66dcc28107e0ce3c43aa`，对应源码版本 CLI **0.166.165**、Open VSX **0.37.200** 和 JetBrains **0.4.215**。 [交互终端](https://github.com/longfa/chainlesschain/pull/28) · [Esc 修复](https://github.com/longfa/chainlesschain/pull/32) · [用户升级指南](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-26-164.html)
 
 ## 终端与轮次
 
@@ -20,6 +20,6 @@ CLI 的新交互会话默认使用 `auto`。IDE 按会话有效模式呈现权�
 
 Windows 验证通过 ConPTY 的真实子进程检查关闭行为，同时核对退出回执、退出码和 PID 回收。后续回归覆盖 Node 对单独 Esc 设置 `meta: true` 的情况，通过按键序列区分单独 Esc 和 Alt+Esc。 [Windows 退出验证](https://github.com/longfa/chainlesschain/pull/31) · [Esc 测试](https://github.com/longfa/chainlesschain/pull/32)
 
-CLI **0.166.164** 的相同源码提交通过 Linux、Windows 和 macOS 的 CLI CI 和 Strict Sandbox，npm 通过 GitHub Actions OIDC 发布。Open VSX 校验了公开 VSIX 与标签制品的一致性。JetBrains 上传在三平台宿主、构建和兼容性检查通过后执行。 [CLI CI](https://github.com/longfa/chainlesschain/actions/runs/45768026105) · [Strict Sandbox](https://github.com/longfa/chainlesschain/actions/runs/45768026017) · [npm](https://github.com/longfa/chainlesschain/actions/runs/45781019483) · [Open VSX](https://github.com/longfa/chainlesschain/actions/runs/45783391508) · [JetBrains](https://github.com/longfa/chainlesschain/actions/runs/45783392448)
+CLI **0.166.164** 的相同源码提交通过 Linux、Windows 和 macOS 的 CLI CI 和 Strict Sandbox，npm 通过 GitHub Actions OIDC 发布。Open VSX 校验了公开 VSIX 与标签制品的一致性。JetBrains 上传在三平台宿主、构建和兼容性检查通过后执行。Marketplace 审核完成后，重新下载并核对了 ZIP 的包内内容。 [CLI CI](https://github.com/longfa/chainlesschain/actions/runs/45768026105) · [Strict Sandbox](https://github.com/longfa/chainlesschain/actions/runs/45768026017) · [npm](https://github.com/longfa/chainlesschain/actions/runs/45781019483) · [Open VSX](https://github.com/longfa/chainlesschain/actions/runs/45783391508) · [JetBrains 发行记录](https://github.com/longfa/chainlesschain/actions/runs/45783392448) · [公开 ZIP](https://plugins.jetbrains.com/plugin/download?rel=true&updateId=1228899)
 
 付费准入为 `NOT_PAID_READY`，原生客户端准入为 `NOT_ADMITTED`，自动晋级为 `HOLD`。

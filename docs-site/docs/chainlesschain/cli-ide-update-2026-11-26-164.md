@@ -2,7 +2,7 @@
 
 ## 概述
 
-CLI **0.166.164** 已通过 GitHub Actions OIDC 发布到 npm。Open VSX **0.37.199** 已公开，推荐此 CLI 版本。JetBrains **0.4.214** 已上传并等待 Marketplace 审核，当前已核验的公开版为 **0.4.213**，配套 CLI **0.166.163**。 [npm 发布](https://github.com/longfa/chainlesschain/actions/runs/45781019483) · [Open VSX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide/0.37.199) · [JetBrains 发布记录](https://github.com/longfa/chainlesschain/actions/runs/45783392448)
+CLI **0.166.164** 已通过 GitHub Actions OIDC 发布到 npm。Open VSX **0.37.199** 已公开，推荐此 CLI 版本。JetBrains **0.4.214** 已上架并通过下载核验，推荐 CLI **0.166.164**。 [npm 发布](https://github.com/longfa/chainlesschain/actions/runs/45781019483) · [Open VSX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide/0.37.199) · [下载 JetBrains 0.4.214](https://plugins.jetbrains.com/plugin/download?rel=true&updateId=1228899) · [JetBrains 发布记录](https://github.com/longfa/chainlesschain/actions/runs/45783392448)
 
 ## 使用示例
 

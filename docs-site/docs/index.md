@@ -102,7 +102,7 @@ features:
 
 ## 当前公开版本（2026-11-26）
 
-CLI **0.166.164** 与 Open VSX **0.37.199** 已公开。JetBrains **0.4.214** 已上传，等待 Marketplace 审核。当前已核验的公开版为 **0.4.213**，配套 CLI **0.166.163**。 运行 `npm i -g chainlesschain@0.166.164 --registry https://registry.npmjs.org` 安装，再用 `cc --version` 与 `cc doctor` 核对。 [升级指南与商店状态](/chainlesschain/cli-ide-update-2026-11-26-164)
+CLI **0.166.164** 与 Open VSX **0.37.199** 已公开。JetBrains **0.4.214** 已上架并通过下载核验，推荐 CLI **0.166.164**。 运行 `npm i -g chainlesschain@0.166.164 --registry https://registry.npmjs.org` 安装，再用 `cc --version` 与 `cc doctor` 核对。 [升级指南与商店状态](/chainlesschain/cli-ide-update-2026-11-26-164)
 
 ## 历史发行与源码核对（2026-11-21）
 
