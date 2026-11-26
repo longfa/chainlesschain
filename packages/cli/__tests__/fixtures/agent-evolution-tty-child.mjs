@@ -411,18 +411,15 @@ try {
     expandFileRefs: false,
     projectMemory: false,
     disableSlashCommands: false,
-    screenReader: true,
     skipDb: true,
   });
-  let emitted = false;
-  const emitResult = () => {
-    if (emitted) return;
-    emitted = true;
+  const emitResult = (exitCode) => {
     try {
       const loaded = composition.loadRun();
       const reopened = createAgentEvolutionRuntimeComposition(config).loadRun();
       const wire = JSON.stringify(received);
       const result = {
+        exitCode,
         stdinIsTTY: process.stdin.isTTY === true,
         stdoutIsTTY: process.stdout.isTTY === true,
         status: loaded.projection.status,
@@ -454,7 +451,6 @@ try {
   process.once("exit", emitResult);
   process.stdout.write("\nCC_TTY_READY\n");
   await waitForAgentEvolutionSession(handle, composition.evolutionIngress);
-  emitResult();
 } catch (error) {
   process.stdout.write(
     `\nCC_TTY_ERROR:${JSON.stringify({
