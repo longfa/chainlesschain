@@ -1,10 +1,10 @@
 # ChainlessChain - Personal Mobile AI Management System Based on USB Key and SIMKey
 
-## Current public release (2026-11-26)
+## Current public release (2026-11-27)
 
-CLI **0.166.164** is public on npm with verified GitHub Actions OIDC provenance. Install with `npm i -g chainlesschain@0.166.164 --registry https://registry.npmjs.org`, then run `cc --version` and `cc doctor`. [npm publication](https://github.com/longfa/chainlesschain/actions/runs/45781019483)
+CLI **0.166.165** is public on npm with signed GitHub Actions OIDC provenance. Install with `npm i -g chainlesschain@0.166.165 --registry https://registry.npmjs.org`, then run `cc --version` and `cc doctor`. [npm publication](https://github.com/longfa/chainlesschain/actions/runs/45885605925)
 
-Run `cc agent` to open the fullscreen terminal. Keep typing during a turn, queue follow-ups, and use `/model` to select the next turn's model. New interactive sessions automatically approve routine tool use. Open VSX **0.37.199** pairs with CLI **0.166.164**. JetBrains **0.4.214** is listed and publicly downloadable. It recommends CLI **0.166.164**. The Esc fix has merged for CLI **0.166.165**. [Upgrade guide](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-26-164.html) · [Runtime design](https://design.chainlesschain.com/release-runtime-update-2026-11-26-164.html) · [Open VSX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide/0.37.199) · [Public JetBrains download](https://plugins.jetbrains.com/plugin/download?rel=true&updateId=1228899)
+The fullscreen terminal supports follow-up input while a turn is running and uses `/model` to select the next turn’s model. Press Esc to close the picker or interrupt a turn. New interactive sessions automatically approve routine tool calls. Open VSX **0.37.200** is public and recommends CLI **0.166.165**. JetBrains **0.4.215** is publicly downloadable and recommends CLI **0.166.165**. [Upgrade guide](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-26-164.html) · [Runtime design](https://design.chainlesschain.com/release-runtime-update-2026-11-26-164.html) · [Open VSX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide/0.37.200) · [JetBrains](https://plugins.jetbrains.com/plugin/download?rel=true&updateId=1229060)
 
 ## Public release (2026-11-24)
 

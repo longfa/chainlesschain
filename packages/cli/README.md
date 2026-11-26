@@ -1,8 +1,12 @@
 # chainlesschain CLI
 
-## CLI 0.166.165 candidate
+## Public CLI 0.166.165
 
-The candidate restores the standalone Esc key for closing the model picker and interrupting a running turn. The planned pairing is Open VSX **0.37.200** and JetBrains **0.4.215**.
+CLI **0.166.165** is public from exact source `206e4e72257ec9178ddb66dcc28107e0ce3c43aa`. CLI CI and Strict Sandbox passed on Linux, Windows, and macOS. GitHub Actions published through OIDC and verified the public archive and signed provenance. Install with `npm i -g chainlesschain@0.166.165 --registry https://registry.npmjs.org`, then use `cc --version` and `cc doctor`. [npm publication](https://github.com/longfa/chainlesschain/actions/runs/45885605925)
+
+The fullscreen terminal supports follow-up input while a turn is running and uses `/model` to select the next turn’s model. Press Esc to close the picker or interrupt a turn. New interactive sessions automatically approve routine tool calls. Open VSX **0.37.200** is public and recommends CLI **0.166.165**. JetBrains **0.4.215** is publicly downloadable and recommends CLI **0.166.165**. [Upgrade guide](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-26-164.html) · [Open VSX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide/0.37.200) · [JetBrains](https://plugins.jetbrains.com/plugin/download?rel=true&updateId=1229060)
+
+Release limits are `NOT_PAID_READY`, `NOT_ADMITTED`, and `HOLD` for paid readiness, native admission, and automatic promotion.
 
 ## Public CLI 0.166.164
 

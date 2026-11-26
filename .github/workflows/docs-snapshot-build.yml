@@ -69,12 +69,12 @@ jobs:
           git diff --exit-code
           test -f "$DIST/index.html"
           test -f "$DIST/$REQUIRED"
-          for version in 0.166.164 0.166.165 0.37.199 0.4.214 /model NOT_PAID_READY HOLD; do
+          for version in 0.166.165 0.37.200 0.4.215 /model NOT_PAID_READY HOLD; do
             grep -Fq "$version" "$DIST/$REQUIRED"
           done
           if [ "$SITE" = www ]; then
             test -f "$DIST/en/index.html"
-            for version in 0.166.164 0.166.165 0.37.199 0.4.214 v5.0.3.145 NOT_PAID_READY HOLD 2/4; do
+            for version in 0.166.165 0.37.200 0.4.215 v5.0.3.145 NOT_PAID_READY HOLD 2/4; do
               grep -Fq "$version" "$DIST/en/index.html"
             done
           fi

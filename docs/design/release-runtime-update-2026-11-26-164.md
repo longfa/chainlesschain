@@ -1,5 +1,7 @@
 # 全屏交互终端、模型切换与授权
 
+CLI **0.166.165** 的 Esc 修复已通过原提交 `206e4e72257ec9178ddb66dcc28107e0ce3c43aa` 的三平台验证并发布。Open VSX **0.37.200** 已公开且推荐该 CLI。JetBrains **0.4.215** 推荐 CLI **0.166.165**。 [npm](https://github.com/longfa/chainlesschain/actions/runs/45885605925) · [Open VSX](https://github.com/longfa/chainlesschain/actions/runs/45887848455) · [JetBrains](https://github.com/longfa/chainlesschain/actions/runs/45887849007) · [CLI CI](https://github.com/longfa/chainlesschain/actions/runs/45785746570) · [CLI Strict Sandbox](https://github.com/longfa/chainlesschain/actions/runs/45785746838)
+
 公开发行的 CLI **0.166.164** 和 Open VSX **0.37.199** 对应源码 `80de4089bbc05773a37ff62737b85e39ab8927d3`。JetBrains **0.4.214** 也已公开，包内文件与正式构建核对一致。Esc 修复已经合入 `206e4e72257ec9178ddb66dcc28107e0ce3c43aa`，对应源码版本 CLI **0.166.165**、Open VSX **0.37.200** 和 JetBrains **0.4.215**。 [交互终端](https://github.com/longfa/chainlesschain/pull/28) · [Esc 修复](https://github.com/longfa/chainlesschain/pull/32) · [用户升级指南](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-26-164.html)
 
 ## 终端与轮次

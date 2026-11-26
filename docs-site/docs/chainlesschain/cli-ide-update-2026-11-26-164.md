@@ -1,19 +1,21 @@
-# CLI 0.166.164 与 IDE 升级
+# CLI 0.166.165 与 IDE 升级
 
 ## 概述
 
-CLI **0.166.164** 已通过 GitHub Actions OIDC 发布到 npm。Open VSX **0.37.199** 已公开，推荐此 CLI 版本。JetBrains **0.4.214** 已上架并通过下载核验，推荐 CLI **0.166.164**。 [npm 发布](https://github.com/longfa/chainlesschain/actions/runs/45781019483) · [Open VSX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide/0.37.199) · [下载 JetBrains 0.4.214](https://plugins.jetbrains.com/plugin/download?rel=true&updateId=1228899) · [JetBrains 发布记录](https://github.com/longfa/chainlesschain/actions/runs/45783392448)
+CLI **0.166.165** 已公开。Open VSX **0.37.200** 和 JetBrains **0.4.215** 已上架，均推荐该 CLI。按 Esc 可关闭模型选择器或中断任务。 [npm 发布](https://github.com/longfa/chainlesschain/actions/runs/45885605925) · [已核验 VSIX](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.200/file/chainlesschain.chainlesschain-ide-0.37.200.vsix) · [JetBrains 下载](https://plugins.jetbrains.com/plugin/download?rel=true&updateId=1229060)
+
+全屏输入、任务中斜杠命令和默认授权从 CLI **0.166.164** 起提供。上一组配套版本为 Open VSX **0.37.199** 和 JetBrains **0.4.214**。 [上一版 CLI](https://github.com/longfa/chainlesschain/actions/runs/45781019483) · [Open VSX 0.37.199](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide/0.37.199) · [JetBrains 0.4.214](https://plugins.jetbrains.com/plugin/download?rel=true&updateId=1228899)
 
 ## 使用示例
 
 ```sh
-npm i -g chainlesschain@0.166.164 --registry https://registry.npmjs.org
+npm i -g chainlesschain@0.166.165 --registry https://registry.npmjs.org
 cc --version
 cc doctor
 cc agent
 ```
 
-升级 IDE 扩展后，重启宿主并用 Doctor 核对实际加载的 CLI 路径。VS Code 用户可以下载 VSIX，在扩展面板选择「从 VSIX 安装」。使用 Open VSX 的编辑器可在扩展面板更新。 [下载已核验的 0.37.199 VSIX](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.199/file/chainlesschain.chainlesschain-ide-0.37.199.vsix)
+升级 IDE 扩展后，重启宿主并用 Doctor 核对实际加载的 CLI 路径。VS Code 用户可以下载 VSIX，在扩展面板选择「从 VSIX 安装」。使用 Open VSX 的编辑器可在扩展面板更新。
 
 ## 核心特性
 
@@ -40,9 +42,11 @@ cc agent
 
 ## 故障排查
 
-CLI **0.166.164** 的全屏模式可能无法识别单独按下的 Esc。用 `/interrupt` 中断任务，在模型选择器中可按 Enter 确认。已合入的 **0.166.165** 源码修复了关闭选择器和中断任务时的 Esc 行为，配套源码版本为 Open VSX **0.37.200** 和 JetBrains **0.4.215**。 [Esc 修复](https://github.com/longfa/chainlesschain/pull/32)
+CLI 0.166.164 的全屏模式可能漏掉单独按下的 Esc，可用 `/interrupt` 中断任务。CLI 0.166.165 已修复这一问题。 [Esc 修复](https://github.com/longfa/chainlesschain/pull/32)
 
 ## 测试覆盖
+
+CLI **0.166.165** 的发行标签 `v-npm-0-166-165` 指向源码 `206e4e72257ec9178ddb66dcc28107e0ce3c43aa`。Linux、Windows 和 macOS 的 CLI CI 与 Strict Sandbox 均通过。公网 npm 安装包也已在 Windows 真终端验证全屏输入、默认授权、`/model` 和 Esc 中断。 [CLI CI](https://github.com/longfa/chainlesschain/actions/runs/45785746570) · [CLI Strict Sandbox](https://github.com/longfa/chainlesschain/actions/runs/45785746838)
 
 CLI 发布标签 `v-npm-0-166-164` 指向源码 `80de4089bbc05773a37ff62737b85e39ab8927d3`。该提交通过 Linux、Windows 和 macOS 的 CLI CI 与 Strict Sandbox。发布工作流核验了 npm 归档和签名来源。 [CLI CI](https://github.com/longfa/chainlesschain/actions/runs/45768026105) · [Strict Sandbox](https://github.com/longfa/chainlesschain/actions/runs/45768026017) · [设计与验证](https://design.chainlesschain.com/release-runtime-update-2026-11-26-164.html)
 

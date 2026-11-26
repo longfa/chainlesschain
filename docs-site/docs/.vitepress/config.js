@@ -59,7 +59,7 @@ export default defineConfig({
           { text: "ChainlessChain系统", link: "/chainlesschain/overview" },
           { text: "厂家管理系统", link: "/manufacturer/overview" },
           {
-            text: "当前安装与升级（11-26）",
+            text: "当前安装与升级",
             link: "/chainlesschain/cli-ide-update-2026-11-26-164",
           },
         ],

@@ -1,6 +1,6 @@
 # CLI Runtime 当前架构与实现
 
-当前公开的 CLI **0.166.164** 支持全屏输入、运行期间命令和下一轮模型切换。CLI **0.166.165** 已合入 Esc 修复。 [全屏终端的运行时设计](https://design.chainlesschain.com/release-runtime-update-2026-11-26-164.html)
+当前公开的 CLI **0.166.165** 支持全屏输入、运行期间命令、下一轮模型切换和单独按 Esc 中断。 [全屏终端的运行时设计](https://design.chainlesschain.com/release-runtime-update-2026-11-26-164.html)
 
 ## 2026-11-15 当前公开范围与 LK 渠道
 

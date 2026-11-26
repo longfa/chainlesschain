@@ -1,5 +1,9 @@
 # Agent Platform 发布与升级指南
 
+## CLI 0.166.165（2026-11-27）
+
+CLI **0.166.165** 和 Open VSX **0.37.200** 已公开。JetBrains **0.4.215** 已上架，推荐 CLI **0.166.165**。 全屏终端可在任务期间编辑输入、排队发送消息，并用 `/model` 切换下一轮模型。按 Esc 关闭模型选择器或中断当前轮次。新交互会话默认自动批准常规工具调用。 [升级指南](./cli-ide-update-2026-11-26-164) · [npm 发布](https://github.com/longfa/chainlesschain/actions/runs/45885605925)
+
 ## CLI 0.166.164（2026-11-26）
 
 CLI **0.166.164** 与 Open VSX **0.37.199** 已公开。JetBrains **0.4.214** 已上架并通过下载核验，推荐 CLI **0.166.164**。 运行 `cc agent` 打开全屏终端。任务期间可继续输入、排队发送消息和使用 `/model` 切换下一轮的模型。新交互会话默认自动批准常规工具调用。 [升级指南](./cli-ide-update-2026-11-26-164) · [npm 发布记录](https://github.com/longfa/chainlesschain/actions/runs/45781019483) · [运行时设计](https://design.chainlesschain.com/release-runtime-update-2026-11-26-164.html)

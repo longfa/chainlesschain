@@ -1,10 +1,10 @@
 # ChainlessChain - 基于U盘和SIMKey的个人移动AI管理系统
 
-## 当前公开版本（2026-11-26）
+## 当前公开版本（2026-11-27）
 
-CLI **0.166.164** 已通过 GitHub Actions OIDC 发布，npm 归档和签名来源已核验。运行 `npm i -g chainlesschain@0.166.164 --registry https://registry.npmjs.org` 安装，再用 `cc --version` 和 `cc doctor` 检查。 [npm 发布记录](https://github.com/longfa/chainlesschain/actions/runs/45781019483)
+CLI **0.166.165** 和 Open VSX **0.37.200** 已公开。JetBrains **0.4.215** 已上架，推荐 CLI **0.166.165**。 运行 `npm i -g chainlesschain@0.166.165 --registry https://registry.npmjs.org` 安装，再用 `cc --version` 和 `cc doctor` 检查。 [npm 发布](https://github.com/longfa/chainlesschain/actions/runs/45885605925)
 
-运行 `cc agent` 打开全屏终端。任务期间可继续输入、排队发送消息和使用 `/model` 切换下一轮的模型。新交互会话默认自动批准常规工具调用。 Open VSX **0.37.199** 配套 CLI **0.166.164**。JetBrains **0.4.214** 已上架并通过下载核验，推荐 CLI **0.166.164**。 CLI **0.166.165** 的 Esc 修复已合入源码。 [安装与升级](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-26-164.html) · [运行时设计](https://design.chainlesschain.com/release-runtime-update-2026-11-26-164.html) · [Open VSX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide/0.37.199) · [JetBrains 公开版](https://plugins.jetbrains.com/plugin/download?rel=true&updateId=1228899)
+全屏终端可在任务期间编辑输入、排队发送消息，并用 `/model` 切换下一轮模型。按 Esc 关闭模型选择器或中断当前轮次。新交互会话默认自动批准常规工具调用。 [安装与升级](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-26-164.html) · [运行时设计](https://design.chainlesschain.com/release-runtime-update-2026-11-26-164.html) · [Open VSX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide/0.37.200) · [JetBrains](https://plugins.jetbrains.com/plugin/download?rel=true&updateId=1229060)
 
 ## 2026-11-24 公开版本
 
