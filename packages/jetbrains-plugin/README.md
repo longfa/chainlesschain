@@ -1,5 +1,11 @@
 # ChainlessChain IDE Bridge (JetBrains)
 
+## Current Marketplace status
+
+JetBrains **0.4.215** is listed and publicly downloadable. It recommends CLI **0.166.165**. Install with `npm i -g chainlesschain@0.166.165 --registry https://registry.npmjs.org`, restart the IDE, and check the CLI in Doctor. Use `/normal` for ordinary confirmation prompts. [Public download](https://plugins.jetbrains.com/plugin/download?rel=true&updateId=1229060) · [Publication workflow](https://github.com/longfa/chainlesschain/actions/runs/45887849007)
+
+## Previous public release 0.4.211
+
 JetBrains **0.4.211** is approved, listed, and publicly downloadable. It recommends CLI **0.166.161**, as verified in the published ZIP. [Download 0.4.211](https://plugins.jetbrains.com/plugin/download?rel=true&updateId=1226836)
 
 Install its recommended CLI with `npm i -g chainlesschain@0.166.161 --registry https://registry.npmjs.org`, restart the IDE, and verify `cc --version`.
@@ -318,7 +324,7 @@ See the [verified publication evidence](https://github.com/longfa/chainlesschain
 
 ## Release compatibility
 
-Plugin **0.4.215** is the current release candidate. It recommends `chainlesschain@0.166.165` and automatically approves routine tool use in new chats. Use `/normal` to require regular approval prompts.
+Plugin **0.4.215** is the current public release. It recommends `chainlesschain@0.166.165` and automatically approves routine tool use in new chats. Use `/normal` to require regular approval prompts.
 
 ## Previous candidates and development notes
 
