@@ -1,7 +1,7 @@
 name: Doc Sync Generated-Copy Gate (PR mandatory)
 
 # Mandatory gate: rejects PRs that modify docs-site/docs/design/** or
-# docs-site-design/docs/** (except whitelisted index.md / .vitepress/).
+# docs-site-design/docs/** (except site-owned index.md, .vitepress/, and public/).
 #
 # These paths are *generated copies* synced from docs/design/**/*.md by:
 #   - docs-site/scripts/sync-design-docs.js
@@ -47,11 +47,12 @@ jobs:
           HEAD_SHA="${{ github.event.pull_request.head.sha }}"
 
           # Files added/modified/renamed under the two generated trees,
-          # excluding the per-site whitelist (index.md and .vitepress/).
+          # excluding site-owned entry points, configuration and static assets.
           OFFENDERS=$(git diff --name-only --diff-filter=ACMR "$BASE_SHA" "$HEAD_SHA" \
             | grep -E '^(docs-site/docs/design/|docs-site-design/docs/)' \
             | grep -v -E '(^|/)index\.md$' \
             | grep -v -E '(^|/)\.vitepress/' \
+            | grep -v -E '^docs-site-design/docs/public/' \
             || true)
 
           if [ -n "$OFFENDERS" ]; then
@@ -100,7 +101,7 @@ jobs:
               '   node docs-site/scripts/sync-design-docs.js',
               '   node docs-site-design/scripts/sync-docs.js',
               '   ```',
-              '4. `git add` both the source and the refreshed copies, push the new commit.',
+              '4. Stage the source changes and push the new commit. The builds generate the site copies.',
               '',
               '### Why this is mandatory (not advisory)',
               '',
@@ -108,7 +109,7 @@ jobs:
               'commits authored with `--no-verify`, or from environments without husky, can',
               'still land on a PR. This gate is the CI-level backstop.',
               '',
-              'Whitelisted (allowed): `index.md` and `.vitepress/**` (each site self-manages).',
+              'Site-owned exceptions: `index.md`, `.vitepress/**` and `docs-site-design/docs/public/**`.',
               '',
               `Run log: ${runUrl}`,
               '',
