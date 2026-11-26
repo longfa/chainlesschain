@@ -135,12 +135,16 @@ class ConversationManagerTest {
     }
 
     @Test
-    void approvalModeDefaultsThenSetModeNormalizesBlankToDefault() {
+    void approvalModeAutoApprovesUntilExplicitlyChanged() {
         ConversationManager m = new ConversationManager();
         ConversationManager.Conversation x = m.create();
-        assertEquals("default", x.mode);
+        assertEquals("bypassPermissions", x.mode);
+        assertEquals(x.mode, x.modeState.snapshot().requested());
+        assertFalse(x.explicitMode);
         assertEquals("acceptEdits", m.setMode(x.id, "acceptEdits").mode);
         assertEquals("default", m.setMode(x.id, "").mode);
+        assertEquals("default", x.modeState.snapshot().requested());
+        assertTrue(x.explicitMode);
     }
 
     @Test
