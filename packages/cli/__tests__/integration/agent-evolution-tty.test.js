@@ -5,6 +5,10 @@ import { fileURLToPath } from "node:url";
 
 import * as nodePty from "node-pty";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import {
+  processExists,
+  waitForProcessRetirement,
+} from "../../scripts/soak-host-metrics.mjs";
 
 const roots = [];
 const fixture = path.resolve(
@@ -57,6 +61,19 @@ function waitForText(state, pattern, timeoutMs = 60_000) {
   });
 }
 
+async function stopFixtureProcess(pid) {
+  if (!processExists(pid)) return;
+  // The console pipe may already be closed while the fixture still owns its
+  // working directory. Terminate the owned Node process.
+  try {
+    process.kill(pid);
+  } catch (error) {
+    if (error.code !== "ESRCH") throw error;
+  }
+  const cleanup = await waitForProcessRetirement(pid);
+  expect(cleanup.retired, "PTY fixture process must retire").toBe(true);
+}
+
 describe("Agent evolution real TTY journey", () => {
   it(
     "authenticates a PTY turn, dispatches only its projection, exits and reopens the durable Run",
@@ -71,6 +88,7 @@ describe("Agent evolution real TTY journey", () => {
       fs.mkdirSync(workspace);
       fs.mkdirSync(configDir);
       const state = { text: "", listeners: new Set(), exit: null };
+      const windows = process.platform === "win32";
       const child = nodePty.spawn(
         process.execPath,
         [fixture, workspace, resultPath],
@@ -78,11 +96,13 @@ describe("Agent evolution real TTY journey", () => {
           cwd: path.resolve(path.dirname(fixture), "../.."),
           cols: 100,
           rows: 30,
+          ...(windows ? { useConpty: true, useConptyDll: true } : {}),
           env: {
             ...process.env,
             NO_COLOR: "1",
             CC_REPL_STREAM: "0",
             CC_PROMPT_SUGGESTIONS: "0",
+            CC_SCREEN_READER: "0",
             CHAINLESSCHAIN_DATA_DIR: configDir,
             CLAUDE_CONFIG_DIR: configDir,
           },
@@ -92,34 +112,39 @@ describe("Agent evolution real TTY journey", () => {
         state.text += data;
         for (const listener of [...state.listeners]) listener();
       });
-      const exited = new Promise((resolve) =>
-        child.onExit((event) => {
-          state.exit = event;
-          for (const listener of [...state.listeners]) listener();
-          resolve(event);
-        }),
-      );
+      child.onExit((event) => {
+        state.exit = event;
+        for (const listener of [...state.listeners]) listener();
+      });
       try {
         // Windows cold starts may run more than one synchronous ACL preflight;
         // one operation can legitimately consume its configured 60s allowance.
-        await waitForText(
-          state,
-          /CC_TTY_READY/u,
-          process.platform === "win32" ? 120_000 : 60_000,
-        );
+        await waitForText(state, /CC_TTY_READY/u, windows ? 120_000 : 60_000);
         child.write("Contact alice@example.com\r");
         await waitForText(state, /TTY_DONE/u);
         child.write("/exit\r");
-        const exit = await exited;
-        expect(exit.exitCode, state.text).toBe(0);
-        // ConPTY can deliver the exit event before the child's final file
-        // write is visible. Read the durable receipt rather than timing it to
-        // the pseudoterminal notification.
-        const result = await vi.waitFor(
-          () => JSON.parse(fs.readFileSync(resultPath, "utf8")),
-          { timeout: 10000, interval: 50 },
-        );
+        // Windows node-pty also reports the console output pipe closing as an
+        // exit event. Verify the Node exit receipt and the owned PID separately.
+        const [result, exit, retirement] = await Promise.all([
+          vi.waitFor(() => JSON.parse(fs.readFileSync(resultPath, "utf8")), {
+            timeout: 10_000,
+            interval: 50,
+          }),
+          vi.waitFor(
+            () => {
+              expect(state.exit, state.text).not.toBeNull();
+              return state.exit;
+            },
+            { timeout: 10_000 },
+          ),
+          waitForProcessRetirement(child.pid),
+        ]);
+        if (!windows || exit.exitCode !== undefined) {
+          expect(exit.exitCode, state.text).toBe(0);
+        }
+        expect(retirement.retired, state.text).toBe(true);
         expect(result).toEqual({
+          exitCode: 0,
           stdinIsTTY: true,
           stdoutIsTTY: true,
           status: "completed",
@@ -131,28 +156,7 @@ describe("Agent evolution real TTY journey", () => {
         });
         expect(state.text).not.toContain("CC_TTY_ERROR:");
       } finally {
-        if (!state.exit) {
-          try {
-            child.kill();
-          } catch {
-            // The normal /exit path may have closed the pseudoterminal.
-          }
-        }
-        let shutdownTimer;
-        try {
-          await Promise.race([
-            exited,
-            new Promise((_, reject) => {
-              shutdownTimer = setTimeout(
-                () =>
-                  reject(new Error("PTY child did not exit after shutdown")),
-                10_000,
-              );
-            }),
-          ]);
-        } finally {
-          clearTimeout(shutdownTimer);
-        }
+        await stopFixtureProcess(child.pid);
       }
     },
     process.platform === "win32" ? 210_000 : 130_000,
