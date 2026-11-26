@@ -4,7 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import * as nodePty from "node-pty";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 const roots = [];
 const fixture = path.resolve(
@@ -111,8 +111,14 @@ describe("Agent evolution real TTY journey", () => {
         await waitForText(state, /TTY_DONE/u);
         child.write("/exit\r");
         const exit = await exited;
-        const result = JSON.parse(fs.readFileSync(resultPath, "utf8"));
-        expect(exit.exitCode).toBe(0);
+        expect(exit.exitCode, state.text).toBe(0);
+        // ConPTY can deliver the exit event before the child's final file
+        // write is visible. Read the durable receipt rather than timing it to
+        // the pseudoterminal notification.
+        const result = await vi.waitFor(
+          () => JSON.parse(fs.readFileSync(resultPath, "utf8")),
+          { timeout: 10000, interval: 50 },
+        );
         expect(result).toEqual({
           stdinIsTTY: true,
           stdoutIsTTY: true,
