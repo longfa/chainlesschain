@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed - cc CLI 0.166.165 and IDE pairing (candidate, 2026-11-26)
+
+- Close the model picker and interrupt a running turn with a standalone Esc reported by Node readline.
+- Pair CLI 0.166.165 with Open VSX 0.37.200 and JetBrains 0.4.215.
+
 ### Added - cc CLI 0.166.164 and IDE pairing (candidate, 2026-11-26)
 
 - Open interactive Agent sessions in a terminal window with a fixed composer, searchable slash commands, and queued follow-ups.

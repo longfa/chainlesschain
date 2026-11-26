@@ -94,7 +94,21 @@ it("keeps the draft editable while streaming and supports slash and model select
     expect(rl.line).toBe("draft after /status");
 
     terminal.showPicker(picker);
-    expect(terminal.handlePickerKey("", { name: "escape" })).toBe(true);
+    expect(
+      terminal.handlePickerKey("", {
+        name: "escape",
+        sequence: "\x1b\x1b",
+        meta: true,
+      }),
+    ).toBe(true);
+    expect(
+      terminal.handlePickerKey("", {
+        name: "escape",
+        sequence: "\x1b",
+        meta: true,
+      }),
+    ).toBe(true);
+    expect(terminal.handlePickerKey("x", { name: "x" })).toBe(false);
     expect(onSelect).toHaveBeenCalledTimes(1);
     expect(rl.line).toBe("draft after /status");
   } finally {
