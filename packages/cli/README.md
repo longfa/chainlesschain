@@ -8,7 +8,7 @@ The candidate restores the standalone Esc key for closing the model picker and i
 
 CLI **0.166.164** is publicly available from source `80de4089bbc05773a37ff62737b85e39ab8927d3`. GitHub Actions verified CLI CI and Strict Sandbox on Linux, Windows, and macOS and published the npm archive through OIDC. Install `npm i -g chainlesschain@0.166.164 --registry https://registry.npmjs.org`, then run `cc --version` and `cc doctor`. [npm publication](https://github.com/longfa/chainlesschain/actions/runs/45781019483)
 
-The fullscreen Agent adds a fixed input area, live slash commands, queued follow-ups, and a searchable `/model` picker. New interactive sessions automatically approve routine tool use subject to managed policy and explicit rules. This CLI pairs with Open VSX **0.37.199** and JetBrains **0.4.214**. [Open VSX publication](https://github.com/longfa/chainlesschain/actions/runs/45783391508) · [JetBrains publication](https://github.com/longfa/chainlesschain/actions/runs/45783392448)
+The fullscreen Agent adds a fixed input area, live slash commands, queued follow-ups, and a searchable `/model` picker. New interactive sessions automatically approve routine tool use subject to managed policy and explicit rules. Open VSX **0.37.199** is public and recommends this CLI. JetBrains **0.4.214** has been uploaded and is awaiting Marketplace review. The verified public version is **0.4.213**, paired with CLI **0.166.163**. Use `/permissions strict` for per-tool prompts and `/interrupt` if the terminal misses Esc. [User guide](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-26-164.html) [Open VSX publication](https://github.com/longfa/chainlesschain/actions/runs/45783391508) · [JetBrains publication](https://github.com/longfa/chainlesschain/actions/runs/45783392448)
 
 Release limits are `NOT_PAID_READY`, `NOT_ADMITTED`, and `HOLD` for paid readiness, native admission, and automatic promotion.
 
@@ -18,7 +18,7 @@ CLI **0.166.163** is available on npm from source `b06b3bfe0f1bf91d40617f3a0c83d
 
 This release improves file-search diagnostics, retries a timed-out Windows credential read once, and asks coding agents to verify workspace changes before reporting delivery. File reads recover when the requested page reaches the model. Canonical compaction can shorten a local handoff while retaining file read positions. Chat Completions stream errors fail the turn, and interrupting a turn closes its pending approvals.
 
-Open VSX **0.37.198** is public and recommends CLI `0.166.163`. JetBrains **0.4.213** pairs with the same CLI and its publication workflow is in progress. [Open VSX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide) · [JetBrains workflow](https://github.com/longfa/chainlesschain/actions/runs/45537935036)
+Open VSX **0.37.198** is public and recommends CLI `0.166.163`. JetBrains **0.4.213** is publicly downloadable and pairs with the same CLI. [Open VSX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide) · [JetBrains workflow](https://github.com/longfa/chainlesschain/actions/runs/45537935036)
 
 The release limits are `NOT_PAID_READY` for paid readiness, `NOT_ADMITTED` for native admission, and `HOLD` for automatic promotion.
 

@@ -34,7 +34,7 @@ const items = english
     <p class="mt-3 text-sm text-muted">
       {english ? releaseStatus.productCandidateStatusEn : releaseStatus.productCandidateStatusZh}
       {english ? " New native v6 creation/model drafts require matching newer desktop builds. " : " 新增原生 v6 创建/模型草稿需要匹配的新桌面构建。"}
-      <a class="text-ember hover:underline" href={releaseStatus.upgradeGuide}>{english ? "Client download status ↗" : "客户端历史与下载状态 ↗"}</a>
+      <a class="text-ember hover:underline" href="https://docs.chainlesschain.com/chainlesschain/installation.html">{english ? "Client download status ↗" : "客户端历史与下载状态 ↗"}</a>
     </p>
     {showJetBrainsCandidate && (
       <p class="mt-3 text-sm text-muted">
@@ -45,8 +45,8 @@ const items = english
     )}
     <p class="mt-3 text-sm text-muted">
       {english
-        ? "The CLI resumes paged reads when file content reaches the model and preserves read progress in bounded local compaction handoffs. Stopping a turn withdraws its pending approvals. Chat Completions stream errors fail the current turn."
-        : "文件内容送达模型后，CLI 恢复按页读取。有界本地压缩保留读取位置。停止轮次时撤回该轮的待审批请求。Chat Completions 流错误会结束当前轮次。"}
+        ? "Run cc agent for a fullscreen terminal with persistent input and queued follow-ups. Use /model to select the next turn’s model. New interactive sessions auto-approve routine tools. The standalone Esc fix is merged in source CLI " + releaseStatus.sourceMainCliVersion + "."
+        : "运行 cc agent 打开全屏终端。任务期间可编辑输入、排队发送消息，并用 /model 选择下一轮模型。新交互会话默认自动批准常规工具。单独按 Esc 的修复已合入 CLI " + releaseStatus.sourceMainCliVersion + " 源码。"}
       <a class="text-ember hover:underline" href={releaseStatus.runtimeDesign}>{english ? " Runtime design and release evidence" : " 运行时设计与发行证据"}</a>
     </p>
     <p class="mt-3 text-sm text-muted">

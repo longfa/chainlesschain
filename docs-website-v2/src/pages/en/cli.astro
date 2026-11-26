@@ -75,7 +75,7 @@ const categories = [
       ['agent --image', 'Multimodal image input (vision models)'],
       ['agent web_search', 'Built-in pluggable search tool (keyless backends incl.)'],
       ['agent -p --json-schema', 'Structured output: reply validated against a JSON Schema with auto-retry'],
-      ['agent REPL steering', 'Queued input / Esc interrupt / /rewind double-Esc / ! bash passthrough / # memorize / TAB completion'],
+      ['agent REPL steering', 'Fullscreen input, queued follow-ups, /model for the next turn, and /interrupt to stop a turn'],
       ['init', 'Inventory the folder into a cc.md memory file (claude /init parity; --ai agent refine)'],
       ['memory files', 'Show the project-memory chain the agent auto-loads (cc.md/CLAUDE.md/AGENTS.md + path-scoped rules)'],
       ['session export / search', 'Export transcripts as Markdown / full-text search across sessions'],
@@ -471,7 +471,7 @@ const packs = [
           175 top-level commands covering the full lifecycle from knowledge base to on-chain governance. Zero GUI dependency, plain text I/O — pipeable, scriptable, CI-ready.
         </p>
         <p class="mt-4 text-sm text-muted max-w-3xl">
-          npm latest is Agent Platform <strong class="text-ink">{NPM_LATEST_CLI_VERSION}</strong>, tagged <code class="font-mono">{CLI_RELEASE_TAG}</code> at <code class="font-mono">{CLI_RELEASE_COMMIT}</code>. This release shares the self-evolution switch across CLI, cc ui and IDEs. Fresh and older automatically generated local deployments default to off; explicit false overrides deployment environment variables. Restart running Agents after switching. It inherits complete recovery summaries, source-code projection, model configuration and Windows startup repairs. Ordinary Agent chat needs no decision service; enabled deployments still verify signatures. Automatic promotion remains HOLD. TypeScript Agent SDK: {AGENT_SDK_VERSION}.
+          npm latest is Agent Platform <strong class="text-ink">{NPM_LATEST_CLI_VERSION}</strong>, tagged <code class="font-mono">{CLI_RELEASE_TAG}</code> at <code class="font-mono">{CLI_RELEASE_COMMIT}</code>. Run <code>cc agent</code> for fullscreen input. Queue follow-ups and use <code>/model</code> to select the next turn’s model. New interactive sessions auto-approve routine tools. Use <code>/permissions strict</code> to restore per-tool prompts. Source CLI {SOURCE_CLI_VERSION} fixes standalone Esc. Automatic promotion remains HOLD. TypeScript Agent SDK: {AGENT_SDK_VERSION}.
         </p>
 
         <!-- Install tabs -->
@@ -506,7 +506,7 @@ const packs = [
       <p class="font-mono text-sm text-muted">Current CLI {CLI_VERSION} · Memory and session capabilities</p>
       <h2 class="mt-3 text-3xl font-bold">Preserve durable state and recover image drafts</h2>
       <p class="mt-5 text-lg text-muted leading-relaxed">The CLI rejects changes at memory capacity, byte, and permission revision limits while preserving existing state. Open VSX {releaseStatus.openVsxVersion} recommends CLI {releaseStatus.openVsxRecommendedCliVersion}; image saves and acknowledgements bind to each page execution. Review restored inputs and explicitly send them. JetBrains {releaseStatus.jetBrainsMarketplaceVersion} is public and recommends CLI {releaseStatus.jetBrainsPublicRecommendedCliVersion}.</p>
-      <p class="mt-4 text-muted leading-relaxed">Public CLI {CLI_VERSION} includes bounded Memory v2, indexed pagination, reviewed project evaluation and Linux cgroup2 recovery at exact release commit {CLI_RELEASE_COMMIT}. Explicit dual-IDE protocol/UI capture and identity diagnostics are now public. Published CLI {SOURCE_CLI_VERSION} adds projection recovery, receipt maintenance and offline risk/task-description previews. Product v5.0.3.140 includes native controlled personal-project actions and goal acceptance. Organization shared goals, memory UI and notifications are included in product .140; later Windows capsules are experimental. Linux durable permissions require provisioning and 100 ms revocation polling. Six-host diagnostics passed; full Docker-pack acceptance and formal 36+9 samples remain open.</p>
+      <p class="mt-4 text-muted leading-relaxed">Public CLI {CLI_VERSION} includes bounded Memory v2, indexed pagination, reviewed project evaluation and Linux cgroup2 recovery at exact release commit {CLI_RELEASE_COMMIT}. Explicit dual-IDE protocol/UI capture and identity diagnostics are now public. Public CLI {CLI_VERSION} includes projection recovery, receipt maintenance and offline risk/task-description previews. Product v5.0.3.140 includes native controlled personal-project actions and goal acceptance. Organization shared goals, memory UI and notifications are included in product .140; later Windows capsules are experimental. Linux durable permissions require provisioning and 100 ms revocation polling. Six-host diagnostics passed; full Docker-pack acceptance and formal 36+9 samples remain open.</p>
       <a class="btn-ghost mt-4" href="https://docs.chainlesschain.com/chainlesschain/agent-platform-release.html">Versions and upgrade steps ↗</a>
     </div>
   </section>

@@ -80,7 +80,7 @@ const categories = [
       ['agent --image', '多模态图像输入（视觉模型）'],
       ['agent web_search', '内置可插拔搜索工具（含免 key 源）'],
       ['agent -p --json-schema', '结构化输出：回答经 JSON Schema 校验，失败自动纠错重试'],
-      ['agent REPL steering', '排队输入 / Esc 中断 / /rewind 双 Esc 回退 / ! bash 直通 / # 快捷记忆 / TAB 补全'],
+      ['agent REPL steering', '全屏输入、排队发送消息、/model 切换下一轮模型、/interrupt 中断任务'],
       ['init', '项目盘点生成 cc.md 记忆文件（claude /init 平价；--ai 用 agent 精炼约定）'],
       ['memory files', '查看 agent 自动加载的项目记忆链（cc.md/CLAUDE.md/AGENTS.md + 路径作用域 rules）'],
       ['session export / search', '会话转录导出 Markdown / 跨会话全文搜索'],
@@ -475,7 +475,7 @@ const packs = [
           175 条顶层命令，覆盖从知识库到链上治理的完整生命周期。零 GUI 依赖，纯文本输入输出，可管道可脚本可 CI。
         </p>
         <p class="mt-4 text-sm text-muted max-w-3xl">
-          npm latest 为 Agent Platform <strong class="text-ink">{NPM_LATEST_CLI_VERSION}</strong>，标签 <code class="font-mono">{CLI_RELEASE_TAG}</code> 对应提交 <code class="font-mono">{CLI_RELEASE_COMMIT}</code>。本版提供 CLI、cc ui 和 IDE 共享的自进化开关，新安装与旧自动本地部署默认关闭；显式 false 覆盖部署环境变量，已运行 Agent 需停止再启动。继承完整恢复摘要、代码投影、模型配置与 Windows 启动修复。普通 Agent 无需决策服务；开启的治理链仍严格验签，自动晋升保持 HOLD。TypeScript Agent SDK 为 {AGENT_SDK_VERSION}。
+          npm latest 为 Agent Platform <strong class="text-ink">{NPM_LATEST_CLI_VERSION}</strong>，标签 <code class="font-mono">{CLI_RELEASE_TAG}</code> 对应提交 <code class="font-mono">{CLI_RELEASE_COMMIT}</code>。运行 <code>cc agent</code> 打开全屏终端，任务期间可继续编辑输入、排队发送消息并用 <code>/model</code> 切换下一轮模型。新交互会话默认批准常规工具，可用 <code>/permissions strict</code> 恢复逐项确认。源码 CLI {SOURCE_CLI_VERSION} 修复单独按 Esc 的处理。自动晋升保持 HOLD。TypeScript Agent SDK 为 {AGENT_SDK_VERSION}。
         </p>
 
         <!-- Install tabs -->
@@ -510,7 +510,7 @@ const packs = [
       <p class="font-mono text-sm text-muted">当前 CLI {CLI_VERSION} · 延续的记忆与会话能力</p>
       <h2 class="mt-3 text-3xl font-bold">保留耐久状态，可靠恢复图片草稿</h2>
       <p class="mt-5 text-lg text-muted leading-relaxed">CLI 在记忆容量、字节与权限修订上限处拒绝变更并保留既有状态。Open VSX {releaseStatus.openVsxVersion} 推荐 CLI {releaseStatus.openVsxRecommendedCliVersion}，图片保存与确认绑定每次页面执行；重载或重启后先检查恢复内容，再明确发送。JetBrains {releaseStatus.jetBrainsMarketplaceVersion} 已公开，推荐 CLI {releaseStatus.jetBrainsPublicRecommendedCliVersion}。</p>
-      <p class="mt-4 text-muted leading-relaxed">公开 CLI {CLI_VERSION} 已包含有界 Memory v2、索引分页、冻结项目评估与 Linux cgroup2 恢复，来自准确发行提交 {CLI_RELEASE_COMMIT}。双 IDE 显式协议/UI 采集与身份诊断已随配对公开版发行；CLI {SOURCE_CLI_VERSION} 已公开数据投影恢复、回执维护与离线风险/任务描述预览；产品 v5.0.3.140 已包含个人项目的原生确认、受控任务动作与目标验收；组织共享目标、记忆面板和通知已进入产品 .140；后续 Windows 胶囊仅为实验。Linux 持久权限需管理员配置，撤销按 100 ms 轮询；六宿主诊断已通过，Docker 整包验收及 36+9 正式样本仍开放。</p>
+      <p class="mt-4 text-muted leading-relaxed">公开 CLI {CLI_VERSION} 已包含有界 Memory v2、索引分页、冻结项目评估与 Linux cgroup2 恢复，来自准确发行提交 {CLI_RELEASE_COMMIT}。双 IDE 显式协议/UI 采集与身份诊断已随配对公开版发行；CLI {CLI_VERSION} 已包含数据投影恢复、回执维护与离线风险/任务描述预览；产品 v5.0.3.140 已包含个人项目的原生确认、受控任务动作与目标验收；组织共享目标、记忆面板和通知已进入产品 .140；后续 Windows 胶囊仅为实验。Linux 持久权限需管理员配置，撤销按 100 ms 轮询；六宿主诊断已通过，Docker 整包验收及 36+9 正式样本仍开放。</p>
       <a class="btn-ghost mt-4" href="https://docs.chainlesschain.com/chainlesschain/agent-platform-release.html">版本与升级步骤 ↗</a>
     </div>
   </section>

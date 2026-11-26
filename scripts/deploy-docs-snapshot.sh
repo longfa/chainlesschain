@@ -18,12 +18,12 @@ printf 'Deployment stamp: %s\nSource commit: %s\nLocal evidence: %s\n' "$stamp" 
 
 for site in docs design www; do
   case "$site" in
-    docs) dist="$repo_root/docs-site/docs/.vitepress/dist"; minimum=600; required="chainlesschain/cli-ide-update-2026-11-25-163.html" ;;
-    design) dist="$repo_root/docs-site-design/docs/.vitepress/dist"; minimum=250; required="release-runtime-update-2026-11-25-163.html" ;;
+    docs) dist="$repo_root/docs-site/docs/.vitepress/dist"; minimum=600; required="chainlesschain/cli-ide-update-2026-11-26-164.html" ;;
+    design) dist="$repo_root/docs-site-design/docs/.vitepress/dist"; minimum=250; required="release-runtime-update-2026-11-26-164.html" ;;
     www) dist="$repo_root/docs-website-v2/dist"; minimum=18; required="index.html" ;;
   esac
   test -f "$dist/index.html" && test -f "$dist/$required"
-  for value in 0.166.163 0.37.198 0.4.213 gpt-6.2-sol gpt-6.2-astra NOT_PAID_READY; do
+  for value in 0.166.164 0.166.165 0.37.199 0.4.214 /model NOT_PAID_READY; do
     grep -Fq "$value" "$dist/$required"
   done
   case "$site" in
@@ -132,11 +132,11 @@ while IFS=$'\t' read -r site sha html files; do
   test "$(find "$stage" -type f -name '*.html' | wc -l)" -eq "$html"
   test "$(find "$stage" -type f | wc -l)" -eq "$files"
   case "$site" in
-    docs) required="$stage/chainlesschain/cli-ide-update-2026-11-25-163.html"; test -f "$stage/chainlesschain/agent-input-and-recovery.html" ;;
-    design) required="$stage/release-runtime-update-2026-11-25-163.html" ;;
+    docs) required="$stage/chainlesschain/cli-ide-update-2026-11-26-164.html"; test -f "$stage/chainlesschain/agent-input-and-recovery.html" ;;
+    design) required="$stage/release-runtime-update-2026-11-26-164.html" ;;
     www) required="$stage/index.html"; grep -Fq 'v5.0.3.145' "$required"; grep -Fq '7 万+' "$required" ;;
   esac
-  for value in 0.166.163 0.37.198 0.4.213 gpt-6.2-sol gpt-6.2-astra NOT_PAID_READY; do
+  for value in 0.166.164 0.166.165 0.37.199 0.4.214 /model NOT_PAID_READY; do
     grep -Fq "$value" "$required"
   done
   # Keep operational files, old pages, and hashed assets still used by cached HTML.
@@ -164,11 +164,11 @@ for site in "${staged[@]}"; do
   test -f "$live/index.html"
   echo "LIVE $site; rollback directory: $backup"
 done
-curl --resolve docs.chainlesschain.com:443:127.0.0.1 -fsSL --max-time 30 https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-25-163.html -o "$prefix-origin-docs.html"
-curl --resolve design.chainlesschain.com:443:127.0.0.1 -fsSL --max-time 30 https://design.chainlesschain.com/release-runtime-update-2026-11-25-163.html -o "$prefix-origin-design.html"
+curl --resolve docs.chainlesschain.com:443:127.0.0.1 -fsSL --max-time 30 https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-26-164.html -o "$prefix-origin-docs.html"
+curl --resolve design.chainlesschain.com:443:127.0.0.1 -fsSL --max-time 30 https://design.chainlesschain.com/release-runtime-update-2026-11-26-164.html -o "$prefix-origin-design.html"
 curl --resolve www.chainlesschain.com:443:127.0.0.1 -fsSL --max-time 30 https://www.chainlesschain.com/ -o "$prefix-origin-www.html"
 for site in docs design www; do
-  for value in 0.166.163 0.37.198 0.4.213 gpt-6.2-sol gpt-6.2-astra NOT_PAID_READY; do
+  for value in 0.166.164 0.166.165 0.37.199 0.4.214 /model NOT_PAID_READY; do
     grep -Fq "$value" "$prefix-origin-$site.html"
   done
 done

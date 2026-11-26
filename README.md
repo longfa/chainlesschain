@@ -1,10 +1,10 @@
 # ChainlessChain - 基于U盘和SIMKey的个人移动AI管理系统
 
-## 当前公开版本（2026-11-25）
+## 当前公开版本（2026-11-26）
 
-CLI **0.166.163** 已通过 GitHub Actions OIDC 发布到 npm，并核验公开归档和签名来源。运行 `npm i -g chainlesschain@0.166.163 --registry https://registry.npmjs.org` 安装，重启宿主后运行 `cc --version` 和 `cc doctor`。 [npm 发布证据](https://github.com/longfa/chainlesschain/actions/runs/45535193598)
+CLI **0.166.164** 已通过 GitHub Actions OIDC 发布，npm 归档和签名来源已核验。运行 `npm i -g chainlesschain@0.166.164 --registry https://registry.npmjs.org` 安装，再用 `cc --version` 和 `cc doctor` 检查。 [npm 发布记录](https://github.com/longfa/chainlesschain/actions/runs/45781019483)
 
-本版修复文件读取恢复、超预算的压缩交接和中断后遗留的待审批项。Chat Completions 流出错时会结束当前轮次。配套 Open VSX **0.37.198** 已公开，JetBrains **0.4.213** 已通过三平台实机矩阵，正在发布。 [Open VSX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide) · [安装与升级](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-25-163.html) · [设计与验证](https://design.chainlesschain.com/release-runtime-update-2026-11-25-163.html)
+运行 `cc agent` 打开全屏终端。任务期间可继续输入、排队发送消息和使用 `/model` 切换下一轮的模型。新交互会话默认自动批准常规工具调用。 Open VSX **0.37.199** 配套 CLI **0.166.164**。JetBrains **0.4.214** 已上传，等待 Marketplace 审核。当前已核验的公开版为 **0.4.213**，配套 CLI **0.166.163**。 CLI **0.166.165** 的 Esc 修复已合入源码。 [安装与升级](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-26-164.html) · [运行时设计](https://design.chainlesschain.com/release-runtime-update-2026-11-26-164.html) · [Open VSX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide/0.37.199) · [JetBrains 公开版](https://plugins.jetbrains.com/plugin/download?rel=true&updateId=1228250)
 
 ## 2026-11-24 公开版本
 

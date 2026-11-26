@@ -4,7 +4,7 @@ layout: home
 hero:
   name: ChainlessChain
   text: 去中心化个人 AI 管理平台
-  tagline: "CLI 0.166.163 已公开"
+  tagline: "CLI 0.166.164 已公开"
   image:
     src: /logo.png
     alt: ChainlessChain Logo
@@ -74,7 +74,7 @@ features:
     link: /chainlesschain/desktop-model-governance
   - icon: 🧑‍💻
     title: CLI 和 IDE 配套版本
-    details: "Open VSX 0.37.198 推荐 CLI 0.166.163，可按需刷新 LK 模型目录。"
+    details: "Open VSX 0.37.199 推荐 CLI 0.166.164。交互终端支持运行期间输入和用 /model 切换下一轮模型。"
     link: /chainlesschain/cli-ide-update-2026-11-23-161
   - icon: 🔐
     title: 安全优先
@@ -92,7 +92,7 @@ features:
 欢迎开发者加入 **「免费测评企业 AI 落地」** 微信交流群，交流 ChainlessChain 的使用、二次开发、插件/IDE 接入、问题排查和企业 AI 落地实践。请扫码入群：
 
 <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;margin:24px 0 32px;padding:20px;border:1px solid var(--vp-c-divider);border-radius:12px;background:var(--vp-c-bg-soft)">
-  <img src="/wechat-group-qr.png" alt="微信群：免费测评企业 AI 落地" width="260" />
+  <img src="/wechat-group-qr.png?v=20261126" alt="微信群：免费测评企业 AI 落地" width="260" />
   <div>
     <p><strong>群聊：免费测评企业 AI 落地</strong></p>
     <p>二维码有效期以微信页面显示为准。提问时请附版本、系统环境、复现步骤和完整日志。</p>
@@ -100,9 +100,9 @@ features:
   </div>
 </div>
 
-## 当前公开版本（2026-11-25）
+## 当前公开版本（2026-11-26）
 
-CLI **0.166.163** 已通过 npm 公开下载、归档完整性和签名来源校验。运行 `npm i -g chainlesschain@0.166.163 --registry https://registry.npmjs.org` 安装，重启宿主后运行 `cc --version` 和 `cc doctor`。 [升级指南与商店状态](/chainlesschain/cli-ide-update-2026-11-25-163)
+CLI **0.166.164** 与 Open VSX **0.37.199** 已公开。JetBrains **0.4.214** 已上传，等待 Marketplace 审核。当前已核验的公开版为 **0.4.213**，配套 CLI **0.166.163**。 运行 `npm i -g chainlesschain@0.166.164 --registry https://registry.npmjs.org` 安装，再用 `cc --version` 与 `cc doctor` 核对。 [升级指南与商店状态](/chainlesschain/cli-ide-update-2026-11-26-164)
 
 ## 历史发行与源码核对（2026-11-21）
 

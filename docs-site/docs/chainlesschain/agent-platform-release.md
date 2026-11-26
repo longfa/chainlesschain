@@ -1,5 +1,9 @@
 # Agent Platform 发布与升级指南
 
+## CLI 0.166.164（2026-11-26）
+
+CLI **0.166.164** 与 Open VSX **0.37.199** 已公开。JetBrains **0.4.214** 已上传，等待 Marketplace 审核。当前已核验的公开版为 **0.4.213**，配套 CLI **0.166.163**。 运行 `cc agent` 打开全屏终端。任务期间可继续输入、排队发送消息和使用 `/model` 切换下一轮的模型。新交互会话默认自动批准常规工具调用。 [升级指南](./cli-ide-update-2026-11-26-164) · [npm 发布记录](https://github.com/longfa/chainlesschain/actions/runs/45781019483) · [运行时设计](https://design.chainlesschain.com/release-runtime-update-2026-11-26-164.html)
+
 ## CLI 0.166.163（2026-11-25）
 
 CLI **0.166.163** 是 npm `latest`。发布标签 `v-npm-0-166-163` 绑定源码 `b06b3bfe0f1bf91d40617f3a0c83d918795d4fe6`。CLI CI 的 74 个必需作业、Strict Sandbox 的 6 个作业和六目标原生验证均通过。公开归档和签名来源由 OIDC 发布工作流核验。 [发布证据](https://github.com/longfa/chainlesschain/actions/runs/45535193598)

@@ -1,5 +1,11 @@
 # ChainlessChain IDE Bridge (JetBrains)
 
+## Current Marketplace status
+
+JetBrains **0.4.214** has been uploaded and is awaiting Marketplace review. The verified public version is **0.4.213**, paired with CLI **0.166.163**. Install that CLI with `npm i -g chainlesschain@0.166.163 --registry https://registry.npmjs.org`, restart the IDE, and check the loaded CLI in Doctor. JetBrains **0.4.214** pairs with CLI **0.166.164** and defaults to auto approval for routine tools in new chats. Use `/normal` for ordinary confirmation prompts. [Public download](https://plugins.jetbrains.com/plugin/download?rel=true&updateId=1228250) · [0.4.214 publishing workflow](https://github.com/longfa/chainlesschain/actions/runs/45783392448) · [Upgrade guide](https://docs.chainlesschain.com/chainlesschain/cli-ide-update-2026-11-26-164.html)
+
+## Previous public release 0.4.211
+
 JetBrains **0.4.211** is approved, listed, and publicly downloadable. It recommends CLI **0.166.161**, as verified in the published ZIP. [Download 0.4.211](https://plugins.jetbrains.com/plugin/download?rel=true&updateId=1226836)
 
 Install its recommended CLI with `npm i -g chainlesschain@0.166.161 --registry https://registry.npmjs.org`, restart the IDE, and verify `cc --version`.
