@@ -112,4 +112,4 @@ VS Code 已为本轮持久化失败生成带阶段的诊断，JetBrains 已支�
 - Windows 真实 stdio 子进程夹具包含一台慢服务和五台可选服务。新进程首次加载配置约 8.50 秒，建立六个连接。缓存后的新进程约 1.56 秒完成配置加载，首屏前只启动一个必需服务。对同一可选服务的两次并发激活共启动一个进程，首次激活约 0.50 秒。计时范围是配置加载与激活，真实终端首轮可输入时间另由宿主探针核对。
 - 终端可用 Tab 补全 `/mcp` 和 `/permissions` 的参数，问题区获得焦点时可独立翻页。`/search` 显示完整会话 ID，`/session links` 提供父会话和最近分支的跳转命令，后台任务列表显示其会话。Windows ConPTY 已验证从补全、执行到正常退出的真实流程。跨系统的同类探针接入已有 CLI Reliability Soak。[终端实现](../../../../packages/cli/src/repl/terminal-window.js) · [宿主探针](../../../../packages/cli/scripts/cli-reliability-soak.mjs)
 
-候选包的 Linux、Windows、macOS 门禁和新一轮 36+9 独立验收仍需回收。无密钥宿主检查会在打包和测试前核对相同提交，已派发公开 `.166` 标签的复跑。[宿主校验](https://github.com/longfa/chainlesschain/actions/runs/46073690466)
+下一轮候选配对为 CLI `0.166.167`、VS Code `0.37.202` 和 JetBrains `0.4.217`。候选包的 Linux、Windows、macOS 门禁和新一轮 36+9 独立验收仍需回收。公开 `.166` 标签的无密钥宿主复跑已完成，macOS Intel 两款 IDE 制品中的源提交均与标签一致。[宿主校验](https://github.com/longfa/chainlesschain/actions/runs/46073690466)

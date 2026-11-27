@@ -1,5 +1,7 @@
 # ChainlessChain IDE Bridge (JetBrains)
 
+The source candidate **0.4.217** recommends CLI **0.166.167**.
+
 ## Current Marketplace status
 
 JetBrains **0.4.216** passed the tagged build and was uploaded. It recommends CLI **0.166.166**. Marketplace listing remains pending. [Publication workflow](https://github.com/longfa/chainlesschain/actions/runs/46054329426)
