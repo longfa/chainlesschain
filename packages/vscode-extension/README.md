@@ -4,9 +4,43 @@ ChainlessChain agent workspace for VS Code-compatible editors with streaming cha
 
 ## Release pairing
 
-Version **0.37.200** recommends CLI **0.166.165**. New chats automatically approve routine tool use. Use `/normal` to require regular approval prompts.
+Version **0.37.201** recommends CLI **0.166.166**. New chats automatically approve routine tool use. Use `/normal` to require regular approval prompts.
 
 ## Current release
+
+<!-- release165-status -->
+
+Open VSX version **0.37.200** pairs with public CLI `0.166.165`.
+Immutable tag `ide-vscode-v0.37.200` identifies this pairing.
+
+| Component                 | Current public status                                       |
+| ------------------------- | ----------------------------------------------------------- |
+| VS Code extension         | **0.37.200**; verified public Open VSX release              |
+| Recommended CLI           | **`chainlesschain@0.166.165`**; verified public npm package |
+| Base bridge compatibility | `cc >= 0.162.190`; newer features require the paired CLI    |
+
+The public VSIX matches the tagged build. [Open VSX publication](https://github.com/longfa/chainlesschain/actions/runs/45887848455) · [Download the verified VSIX](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.200/file/chainlesschain.chainlesschain-ide-0.37.200.vsix)
+
+Using `@0.166.165` selects this pairing. Install with `npm i -g chainlesschain@0.166.165 --registry https://registry.npmjs.org`, restart the host, and run `cc --version` and `cc doctor`. New chats automatically approve routine tool requests. Use `/normal` for ordinary confirmation prompts.
+
+### Previous verified release (0.37.199)
+
+<!-- release164-status -->
+
+Open VSX version **0.37.199** pairs with public CLI `0.166.164`.
+Immutable tag `ide-vscode-v0.37.199` identifies this pairing.
+
+| Component                 | Current public status                                       |
+| ------------------------- | ----------------------------------------------------------- |
+| VS Code extension         | **0.37.199**; verified public Open VSX release              |
+| Recommended CLI           | **`chainlesschain@0.166.164`**; verified public npm package |
+| Base bridge compatibility | `cc >= 0.162.190`; newer features require the paired CLI    |
+
+The public VSIX matches the tagged build. [Open VSX publication](https://github.com/longfa/chainlesschain/actions/runs/45783391508) · [Download the verified VSIX](https://open-vsx.org/api/chainlesschain/chainlesschain-ide/0.37.199/file/chainlesschain.chainlesschain-ide-0.37.199.vsix)
+
+Using `@0.166.164` selects this pairing. Install with `npm i -g chainlesschain@0.166.164 --registry https://registry.npmjs.org`, restart the host, and run `cc --version` and `cc doctor`. New chats automatically approve routine tool requests. Use `/normal` for ordinary confirmation prompts.
+
+### Previous verified release (0.37.198)
 
 <!-- release163-status -->
 

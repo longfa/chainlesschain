@@ -137,6 +137,10 @@ export default defineConfig({
             link: "/modules/110-agent-platform-release-boundaries",
           },
           {
+            text: "全屏终端、模型切换与授权",
+            link: "/release-runtime-update-2026-11-26-164",
+          },
+          {
             text: "CLI .163 / 读取恢复、压缩与轮次隔离",
             link: "/release-runtime-update-2026-11-25-163",
           },

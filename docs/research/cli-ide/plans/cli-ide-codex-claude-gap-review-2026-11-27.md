@@ -85,3 +85,9 @@ VS Code 已为本轮持久化失败生成带阶段的诊断，JetBrains 已支�
 - 新增 `cc agent -p --expect-deliverable <path>`，可重复指定工作区相对路径。headless 首轮用变更前后的文件证据产生交付回执。在 `first-run-linux-vscode` 的等价占位场景，真实 CLI 保留 27 字节原文件，并以退出码 `1` 返回 `CC_DELIVERABLE_UNVERIFIED`。正例回执确认文件内容有变化，检查状态保留为 `not_verified`，独立验收器继续评估测试和变异。原生评测驱动为候选声明预期交付，当前两个 IDE 接收同一流式终态。等价回放使用本地 CLI，原 Linux VS Code 宿主旅程仍需定向复跑。[交付回执](../../../../packages/cli/src/lib/workspace-delivery-receipt.js) · [原生驱动](../../../../packages/cli/scripts/verify01-native-task-campaign.mjs)
 - `read_file` 在打开前判断普通文件类型和 8 MiB 读取上限，实际读取使用有界描述符，保留现有分页、哈希行、Notebook 和读取连续性。超过上限时返回 `CC_READ_FILE_SIZE_LIMIT`。POSIX FIFO 回归等待 Linux 或 macOS 宿主结果，网络文件系统 I/O 超时与更大文件的增量索引留待后续验证。[读取实现](../../../../packages/cli/src/lib/read-file-page.js) · [分页与读取回归](../../../../packages/cli/__tests__/unit/agent-core-read-file-range.test.js)
 - Windows 本地通过 CLI 的两组共 173 项定向回归，其中 POSIX FIFO 用例按平台跳过。VS Code 单测 359 项通过。JetBrains 用 JDK 21 编译更新后的 `ChatEvents` 并直接运行 34 项 JUnit 检查，结果全部通过。完整 Gradle 宿主运行仍需构建环境解析 IntelliJ Platform 依赖。
+
+### 最新公开包与候选制品复测
+
+- 从 npm 安装最新公开 CLI `0.166.165`，并从 [GitHub Actions](https://github.com/longfa/chainlesschain/actions/runs/45993146794) 独立安装同版本的候选归档 `f21defe563`。候选的 CLI、VSIX、JetBrains ZIP 均核对了打包清单的字节长度、SHA-256 和 SHA-512。
+- 两个包在相同 Windows 隔离工作区、回环输入和约束下各复跑两项。公开版的占位文件场景退出 `0`，候选退出 `1` 并返回 `CC_DELIVERABLE_UNVERIFIED`。原 `verify-18` 录流在两边均退出 `5` 且各收到一次请求，候选还返回 `upstream_failure`。两个 Open VSX 制品在分别隔离的扩展目录中安装成功。JetBrains 公开 ZIP 来自 Marketplace `1229060`。[公开 VSIX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide/0.37.200) · [公开 JetBrains ZIP](https://plugins.jetbrains.com/plugin/download?rel=true&updateId=1229060)
+- 下一组发布候选为 CLI `0.166.166`、Open VSX `0.37.201`、JetBrains `0.4.216`。需用该组候选的精确提交重新完成发行门禁，并按仓库规定顺序验证公开制品。此前 `.165` 对照继续按实际包身份留档。

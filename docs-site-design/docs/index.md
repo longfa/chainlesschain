@@ -4,7 +4,7 @@ layout: home
 hero:
   name: ChainlessChain
   text: 系统设计文档
-  tagline: "CLI 0.166.163 与 Open VSX 0.37.198 已公开"
+  tagline: "CLI 0.166.165 与 Open VSX 0.37.200 已公开"
   image:
     src: /logo.png
     alt: ChainlessChain Logo
@@ -86,7 +86,7 @@ features:
 欢迎开发者加入 **「免费测评企业 AI 落地」** 微信交流群，交流系统架构、模块设计、插件/IDE 接入、问题排查和企业 AI 落地实践。请扫码入群：
 
 <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;margin:24px 0 32px;padding:20px;border:1px solid var(--vp-c-divider);border-radius:12px;background:var(--vp-c-bg-soft)">
-  <img src="/wechat-group-qr.png" alt="微信群：免费测评企业 AI 落地" width="260" />
+  <img src="/wechat-group-qr.png?v=20261126" alt="微信群：免费测评企业 AI 落地" width="260" />
   <div>
     <p><strong>群聊：免费测评企业 AI 落地</strong></p>
     <p>二维码有效期以微信页面显示为准。架构问题请尽量附模块、版本、复现步骤和相关日志。</p>
@@ -94,9 +94,9 @@ features:
   </div>
 </div>
 
-## 当前运行时与发行（2026-11-25）
+## 当前运行时与发行（2026-11-27）
 
-CLI **0.166.163** 与配套 Open VSX **0.37.198** 已公开核验。JetBrains **0.4.213** 已通过三平台实机矩阵，正在发布。 [读取恢复、压缩与轮次隔离](/release-runtime-update-2026-11-25-163) · [上轮会话恢复与任务生命周期](/release-runtime-update-2026-11-24-162)
+CLI **0.166.165** 和 Open VSX **0.37.200** 已公开。JetBrains **0.4.215** 已上架，推荐 CLI **0.166.165**。 Esc 可关闭模型选择器或中断当前轮次。 [全屏终端、模型切换与授权](/release-runtime-update-2026-11-26-164) · [读取恢复、压缩与轮次隔离](/release-runtime-update-2026-11-25-163)
 
 ## 历史发行与源码核对（2026-11-21）
 

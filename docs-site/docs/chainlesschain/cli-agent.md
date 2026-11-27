@@ -1,6 +1,10 @@
 # 代理模式 (agent)
 
-> 当前公开 CLI **0.166.142**，配套 Open VSX **0.37.178** / JetBrains **0.4.195**。新增独立授权的目标事件与显式单页历史恢复；事件恢复与 Agent 会话检查点分别处理，新原生历史需要匹配新版桌面端。客户端 v5.0.3.145 尚未完整发行。升级与边界见[升级指南](./cli-ide-update-2026-11-05-142)。
+> CLI **0.166.165** 和 Open VSX **0.37.200** 已公开。JetBrains **0.4.215** 已上架，推荐 CLI **0.166.165**。 [安装、按键和命令](./cli-ide-update-2026-11-26-164)
+
+## 全屏终端
+
+运行 `cc agent` 打开全屏终端。任务期间可编辑输入、排队发送消息，并用 `/model` 切换下一轮模型。输入 `/` 浏览命令，用 `/status` 查看状态，或用 `/interrupt` 中断当前轮次。新交互会话默认自动批准常规工具调用。用 `/permissions strict` 恢复逐项确认。 [终端操作](./cli-ide-update-2026-11-26-164#核心特性)
 
 <!-- docs-code-git-sync-2026-10-30 -->
 
@@ -608,7 +612,7 @@ Context Engineering 按固定顺序排列注入内容（System Prompt → Instin
 >
 > **输入排队（v0.162.40+）**：agent 回合进行中继续打字不再触发并发回合 —— 多余输入按 FIFO 排队（灰色 `queued (N)` 提示），当前回合结束后自动依次执行。
 >
-> **Esc 打断（v0.162.40+）**：回合进行中按 `Esc` 立即中止当前回合（黄色 "turn interrupted" 提示，非报错）——已产出的部分对话保留，排队中的输入照常继续执行。
+> **中断当前轮次**。CLI 0.166.165 全屏模式支持按 Esc 或使用 `/interrupt`。中断保留已输出的内容，队列按会话规则继续执行。
 >
 > **会话回退 `/rewind`（v0.162.40+，steering 三件套收口）**：`/rewind` 列出历史用户轮次（新→旧编号 + 预览），`/rewind <n>` 把对话截回该轮之前并把原文预填到输入行（改完重发）；空闲时**双击 Esc** 调出同一选择器。注意这只回退**对话**，文件状态回退用 `cc checkpoint restore`。
 >
@@ -630,7 +634,7 @@ Context Engineering 按固定顺序排列注入内容（System Prompt → Instin
 | `/provider <p>`        | 切换/查看提供商，支持 8 个提供商 (ollama/anthropic/openai/deepseek/dashscope/mistral/gemini/volcengine) |
 | `/clear`               | 清空对话历史                                                                                            |
 | `/compact`             | 智能压缩对话（基于重要性评分）                                                                          |
-| `/rewind [n]`          | 列出/回退到历史用户轮次（双击 Esc 同效；文件回退用 `cc checkpoint`）                                    |
+| `/rewind [n]`          | 列出/回退到历史用户轮次（文件回退用 `cc checkpoint`）                                                   |
 | `! <cmd>`              | bash 直通：直接跑 shell，输出进对话上下文                                                               |
 | `# <note>`             | 快捷记忆：追加到项目 `cc.md` 的 `## Notes`                                                              |
 | `/output-style [name]` | 列出 / 切换 [输出风格](./output-styles) 人格；`none` 清除                                               |

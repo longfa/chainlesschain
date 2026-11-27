@@ -1,5 +1,7 @@
 # CLI Runtime 当前架构与实现
 
+当前公开的 CLI **0.166.165** 支持全屏输入、运行期间命令、下一轮模型切换和单独按 Esc 中断。 [全屏终端的运行时设计](https://design.chainlesschain.com/release-runtime-update-2026-11-26-164.html)
+
 ## 2026-11-15 当前公开范围与 LK 渠道
 
 CLI **0.166.150**、Open VSX **0.37.189**、JetBrains **0.4.204** 已从准确源码 `b2af25c65d34f1ee34cdddf308b5a8e57bb4f198` 公开核验，两款 IDE 推荐 CLI .150。CLI、cc ui、IDE 支持 LK 主备字母域名、共用 Key、各渠道（含火山）保存并切回恢复。197 项目录中的 83 项对话模型按协议进入聊天选择器；媒体模型仍为目录参考。LK 动态价格、余额、Key 额度与真实 API 账单使用平台算力；账单没有 Token 数。桌面源码支持账户查询，公开 PC/mobile 安装包仍为 **v5.0.3.145**。[本轮设计与发行回执](./release-runtime-update-2026-11-15-150.md)。
