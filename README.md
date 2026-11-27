@@ -1,6 +1,12 @@
 # ChainlessChain - 基于U盘和SIMKey的个人移动AI管理系统
 
-## 当前公开版本（2026-11-27）
+## 当前公开版本（2026-11-28）
+
+CLI **0.166.166** 已在 npm 发布。Open VSX **0.37.201** 已上架，推荐 CLI **0.166.166**。JetBrains **0.4.216** 已上传，商店当前提供 **0.4.215**，配对 CLI **0.166.165**。 运行 `npm i -g chainlesschain@0.166.166 --registry https://registry.npmjs.org` 安装。 [npm 发布](https://github.com/longfa/chainlesschain/actions/runs/46047860034)
+
+[发布记录](https://github.com/longfa/chainlesschain/blob/main/docs-site/docs/chainlesschain/agent-platform-release.md) · [Open VSX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide/0.37.201) · [JetBrains 上传](https://github.com/longfa/chainlesschain/actions/runs/46054329426)
+
+## 2026-11-27 公开版本
 
 CLI **0.166.165** 和 Open VSX **0.37.200** 已公开。JetBrains **0.4.215** 已上架，推荐 CLI **0.166.165**。 运行 `npm i -g chainlesschain@0.166.165 --registry https://registry.npmjs.org` 安装，再用 `cc --version` 和 `cc doctor` 检查。 [npm 发布](https://github.com/longfa/chainlesschain/actions/runs/45885605925)
 

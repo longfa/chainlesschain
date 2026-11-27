@@ -1,6 +1,12 @@
 # ChainlessChain - Personal Mobile AI Management System Based on USB Key and SIMKey
 
-## Current public release (2026-11-27)
+## Current public release (2026-11-28)
+
+CLI **0.166.166** and Open VSX **0.37.201** are public. Open VSX recommends CLI **0.166.166**. JetBrains **0.4.216** was uploaded and awaits listing. Its public version **0.4.215** recommends CLI **0.166.165**. Install with `npm i -g chainlesschain@0.166.166 --registry https://registry.npmjs.org`. [npm publication](https://github.com/longfa/chainlesschain/actions/runs/46047860034)
+
+[Release notes](https://github.com/longfa/chainlesschain/blob/main/docs-site/docs/chainlesschain/agent-platform-release.md) · [Open VSX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide/0.37.201) · [JetBrains upload](https://github.com/longfa/chainlesschain/actions/runs/46054329426)
+
+## Public release (2026-11-27)
 
 CLI **0.166.165** is public on npm with signed GitHub Actions OIDC provenance. Install with `npm i -g chainlesschain@0.166.165 --registry https://registry.npmjs.org`, then run `cc --version` and `cc doctor`. [npm publication](https://github.com/longfa/chainlesschain/actions/runs/45885605925)
 
