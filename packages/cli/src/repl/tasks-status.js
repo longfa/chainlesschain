@@ -76,6 +76,7 @@ export function formatBackgroundTasks(tasks, { now = Date.now() } = {}) {
       .trim();
     const cmdShort = cmd.length > 70 ? cmd.slice(0, 70) + "…" : cmd;
     lines.push(`  ${taskStatusLabel(t)}  ${t.id}  ${elapsed}  ${cmdShort}`);
+    if (t.sessionId) lines.push(`    Session: /session resume ${t.sessionId}`);
   }
   lines.push("Manage: /tasks kill <id> · /tasks kill-all");
   return lines.join("\n");

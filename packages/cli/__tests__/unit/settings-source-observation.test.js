@@ -51,6 +51,22 @@ function onFirstRead(callback) {
 }
 
 describe("strict settings source observations", () => {
+  it.runIf(process.platform === "win32")(
+    "resolves a Windows extended-length settings path to the same verified file",
+    () => {
+      const file = write("project/.claude/settings.json", {
+        permissions: { deny: ["Bash"] },
+      });
+      const ordinary = observeSettingsSource(file);
+      const extended = observeSettingsSource(path.toNamespacedPath(file));
+      expect(extended.physicalPath).toBe(ordinary.physicalPath);
+      expect(extended.fileIdentity).toEqual(ordinary.fileIdentity);
+      expect(extended.parentIdentity).toEqual(ordinary.parentIdentity);
+      expect(extended.digest).toBe(ordinary.digest);
+      expect(extended.settings.permissions.deny).toEqual(["Bash"]);
+    },
+  );
+
   it("derives immutable settings and digest from one descriptor's exact bytes", () => {
     const bytes = '{\n "permissions": {"deny":["Bash"]}, "model":"haiku"\n}\n';
     const file = write(".claude/settings.json", bytes);

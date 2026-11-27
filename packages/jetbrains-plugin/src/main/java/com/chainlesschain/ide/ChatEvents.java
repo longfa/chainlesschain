@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Map the CLI's stream-json NDJSON events onto the small message vocabulary
@@ -25,6 +26,10 @@ import java.util.Map;
  * approval / approval_done / plan / error. Pure JDK, headless-testable.
  */
 public final class ChatEvents {
+    private static final Set<String> PERSISTENCE_CODES = Set.of(
+            "CC_SESSION_PERSISTENCE_FAILED", "CC_SESSION_TOOL_ROUND_PERSISTENCE_FAILED",
+            "SESSION_REVISION_STALE", "CC_COMPACTION_REVISION_STALE", "CC_COMPACTION_SETTLEMENT_FAILED");
+    private static final Set<String> PERSISTENCE_PHASES = Set.of("before-model", "after-model", "unspecified");
     private ChatEvents() {}
 
     /** Per-conversation state: did text stream via deltas this turn? */
@@ -140,6 +145,17 @@ public final class ChatEvents {
 
     private static boolean isTrue(Object v) {
         return Boolean.TRUE.equals(v);
+    }
+
+    private static String persistenceFailure(Map<String, Object> event, String subtype) {
+        String code = str(event, "code", "");
+        if (!("error_persistence".equals(subtype) || "error_session_persistence".equals(subtype)
+                || PERSISTENCE_CODES.contains(code))) return null;
+        Map<String, Object> persistence = asMap(event.get("persistence"));
+        String phase = persistence == null ? "unspecified" : str(persistence, "phase", "unspecified");
+        if (!PERSISTENCE_PHASES.contains(phase)) phase = "unspecified";
+        String identifier = code.matches("[A-Z][A-Z0-9_]{0,119}") ? " [" + code + "]" : "";
+        return "Session persistence failed" + identifier + " (phase: " + phase + "). Inspect the saved session before continuing.";
     }
 
     private static Map<String, Object> ui(String kind) {
@@ -361,8 +377,9 @@ public final class ChatEvents {
             m.put("isError", isError);
             Object text;
             if (isError) {
-                text = evt.get("error") != null ? evt.get("error")
-                        : evt.get("result") != null ? evt.get("result") : "turn failed";
+                String persistence = persistenceFailure(evt, subtype);
+                text = persistence != null ? persistence : first(evt, "error", "result");
+                if (text == null) text = "turn failed";
             } else {
                 // If text streamed via deltas, the final result repeats it — drop.
                 text = sawDelta ? null : evt.get("result");

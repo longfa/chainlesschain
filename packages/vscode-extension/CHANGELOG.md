@@ -1,5 +1,10 @@
 # Changelog — ChainlessChain IDE Bridge (VS Code)
 
+## [0.37.202] - CLI 0.166.167 pairing (candidate, 2026-11-28)
+
+- Show verified conversation recovery and pending questions or unresolved MCP calls.
+- Provide a retry path for saved history loading failures.
+
 ## [0.37.201] - CLI 0.166.166 pairing (candidate, 2026-11-27)
 
 - Show workspace delivery verification and distinguish it from independent checks.

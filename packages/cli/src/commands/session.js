@@ -314,12 +314,13 @@ export function registerSessionCommand(program, dependencies = {}) {
           const branch = withTranscriptForkMessages(
             source.id,
             options.afterMessage,
-            (messages) =>
+            (messages, sessionExecutionScope) =>
               createBranchSession({
                 branchSessionId: `session-fork-${randomUUID().replaceAll("-", "")}`,
                 parentSessionId: source.id,
                 parentTurnId: options.afterMessage.slice(source.id.length + 1),
                 messages,
+                sessionExecutionScope,
                 meta: { provider: meta?.provider, model: meta?.model },
               }),
           );

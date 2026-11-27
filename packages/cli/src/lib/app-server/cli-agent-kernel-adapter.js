@@ -139,11 +139,15 @@ export class CliAgentKernelAdapter {
       eventChain: Promise.resolve(),
       closed: false,
       failure: null,
+      startupResult: null,
       runPromise: null,
       collector: null,
     };
     const queueEvent = (event) => {
       const current = session.current;
+      if (!current && event.type === "result" && event.is_error === true) {
+        session.startupResult = event;
+      }
       session.eventChain = session.eventChain.then(async () => {
         if (!current) return;
         await current.emit(event);
@@ -289,6 +293,10 @@ export class CliAgentKernelAdapter {
     requestQuestion,
   }) {
     const session = await this._session(threadId, options);
+    if (session.startupResult) {
+      await emit(session.startupResult);
+      return session.startupResult;
+    }
     if (session.current) {
       throw adapterError(
         "CC_APP_SERVER_TURN_ACTIVE",

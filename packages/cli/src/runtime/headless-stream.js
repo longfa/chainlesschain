@@ -109,6 +109,11 @@ import {
 import { detectVersionSkew, versionSkewMessage } from "../lib/version-skew.js";
 import { captureAmbientExecutionLocation } from "../lib/execution-location-runtime.js";
 import {
+  captureSessionExecutionScope,
+  checkSessionExecutionScope,
+  describeSessionExecutionScopeChange,
+} from "../lib/session-execution-scope.js";
+import {
   AGENT_EVOLUTION_INGRESS_FAILED_CODE,
   captureAgentEvolutionIngress,
 } from "../lib/evolution/agent-evolution-ingress.js";
@@ -2176,6 +2181,31 @@ async function runAgentHeadlessStreamInWorkspace(
   const additionalDirectories = Array.isArray(options.additionalDirectories)
     ? options.additionalDirectories.filter(Boolean)
     : [];
+  const sessionExecutionScope = persist
+    ? captureSessionExecutionScope({
+        cwd,
+        additionalDirectories,
+        sandbox: options.sandbox,
+      })
+    : null;
+  const scopeResolution = checkSessionExecutionScope(
+    canonicalResume?.sessionExecutionScope,
+    sessionExecutionScope,
+    options.allowSessionScopeChange === true,
+  );
+  const scopeNotice = describeSessionExecutionScopeChange(scopeResolution);
+  if (scopeNotice) writeErr(`${scopeNotice}\n`);
+  if (scopeResolution.status === "refused") {
+    emit({
+      type: "result",
+      subtype: "error_session_resume",
+      is_error: true,
+      code: "CC_SESSION_EXECUTION_SCOPE_CHANGED",
+      error: scopeNotice,
+      session_id: sessionId,
+    });
+    return { exitCode: 1, turns: 0 };
+  }
 
   // .claude/settings.json permission rules (deny > ask > allow); see
   // runAgentHeadless for the full semantics. null = no file → unchanged.
@@ -3390,6 +3420,7 @@ async function runAgentHeadlessStreamInWorkspace(
               provider,
               model,
             }),
+            sessionExecutionScope,
           }),
           "startSession",
         );
@@ -3475,6 +3506,31 @@ async function runAgentHeadlessStreamInWorkspace(
     }
   }
 
+  const pendingMcpReviews =
+    canonicalResume?.snapshot?.recoveryAuthority?.unsettled?.length || 0;
+  const resumedSessionState = canonicalResume
+    ? {
+        version: 1,
+        source: "verified-transcript",
+        persistence: "durable",
+        resumed_messages: resumedMessages,
+        pending_questions: restoredQuestionEvents.length,
+        pending_mcp_reviews: pendingMcpReviews,
+        execution_scope: scopeResolution.status,
+        summary: [
+          `Saved conversation verified (${resumedMessages} messages restored).`,
+          restoredQuestionEvents.length > 0
+            ? `Waiting for answers to ${restoredQuestionEvents.length} saved question(s).`
+            : null,
+          pendingMcpReviews > 0
+            ? `Review ${pendingMcpReviews} unresolved MCP call(s) before resuming those operations.`
+            : null,
+          scopeNotice,
+        ]
+          .filter(Boolean)
+          .join(" "),
+      }
+    : null;
   emit({
     type: "system",
     subtype: "init",
@@ -3486,6 +3542,7 @@ async function runAgentHeadlessStreamInWorkspace(
     protocol_version: STREAM_PROTOCOL_VERSION,
     session_id: sessionId,
     session_persistence: persist,
+    ...(resumedSessionState ? { session_state: resumedSessionState } : {}),
     input_receipts: {
       version:
         persist && store.appendInputWithReceipt && store.readInputReceipt

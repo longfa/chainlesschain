@@ -36,6 +36,12 @@ import { isPromise, isProxy } from "node:util/types";
 import { logger } from "../lib/logger.js";
 import { captureSkillRuntimeDependencies } from "../lib/evolution/skill-runtime-revalidation.js";
 import { captureAmbientExecutionLocation } from "../lib/execution-location-runtime.js";
+import {
+  captureSessionExecutionScope,
+  checkSessionExecutionScope,
+  describeSessionExecutionScopeChange,
+  normalizeSessionExecutionScope,
+} from "../lib/session-execution-scope.js";
 import { issueMcpStdioExecutionAuthority } from "../lib/mcp-stdio-execution-authority.js";
 import { PlanModeManager, PlanState } from "../lib/plan-mode.js";
 import {
@@ -229,6 +235,7 @@ import {
   resolveAskIdleTimeoutMs,
   questionWithIdleTimeout,
   createReplQuestionQueue,
+  askReplUser,
 } from "./permission-prompt.js";
 import { describeAskContext, raceLocalAndRemote } from "./remote-approval.js";
 import { runWithHostHooksV2Workspace } from "../lib/hooks-v2-workspace-context.js";
@@ -237,6 +244,7 @@ import {
   permissionModeForTier,
   describeTier,
   nextTier,
+  TIER_CYCLE,
 } from "./permission-tier.js";
 
 export const REPL_RUNTIME_LEDGER_PERSISTENCE_FAILURE_MESSAGE =
@@ -2254,7 +2262,11 @@ function absentReplJsonlResumeCandidate(sessionId) {
  * shared reader from that same event array. A present-but-invalid transcript is
  * an inert structured refusal and cannot be committed into the active REPL.
  */
-export function prepareReplJsonlResumeCandidate(sessionId, dependencies = {}) {
+export function prepareReplJsonlResumeCandidate(
+  sessionId,
+  dependencies = {},
+  activeScope = {},
+) {
   let sessionSnapshot = null;
   try {
     validateReplResumeSessionId(sessionId);
@@ -2294,6 +2306,29 @@ export function prepareReplJsonlResumeCandidate(sessionId, dependencies = {}) {
       );
       error.code = "CC_SESSION_HOST_SNAPSHOT_UNVERIFIED";
       throw error;
+    }
+    const storedScope = normalizeSessionExecutionScope(
+      dataDescriptorValue(
+        stateDescriptors,
+        "sessionExecutionScope",
+        "REPL session host resume state",
+        { required: false },
+      ),
+    );
+    const scopeResolution = activeScope.current
+      ? checkSessionExecutionScope(
+          storedScope,
+          activeScope.current,
+          activeScope.allowChange === true,
+        )
+      : null;
+    const scopeNotice = scopeResolution
+      ? describeSessionExecutionScopeChange(scopeResolution)
+      : null;
+    if (scopeResolution?.status === "refused") {
+      throw Object.assign(new Error(scopeNotice), {
+        code: "CC_SESSION_EXECUTION_SCOPE_CHANGED",
+      });
     }
     const rawRebuiltMessages = snapshotReplMessages(
       dataDescriptorValue(
@@ -2379,6 +2414,7 @@ export function prepareReplJsonlResumeCandidate(sessionId, dependencies = {}) {
       ok: true,
       sessionId,
       sessionBudgetRoot,
+      scopeNotice,
       modelUsageRecovery,
       rebuiltMessages,
       replayMessages: normalizedReplay.replayMessages,
@@ -2399,9 +2435,17 @@ export function prepareReplJsonlResumeCandidate(sessionId, dependencies = {}) {
  * feature/config reads are reserved for new sessions or the legacy DB
  * fallback when no JSONL transcript exists.
  */
-export function prepareReplStartupResume(sessionId, dependencies = {}) {
+export function prepareReplStartupResume(
+  sessionId,
+  dependencies = {},
+  activeScope,
+) {
   if (sessionId !== null && sessionId !== undefined) {
-    const candidate = prepareReplJsonlResumeCandidate(sessionId, dependencies);
+    const candidate = prepareReplJsonlResumeCandidate(
+      sessionId,
+      dependencies,
+      activeScope,
+    );
     if (candidate.ok) {
       return Object.freeze({ useJsonl: true, candidate });
     }
@@ -3147,7 +3191,25 @@ export async function startAgentRepl(options = {}) {
   };
   try {
     const result = await runReplStartupBoundary(runtimeOptions, {
-      prepareReplStartupResume,
+      prepareReplStartupResume: (sessionId) =>
+        prepareReplStartupResume(
+          sessionId,
+          {},
+          {
+            current: sessionId
+              ? captureSessionExecutionScope({
+                  cwd: process.cwd(),
+                  additionalDirectories: Array.isArray(
+                    options.additionalDirectories,
+                  )
+                    ? options.additionalDirectories.filter(Boolean)
+                    : [],
+                  sandbox: options.sandbox,
+                })
+              : null,
+            allowChange: options.allowSessionScopeChange === true,
+          },
+        ),
       refuseReplStartupResume,
       acquireSessionHostLease,
       openProductionSessionBudgetRoot,
@@ -4192,7 +4254,14 @@ async function startAgentReplInWorkspaceOwned(
       sessionId = startReplJsonlSession(
         jsonlStartSession,
         options.sessionId || null,
-        meta,
+        {
+          ...meta,
+          sessionExecutionScope: captureSessionExecutionScope({
+            cwd: process.cwd(),
+            additionalDirectories,
+            sandbox: _sandbox,
+          }),
+        },
         options.observabilityScope,
         {
           requireDurable: Boolean(_sessionBudget),
@@ -4452,8 +4521,20 @@ async function startAgentReplInWorkspaceOwned(
   _replSideEffects = _startupReplSideEffects.sideEffects;
   let _mcpLedgerRecovery = null;
   let _mcpLedgerRecoveryError = null;
+  if (_startupJsonlResume?.scopeNotice)
+    logger.warn(_startupJsonlResume.scopeNotice);
   const _prepareJsonlResumeCandidate = (targetSessionId) =>
-    prepareReplJsonlResumeCandidate(targetSessionId);
+    prepareReplJsonlResumeCandidate(
+      targetSessionId,
+      {},
+      {
+        current: captureSessionExecutionScope({
+          cwd: process.cwd(),
+          additionalDirectories,
+          sandbox: _sandbox,
+        }),
+      },
+    );
   const _prepareMcpRecoveryCommit = (candidate) => {
     const authorized =
       candidate && REPL_MCP_RECOVERY_CANDIDATES.has(candidate)
@@ -4795,6 +4876,7 @@ async function startAgentReplInWorkspaceOwned(
           // --no-jetbrains disables.
           jetbrains: options.jetbrains,
           cwd: process.cwd(),
+          allowOnDemandStdio: !options.permissionPromptTool,
           // advertise the session id to spawned stdio MCP servers
           sessionId,
         },
@@ -5322,7 +5404,8 @@ async function startAgentReplInWorkspaceOwned(
 
   // `@` tab-completion (Claude-Code @-mention parity): filesystem paths +
   // (when the IDE bridge is connected) the editor's open tabs ranked first.
-  const { makeAtCompleter } = await import("../lib/repl-completer.js");
+  const { makeAtCompleter, readSlashArgument } =
+    await import("../lib/repl-completer.js");
   const { discoverCommands } = await import("../lib/slash-commands.js");
   const atCompleter = makeAtCompleter({
     // cwd left unset on purpose: the completer resolves process.cwd() lazily
@@ -5404,6 +5487,19 @@ async function startAgentReplInWorkspaceOwned(
     // alongside the built-ins above. Sync + best-effort; the completer
     // TTL-caches the result so this filesystem walk runs at most once per few
     // seconds, and process.cwd() makes it follow `/cd` mid-session.
+    getSlashArguments: (command) => {
+      if (command === "/permissions") {
+        return [...TIER_CYCLE, "auto", "dontask", "denials"];
+      }
+      if (command === "/mcp") {
+        const hostMcp = _getReplHostMcp();
+        return [
+          ...(hostMcp?.mcpClient?.listServers?.() || []),
+          ...(hostMcp?.listDeferredMcpServers?.() || []),
+        ].map(({ name }) => name);
+      }
+      return [];
+    },
     getDynamicSlashCommands: () => {
       if (_slashCommandsDisabled) return [];
       try {
@@ -5464,16 +5560,17 @@ async function startAgentReplInWorkspaceOwned(
           ]
             .filter(Boolean)
             .join("  ·  "),
-        getSlashSuggestions: (line) => {
-          if (_replQuestions.isActive() || !/^\/[\w:.-]*$/.test(line))
-            return [];
-          const commands = atCompleter(line)[0];
-          if (line !== "/" || !_processingLine) return commands;
-          return commands.sort(
+        getSlashCompletion: (line, cursor) => {
+          if (_replQuestions.isActive()) return null;
+          const completion = atCompleter.completeSlash(line, cursor);
+          if (line !== "/" || !_processingLine || !completion)
+            return completion;
+          completion.candidates.sort(
             (a, b) =>
               Number(liveSlashCommands.has(b)) -
               Number(liveSlashCommands.has(a)),
           );
+          return completion;
         },
         isQuestionActive: () => _replQuestions.isActive(),
       })
@@ -5488,8 +5585,13 @@ async function startAgentReplInWorkspaceOwned(
   // Let the EPIPE guard route a broken pipe through this interface's graceful
   // "close" cleanup instead of a bare exit.
   _replRl = rl;
-  _replQuestions = createReplQuestionQueue(rl, (text) =>
-    process.stdout.write(text),
+  _replQuestions = createReplQuestionQueue(
+    rl,
+    (text) => process.stdout.write(text),
+    {
+      showDetails: (text) => terminalWindow?.showQuestionDetails(text),
+      clearDetails: () => terminalWindow?.clearQuestionDetails(),
+    },
   );
   terminalWindow?.bind(rl);
   const disposeTerminal = () => {
@@ -5741,7 +5843,11 @@ async function startAgentReplInWorkspaceOwned(
         (k.name === "pageup" || k.name === "pagedown")
       ) {
         _consumeReadlineKeypress(key);
-        terminalWindow.scroll(k.name === "pageup" ? 1 : -1);
+        if (_replQuestions.isActive()) {
+          terminalWindow.pageQuestion(k.name === "pageup" ? -1 : 1);
+        } else {
+          terminalWindow.scroll(k.name === "pageup" ? 1 : -1);
+        }
         return;
       }
       if (_replQuestions.isActive()) return;
@@ -7527,12 +7633,19 @@ async function startAgentReplInWorkspaceOwned(
               try {
                 const { createBranchSession } =
                   await import("../harness/jsonl-session-store.js");
+                const parent = readSessionHostResumeState(sessionId);
+                if (parent && !isVerifiedSessionHostSnapshot(parent.snapshot)) {
+                  throw new Error(
+                    "Canonical session history could not be verified",
+                  );
+                }
                 const res = createBranchSession({
                   branchSessionId: plan.branchSessionId,
                   parentSessionId: sessionId,
                   parentTurnId: plan.parentTurnId,
                   messages: messages.slice(0, turnIndex),
                   meta: { title: `Branch of ${sessionId}` },
+                  sessionExecutionScope: parent?.sessionExecutionScope,
                 });
                 logger.log(
                   chalk.green(
@@ -8051,6 +8164,31 @@ async function startAgentReplInWorkspaceOwned(
     // Session info
     if (trimmed === "/session" || trimmed.startsWith("/session ")) {
       const sessionArg = trimmed.slice(8).trim();
+      if (sessionArg === "links") {
+        try {
+          const { listJsonlSessions, readJsonlSessionParent, sessionExists } =
+            await import("../harness/jsonl-session-store.js");
+          logger.log(`Session: ${sessionId}`);
+          if (sessionExists(sessionId)) {
+            const parent = readJsonlSessionParent(sessionId);
+            if (parent) logger.log(`Parent: /session resume ${parent}`);
+            for (const { id } of listJsonlSessions({ limit: 10 })) {
+              if (id === sessionId) continue;
+              try {
+                if (readJsonlSessionParent(id) === sessionId) {
+                  logger.log(`Child: /session resume ${id}`);
+                }
+              } catch {
+                // Another session may have been closed or removed while listing.
+              }
+            }
+          }
+        } catch (error) {
+          logger.error(`Session links could not be read: ${error.message}`);
+        }
+        prompt();
+        return;
+      }
       if (sessionArg.startsWith("resume ")) {
         const resumeId = sessionArg.slice(7).trim();
         try {
@@ -8160,6 +8298,7 @@ async function startAgentReplInWorkspaceOwned(
                     : targetMode.tier,
               );
               _replSideEffects = preparedSideEffects.sideEffects;
+              if (prepared.scopeNotice) logger.warn(prepared.scopeNotice);
               if (preparedSideEffects.warning) {
                 logger.warn(preparedSideEffects.warning);
               }
@@ -8526,10 +8665,12 @@ async function startAgentReplInWorkspaceOwned(
           for (const r of results) {
             const snippet = (r.snippet || "").substring(0, 120);
             logger.log(
-              `  ${chalk.cyan(r.sessionId.substring(0, 20))} [${chalk.dim(r.role)}] ${snippet}`,
+              `  ${chalk.cyan(r.sessionId)} [${chalk.dim(r.role)}] ${snippet}`,
             );
           }
-          logger.log("");
+          logger.log(
+            "Resume one with /session resume <id>. Use /session links to show its parent and recent branches.",
+          );
         }
       } catch (err) {
         logger.error(`Search failed: ${err.message}`);
@@ -9321,8 +9462,25 @@ async function startAgentReplInWorkspaceOwned(
       return;
     }
     if (trimmed === "/mcp" || trimmed.startsWith("/mcp ")) {
-      const mcpClient = _getReplHostMcp()?.mcpClient;
-      logger.log(renderMcpSurface(mcpClient));
+      const hostMcp = _getReplHostMcp();
+      const server = readSlashArgument(trimmed.slice(4));
+      const deferred = hostMcp?.listDeferredMcpServers?.() || [];
+      if (server && deferred.some(({ name }) => name === server)) {
+        if (!(await hostMcp.activateDeferredMcpServer(server))) {
+          prompt();
+          return;
+        }
+      }
+      logger.log(renderMcpSurface(hostMcp?.mcpClient, server));
+      if (!server && deferred.length) {
+        logger.log("MCP servers available on demand:");
+        for (const item of deferred) {
+          logger.log(
+            `  ${item.name} (${item.toolNames.length} cached tool names)`,
+          );
+        }
+        logger.log("Use /mcp <server> to connect.");
+      }
       prompt();
       return;
     }
@@ -9511,7 +9669,7 @@ async function startAgentReplInWorkspaceOwned(
     // `/permissions` — allow/ask/deny rules in effect this session (Claude-Code
     // parity): what the agent runs unprompted, asks about, or is blocked from.
     if (trimmed === "/permissions" || trimmed.startsWith("/permissions ")) {
-      const arg = trimmed.slice("/permissions".length).trim();
+      const arg = readSlashArgument(trimmed.slice("/permissions".length));
       if (arg === "denials" || arg === "denied") {
         // Review what the agent was BLOCKED from running this session
         // (Claude-Code 2.1.193 "recent denials").
@@ -10371,6 +10529,7 @@ async function startAgentReplInWorkspaceOwned(
       const activeMcpRuntime = _activateMcpHostRuntime();
       const activeRawMcpClient = activeMcpRuntime.rawClient || undefined;
       _refreshProjectContext();
+      const turnSignal = combineReplSignals(_turnAbort.signal, options.signal);
       const {
         content: response,
         usageEvents,
@@ -10429,7 +10588,15 @@ async function startAgentReplInWorkspaceOwned(
         // of hanging forever. undefined → agent-core's 180s default (matches cc
         // chat/ask); config.llm.streamStallTimeoutMs tunes or disables (0).
         streamStallTimeoutMs: _streamStallTimeoutMs,
-        signal: combineReplSignals(_turnAbort.signal, options.signal),
+        signal: turnSignal,
+        ...(process.stdin.isTTY
+          ? {
+              interaction: {
+                askUser: (request) =>
+                  askReplUser(_replQuestions, request, turnSignal),
+              },
+            }
+          : {}),
         // On an auto-detected image turn, switch to the vision LLM for this
         // turn only (provider/baseUrl/apiKey unchanged, model → vision model).
         provider: _visionLlm ? _visionLlm.provider : provider,

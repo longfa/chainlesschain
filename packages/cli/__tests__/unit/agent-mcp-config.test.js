@@ -10,6 +10,9 @@
  */
 
 import { afterAll, beforeAll, describe, it, expect, vi } from "vitest";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import {
   parseMcpServers,
   mcpToolName,
@@ -730,6 +733,84 @@ describe("loadMcpConfig", () => {
       }),
     ).rejects.toMatchObject({ code: "CC_MCP_SANDBOX_POLICY_INVALID" });
     expect(client.calls.connect).toEqual([]);
+  });
+
+  it("defers five cached optional stdio servers and coalesces first activation", async () => {
+    const home = mkdtempSync(join(tmpdir(), "cc-stdio-startup-"));
+    vi.stubEnv("CHAINLESSCHAIN_HOME", home);
+    try {
+      const optional = Array.from({ length: 5 }, (_, i) => `optional-${i}`);
+      const names = ["required", ...optional];
+      const file = join(home, "mcp.json");
+      const managed = join(home, "managed-settings.json");
+      const allTools = Object.fromEntries(
+        names.map((name) => [name, [{ name: "lookup" }]]),
+      );
+      writeFileSync(
+        file,
+        JSON.stringify({
+          mcpServers: Object.fromEntries(
+            names.map((name) => [
+              name,
+              {
+                command: process.execPath,
+                discoveryCache: true,
+                startOnDemand: name !== "required",
+              },
+            ]),
+          ),
+        }),
+      );
+      const start = (client) =>
+        loadMcpConfig(file, {
+          createClient: () => client,
+          allowOnDemandStdio: true,
+          managedSettingsFile: managed,
+        });
+      const cold = fakeClient(allTools);
+      await start(cold);
+      expect(cold.calls.connect.map(({ name }) => name)).toEqual(names);
+      const warm = fakeClient(allTools);
+      const result = await start(warm);
+      expect(warm.calls.connect.map(({ name }) => name)).toEqual(["required"]);
+      expect(result.listDeferredMcpServers()).toEqual(
+        optional.map((name) => ({ name, toolNames: ["lookup"] })),
+      );
+      expect(
+        result.externalToolExecutors["mcp__optional-0__lookup"],
+      ).toBeUndefined();
+      await expect(
+        Promise.all([
+          result.activateDeferredMcpServer("optional-0"),
+          result.activateDeferredMcpServer("optional-0"),
+        ]),
+      ).resolves.toEqual([true, true]);
+      expect(warm.calls.connect.map(({ name }) => name)).toEqual([
+        "required",
+        "optional-0",
+      ]);
+      expect(
+        result.externalToolExecutors["mcp__optional-0__lookup"].serverName,
+      ).toBe("optional-0");
+      writeFileSync(
+        managed,
+        JSON.stringify({ deniedMcpServers: ["optional-1"] }),
+      );
+      await expect(
+        result.activateDeferredMcpServer("optional-1"),
+      ).resolves.toBe(false);
+      writeFileSync(file, "{}");
+      await expect(
+        result.activateDeferredMcpServer("optional-2"),
+      ).resolves.toBe(false);
+      expect(warm.calls.connect.map(({ name }) => name)).toEqual([
+        "required",
+        "optional-0",
+      ]);
+    } finally {
+      vi.unstubAllEnvs();
+      rmSync(home, { recursive: true, force: true });
+    }
   });
 });
 

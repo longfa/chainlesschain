@@ -1223,7 +1223,7 @@ class ChatViewProvider {
         kind: "info",
         text: "More saved messages are available. Select Latest messages to continue loading.",
       });
-    } catch (error) {
+    } catch {
       if (
         this._disposed ||
         this._convs.get(conv.id) !== conv ||
@@ -1236,7 +1236,7 @@ class ChatViewProvider {
         return;
       this._postFrom(conv.id, {
         kind: "info",
-        text: `Saved conversation could not be loaded: ${String(error.message).slice(0, 500)}`,
+        text: "Saved conversation could not be loaded. Select Latest messages to retry.",
       });
     }
   }
@@ -1529,10 +1529,20 @@ class ChatViewProvider {
           this._persistTabs(); // resume id changed without a tab-bar repost
           this._indexConversation(conv, "running");
         }
-        if (evt.resumed_messages > 0) {
+        const sessionState = evt.session_state;
+        const restoredSummary =
+          sessionState?.version === 1 &&
+          sessionState.source === "verified-transcript" &&
+          typeof sessionState.summary === "string" &&
+          sessionState.summary.length <= 500
+            ? sessionState.summary
+            : null;
+        if (restoredSummary || evt.resumed_messages > 0) {
           this._postFrom(convId, {
             kind: "info",
-            text: `resumed previous conversation (${evt.resumed_messages} messages)`,
+            text:
+              restoredSummary ||
+              `resumed previous conversation (${evt.resumed_messages} messages)`,
           });
         }
       }

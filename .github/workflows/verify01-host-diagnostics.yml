@@ -49,6 +49,9 @@ on:
 permissions:
   contents: read
 
+env:
+  VERIFY01_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
 jobs:
   descendant-reproduction:
     name: macOS owned-descendant reproduction (diagnostic only)
@@ -92,6 +95,11 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ env.VERIFY01_SOURCE_SHA }}
+      - name: Verify exact candidate source
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$VERIFY01_SOURCE_SHA"
       - uses: actions/setup-node@v5
         with:
           node-version: "22.12.0"
@@ -119,6 +127,11 @@ jobs:
         if: runner.os == 'Windows'
         run: git config --global core.longpaths true
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ env.VERIFY01_SOURCE_SHA }}
+      - name: Verify exact candidate source
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$VERIFY01_SOURCE_SHA"
       - uses: actions/setup-node@v5
         with:
           node-version: "22.12.0"

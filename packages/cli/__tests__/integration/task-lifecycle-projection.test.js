@@ -15,6 +15,7 @@ import { fileURLToPath } from "node:url";
 import { expect, it, vi } from "vitest";
 import {
   appendAssistantMessage,
+  readJsonlSessionParent,
   readVerifiedMessages,
   startSession,
 } from "../../src/harness/jsonl-session-store.js";
@@ -25,6 +26,8 @@ import { AgentScheduleStore } from "../../src/lib/agent-schedule-store.js";
 import { createMcpCallLedger } from "../../src/lib/mcp-call-ledger.js";
 import { createSessionMcpLedgerSink } from "../../src/lib/mcp-call-ledger-store.js";
 import { readSessionTranscriptHistory } from "../../src/lib/session-transcript-history.js";
+import { captureSessionExecutionScope } from "../../src/lib/session-execution-scope.js";
+import { readSessionHostResumeState } from "../../src/lib/session-host-snapshot.js";
 import {
   appendMcpTaskJournalEvent,
   listMcpTaskRecords,
@@ -179,7 +182,12 @@ it("reads concurrent task sources and forks a verified session from separate CLI
 
   try {
     const sessionId = "task-fixture-" + randomUUID();
-    startSession(sessionId, { provider: "fixture", model: "fixture" });
+    const executionScope = captureSessionExecutionScope({ cwd: workspace });
+    startSession(sessionId, {
+      provider: "fixture",
+      model: "fixture",
+      sessionExecutionScope: executionScope,
+    });
     appendAssistantMessage(sessionId, "common reply");
     const localId = randomUUID();
     const ledger = createMcpCallLedger({
@@ -300,6 +308,14 @@ it("reads concurrent task sources and forks a verified session from separate CLI
     );
     expect(partial.status, partial.stderr || partial.stdout).toBe(0);
     const partialId = JSON.parse(partial.stdout).sessionId;
+    expect(readJsonlSessionParent(partialId)).toBe(sessionId);
+    expect(readJsonlSessionParent(branch.sessionId)).toBe(sessionId);
+    expect(readSessionHostResumeState(partialId).sessionExecutionScope).toEqual(
+      executionScope,
+    );
+    expect(
+      readSessionHostResumeState(branch.sessionId).sessionExecutionScope,
+    ).toEqual(executionScope);
     expect(replies(partialId)).toEqual(["common reply"]);
     expect(listMcpTaskRecords(partialId)).toEqual([]);
     expect(replies(sessionId)).toEqual(["common reply", "original reply"]);

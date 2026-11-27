@@ -631,6 +631,7 @@ export function listBackgroundShellTasks() {
     });
     return {
       id: t.id,
+      ...(t.sessionId ? { sessionId: t.sessionId } : {}),
       status: t.status,
       command: desc.command, // P1-2: secret-redacted
       pid: desc.pid, // P1-2: PID surfaced
@@ -7011,6 +7012,7 @@ async function executeToolInner(
         const id = `bg_${++_backgroundTaskSeq}`;
         const task = {
           id,
+          sessionId,
           command: args.command,
           cwd:
             linuxGenericBackgroundLaunch?.options.cwd ||

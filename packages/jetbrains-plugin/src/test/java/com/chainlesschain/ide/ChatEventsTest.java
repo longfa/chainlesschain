@@ -15,6 +15,15 @@ import org.junit.jupiter.api.Test;
 class ChatEventsTest {
 
     @Test
+    void persistenceFailureUsesTheReportedPhaseAndFixedRetryGuidance() {
+        Map<String, Object> result = ChatEvents.mapAgentEvent(Map.of(
+                "type", "result", "is_error", true, "subtype", "error_persistence",
+                "code", "CC_SESSION_PERSISTENCE_FAILED", "error", "private path",
+                "persistence", Map.of("phase", "after-model")), new ChatEvents.TurnState());
+        assertEquals("Session persistence failed [CC_SESSION_PERSISTENCE_FAILED] (phase: after-model). Inspect the saved session before continuing.", result.get("text"));
+    }
+
+    @Test
     void goalChecksAndExhaustionDoNotClaimCompletion() {
         ChatEvents.TurnState state = new ChatEvents.TurnState();
         Map<String, Object> pending = ChatEvents.mapAgentEvent(Map.of("type", "goal_evaluated", "met", false, "reason", "tests failing"), state);

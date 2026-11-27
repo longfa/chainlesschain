@@ -1,5 +1,10 @@
 # Changelog — ChainlessChain IDE Bridge (JetBrains)
 
+## [0.4.217] - CLI 0.166.167 pairing (candidate, 2026-11-28)
+
+- Show verified conversation recovery, pending questions and unresolved MCP calls.
+- Show the persistence failure phase and a retry path for saved history loading.
+
 ## [0.4.216] - CLI 0.166.166 pairing (candidate, 2026-11-27)
 
 - Show workspace delivery verification and distinguish it from independent checks.

@@ -392,6 +392,10 @@ export function registerAgentCommand(program, dependencies = {}) {
       "When resuming, branch into a NEW session id and leave the original untouched (claude --fork-session parity)",
     )
     .option(
+      "--resume-in-current-workspace",
+      "Confirm changed workspace, extra roots or sandbox for a session resume; current policy still applies",
+    )
+    .option(
       "--fork-request-id <key>",
       "Stable idempotency key for --fork-session retries (omit for a new fork each invocation)",
     )
@@ -1287,37 +1291,6 @@ export function registerAgentCommand(program, dependencies = {}) {
         }
       }
 
-      // --fork-session: branch the resolved session into a NEW id so the
-      // ORIGINAL transcript is preserved (Claude-Code parity). One chokepoint
-      // before headless / stream / interactive dispatch 鈥?all read
-      // `options.session`. The copy carries the full history, so the branch
-      // replays end-to-end on a later --resume. Only meaningful when resuming;
-      // a no-op (silent) for a fresh run.
-      if (options.forkSession && options.session) {
-        const store = await import("../harness/jsonl-session-store.js");
-        const { applyForkSession } =
-          await import("../runtime/headless-runner.js");
-        const fork = applyForkSession(
-          {
-            forkSession: true,
-            sessionId: options.session,
-            forkRequestId: options.forkRequestId,
-          },
-          store,
-        );
-        if (fork.missing) {
-          process.stderr.write(
-            `--fork-session: no persisted transcript for "${options.session}"; ` +
-              "nothing to fork, continuing on it.\n",
-          );
-        } else if (fork.forkedFrom) {
-          process.stderr.write(
-            `Forked session ${fork.forkedFrom} 鈫?${fork.sessionId} (original preserved)\n`,
-          );
-          options.session = fork.sessionId;
-        }
-      }
-
       // Event projections only make sense for NDJSON output: the stream-input
       // mode is always NDJSON, otherwise require stream-json explicitly (fail
       // fast rather than silently dropping an opt-in machine contract).
@@ -1483,6 +1456,68 @@ export function registerAgentCommand(program, dependencies = {}) {
         await _finishWorktree();
         process.exit(1);
         return;
+      }
+
+      // --fork-session: branch the resolved session into a NEW id so the
+      // ORIGINAL transcript is preserved (Claude-Code parity). One chokepoint
+      // before headless / stream / interactive dispatch 鈥?all read
+      // `options.session`. The copy carries the full history, so the branch
+      // replays end-to-end on a later --resume. Only meaningful when resuming;
+      // a no-op (silent) for a fresh run.
+      if (options.forkSession && options.session) {
+        const store = await import("../harness/jsonl-session-store.js");
+        const { readSessionHostResumeState } =
+          await import("../lib/session-host-snapshot.js");
+        const {
+          captureSessionExecutionScope,
+          checkSessionExecutionScope,
+          describeSessionExecutionScopeChange,
+        } = await import("../lib/session-execution-scope.js");
+        const previous = readSessionHostResumeState(options.session);
+        const check = checkSessionExecutionScope(
+          previous?.sessionExecutionScope,
+          previous?.sessionExecutionScope
+            ? captureSessionExecutionScope({
+                cwd: process.cwd(),
+                additionalDirectories,
+                sandbox: resolvedAgentSandbox,
+              })
+            : null,
+          options.resumeInCurrentWorkspace === true,
+        );
+        if (check.status === "refused") {
+          const error = describeSessionExecutionScopeChange(check);
+          writeStartupResult(options, {
+            subtype: "error_startup",
+            code: "CC_SESSION_EXECUTION_SCOPE_CHANGED",
+            error,
+          });
+          process.stderr.write(error + "\n");
+          await _finishWorktree();
+          process.exitCode = 1;
+          return;
+        }
+        const { applyForkSession } =
+          await import("../runtime/headless-runner.js");
+        const fork = applyForkSession(
+          {
+            forkSession: true,
+            sessionId: options.session,
+            forkRequestId: options.forkRequestId,
+          },
+          store,
+        );
+        if (fork.missing) {
+          process.stderr.write(
+            `--fork-session: no persisted transcript for "${options.session}"; ` +
+              "nothing to fork, continuing on it.\n",
+          );
+        } else if (fork.forkedFrom) {
+          process.stderr.write(
+            `Forked session ${fork.forkedFrom} 鈫?${fork.sessionId} (original preserved)\n`,
+          );
+          options.session = fork.sessionId;
+        }
       }
 
       // --image <path> (repeatable): read into {mediaType, base64} for the
@@ -1785,6 +1820,7 @@ export function registerAgentCommand(program, dependencies = {}) {
             allowedTools: parseToolList(options.allowedTools),
             disallowedTools: parseToolList(options.disallowedTools),
             additionalDirectories,
+            allowSessionScopeChange: options.resumeInCurrentWorkspace === true,
             sandbox: resolvedAgentSandbox,
             maxTurns: options.maxTurns
               ? parseInt(options.maxTurns, 10)
@@ -2102,6 +2138,7 @@ export function registerAgentCommand(program, dependencies = {}) {
           allowedTools: parseToolList(options.allowedTools),
           disallowedTools: parseToolList(options.disallowedTools),
           additionalDirectories,
+          allowSessionScopeChange: options.resumeInCurrentWorkspace === true,
           sandbox: resolvedAgentSandbox,
           autoCheckpoint,
           managedCheckpoint: options.managedCheckpoint === true,
@@ -2384,6 +2421,7 @@ export function registerAgentCommand(program, dependencies = {}) {
         parkOnExit: options.parkOnExit, // false when --no-park-on-exit
         bundlePath: options.bundle || null,
         additionalDirectories,
+        allowSessionScopeChange: options.resumeInCurrentWorkspace === true,
         sandbox: resolvedAgentSandbox,
         autoCheckpoint,
         managedCheckpoint: options.managedCheckpoint === true,

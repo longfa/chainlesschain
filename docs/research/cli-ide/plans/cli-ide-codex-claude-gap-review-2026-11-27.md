@@ -102,3 +102,15 @@ VS Code 已为本轮持久化失败生成带阶段的诊断，JetBrains 已支�
 - 从 npm 下载的 CLI 归档与预发布 SHA-256 一致。全新安装后复跑 `verify-18` 录流、首次 IDE 的占位文件等价场景和 Windows 目标共享冲突，分别得到退出码 5、退出码 1 和目标状态单次更新。Open VSX 回读包已安装，推荐 CLI 与本次配套版本一致。 [npm 归档](https://registry.npmjs.org/chainlesschain/-/chainlesschain-0.166.166.tgz) · [Open VSX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide/0.37.201)
 
 原生模型任务的独立验收沿用既有 36+9 记录。下一轮按第二批计划定向复跑并补齐 macOS 履历。
+
+## 会话恢复、MCP 与终端实施记录
+
+- 历史 `verify-05` 在公开 CLI `0.166.166` 与当前源码上分别重放 14 次读取，第 18 轮均返回第 480–559 行，共 2,560 个字符。`verify-29` 的第 7 份原始压缩输入在两者上均以 19,660 token 的恢复预算成功降级。两份结果来自归档离线回放，原宿主的独立任务验收需要候选归档复跑。[verify-05 归档](https://github.com/longfa/chainlesschain/actions/runs/45381796486/artifacts/14917685744) · [verify-29 归档](https://github.com/longfa/chainlesschain/actions/runs/45383766533/artifacts/14918890750)
+- 新建的持久化 Agent 会话记录工作区与宿主身份、额外根、沙箱级别和网络范围。CLI、双向流与 App Server 从验证过的历史恢复。CLI 的 `--resume-in-current-workspace` 显式确认范围变更，当前托管策略继续生效。分支继承原会话范围，旧会话兼容旧格式。Windows 下从真实 CLI 触发跨目录恢复时暴露了 `realpathSync` 的扩展路径错误，改用原生路径解析后重放已通过。[会话范围](../../../../packages/cli/src/lib/session-execution-scope.js) · [Windows 路径回归](../../../../packages/cli/__tests__/unit/settings-source-observation.test.js)
+- VS Code 和 JetBrains 显示已验证的恢复消息数、保存的问题和待检查的 MCP 调用。分页继续显示单条消息截断，加载失败提示通过 Latest messages 重试。两端按相同的持久化阶段提示检查已保存会话。[流式恢复状态](../../../../packages/cli/src/runtime/headless-stream.js) · [JetBrains 持久化诊断](../../../../packages/jetbrains-plugin/src/main/java/com/chainlesschain/ide/ChatEvents.java)
+- 交互式 `--mcp-config` 的可选 stdio 服务可同时配置 `startOnDemand: true` 和 `discoveryCache: true`。首次连接成功后缓存工具名称。下一次启动在 TTL 内延后建连，用 `/mcp <name>` 显式启动并重新检查当前配置和托管策略。并发启动合并成一次，实际工具须等连接和发现通过后进入目录。通过 MCP 提供必需审批的会话继续在启动时连接。[配置入口](../../../../packages/cli/src/runtime/mcp-config.js) · [启动缓存](../../../../packages/cli/src/runtime/mcp-stdio-startup-hints.js)
+- Windows 真实 stdio 子进程夹具包含一台慢服务和五台可选服务。新进程首次加载配置约 8.50 秒，建立六个连接。缓存后的新进程约 1.56 秒完成配置加载，首屏前只启动一个必需服务。对同一可选服务的两次并发激活共启动一个进程，首次激活约 0.50 秒。计时范围是配置加载与激活，真实终端首轮可输入时间另由宿主探针核对。
+- 终端可用 Tab 补全 `/mcp` 和 `/permissions` 的参数，问题区获得焦点时可独立翻页。`/search` 显示完整会话 ID，`/session links` 提供父会话和最近分支的跳转命令，后台任务列表显示其会话。Windows ConPTY 已验证从补全、执行到正常退出的真实流程。跨系统的同类探针接入已有 CLI Reliability Soak。[终端实现](../../../../packages/cli/src/repl/terminal-window.js) · [宿主探针](../../../../packages/cli/scripts/cli-reliability-soak.mjs)
+- Windows ConPTY 的 20 项选择夹具首次返回 `user_not_reachable`，原因是互动 Agent 未将 `ask_user_question` 接入现有 readline 问答队列。接入同一队列后，真实终端向下翻两页、选择第 16 项，模型回合收到选项并正常退出。另一个夹具用 Esc 中断首轮，请求连接关闭后，排队的输入继续执行一次。两项流程已接入三个系统的标准终端探针。[问答入口](../../../../packages/cli/src/repl/permission-prompt.js) · [原生探针](../../../../packages/cli/scripts/cli-reliability-soak.mjs)
+
+下一轮候选配对为 CLI `0.166.167`、VS Code `0.37.202` 和 JetBrains `0.4.217`。候选包的 Linux、Windows、macOS 门禁和新一轮 36+9 独立验收仍需回收。公开 `.166` 标签的无密钥宿主复跑已完成，macOS Intel 两款 IDE 制品中的源提交均与标签一致。[宿主校验](https://github.com/longfa/chainlesschain/actions/runs/46073690466)

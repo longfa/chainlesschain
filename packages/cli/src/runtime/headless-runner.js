@@ -142,6 +142,11 @@ import {
 } from "../lib/exit-codes.cjs";
 import { isolationLevel } from "../lib/agent-sandbox.js";
 import { captureAmbientExecutionLocation } from "../lib/execution-location-runtime.js";
+import {
+  captureSessionExecutionScope,
+  checkSessionExecutionScope,
+  describeSessionExecutionScopeChange,
+} from "../lib/session-execution-scope.js";
 import { createBackgroundPhaseReporter } from "../lib/background-phase-reporter.js";
 import { createBackgroundInteractionClient } from "../lib/background-interaction-resolver.js";
 import { withQuietStdout } from "./quiet-stdout.js";
@@ -1153,7 +1158,7 @@ async function runAgentHeadlessInWorkspace(
     });
   }
 
-  const emitHeadlessError = (resultMsg) => {
+  const emitHeadlessError = (resultMsg, code) => {
     if (isStream) {
       writeOut(
         JSON.stringify({
@@ -1161,12 +1166,13 @@ async function runAgentHeadlessInWorkspace(
           subtype: "error",
           is_error: true,
           error: resultMsg,
+          ...(code ? { code } : {}),
         }) + "\n",
       );
     } else if (isJson) {
       writeOut(
-        JSON.stringify(
-          buildResultEnvelope({
+        JSON.stringify({
+          ...buildResultEnvelope({
             subtype: "error",
             isError: true,
             result: resultMsg,
@@ -1176,7 +1182,8 @@ async function runAgentHeadlessInWorkspace(
             numTurns: 0,
             durationMs: 0,
           }),
-        ) + "\n",
+          ...(code ? { code } : {}),
+        }) + "\n",
       );
     }
   };
@@ -1220,6 +1227,35 @@ async function runAgentHeadlessInWorkspace(
   // but it does not opt into replaying the target's prior conversation.
   const canonicalResume = resumeId ? canonicalAdmission : null;
 
+  const cwd = options.cwd || process.cwd();
+  const formalQualityHermetic = isFormalQualityHermeticRuntime(process.env);
+  const hermeticExecution =
+    options.hermeticExecution === true || formalQualityHermetic;
+  const additionalDirectories =
+    !hermeticExecution && Array.isArray(options.additionalDirectories)
+      ? options.additionalDirectories.filter(Boolean)
+      : [];
+  const sessionExecutionScope =
+    persist || canonicalAdmission
+      ? captureSessionExecutionScope({
+          cwd,
+          additionalDirectories,
+          sandbox: options.sandbox,
+        })
+      : null;
+  const scopeResolution = checkSessionExecutionScope(
+    canonicalAdmission?.sessionExecutionScope,
+    sessionExecutionScope,
+    options.allowSessionScopeChange === true,
+  );
+  const scopeNotice = describeSessionExecutionScopeChange(scopeResolution);
+  if (scopeNotice) writeErr(`${scopeNotice}\n`);
+  if (scopeResolution.status === "refused") {
+    emitHeadlessError(scopeNotice, "CC_SESSION_EXECUTION_SCOPE_CHANGED");
+    disposePendingHookEvents();
+    return { exitCode: 1, result: scopeNotice, isError: true };
+  }
+
   if (options.observabilityScope != null && canonicalAdmission) {
     const message =
       "CC_OBSERVABILITY_SCOPE_IMMUTABLE: an existing session scope cannot be overwritten; create a new scoped session";
@@ -1247,15 +1283,11 @@ async function runAgentHeadlessInWorkspace(
   });
   let model = connection.model;
   const { provider, baseUrl, apiKey } = connection;
-  const cwd = options.cwd || process.cwd();
   const deliveryBefore = await snapshotDelivery(
     cwd,
     options.deliveryPaths,
     options.signal,
   );
-  const formalQualityHermetic = isFormalQualityHermeticRuntime(process.env);
-  const hermeticExecution =
-    options.hermeticExecution === true || formalQualityHermetic;
   if (
     options.fileMutationScope != null &&
     (options.exactToolNames !== true || !hermeticExecution)
@@ -1268,13 +1300,6 @@ async function runAgentHeadlessInWorkspace(
     options.fileMutationScope,
     { cwd },
   );
-  // Extra workspace roots (--add-dir). Resolved/validated by the caller; we
-  // just normalize to a clean string[] here.
-  const additionalDirectories = hermeticExecution
-    ? []
-    : Array.isArray(options.additionalDirectories)
-      ? options.additionalDirectories.filter(Boolean)
-      : [];
 
   // .claude/settings.json permission rules (deny > ask > allow). A `deny` hard-
   // blocks, an `allow` pre-authorizes (so a safe op isn't fail-closed headless),
@@ -2324,6 +2349,7 @@ async function runAgentHeadlessInWorkspace(
             provider,
             model,
           }),
+          sessionExecutionScope,
         });
       }
       // Persist the expanded content so a resumed session faithfully replays

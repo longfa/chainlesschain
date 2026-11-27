@@ -3,6 +3,19 @@
   "releases": [
     {
       "productVersion": null,
+      "cliVersion": "0.166.167",
+      "cliVersions": ["0.166.167"],
+      "date": "2026-11-28",
+      "title": "",
+      "sections": [
+        {
+          "heading": "Added - cc CLI 0.166.167 and IDE pairing (candidate, 2026-11-28)",
+          "body": "- Verify workspace and sandbox scope before restoring persistent Agent sessions.\n- Show verified conversation recovery and persistence diagnostics in both IDEs.\n- Start cached optional stdio MCP servers on demand and complete terminal command arguments.\n- Pair CLI 0.166.167 with Open VSX 0.37.202 and JetBrains 0.4.217."
+        }
+      ]
+    },
+    {
+      "productVersion": null,
       "cliVersion": "0.166.166",
       "cliVersions": ["0.166.166"],
       "date": "2026-11-27",

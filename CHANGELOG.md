@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added - cc CLI 0.166.167 and IDE pairing (candidate, 2026-11-28)
+
+- Verify workspace and sandbox scope before restoring persistent Agent sessions.
+- Show verified conversation recovery and persistence diagnostics in both IDEs.
+- Start cached optional stdio MCP servers on demand and complete terminal command arguments.
+- Pair CLI 0.166.167 with Open VSX 0.37.202 and JetBrains 0.4.217.
+
 ### Fixed - cc CLI 0.166.166 and IDE pairing (candidate, 2026-11-27)
 
 - Verify declared workspace deliverables and show unverified delivery in CLI and IDE results.
