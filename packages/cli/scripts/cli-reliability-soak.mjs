@@ -363,6 +363,52 @@ async function startFakeOllama() {
         // The CLI should always send JSON; an invalid request gets the same
         // deterministic response and will fail in the caller's own contract.
       }
+      const latestInput = parsed?.messages?.findLast?.(
+        (m) => m.role === "user",
+      )?.content;
+      if (
+        latestInput === "TTY-HOLD-TURN" ||
+        latestInput === "TTY-QUEUED-TURN" ||
+        latestInput === "TTY-LONG-QUESTION"
+      ) {
+        response.writeHead(200, { "Content-Type": "application/x-ndjson" });
+        if (latestInput === "TTY-HOLD-TURN") {
+          response.write(
+            `${JSON.stringify({ message: { role: "assistant", content: "TTY-HOLDING" }, done: false })}\n`,
+          );
+          return;
+        }
+        const toolAnswer = parsed.messages.findLast((m) => m.role === "tool");
+        const message = { role: "assistant", content: "TTY-QUEUED-DONE" };
+        if (latestInput === "TTY-LONG-QUESTION") {
+          message.content = toolAnswer
+            ? String(toolAnswer.content).includes('"answer":"Choice-16"')
+              ? "TTY-QUESTION-DONE"
+              : "TTY-QUESTION-WRONG-ANSWER"
+            : "";
+          if (!toolAnswer)
+            message.tool_calls = [
+              {
+                id: "tty-question-1",
+                type: "function",
+                function: {
+                  name: "ask_user_question",
+                  arguments: {
+                    question: "Choose a fixture option",
+                    options: Array.from(
+                      { length: 20 },
+                      (_, i) => `Choice-${String(i + 1).padStart(2, "0")}`,
+                    ),
+                  },
+                },
+              },
+            ];
+        }
+        response.end(
+          `${JSON.stringify({ message, done: true, prompt_eval_count: 1, eval_count: 1 })}\n`,
+        );
+        return;
+      }
       if (mcpOutputProbe) {
         const toolCallRequired = !mcpObservations.budgetCodeObserved;
         if (toolCallRequired) mcpObservations.toolCallResponses += 1;
@@ -2256,29 +2302,34 @@ export async function concurrentAgentScenario(
   };
 }
 
-async function fullscreenTerminalScenario(pty, baseUrl, home, nativeOptions) {
-  const terminal = pty.spawn(process.execPath, commonArgs(baseUrl), {
-    cwd: REPOSITORY_ROOT,
-    env: {
-      ...childEnvironment(home),
-      CC_NO_FLICKER: "1",
-      TERM: "xterm-256color",
+async function fullscreenTerminalProbe(
+  pty,
+  baseUrl,
+  home,
+  nativeOptions,
+  observe,
+) {
+  const terminal = pty.spawn(
+    process.execPath,
+    [...commonArgs(baseUrl), "--safe-mode"],
+    {
+      cwd: REPOSITORY_ROOT,
+      env: {
+        ...childEnvironment(home),
+        CC_NO_FLICKER: "1",
+        TERM: "xterm-256color",
+      },
+      name: "xterm-256color",
+      cols: 100,
+      rows: 30,
+      ...nativeOptions,
     },
-    name: "xterm-256color",
-    cols: 100,
-    rows: 30,
-    ...nativeOptions,
-  });
+  );
   let output = "";
   let step = 0;
-  const observe = [
-    ["Ready", "/permissions str"],
-    ["\u203a strict", "\t\r"],
-    ["Approval policy", "/exit\r"],
-  ];
   terminal.onData((chunk) => {
     output = (output + chunk).slice(-128 * 1024);
-    if (step < observe.length && output.includes(observe[step][0])) {
+    if (step < observe.length && observe[step][0].test(output)) {
       const [, keys] = observe[step++];
       output = "";
       terminal.write(keys);
@@ -2292,7 +2343,7 @@ async function fullscreenTerminalScenario(pty, baseUrl, home, nativeOptions) {
         /* The deadline remains authoritative. */
       }
       resolve(null);
-    }, 60_000);
+    }, 120_000);
     terminal.onExit((event) => {
       clearTimeout(timer);
       resolve(event.exitCode);
@@ -2304,6 +2355,44 @@ async function fullscreenTerminalScenario(pty, baseUrl, home, nativeOptions) {
     exitCode,
     processRetired,
     observedSteps: step,
+    ...(process.env.CC_CLI_RELIABILITY_DEBUG === "1"
+      ? { debugOutput: output.slice(-4000) }
+      : {}),
+  };
+}
+
+async function fullscreenTerminalScenario(pty, baseUrl, home, nativeOptions) {
+  const run = (name, observe) =>
+    fullscreenTerminalProbe(
+      pty,
+      baseUrl,
+      join(home, name),
+      nativeOptions,
+      observe,
+    );
+  const completion = await run("completion", [
+    [/Ready/u, "/permissions str"],
+    [/\u203a strict/u, "\t\r"],
+    [/Approval policy/u, "/exit\r"],
+  ]);
+  const interruption = await run("interrupt", [
+    [/Ready/u, "TTY-HOLD-TURN\r"],
+    [/TTY-HOLDING/u, "TTY-QUEUED-TURN\r"],
+    [/(?:queued \(1\)|1 queued)/u, "\x1b"],
+    [/TTY-QUEUED-DONE/u, "/exit\r"],
+  ]);
+  const question = await run("question", [
+    [/Ready/u, "TTY-LONG-QUESTION\r"],
+    [/1\. Choice-01/u, "\x1b[6~"],
+    [/\d+\. Choice-(?:08|09|10)/u, "\x1b[6~"],
+    [/16\. Choice-16/u, "16\r"],
+    [/TTY-QUESTION-DONE/u, "/exit\r"],
+  ]);
+  return {
+    pass: completion.pass && interruption.pass && question.pass,
+    completion,
+    interruption,
+    question,
   };
 }
 

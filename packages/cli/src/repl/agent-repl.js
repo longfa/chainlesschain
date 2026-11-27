@@ -235,6 +235,7 @@ import {
   resolveAskIdleTimeoutMs,
   questionWithIdleTimeout,
   createReplQuestionQueue,
+  askReplUser,
 } from "./permission-prompt.js";
 import { describeAskContext, raceLocalAndRemote } from "./remote-approval.js";
 import { runWithHostHooksV2Workspace } from "../lib/hooks-v2-workspace-context.js";
@@ -10528,6 +10529,7 @@ async function startAgentReplInWorkspaceOwned(
       const activeMcpRuntime = _activateMcpHostRuntime();
       const activeRawMcpClient = activeMcpRuntime.rawClient || undefined;
       _refreshProjectContext();
+      const turnSignal = combineReplSignals(_turnAbort.signal, options.signal);
       const {
         content: response,
         usageEvents,
@@ -10586,7 +10588,15 @@ async function startAgentReplInWorkspaceOwned(
         // of hanging forever. undefined → agent-core's 180s default (matches cc
         // chat/ask); config.llm.streamStallTimeoutMs tunes or disables (0).
         streamStallTimeoutMs: _streamStallTimeoutMs,
-        signal: combineReplSignals(_turnAbort.signal, options.signal),
+        signal: turnSignal,
+        ...(process.stdin.isTTY
+          ? {
+              interaction: {
+                askUser: (request) =>
+                  askReplUser(_replQuestions, request, turnSignal),
+              },
+            }
+          : {}),
         // On an auto-detected image turn, switch to the vision LLM for this
         // turn only (provider/baseUrl/apiKey unchanged, model → vision model).
         provider: _visionLlm ? _visionLlm.provider : provider,

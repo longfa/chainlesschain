@@ -3,7 +3,10 @@ import { createInterface } from "node:readline";
 import { PassThrough } from "node:stream";
 import { describe, it, expect, vi } from "vitest";
 import { createTerminalWindow } from "../../src/repl/terminal-window.js";
-import { createReplQuestionQueue } from "../../src/repl/permission-prompt.js";
+import {
+  askReplUser,
+  createReplQuestionQueue,
+} from "../../src/repl/permission-prompt.js";
 import { makeAtCompleter } from "../../src/lib/repl-completer.js";
 import {
   TUI_MODES,
@@ -19,6 +22,49 @@ import {
   supportsHyperlinks,
   renderTuiStatus,
 } from "../../src/repl/fullscreen-tui.js";
+
+describe("askReplUser", () => {
+  it("gives readline all numbered choices and returns only the selected values", async () => {
+    const options = Array.from(
+      { length: 20 },
+      (_, index) => `Choice ${index + 1}`,
+    );
+    const ask = vi.fn(async () => "16, 2, 16");
+    const cancel = vi.fn();
+    await expect(
+      askReplUser(
+        { create: () => ({ ask, cancel }) },
+        {
+          question: "Choose colors",
+          options,
+          multiSelect: true,
+        },
+      ),
+    ).resolves.toEqual(["Choice 16", "Choice 2"]);
+    expect(ask.mock.calls[0][0]).toContain("20. Choice 20\n");
+    expect(cancel).toHaveBeenCalledOnce();
+  });
+
+  it("cancels an unanswered question when the turn aborts", async () => {
+    const controller = new AbortController();
+    let answer;
+    const ask = vi.fn(
+      () =>
+        new Promise((resolve) => {
+          answer = resolve;
+        }),
+    );
+    const cancel = vi.fn(() => answer(null));
+    const pending = askReplUser(
+      { create: () => ({ ask, cancel }) },
+      { question: "Continue?" },
+      controller.signal,
+    );
+    controller.abort();
+    await expect(pending).rejects.toMatchObject({ code: "USER_REJECTED" });
+    expect(cancel).toHaveBeenCalled();
+  });
+});
 
 it("keeps the draft editable while streaming and supports slash and model selection", () => {
   vi.useFakeTimers();
