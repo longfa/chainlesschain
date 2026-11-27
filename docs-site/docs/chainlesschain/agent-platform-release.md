@@ -1,5 +1,13 @@
 # Agent Platform 发布与升级指南
 
+## CLI 0.166.166（2026-11-28）
+
+CLI **0.166.166** 已在 npm 发布。Open VSX **0.37.201** 已上架，推荐 CLI **0.166.166**。JetBrains **0.4.216** 已上传，商店当前提供 **0.4.215**，配对 CLI **0.166.165**。 运行 `npm i -g chainlesschain@0.166.166 --registry https://registry.npmjs.org` 安装，再用 `cc --version` 和 `cc doctor` 核对。 [npm 发布](https://github.com/longfa/chainlesschain/actions/runs/46047860034) · [Open VSX 发布](https://github.com/longfa/chainlesschain/actions/runs/46054328636) · [JetBrains 上传](https://github.com/longfa/chainlesschain/actions/runs/46054329426)
+
+本次更新可核对声明的交付文件，并对供应商流错误分类。Windows 目标写入遇到短暂共享冲突时会重试。 三系统 CLI 门禁通过，已使用公网包回放两条 VERIFY01 场景和 Windows 文件共享冲突。
+
+付费准入、原生客户端准入和自动晋级分别为 `NOT_PAID_READY`、`NOT_ADMITTED` 和 `HOLD`。本次发行未增加 36+9 模型任务实测成绩。
+
 ## CLI 0.166.165（2026-11-27）
 
 CLI **0.166.165** 和 Open VSX **0.37.200** 已公开。JetBrains **0.4.215** 已上架，推荐 CLI **0.166.165**。 全屏终端可在任务期间编辑输入、排队发送消息，并用 `/model` 切换下一轮模型。按 Esc 关闭模型选择器或中断当前轮次。新交互会话默认自动批准常规工具调用。 [升级指南](./cli-ide-update-2026-11-26-164) · [npm 发布](https://github.com/longfa/chainlesschain/actions/runs/45885605925)

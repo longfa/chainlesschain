@@ -2,6 +2,8 @@
 
 ## Current Marketplace status
 
+JetBrains **0.4.216** passed the tagged build and was uploaded. It recommends CLI **0.166.166**. Marketplace listing remains pending. [Publication workflow](https://github.com/longfa/chainlesschain/actions/runs/46054329426)
+
 JetBrains **0.4.215** is listed and publicly downloadable. It recommends CLI **0.166.165**. Install with `npm i -g chainlesschain@0.166.165 --registry https://registry.npmjs.org`, restart the IDE, and check the CLI in Doctor. Use `/normal` for ordinary confirmation prompts. [Public download](https://plugins.jetbrains.com/plugin/download?rel=true&updateId=1229060) · [Publication workflow](https://github.com/longfa/chainlesschain/actions/runs/45887849007)
 
 ## Previous public release 0.4.211

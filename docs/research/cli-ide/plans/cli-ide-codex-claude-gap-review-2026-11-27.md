@@ -92,3 +92,13 @@ VS Code 已为本轮持久化失败生成带阶段的诊断，JetBrains 已支�
 - 两个包在相同 Windows 隔离工作区、回环输入和约束下各复跑两项。公开版的占位文件场景退出 `0`，候选退出 `1` 并返回 `CC_DELIVERABLE_UNVERIFIED`。原 `verify-18` 录流在两边均退出 `5` 且各收到一次请求，候选还返回 `upstream_failure`。两个 Open VSX 制品在分别隔离的扩展目录中安装成功。JetBrains 公开 ZIP 来自 Marketplace `1229060`。[公开 VSIX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide/0.37.200) · [公开 JetBrains ZIP](https://plugins.jetbrains.com/plugin/download?rel=true&updateId=1229060)
 - 下一组发布候选为 CLI `0.166.166`、Open VSX `0.37.201`、JetBrains `0.4.216`。需用该组候选的精确提交重新完成发行门禁，并按仓库规定顺序验证公开制品。此前 `.165` 对照继续按实际包身份留档。
 - 候选的 Windows `goal watch`／`goal pause` 集成用例暴露文件被读取时原子替换报 `EPERM` 的问题。用真实 Windows 文件共享句柄复现。修订前旧记录保持 `active`，修订后同一触发进入 `paused`，版本号只增加一次且无临时文件残留。目标存储及原始观察进程用例共 25 项通过。[失败分片](https://github.com/longfa/chainlesschain/actions/runs/45998567122/job/140543952358) · [原子写入](../../../../packages/cli/src/lib/goal-store.js) · [目标存储回归](../../../../packages/cli/__tests__/unit/goal-store.test.js)
+
+### 发布回读（2026-11-28）
+
+- CLI `0.166.166` 和 Open VSX `0.37.201` 已公开，标签均指向 `b5b5a6aac952fb0f976728863b35e0aa4c247380`。npm 在发布 CLI 前核验子包字节与依赖版本，Open VSX 标签任务安装并核验了公开 CLI。JetBrains `0.4.216` 已上传，公开 API 返回待上架。 [npm](https://github.com/longfa/chainlesschain/actions/runs/46047860034) · [Open VSX](https://github.com/longfa/chainlesschain/actions/runs/46054328636) · [JetBrains](https://github.com/longfa/chainlesschain/actions/runs/46054329426)
+
+- 同一提交的 CLI CI、CLI Strict Sandbox、IDE 主矩阵、ARM64 宿主矩阵和预发布包均通过。macOS 排队取消、JetBrains 解包失败和 npm 依赖签名接口的无效响应均已在原提交或标签重试通过。 [CLI CI](https://github.com/longfa/chainlesschain/actions/runs/46017345605) · [Strict Sandbox](https://github.com/longfa/chainlesschain/actions/runs/46017345435) · [IDE 主矩阵](https://github.com/longfa/chainlesschain/actions/runs/46017345333) · [ARM64](https://github.com/longfa/chainlesschain/actions/runs/46017345542) · [预发布包](https://github.com/longfa/chainlesschain/actions/runs/46017479816)
+
+- 从 npm 下载的 CLI 归档与预发布 SHA-256 一致。全新安装后复跑 `verify-18` 录流、首次 IDE 的占位文件等价场景和 Windows 目标共享冲突，分别得到退出码 5、退出码 1 和目标状态单次更新。Open VSX 回读包已安装，推荐 CLI 与本次配套版本一致。 [npm 归档](https://registry.npmjs.org/chainlesschain/-/chainlesschain-0.166.166.tgz) · [Open VSX](https://open-vsx.org/extension/chainlesschain/chainlesschain-ide/0.37.201)
+
+原生模型任务的独立验收沿用既有 36+9 记录。下一轮按第二批计划定向复跑并补齐 macOS 履历。

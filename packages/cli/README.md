@@ -1,8 +1,14 @@
 # chainlesschain CLI
 
-## CLI 0.166.166 candidate
+## Public CLI 0.166.166
 
-The candidate adds workspace delivery readback, provider stream error classification, and bounded file reads. The planned pairing is Open VSX **0.37.201** and JetBrains **0.4.216**.
+The exact release source `b5b5a6aac952fb0f976728863b35e0aa4c247380` passed CLI CI and Strict Sandbox on Linux, Windows, and macOS. GitHub Actions published through OIDC and verified the public archive and signed provenance. Install with `npm i -g chainlesschain@0.166.166 --registry https://registry.npmjs.org`, then run `cc --version` and `cc doctor`. [npm publication](https://github.com/longfa/chainlesschain/actions/runs/46047860034)
+
+CLI **0.166.166** and Open VSX **0.37.201** are public. Open VSX recommends CLI **0.166.166**. JetBrains **0.4.216** was uploaded and awaits listing. Its public version **0.4.215** recommends CLI **0.166.165**. [Open VSX publication](https://github.com/longfa/chainlesschain/actions/runs/46054328636) · [JetBrains upload](https://github.com/longfa/chainlesschain/actions/runs/46054329426)
+
+The CLI can verify declared deliverables and classify provider stream failures. On Windows, goal writes retry brief sharing errors while another process watches the goal. Local `read_file` limits each read to 8 MiB and accepts regular files.
+
+Release limits are `NOT_PAID_READY`, `NOT_ADMITTED`, and `HOLD` for paid readiness, native admission, and automatic promotion. This release adds no model-task retest results.
 
 ## Public CLI 0.166.165
 
