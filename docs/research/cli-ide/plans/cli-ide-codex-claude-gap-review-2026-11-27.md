@@ -105,10 +105,11 @@ VS Code 已为本轮持久化失败生成带阶段的诊断，JetBrains 已支�
 
 ## 会话恢复、MCP 与终端实施记录
 
-- 历史 `verify-05` 在当前源码上重放 14 次读取，第 18 轮仍返回第 480–559 行，共 2,560 个字符。`verify-29` 的第 7 份原始压缩输入在 19,660 token 的恢复预算下成功降级并保留当前任务。两份结果来自归档离线回放，原宿主的独立任务验收需要候选归档复跑。[verify-05 归档](https://github.com/longfa/chainlesschain/actions/runs/45381796486/artifacts/14917685744) · [verify-29 归档](https://github.com/longfa/chainlesschain/actions/runs/45383766533/artifacts/14918890750)
+- 历史 `verify-05` 在公开 CLI `0.166.166` 与当前源码上分别重放 14 次读取，第 18 轮均返回第 480–559 行，共 2,560 个字符。`verify-29` 的第 7 份原始压缩输入在两者上均以 19,660 token 的恢复预算成功降级。两份结果来自归档离线回放，原宿主的独立任务验收需要候选归档复跑。[verify-05 归档](https://github.com/longfa/chainlesschain/actions/runs/45381796486/artifacts/14917685744) · [verify-29 归档](https://github.com/longfa/chainlesschain/actions/runs/45383766533/artifacts/14918890750)
 - 新建的持久化 Agent 会话记录工作区与宿主身份、额外根、沙箱级别和网络范围。CLI、双向流与 App Server 从验证过的历史恢复。CLI 的 `--resume-in-current-workspace` 显式确认范围变更，当前托管策略继续生效。分支继承原会话范围，旧会话兼容旧格式。Windows 下从真实 CLI 触发跨目录恢复时暴露了 `realpathSync` 的扩展路径错误，改用原生路径解析后重放已通过。[会话范围](../../../../packages/cli/src/lib/session-execution-scope.js) · [Windows 路径回归](../../../../packages/cli/__tests__/unit/settings-source-observation.test.js)
 - VS Code 和 JetBrains 显示已验证的恢复消息数、保存的问题和待检查的 MCP 调用。分页继续显示单条消息截断，加载失败提示通过 Latest messages 重试。两端按相同的持久化阶段提示检查已保存会话。[流式恢复状态](../../../../packages/cli/src/runtime/headless-stream.js) · [JetBrains 持久化诊断](../../../../packages/jetbrains-plugin/src/main/java/com/chainlesschain/ide/ChatEvents.java)
 - 交互式 `--mcp-config` 的可选 stdio 服务可同时配置 `startOnDemand: true` 和 `discoveryCache: true`。首次连接成功后缓存工具名称。下一次启动在 TTL 内延后建连，用 `/mcp <name>` 显式启动并重新检查当前配置和托管策略。并发启动合并成一次，实际工具须等连接和发现通过后进入目录。通过 MCP 提供必需审批的会话继续在启动时连接。[配置入口](../../../../packages/cli/src/runtime/mcp-config.js) · [启动缓存](../../../../packages/cli/src/runtime/mcp-stdio-startup-hints.js)
+- Windows 真实 stdio 子进程夹具包含一台慢服务和五台可选服务。新进程首次加载配置约 8.50 秒，建立六个连接。缓存后的新进程约 1.56 秒完成配置加载，首屏前只启动一个必需服务。对同一可选服务的两次并发激活共启动一个进程，首次激活约 0.50 秒。计时范围是配置加载与激活，真实终端首轮可输入时间另由宿主探针核对。
 - 终端可用 Tab 补全 `/mcp` 和 `/permissions` 的参数，问题区获得焦点时可独立翻页。`/search` 显示完整会话 ID，`/session links` 提供父会话和最近分支的跳转命令，后台任务列表显示其会话。Windows ConPTY 已验证从补全、执行到正常退出的真实流程。跨系统的同类探针接入已有 CLI Reliability Soak。[终端实现](../../../../packages/cli/src/repl/terminal-window.js) · [宿主探针](../../../../packages/cli/scripts/cli-reliability-soak.mjs)
 
 候选包的 Linux、Windows、macOS 门禁和新一轮 36+9 独立验收仍需回收。无密钥宿主检查会在打包和测试前核对相同提交，已派发公开 `.166` 标签的复跑。[宿主校验](https://github.com/longfa/chainlesschain/actions/runs/46073690466)
