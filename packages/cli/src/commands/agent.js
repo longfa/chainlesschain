@@ -52,6 +52,7 @@ import {
   isFormalQualityHermeticRuntime,
 } from "../lib/formal-quality-eval-runtime.js";
 import { withQuietStdout } from "../runtime/quiet-stdout.js";
+import { deliveryPaths } from "../lib/workspace-delivery-receipt.js";
 import {
   createSessionPersistenceFailure,
   projectSessionPersistenceFailure,
@@ -397,6 +398,11 @@ export function registerAgentCommand(program, dependencies = {}) {
     .option(
       "--add-dir <dir>",
       "Extra working directory the agent may read/search/edit (repeatable)",
+      (val, prev) => (prev || []).concat([val]),
+    )
+    .option(
+      "--expect-deliverable <path>",
+      "Verify a workspace-relative file changed in the first headless turn (repeatable)",
       (val, prev) => (prev || []).concat([val]),
     )
     .option(
@@ -781,6 +787,20 @@ export function registerAgentCommand(program, dependencies = {}) {
     )
     .action(async (task, options, command) => {
       const formalQualityHermetic = isFormalQualityHermeticRuntime(process.env);
+      let expectedDeliverables;
+      try {
+        expectedDeliverables = deliveryPaths(
+          options.expectDeliverable ??
+            (formalQualityHermetic &&
+            process.env.CC_VERIFY01_DELIVERY_RECEIPTS === "1"
+              ? formalQualityAllowedFiles(process.env)
+              : null),
+        );
+      } catch (error) {
+        process.stderr.write(`Error: ${error.message}\n`);
+        process.exitCode = 1;
+        return;
+      }
       if (formalQualityHermetic) {
         const provider = formalQualityProvider(process.env);
         if (!provider) {
@@ -1739,6 +1759,7 @@ export function registerAgentCommand(program, dependencies = {}) {
               },
             );
           outcome = await runAgentHeadlessStream({
+            deliveryPaths: expectedDeliverables,
             unattendedActionPolicy,
             toolAdmission,
             model: options.model,
@@ -1860,6 +1881,14 @@ export function registerAgentCommand(program, dependencies = {}) {
       if (!prompt && (wantsHeadless || !process.stdin.isTTY)) {
         const piped = (await readStdin()).trim();
         if (piped) prompt = piped;
+      }
+      if (options.expectDeliverable && (!prompt || backgroundRequested)) {
+        process.stderr.write(
+          "--expect-deliverable requires a foreground headless task.\n",
+        );
+        await _finishWorktree();
+        process.exitCode = 1;
+        return;
       }
 
       // Commander canonicalizes the dual long-option declaration
@@ -2068,6 +2097,7 @@ export function registerAgentCommand(program, dependencies = {}) {
           // history when the id already exists and creates it otherwise.
           resume: options.session,
           outputFormat: options.outputFormat,
+          deliveryPaths: expectedDeliverables,
           permissionMode: options.permissionMode,
           allowedTools: parseToolList(options.allowedTools),
           disallowedTools: parseToolList(options.disallowedTools),

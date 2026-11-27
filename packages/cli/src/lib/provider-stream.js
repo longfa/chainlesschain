@@ -131,6 +131,7 @@ export async function* openAIStream({
     throw new Error(`${res.status} ${res.statusText}`);
   }
   let completed = false;
+  let outputReceived = false;
   for await (const raw of responseLines(res.body)) {
     const line = raw.trim();
     if (!line || !line.startsWith("data:")) continue;
@@ -143,9 +144,13 @@ export async function* openAIStream({
     }
     try {
       const obj = JSON.parse(payload);
-      if (obj?.error) throw createChatCompletionsStreamError();
+      if (obj?.error)
+        throw createChatCompletionsStreamError(obj.error, outputReceived);
       const delta = obj?.choices?.[0]?.delta?.content;
-      if (delta) yield delta;
+      if (delta) {
+        outputReceived = true;
+        yield delta;
+      }
     } catch (error) {
       if (requireCompletion || error?.code === CHAT_COMPLETIONS_STREAM_FAILED)
         throw error;

@@ -1584,6 +1584,10 @@ export class CcAppServer {
         result: result?.result ?? null,
         error: result?.error ?? null,
         code: result?.code ?? null,
+        ...(result?.error_details
+          ? { error_details: result.error_details }
+          : {}),
+        ...(result?.delivery ? { delivery: result.delivery } : {}),
       },
     });
     turn.terminalEvidence = {
@@ -1603,6 +1607,7 @@ export class CcAppServer {
     await this.send(
       rpcNotification("turn/completed", {
         turn: turnProjection(turn),
+        ...(result?.delivery ? { delivery: result.delivery } : {}),
         error:
           status === "failed"
             ? {
@@ -1611,6 +1616,9 @@ export class CcAppServer {
                   0,
                   4096,
                 ),
+                ...(result?.error_details
+                  ? { details: result.error_details }
+                  : {}),
               }
             : null,
       }),

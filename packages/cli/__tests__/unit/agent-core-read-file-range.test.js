@@ -4,7 +4,9 @@
  * Exercises executeTool against real temp files.
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, rmSync, truncateSync, writeFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { MAX_READ_FILE_BYTES } from "../../src/lib/read-file-page.js";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import fs from "node:fs";
@@ -1214,9 +1216,41 @@ describe("read_file offset/limit line ranges", () => {
     ).toBe(first.content);
   });
 
+  it("rejects oversized files before opening the descriptor", async () => {
+    const filePath = join(dir, "large.txt");
+    writeFileSync(filePath, "");
+    truncateSync(filePath, MAX_READ_FILE_BYTES + 1);
+    const open = vi.spyOn(fs, "openSync");
+    try {
+      expect(
+        await executeTool(
+          "read_file",
+          { path: "large.txt", limit: 1 },
+          { cwd: dir },
+        ),
+      ).toMatchObject({ code: "CC_READ_FILE_SIZE_LIMIT" });
+      expect(open.mock.calls.some(([target]) => target === filePath)).toBe(
+        false,
+      );
+    } finally {
+      open.mockRestore();
+    }
+  });
+
+  it.skipIf(process.platform === "win32")(
+    "rejects an unread FIFO without opening it",
+    async () => {
+      const fifo = join(dir, "source.fifo");
+      execFileSync("mkfifo", [fifo]);
+      expect(
+        await executeTool("read_file", { path: "source.fifo" }, { cwd: dir }),
+      ).toMatchObject({ code: "CC_READ_FILE_NOT_REGULAR" });
+    },
+  );
+
   it("caches repeated reads within a run and invalidates the cache when the file changes", async () => {
     const filePath = join(dir, "f.txt");
-    const readSpy = vi.spyOn(fs, "readFileSync");
+    const readSpy = vi.spyOn(fs, "openSync");
     const context = { cwd: dir, readFileCache: new Map() };
     try {
       const first = await executeTool(

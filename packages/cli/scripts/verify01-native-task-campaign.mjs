@@ -363,6 +363,7 @@ export function nativeEnvironment(
       providerProfile.runtimeProvider ?? providerProfile.provider,
     CC_FORMAL_QUALITY_EVAL_ISOLATION_ROOT: root,
     CC_FORMAL_QUALITY_EVAL_ALLOWED_FILES: JSON.stringify(expectedFiles),
+    CC_VERIFY01_DELIVERY_RECEIPTS: "1",
     [providerProfile.keyEnvironment]: capability,
   };
   for (const name of [

@@ -116,7 +116,7 @@ async function directoryFiles(root, check, maxFiles) {
 export async function captureGoalWorkspace(
   cwd,
   call,
-  { signal, limits = {} } = {},
+  { signal, limits = {}, allowMissingArtifact = false } = {},
 ) {
   const bounds = { ...LIMITS, ...limits };
   const started = Date.now();
@@ -176,8 +176,13 @@ export async function captureGoalWorkspace(
       try {
         before = await fsp.lstat(target, { bigint: true });
       } catch (error) {
-        // Deleted tracked files are part of the current source version. A
-        // missing requested artifact, however, cannot support completion.
+        if (artifact && allowMissingArtifact && error.code === "ENOENT") {
+          // Keep the same absence checks as deleted tracked files. The result
+          // supports a before/after comparison, never positive completion.
+          identities.push([target, null]);
+          continue;
+        }
+        // Deleted tracked files are part of the current source version.
         if (scope !== "git-visible-files-under-cwd" || error.code !== "ENOENT")
           throw error;
         content.update(

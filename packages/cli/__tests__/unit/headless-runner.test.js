@@ -52,6 +52,7 @@ import { HostResourceBudget } from "../../src/lib/host-resource-budget.js";
 import { HERMETIC_CODING_SYSTEM_PROMPT } from "../../src/lib/coding-task-guidance.js";
 import { createPermissionRulesProvider } from "../../src/lib/permission-authority.js";
 import { prepareCanonicalProviderContext } from "../../src/lib/context-memory-kernel/provider-context.js";
+import { createChatCompletionsStreamError } from "../../src/lib/stream-retry.js";
 
 const runAgentHeadless = (options = {}, deps = {}) =>
   runAgentHeadlessWithIngress(
@@ -104,6 +105,93 @@ const replyText = (content) =>
   }));
 
 describe("bounded transport terminal details", () => {
+  it.each([
+    ["insufficient_quota", "quota_exhausted"],
+    ["rate_limit_exceeded", "rate_limited"],
+    ["server_error", "upstream_failure"],
+    ["unrecognized-secret-code", "unknown"],
+  ])(
+    "returns an actionable, redacted provider-stream result for %s",
+    async (code, category) => {
+      const privateMessage = "sk-private-provider-test-key";
+      const chat = vi.fn(async () => {
+        throw createChatCompletionsStreamError(
+          { code, message: privateMessage },
+          true,
+        );
+      });
+      const { deps, out } = makeDeps(chat);
+      const run = await runAgentHeadless(
+        {
+          prompt: "hello",
+          provider: "openai",
+          model: "gpt-4o",
+          outputFormat: "json",
+          ephemeral: true,
+        },
+        deps,
+      );
+      expect(run.exitCode).toBe(5);
+      expect(JSON.parse(out.join(""))).toMatchObject({
+        subtype: "error",
+        is_error: true,
+        error_details: {
+          kind: "provider_stream",
+          category,
+          outputReceived: true,
+          noReplay: true,
+        },
+      });
+      expect(out.join("")).not.toContain(privateMessage);
+      expect(out.join("")).not.toContain("unrecognized-secret-code");
+      expect(chat).toHaveBeenCalledOnce();
+    },
+  );
+
+  it.each([
+    ["missing", null, null, 1],
+    ["unchanged", "placeholder", "placeholder", 1],
+    ["changed", "placeholder", "export const answer = 42", 0],
+    ["changed", null, "export const answer = 42", 0],
+  ])(
+    "reports %s deliverable content using workspace readback",
+    async (status, initial, delivered, exitCode) => {
+      const cwd = mkdtempSync(join(tmpdir(), "cc-delivery-receipt-"));
+      const file = join(cwd, "candidate.js");
+      try {
+        if (initial !== null) writeFileSync(file, initial);
+        const { deps, out } = makeDeps(async () => {
+          if (delivered !== null) writeFileSync(file, delivered);
+          return replyText("The required change is complete.")();
+        });
+        const run = await runAgentHeadless(
+          {
+            cwd,
+            prompt: "Change candidate.js",
+            provider: "openai",
+            model: "gpt-4o",
+            outputFormat: "json",
+            ephemeral: true,
+            deliveryPaths: ["candidate.js"],
+          },
+          deps,
+        );
+        expect(run.exitCode).toBe(exitCode);
+        const result = JSON.parse(out.join(""));
+        expect(result.delivery).toMatchObject({
+          status: exitCode ? "unverified" : "verified",
+          checks: "not_verified",
+          files: [{ path: "candidate.js", status }],
+        });
+        expect(result.subtype).toBe(
+          exitCode ? "error_deliverable_unverified" : "success",
+        );
+      } finally {
+        rmSync(cwd, { recursive: true, force: true });
+      }
+    },
+  );
+
   it.each([false, true])(
     "sends the explicit output cap in the physical provider request (stream=%s)",
     async (stream) => {

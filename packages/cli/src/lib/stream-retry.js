@@ -27,14 +27,66 @@ export const STREAM_RETRY_MAX_DELAY_MS = 60_000;
 export const CHAT_COMPLETIONS_STREAM_FAILED =
   "CC_CHAT_COMPLETIONS_STREAM_FAILED";
 
-export function createChatCompletionsStreamError() {
-  return Object.assign(
-    new Error("OpenAI-compatible stream returned a provider error"),
-    {
+const providerStreamErrors = new WeakMap();
+
+export function createChatCompletionsStreamError(
+  payload,
+  outputReceived = false,
+) {
+  const identifiers = [payload?.code, payload?.type];
+  let category = "unknown";
+  let message = "OpenAI-compatible stream returned a provider error";
+  // Only recognized protocol identifiers become diagnostics. Gateway text and
+  // unrecognized identifiers may include secrets or request content.
+  if (
+    identifiers.includes("insufficient_quota") ||
+    identifiers.includes("billing_hard_limit_reached")
+  ) {
+    category = "quota_exhausted";
+    message =
+      "Model provider quota exhausted. Check the provider account balance and spending limits.";
+  } else if (
+    identifiers.includes("rate_limit_exceeded") ||
+    identifiers.includes("rate_limit_error")
+  ) {
+    category = "rate_limited";
+    message =
+      "Model provider rate limit reached. Wait before retrying explicitly.";
+  } else if (
+    identifiers.includes("server_error") ||
+    identifiers.includes("internal_server_error") ||
+    identifiers.includes("upstream_error") ||
+    identifiers.includes("overloaded_error") ||
+    (payload?.type === "new_api_error" &&
+      typeof payload.message === "string" &&
+      /\bupstream stream ended before the response\b/i.test(
+        payload.message.slice(0, 256),
+      ))
+  ) {
+    category = "upstream_failure";
+    message =
+      "Model provider reported an upstream failure. Check provider status before retrying explicitly.";
+  }
+  const error = Object.assign(new Error(message), {
+    code: CHAT_COMPLETIONS_STREAM_FAILED,
+    noReplay: true,
+  });
+  providerStreamErrors.set(
+    error,
+    Object.freeze({
+      kind: "provider_stream",
       code: CHAT_COMPLETIONS_STREAM_FAILED,
+      category,
+      outputReceived: outputReceived === true,
+      usageSettlement: "unconfirmed",
       noReplay: true,
-    },
+    }),
   );
+  return error;
+}
+
+export function providerStreamErrorDetails(error) {
+  return providerStreamErrors.get(error);
 }
 
 export function cancelProviderStreamReader(reader) {

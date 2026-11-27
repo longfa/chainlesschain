@@ -6,7 +6,7 @@ import "../helpers/test-model-egress.js";
  */
 
 import { describe, it, expect, vi } from "vitest";
-import { mkdtempSync, realpathSync, rmSync } from "node:fs";
+import { mkdtempSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { PassThrough } from "node:stream";
@@ -232,6 +232,50 @@ describe("runAgentHeadlessStream", () => {
   async function* input(...jsonObjs) {
     yield jsonObjs.map((o) => JSON.stringify(o)).join("\n") + "\n";
   }
+
+  it("reports unverifiable delivery on the declared IDE turn without carrying the request to later turns", async () => {
+    const cwd = mkdtempSync(path.join(tmpdir(), "cc-stream-delivery-"));
+    try {
+      writeFileSync(path.join(cwd, "candidate.js"), "placeholder");
+      const deps = baseDeps({
+        input: input(
+          { text: "Change candidate.js" },
+          { text: "Follow-up question" },
+        ),
+        agentLoop: async function* () {
+          yield { type: "response-complete", content: "The file was changed." };
+          yield { type: "run-ended", reason: "complete" };
+        },
+      });
+      const run = await runAgentHeadlessStream(
+        {
+          cwd,
+          persist: false,
+          expandFileRefs: false,
+          useRegisteredMcp: false,
+          deliveryPaths: ["candidate.js"],
+        },
+        deps,
+      );
+      const results = deps._lines
+        .map(JSON.parse)
+        .filter((event) => event.type === "result");
+      expect(run.exitCode).toBe(1);
+      expect(results[0]).toMatchObject({
+        is_error: true,
+        code: "CC_DELIVERABLE_UNVERIFIED",
+        delivery: {
+          turn_id: expect.stringMatching(/^tr-.+:1$/),
+          checks: "not_verified",
+          files: [{ path: "candidate.js", status: "unchanged" }],
+        },
+      });
+      expect(results[1]).toMatchObject({ is_error: false, subtype: "success" });
+      expect(results[1]).not.toHaveProperty("delivery");
+    } finally {
+      rmSync(cwd, { recursive: true, force: true });
+    }
+  });
 
   it("retains the output cap for every queued IDE input turn", async () => {
     const caps = [];
