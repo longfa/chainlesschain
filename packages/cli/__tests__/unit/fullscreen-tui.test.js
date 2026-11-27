@@ -4,6 +4,7 @@ import { PassThrough } from "node:stream";
 import { describe, it, expect, vi } from "vitest";
 import { createTerminalWindow } from "../../src/repl/terminal-window.js";
 import { createReplQuestionQueue } from "../../src/repl/permission-prompt.js";
+import { makeAtCompleter } from "../../src/lib/repl-completer.js";
 import {
   TUI_MODES,
   DEFAULT_TUI_MODE,
@@ -41,10 +42,10 @@ it("keeps the draft editable while streaming and supports slash and model select
     stderr: { isTTY: false },
     waitForOutput: async () => true,
     getStatus: () => "Working",
-    getSlashSuggestions: (line) =>
-      ["/help", "/status"].filter(
-        (command) => line && command.startsWith(line),
-      ),
+    getSlashCompletion: makeAtCompleter({
+      slashCommands: ["/help", "/status", "/permissions"],
+      getSlashArguments: () => ["strict"],
+    }).completeSlash,
   });
   const rl = createInterface({
     input,
@@ -70,11 +71,35 @@ it("keeps the draft editable while streaming and supports slash and model select
     rl.line = "/";
     rl.cursor = 1;
     expect(terminal.handleSlashKey({ name: "down" })).toBe(true);
+    expect(terminal.handleSlashKey({ name: "down" })).toBe(true);
     vi.runOnlyPendingTimers();
     expect(writes.at(-1)).toContain("› /status");
     expect(terminal.handleSlashKey({ name: "return" })).toBe(false);
     rl.write(null, { name: "return", sequence: "\r" });
     expect(submitted).toEqual(["/status"]);
+
+    rl.line = '/permissions "strx"';
+    rl.cursor = rl.line.indexOf("x");
+    expect(terminal.handleSlashKey({ name: "return" })).toBe(false);
+    expect(rl.line).toBe('/permissions "strx"');
+    expect(terminal.handleSlashKey({ name: "tab" })).toBe(true);
+    expect(rl.line).toBe('/permissions "strict" ');
+    rl.line = "";
+    rl.cursor = 0;
+
+    terminal.showQuestionDetails(
+      Array.from(
+        { length: 20 },
+        (_, index) => `Question choice ${index + 1}\n`,
+      ).join(""),
+    );
+    vi.runOnlyPendingTimers();
+    expect(writes.at(-1)).toContain("Question choice 1");
+    expect(writes.at(-1)).not.toContain("Question choice 16");
+    terminal.pageQuestion(2);
+    vi.runOnlyPendingTimers();
+    expect(writes.at(-1)).toContain("Question choice 16");
+    terminal.clearQuestionDetails();
 
     rl.write("draft after /status");
     const onSelect = vi.fn();

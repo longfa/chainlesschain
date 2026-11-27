@@ -143,6 +143,25 @@ describe("renderMcpSurface", () => {
     expect(surface).toContain("/mcp__gh__review — code review");
   });
 
+  it("uses the selected server for tools, resources and prompts", () => {
+    const client = {
+      listServers: () => [
+        { name: "local tools", state: "connected", tools: 1 },
+      ],
+      listTools: (server) => [{ name: `${server}-lookup` }],
+      listResources: (server) => [{ uri: "file://x", server }],
+      listPrompts: (server) => [{ name: "review", server }],
+    };
+    const surface = renderMcpSurface(client, "local tools");
+    expect(surface).toContain("MCP server local tools (connected, 1 tools)");
+    expect(surface).toContain("local tools-lookup");
+    expect(surface).toContain("file://x [local tools]");
+    expect(surface).toContain("/mcp__local tools__review");
+    expect(renderMcpSurface(client, "absent")).toContain(
+      '"absent" was not found',
+    );
+  });
+
   it("notes when servers expose nothing", () => {
     const surface = renderMcpSurface({
       listResources: () => [],

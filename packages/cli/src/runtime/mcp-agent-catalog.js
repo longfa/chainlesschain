@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { inferTransport } from "../harness/mcp-client.js";
+import { discoveryCachePolicy, inferTransport } from "../harness/mcp-client.js";
 import {
   admitMcpToolList,
   isMcpToolMetadataError,
@@ -10,6 +10,11 @@ import {
   setMcpToolCatalogRefresh,
 } from "../lib/mcp-tool-catalog-authority.js";
 import { refreshMcpToolSearch } from "./mcp-tool-search.js";
+import {
+  mcpStdioHintKey,
+  readMcpStdioStartupHint as readStartupHint,
+  recordMcpStdioStartupHint as recordStartupHint,
+} from "./mcp-stdio-startup-hints.js";
 
 const catalogs = new WeakMap();
 const configAuthorities = new WeakMap();
@@ -48,6 +53,27 @@ function configIdentity(config, authorizationRefresh = false) {
   return createHash("sha256")
     .update(JSON.stringify(normalize(source)))
     .digest("hex");
+}
+
+function writeOrReadStdioStartupHint(name, config, cwd, tools) {
+  if (config.startOnDemand !== true || inferTransport(config) !== "stdio")
+    return null;
+  const policy = discoveryCachePolicy(config);
+  if (!policy.enabled) return null;
+  const key = mcpStdioHintKey(name, cwd, configIdentity(config));
+  if (tools) return recordStartupHint(key, tools);
+  const toolNames = readStartupHint(key, policy.ttlMs);
+  return toolNames
+    ? Object.freeze({ name, toolNames: Object.freeze(toolNames) })
+    : null;
+}
+
+export function readMcpStdioStartupHint(name, config, cwd) {
+  return writeOrReadStdioStartupHint(name, config, cwd);
+}
+
+export function recordMcpStdioStartupHint(name, config, cwd, tools) {
+  writeOrReadStdioStartupHint(name, config, cwd, tools);
 }
 
 function observedEntry(client, name, record) {

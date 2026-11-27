@@ -252,6 +252,32 @@ describe("slash-command completion", () => {
     expect(c("/")[0]).toEqual(["/exit", "/help", "/model"]); // sorted + unique
     expect(c("/he")[0]).toEqual(["/help"]); // single, not doubled
   });
+
+  it("completes registered arguments without replacing the command", () => {
+    const complete = makeAtCompleter({
+      slashCommands: ["/permissions"],
+      getSlashArguments: () => ["strict", "trusted"],
+    });
+    expect(complete("/permissions STR")).toEqual([["strict"], "STR"]);
+    expect(complete("/other STR")[0]).toEqual([]);
+  });
+
+  it("replaces a quoted argument through its closing quote at a middle cursor", () => {
+    const complete = makeAtCompleter({
+      slashCommands: ["/mcp"],
+      getSlashArguments: () => ["local tools", "remote"],
+    });
+    const line = '/mcp  "locx"  extra';
+    const result = complete.completeSlash(line, line.indexOf("x"));
+    expect(result.candidates).toEqual(['"local tools"']);
+    expect(
+      line.slice(0, result.start) +
+        result.candidates[0] +
+        line.slice(result.end),
+    ).toBe('/mcp  "local tools"  extra');
+    expect(complete("/mcp loc")).toEqual([['"local tools"'], "loc"]);
+    expect(complete.completeSlash(line)).toBeNull();
+  });
 });
 
 describe("dynamic (custom) slash-command completion", () => {

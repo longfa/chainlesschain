@@ -106,7 +106,7 @@ export async function questionWithIdleTimeout(ask, prompt, timeoutMs) {
 
 // All terminal questions share readline with the composer. Suspending the
 // draft keeps an approval response separate from the next user message.
-export function createReplQuestionQueue(readline, write) {
+export function createReplQuestionQueue(readline, write, display = {}) {
   let tail = Promise.resolve();
   let current = null;
   let closed = false;
@@ -135,10 +135,13 @@ export function createReplQuestionQueue(readline, write) {
               readline.line = "";
               readline.cursor = 0;
               const split = text.lastIndexOf("\n") + 1;
-              if (split) write(text.slice(0, split));
+              const detailsShown =
+                split && display.showDetails?.(text.slice(0, split));
+              if (split && !detailsShown) write(text.slice(0, split));
               const finish = (value) => {
                 signal.removeEventListener("abort", onAbort);
                 current = null;
+                if (detailsShown) display.clearDetails?.();
                 if (!closed) {
                   readline.line = line;
                   readline.cursor = cursor;

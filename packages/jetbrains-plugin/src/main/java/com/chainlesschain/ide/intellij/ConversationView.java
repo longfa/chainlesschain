@@ -2296,7 +2296,13 @@ final class ConversationView {
                     }
                 }
                 Object resumed = event.get("resumed_messages");
-                if (resumed instanceof Number && ((Number) resumed).intValue() > 0) {
+                Object state = event.get("session_state");
+                if (state instanceof Map<?, ?> sessionState
+                        && sessionState.get("version") instanceof Number version && version.intValue() == 1
+                        && "verified-transcript".equals(sessionState.get("source"))
+                        && sessionState.get("summary") instanceof String summary && !summary.isEmpty() && summary.length() <= 500) {
+                    SwingUtilities.invokeLater(() -> append("ℹ " + summary + "\n"));
+                } else if (resumed instanceof Number && ((Number) resumed).intValue() > 0) {
                     final String note = "ℹ resumed previous conversation ("
                             + ((Number) resumed).intValue() + " messages)\n";
                     SwingUtilities.invokeLater(() -> append(note));

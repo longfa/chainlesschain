@@ -86,6 +86,7 @@ import {
   createExecutionLocationTargetAttestation,
   normalizeExecutionLocationBinding,
 } from "../lib/execution-location-contract.js";
+import { normalizeSessionExecutionScope } from "../lib/session-execution-scope.js";
 import { canonicalJson } from "../lib/scheduler-kernel/contract.js";
 import {
   listSessionAntiRollbackIds as listSessionAntiRollbackIdsForStore,
@@ -2823,6 +2824,13 @@ export function startSession(sessionId, meta = {}) {
       ? {
           executionLocation: normalizeExecutionLocationBinding(
             meta.executionLocation,
+          ),
+        }
+      : {}),
+    ...(meta.sessionExecutionScope != null
+      ? {
+          sessionExecutionScope: normalizeSessionExecutionScope(
+            meta.sessionExecutionScope,
           ),
         }
       : {}),
@@ -6098,6 +6106,31 @@ export function getJsonlSessionMetadata(sessionId) {
   return meta ? publicSessionMeta(meta) : null;
 }
 
+/** Read parent lineage from verified events for navigation. */
+export function readJsonlSessionParent(sessionId) {
+  return readVerifiedProjection(sessionId, () => {
+    let parent = null;
+    return {
+      accept(event) {
+        if (event.type === "session_branch")
+          parent = event.data?.parentSessionId;
+        const fork = event.data?.[SESSION_FORK_AUTHORITY_FIELD];
+        if (
+          event.type === "system" &&
+          fork?.schema === SESSION_FORK_AUTHORITY_SCHEMA
+        ) {
+          parent = fork.sourceSessionId;
+        }
+      },
+      finish() {
+        return !parent || isUnsafeSessionId(parent) || parent === sessionId
+          ? null
+          : parent;
+      },
+    };
+  });
+}
+
 export function listJsonlSessions(options = {}) {
   const dir = getSessionsDir();
   if (!existsSync(dir)) return [];
@@ -6928,6 +6961,7 @@ export function forkSession(sourceId, options = {}) {
  * @param {{title?:string,provider?:string,model?:string}} [params.meta]
  * @param {object|null} [params.history] Scoped display-history capability from
  *   createSessionTranscriptBranchProjection(), consumed under the source lock.
+ * @param {object|null} [params.sessionExecutionScope] Verified source scope.
  * @returns {{branchSessionId:string, created:boolean, messages:number}}
  */
 export function createBranchSession({
@@ -6937,6 +6971,7 @@ export function createBranchSession({
   messages = [],
   meta = {},
   history = null,
+  sessionExecutionScope = null,
 } = {}) {
   if (isUnsafeSessionId(branchSessionId)) {
     throw new Error(
@@ -6969,6 +7004,9 @@ export function createBranchSession({
   }
   const branchParentSessionId = parentSessionId;
   const branchParentTurnId = parentTurnId;
+  const inheritedScope = normalizeSessionExecutionScope(
+    historyPlan?.sessionExecutionScope ?? sessionExecutionScope,
+  );
   const cleanMeta = sanitizePersistedMessage(meta);
   if (!cleanMeta || typeof cleanMeta !== "object") {
     throw new TypeError("Branch metadata must contain JSON-safe data");
@@ -6980,6 +7018,7 @@ export function createBranchSession({
         : `Branch of ${branchParentSessionId ?? "session"}`,
     provider: typeof cleanMeta.provider === "string" ? cleanMeta.provider : "",
     model: typeof cleanMeta.model === "string" ? cleanMeta.model : "",
+    ...(inheritedScope ? { sessionExecutionScope: inheritedScope } : {}),
   };
   const digestEvents = [
     { type: "session_start", data: startData },

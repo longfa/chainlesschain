@@ -90,7 +90,10 @@ function inspect(file, fs, maxBytes) {
     remaining.unshift(path.basename(logicalParent));
     logicalParent = next;
   }
-  const canonicalParent = fs.realpathSync(logicalParent);
+  // Native realpath accepts Windows extended-length paths and reports the
+  // same canonical directory for both the initial observation and recheck.
+  const realpath = fs.realpathSync.native || fs.realpathSync;
+  const canonicalParent = realpath(logicalParent);
   const physicalPath = path.join(canonicalParent, ...remaining);
   const flags =
     (fs.constants?.O_RDONLY ?? fsDefault.constants.O_RDONLY) |
@@ -104,8 +107,7 @@ function inspect(file, fs, maxBytes) {
   }
   function verifyParent(original) {
     if (
-      pathIdentity(fs.realpathSync(logicalParent)) !==
-      pathIdentity(canonicalParent)
+      pathIdentity(realpath(logicalParent)) !== pathIdentity(canonicalParent)
     ) {
       throw failure("CC_SETTINGS_SOURCE_CHANGED");
     }

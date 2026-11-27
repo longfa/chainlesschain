@@ -16,6 +16,7 @@
 
 import fs from "fs";
 import path from "path";
+import { createHash } from "node:crypto";
 import { isProxy } from "node:util/types";
 import {
   MCPClient,
@@ -46,6 +47,8 @@ import { refreshMcpToolSearch } from "./mcp-tool-search.js";
 import {
   registerMcpCatalogServer,
   settleMcpCatalogServer,
+  readMcpStdioStartupHint,
+  recordMcpStdioStartupHint,
 } from "./mcp-agent-catalog.js";
 import { issueMcpStdioExecutionAuthority } from "../lib/mcp-stdio-execution-authority.js";
 import {
@@ -417,6 +420,7 @@ function parseMcpServersForSource(raw, { provisionManagedTls = false } = {}) {
       (cfg.discoveryCache && typeof cfg.discoveryCache === "object")
         ? { discoveryCache: cfg.discoveryCache }
         : {}),
+      ...(cfg.startOnDemand === true ? { startOnDemand: true } : {}),
       ...headersHelperField(cfg.headersHelper),
       ...(cfg.configScope ? { configScope: cfg.configScope } : {}),
       ...(cfg.configSource ? { configSource: cfg.configSource } : {}),
@@ -737,64 +741,114 @@ export async function setupMcpFromConfig(servers, deps = {}) {
       connectConfig: connectCfg,
       authorizationRefresh: connectCfg !== cfg,
     });
-    let res;
-    try {
-      res = await mcpClient.connect(name, connectCfg);
-    } catch (err) {
-      let line = `  mcp: failed to connect "${name}": ${err.message}\n`;
-      const hint = mcpAuthHint(cfg.url, err.message);
-      if (hint) line += hint;
-      settleMcpCatalogServer(result, name);
-      writeErr(line);
+    const startupCwd = deps.cwd || process.cwd();
+    const connect = async (revalidate) => {
+      let res;
+      try {
+        if (revalidate) await revalidate(name, cfg);
+        res = await mcpClient.connect(name, connectCfg);
+      } catch (err) {
+        let line = `  mcp: failed to connect "${name}": ${err.message}\n`;
+        const hint = mcpAuthHint(cfg.url, err.message);
+        if (hint) line += hint;
+        settleMcpCatalogServer(result, name);
+        writeErr(line);
+        return false;
+      }
+      const { tools, error: toolMetadataError } = settleMcpCatalogServer(
+        result,
+        name,
+        res,
+      );
+      const resources = Array.isArray(res?.resources) ? res.resources : [];
+      const resourceTemplates = Array.isArray(res?.resourceTemplates)
+        ? res.resourceTemplates
+        : [];
+      const prompts = Array.isArray(res?.prompts) ? res.prompts : [];
+      // A server can connect (initialize OK) yet have its tools/list fail — the
+      // mcp-client surfaces that as `res.toolsError` (Claude-Code 2.1.181
+      // "Connected · tools fetch failed"). Don't let it pass as a silent
+      // "0 tools": report it, and if the fetch failed on auth (401/403), reuse the
+      // same actionable `cc mcp login` hint as the connect-failure path.
+      if (res?.toolsError) {
+        let line = `  mcp: "${name}" connected but tools fetch failed: ${res.toolsError}\n`;
+        const hint = mcpAuthHint(cfg.url, res.toolsError);
+        if (hint) line += hint;
+        writeErr(line);
+      }
+      if (toolMetadataError) {
+        writeErr(
+          `  mcp: "${name}" connected but tool metadata was rejected: ${toolMetadataError.message}\n`,
+        );
+      }
+      connected.push({
+        server: name,
+        tools: tools.length,
+        resources: resources.length,
+        prompts: prompts.length,
+      });
+      if (typeof res?.instructions === "string" && res.instructions.trim()) {
+        result.instructionsByServer[name] = res.instructions.trim();
+      }
+      for (const r of resources) {
+        if (!r || !r.uri) continue;
+        result.resources.push({ ...r, server: name });
+      }
+      for (const template of resourceTemplates) {
+        if (!template || !template.uriTemplate) continue;
+        result.resourceTemplates.push({ ...template, server: name });
+      }
+      for (const p of prompts) {
+        if (!p || !p.name) continue;
+        result.prompts.push({ ...p, server: name });
+      }
+      if (
+        deps.revalidateDeferredStdio &&
+        !res?.toolsError &&
+        !toolMetadataError
+      ) {
+        recordMcpStdioStartupHint(name, cfg, startupCwd, tools);
+      }
+      return true;
+    };
+
+    const hint =
+      deps.revalidateDeferredStdio &&
+      readMcpStdioStartupHint(name, cfg, startupCwd);
+    if (!hint) {
+      await connect();
       continue;
     }
-    const { tools, error: toolMetadataError } = settleMcpCatalogServer(
-      result,
-      name,
-      res,
-    );
-    const resources = Array.isArray(res?.resources) ? res.resources : [];
-    const resourceTemplates = Array.isArray(res?.resourceTemplates)
-      ? res.resourceTemplates
-      : [];
-    const prompts = Array.isArray(res?.prompts) ? res.prompts : [];
-    // A server can connect (initialize OK) yet have its tools/list fail — the
-    // mcp-client surfaces that as `res.toolsError` (Claude-Code 2.1.181
-    // "Connected · tools fetch failed"). Don't let it pass as a silent
-    // "0 tools": report it, and if the fetch failed on auth (401/403), reuse the
-    // same actionable `cc mcp login` hint as the connect-failure path.
-    if (res?.toolsError) {
-      let line = `  mcp: "${name}" connected but tools fetch failed: ${res.toolsError}\n`;
-      const hint = mcpAuthHint(cfg.url, res.toolsError);
-      if (hint) line += hint;
-      writeErr(line);
+    if (!result.deferredMcpStdio) {
+      const deferred = new Map();
+      Object.defineProperty(result, "deferredMcpStdio", { value: deferred });
+      result.listDeferredMcpServers = () =>
+        [...deferred.values()].map(({ hint }) => hint);
+      result.activateDeferredMcpServer = async (serverName) => {
+        const pending = deferred.get(serverName);
+        if (!pending) return false;
+        pending.promise ??= pending
+          .run()
+          .finally(() => deferred.delete(serverName));
+        return pending.promise;
+      };
     }
-    if (toolMetadataError) {
-      writeErr(
-        `  mcp: "${name}" connected but tool metadata was rejected: ${toolMetadataError.message}\n`,
-      );
-    }
-    connected.push({
-      server: name,
-      tools: tools.length,
-      resources: resources.length,
-      prompts: prompts.length,
+    result.deferredMcpStdio.set(name, {
+      hint,
+      run: async () => {
+        const connected = await connect(deps.revalidateDeferredStdio);
+        if (
+          connected &&
+          (result.resources.length || result.resourceTemplates.length)
+        )
+          registerMcpResourceTools(result);
+        if (connected && result.resourceTemplates.length)
+          registerMcpResourceTemplateTool(result);
+        refreshMcpToolSearch(result);
+        publishMcpToolCatalog(result, { create: true });
+        return connected;
+      },
     });
-    if (typeof res?.instructions === "string" && res.instructions.trim()) {
-      result.instructionsByServer[name] = res.instructions.trim();
-    }
-    for (const r of resources) {
-      if (!r || !r.uri) continue;
-      result.resources.push({ ...r, server: name });
-    }
-    for (const template of resourceTemplates) {
-      if (!template || !template.uriTemplate) continue;
-      result.resourceTemplates.push({ ...template, server: name });
-    }
-    for (const p of prompts) {
-      if (!p || !p.name) continue;
-      result.prompts.push({ ...p, server: name });
-    }
   }
 
   // Expose MCP resources to the LLM as generic read-only tools. A
@@ -991,9 +1045,15 @@ function registerMcpResourceTemplateTool(result) {
  */
 export async function loadMcpConfig(filePath, deps = {}) {
   const readFile = deps.readFile || ((p) => fs.readFileSync(p, "utf-8"));
+  const configDigest = (bytes) =>
+    createHash("sha256").update(bytes).digest("hex");
   let raw;
+  let initialDigest;
   try {
-    raw = JSON.parse(readFile(filePath));
+    const configText = readFile(filePath);
+    raw = JSON.parse(configText);
+    if (deps.allowOnDemandStdio === true)
+      initialDigest = configDigest(configText);
   } catch (err) {
     throw new Error(
       `--mcp-config: cannot read/parse "${filePath}": ${err.message}`,
@@ -1020,9 +1080,38 @@ export async function loadMcpConfig(filePath, deps = {}) {
     () => path.resolve(filePath),
     { failFast: true },
   );
+  const startupCwd = process.cwd();
+  const explicitConfig = path.resolve(filePath);
   return setupMcpFromConfig(servers, {
     ...deps,
     mcpServerErrors: errors,
+    ...(deps.allowOnDemandStdio === true
+      ? {
+          async revalidateDeferredStdio(name, config) {
+            const { loadManagedSettings } =
+              await import("../lib/settings-loader.cjs");
+            const currentPolicy = loadManagedSettings({
+              env: deps.managedSettingsEnv,
+              managedSettingsFile: deps.managedSettingsFile,
+            }).settings;
+            const managedServers =
+              currentPolicy?.managedMcpServers || currentPolicy?.mcpServers;
+            if (
+              process.cwd() !== startupCwd ||
+              configDigest(readFile(explicitConfig)) !== initialDigest ||
+              (managedServers && Object.hasOwn(managedServers, name)) ||
+              !Object.hasOwn(
+                filterMcpServersByPolicy({ [name]: config }, currentPolicy),
+                name,
+              )
+            ) {
+              throw new Error(
+                "The MCP config, workspace or managed policy changed. Restart the session before connecting.",
+              );
+            }
+          },
+        }
+      : {}),
   });
 }
 
@@ -1602,6 +1691,13 @@ export async function resolveAgentMcp(args = {}, deps = {}) {
     result = await doFile(args.mcpConfigPath, {
       ...fwd,
       into: result || undefined,
+      ...(args.allowOnDemandStdio === true
+        ? {
+            allowOnDemandStdio: true,
+            managedSettingsFile: managedLoaded.file,
+            managedSettingsEnv: args.env,
+          }
+        : {}),
     }); // fail-fast on bad file
   }
   // --strict-mcp-config: use ONLY the explicit --mcp-config servers; ignore the

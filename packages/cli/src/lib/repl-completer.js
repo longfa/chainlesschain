@@ -46,6 +46,11 @@ export function extractBashPathPrefix(line) {
   return { prefix: tok };
 }
 
+export function readSlashArgument(text) {
+  const value = text.trim();
+  return /^(["'])(.*)\1$/u.exec(value)?.[2] ?? value;
+}
+
 /** Normalize to forward slashes (what @refs use on every platform). */
 function fwd(p) {
   return String(p).replace(/\\/g, "/");
@@ -93,11 +98,10 @@ export function fileCandidates(prefix, { cwd = process.cwd(), deps } = {}) {
 /**
  * Build a readline completer. Returns `completer(line)` → `[hits, replaced]`
  * per the readline contract. Completes `@path` tokens anywhere in the line
- * and `/command` names at line start (while the command token is still being
- * typed); everything else completes to nothing.
+ * and registered `/command` names and arguments at line start.
  *
  * @param {object} opts { cwd?, getIdeOpenFiles?: () => Promise<string[]>,
- *                        slashCommands?: string[], deps? }
+ *                        slashCommands?: string[], getSlashArguments?, deps? }
  */
 export function makeAtCompleter(opts = {}) {
   // Lazy when not pinned: `/cd` mid-session moves process.cwd() and the
@@ -183,20 +187,53 @@ export function makeAtCompleter(opts = {}) {
     return [...new Set([...slashCommands, ...dyn])].sort();
   };
 
-  const completer = (line) => {
-    // `/command` completion (Claude-Code parity): only while typing the
-    // command token itself — once a space follows, args are the user's. The
-    // token charset includes `:` / `.` / digits so namespaced custom commands
-    // (`/git:commit` from commands/git/commit.md) complete too.
-    const slash = /^\/([A-Za-z0-9:._-]*)$/.exec(line);
-    if (slash) {
-      const all = mergedSlashCommands();
-      if (all.length) {
-        const pref = `/${slash[1].toLowerCase()}`;
-        const hits = all.filter((c) => c.toLowerCase().startsWith(pref));
-        return [hits, line];
-      }
+  const completeSlash = (line, cursor = line.length) => {
+    const command = /^\/[A-Za-z0-9:._-]*(?=[ \t]|$)/u.exec(line)?.[0];
+    if (!command) return null;
+    const matches = (candidates, prefix) =>
+      candidates.filter(
+        (word) =>
+          typeof word === "string" && word.toLowerCase().startsWith(prefix),
+      );
+    if (cursor <= command.length) {
+      return {
+        start: 0,
+        end: command.length,
+        candidates: matches(
+          mergedSlashCommands(),
+          line.slice(0, cursor).toLowerCase(),
+        ),
+        argument: false,
+      };
     }
+    const getArguments = opts.getSlashArguments;
+    if (!getArguments || !slashCommands.includes(command)) return null;
+    const separator = /^[ \t]+/u.exec(line.slice(command.length))[0];
+    const start = command.length + separator.length;
+    const argument = /^(?:"[^"\r\n]*"?|'[^'\r\n]*'?|[^\s"']*)/u.exec(
+      line.slice(start),
+    )[0];
+    const end = start + argument.length;
+    if (cursor < start || cursor > end) return null;
+    const quote = /^["']/u.exec(argument)?.[0];
+    const typed = line.slice(start + Number(Boolean(quote)), cursor);
+    const prefix = (
+      quote && typed.endsWith(quote) ? typed.slice(0, -1) : typed
+    ).toLowerCase();
+    const candidates = matches(getArguments(command) || [], prefix)
+      .filter((word) => !/[\p{Cc}"']/u.test(word))
+      .map((word) => {
+        const delimiter = quote || (/\s/u.test(word) ? '"' : "");
+        return delimiter + word + delimiter;
+      });
+    return candidates.length
+      ? { start, end, candidates, argument: true }
+      : null;
+  };
+
+  const completer = (line) => {
+    const slash = completeSlash(line);
+    if (slash) return [slash.candidates, line.slice(slash.start, slash.end)];
     // `!` bash-mode file-path completion (Claude-Code 2.1.193 parity): the
     // trailing token completes to filesystem paths under cwd — a shell command
     // runs from cwd, so this uses the filesystem candidate set only (not the
@@ -228,6 +265,7 @@ export function makeAtCompleter(opts = {}) {
     // readline replaces `replaced` with the chosen hit — keep the `@`.
     return [merged.map((m) => `@${m}`), `@${at.prefix}`];
   };
+  completer.completeSlash = completeSlash;
   // test seam: expose the cache refresher state
   completer._refreshIde = refreshIde;
   completer._ideState = () => ({ ideFiles, ideFetchedAt });

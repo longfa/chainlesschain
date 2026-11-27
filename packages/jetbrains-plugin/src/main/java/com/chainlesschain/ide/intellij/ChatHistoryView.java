@@ -193,8 +193,7 @@ final class ChatHistoryView {
         SessionTranscriptPage page = result == null ? null : result.page();
         if (error != null || page == null) {
             cancel();
-            String reason = error == null ? "No history response" : String.valueOf(error.getMessage());
-            status.setText(" Saved conversation could not be loaded: " + reason.substring(0, Math.min(500, reason.length())));
+            status.setText(" Saved conversation could not be loaded. Select Latest messages to retry.");
             status.setToolTipText(status.getText()); updateControls(); return;
         }
         if (next.incremental() || next.cursor() == null) {

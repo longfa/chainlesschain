@@ -1,4 +1,5 @@
 import { createSessionModelUsageRecoveryProjection } from "./session-model-usage-recovery.js";
+import { normalizeSessionExecutionScope } from "./session-execution-scope.js";
 import {
   MCP_TASK_DELIVERY_EVENT,
   projectMcpTaskDeliveryMessage,
@@ -330,6 +331,10 @@ export function projectVerifiedSessionHostSnapshot(sessionId, events) {
     deferredAnswers: deferred.answers,
     deferredQuestionSequence: deferred.maxSequence,
     sessionBudgetRoot: sessionBudgetRootFromEvents(safeEvents),
+    sessionExecutionScope: normalizeSessionExecutionScope(
+      safeEvents.find((event) => event.type === "session_start")?.data
+        ?.sessionExecutionScope,
+    ),
     modelUsageRecovery: modelUsage.finish(),
     inputRecovery,
     mcpTaskReferenceDigests: Object.freeze([
@@ -349,6 +354,7 @@ function createStreamingSessionHostProjection(sessionId) {
   let title = "Untitled";
   let lastEventType = null;
   let sessionBudgetRoot = null;
+  let sessionExecutionScope = null;
   const structure = createSessionTranscriptStructureProjection(sessionId, {
     failFast: true,
   });
@@ -373,6 +379,9 @@ function createStreamingSessionHostProjection(sessionId) {
       inputLifecycle.accept(safeEvent);
       if (safeEvent.type === "session_start") {
         if (safeEvent.data?.title) title = String(safeEvent.data.title);
+        sessionExecutionScope = normalizeSessionExecutionScope(
+          safeEvent.data?.sessionExecutionScope,
+        );
         if (Object.hasOwn(safeEvent.data || {}, "sessionBudgetRoot")) {
           sessionBudgetRoot = normalizeSessionBudgetRootConfig(
             safeEvent.data.sessionBudgetRoot,
@@ -417,6 +426,7 @@ function createStreamingSessionHostProjection(sessionId) {
         deferredAnswers: deferred.answers,
         deferredQuestionSequence: deferred.maxSequence,
         sessionBudgetRoot,
+        sessionExecutionScope,
         modelUsageRecovery: modelUsage.finish(),
         inputRecovery,
         mcpTaskReferenceDigests: Object.freeze([...mcpTaskReferenceDigests]),

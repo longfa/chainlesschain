@@ -415,7 +415,7 @@ function boundedPositiveInt(value, fallback, maximum) {
   return Math.min(maximum, Math.floor(value));
 }
 
-function discoveryCachePolicy(config = {}) {
+export function discoveryCachePolicy(config = {}) {
   const configured = config?.discoveryCache;
   if (configured !== true && (!configured || typeof configured !== "object")) {
     return { enabled: false };

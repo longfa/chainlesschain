@@ -49,7 +49,7 @@ export function createTerminalWindow({
   stderr,
   waitForOutput,
   getStatus,
-  getSlashSuggestions,
+  getSlashCompletion,
   isQuestionActive = () => false,
 }) {
   let rl;
@@ -63,6 +63,10 @@ export function createTerminalWindow({
   let slashQuery = "";
   let slashSelection = 0;
   let picker = null;
+  let questionDetails = "";
+  let questionStart = 0;
+  let questionRowCount = 0;
+  let questionPageSize = 1;
   const transcript = [{ text: "" }];
   const writeTerminal = stdout.write.bind(stdout);
   const writeError = stderr.write;
@@ -141,10 +145,26 @@ export function createTerminalWindow({
       Math.max(1, Math.min(5, rows - 3)),
     );
     const inputStart = Math.max(0, cursorRow - inputHeight + 1);
+    const questionRows = questionDetails
+      ? questionDetails
+          .trimEnd()
+          .split("\n")
+          .flatMap((line) => wrap(line).rows)
+      : [];
+    questionRowCount = questionRows.length;
+    questionPageSize = Math.max(1, Math.min(7, rows - inputHeight - 3));
+    questionStart = Math.min(
+      questionStart,
+      Math.max(0, questionRowCount - questionPageSize),
+    );
+    const visibleQuestion = questionRows.slice(
+      questionStart,
+      questionStart + questionPageSize,
+    );
     const visiblePicker = picker && !isQuestionActive() ? picker : null;
     const suggestions = visiblePicker
       ? pickerMatches()
-      : currentSlashSuggestions();
+      : currentSlashCompletion()?.candidates || [];
     const selection = visiblePicker ? visiblePicker.index : slashSelection;
     const pickerTitle = visiblePicker
       ? wrap(
@@ -161,6 +181,7 @@ export function createTerminalWindow({
     const menuStart = Math.max(0, selection - menuHeight + 1);
     const footer = [
       "",
+      ...visibleQuestion,
       ...inputRows.slice(inputStart, inputStart + inputHeight),
     ];
     if (pickerTitle && rows > footer.length) footer.push(pickerTitle);
@@ -184,7 +205,12 @@ export function createTerminalWindow({
       }
       offset = Math.min(offset, Math.max(0, total - capacity));
     }
-    const range = offset ? "  ·  PgDn for newer output" : "";
+    const range =
+      questionRowCount > questionPageSize
+        ? `  ·  Question ${questionStart + 1}–${questionStart + visibleQuestion.length}/${questionRowCount} · PgUp/PgDn`
+        : offset && !isQuestionActive()
+          ? "  ·  PgDn for newer output"
+          : "";
     footer[0] = wrap(getStatus() + range).rows[0];
     let skip = offset;
     for (
@@ -209,7 +235,7 @@ export function createTerminalWindow({
       ...Array(capacity - recent.length).fill(""),
       ...footer,
     ];
-    const position = `\x1b[${capacity + 2 + cursorRow - inputStart};${cursor.at(-1).col + 1}H`;
+    const position = `\x1b[${capacity + 2 + visibleQuestion.length + cursorRow - inputStart};${cursor.at(-1).col + 1}H`;
     const update = diffRepaint(painted.slice(0, rows), next);
     if (!update && cursorPosition === position) return;
     painted = next;
@@ -223,17 +249,21 @@ export function createTerminalWindow({
     }
   }
 
-  function currentSlashSuggestions() {
-    const suggestions = getSlashSuggestions(rl.line);
-    if (slashQuery !== rl.line) {
-      slashQuery = rl.line;
-      slashSelection = Math.max(0, suggestions.indexOf(rl.line));
+  function currentSlashCompletion() {
+    const completion = getSlashCompletion(rl.line, rl.cursor);
+    const suggestions = completion?.candidates || [];
+    const query = `${rl.cursor}\0${rl.line}`;
+    if (slashQuery !== query) {
+      slashQuery = query;
+      const token =
+        completion && rl.line.slice(completion.start, completion.end);
+      slashSelection = Math.max(0, suggestions.indexOf(token));
     }
     slashSelection = Math.min(
       slashSelection,
       Math.max(0, suggestions.length - 1),
     );
-    return suggestions;
+    return completion;
   }
 
   function pickerMatches() {
@@ -270,6 +300,29 @@ export function createTerminalWindow({
     },
     schedule,
     append,
+    showQuestionDetails(text) {
+      if (!active) return false;
+      questionDetails = terminalText(text);
+      questionStart = 0;
+      schedule();
+      return true;
+    },
+    clearQuestionDetails() {
+      if (questionDetails) append(questionDetails);
+      questionDetails = "";
+      questionStart = 0;
+      schedule();
+    },
+    pageQuestion(delta) {
+      questionStart = Math.max(
+        0,
+        Math.min(
+          questionStart + delta * questionPageSize,
+          questionRowCount - questionPageSize,
+        ),
+      );
+      schedule();
+    },
     follow() {
       offset = 0;
       schedule();
@@ -321,7 +374,8 @@ export function createTerminalWindow({
       if (!active || key.ctrl || key.meta || key.shift) return false;
       if (!["up", "down", "tab", "return", "enter"].includes(key.name))
         return false;
-      const suggestions = currentSlashSuggestions();
+      const completion = currentSlashCompletion();
+      const suggestions = completion?.candidates || [];
       if (suggestions.length === 0) return false;
       if (key.name === "up" || key.name === "down") {
         const delta = key.name === "up" ? -1 : 1;
@@ -330,10 +384,16 @@ export function createTerminalWindow({
         schedule();
         return true;
       }
-      rl.line = suggestions[slashSelection] + (key.name === "tab" ? " " : "");
-      rl.cursor = rl.line.length;
+      const tab = key.name === "tab";
+      // Enter submits the argument as typed. Tab explicitly inserts the menu choice.
+      if (completion.argument && !tab) return false;
+      const suffix = rl.line.slice(completion.end);
+      const selected =
+        suggestions[slashSelection] + (tab && !suffix ? " " : "");
+      rl.line = rl.line.slice(0, completion.start) + selected + suffix;
+      rl.cursor = completion.start + selected.length;
       schedule();
-      return key.name === "tab";
+      return tab;
     },
     scroll(delta) {
       offset = Math.max(

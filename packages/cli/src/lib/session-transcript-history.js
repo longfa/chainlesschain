@@ -14,6 +14,7 @@ import {
   boundTranscriptRow,
 } from "./session-transcript-page.js";
 import { createSessionHistoryOrigins } from "./session-history-origins.js";
+import { normalizeSessionExecutionScope } from "./session-execution-scope.js";
 import { getDurableSystemMessageProvenance } from "./session-message-provenance.js";
 import { projectToolRoundMessages } from "./session-tool-round.js";
 import { projectSessionInputMessages } from "./session-input-lifecycle.js";
@@ -273,15 +274,21 @@ export function createSessionTranscriptHistoryProjection(
     });
     if (!found)
       throw new Error("The selected reply is unavailable in verified history");
-    return branch.consume(messages);
+    return branch.consume(messages, sessionExecutionScope);
   }
 
+  let sessionExecutionScope = null;
   return {
     accept(event) {
       if (!HASH.test(event.hash))
         throw new TypeError("verified event hash required");
       eventCount += 1;
       generation ||= event.hash;
+      if (branch && event.type === "session_start" && eventCount === 1) {
+        sessionExecutionScope = normalizeSessionExecutionScope(
+          event.data?.sessionExecutionScope,
+        );
+      }
       const imported = branchImport.accept(event);
       const messages = eventMessages(event, imported);
       if (imported?.kind === "start") {
@@ -376,6 +383,7 @@ export function createSessionTranscriptHistoryProjection(
         return withSessionBranchHistory(
           {
             parentSessionId: sessionId,
+            sessionExecutionScope,
             contextDigest: branchContextDigest(branch.messages),
             contextOrigins,
             descriptor: {

@@ -2256,6 +2256,57 @@ export async function concurrentAgentScenario(
   };
 }
 
+async function fullscreenTerminalScenario(pty, baseUrl, home, nativeOptions) {
+  const terminal = pty.spawn(process.execPath, commonArgs(baseUrl), {
+    cwd: REPOSITORY_ROOT,
+    env: {
+      ...childEnvironment(home),
+      CC_NO_FLICKER: "1",
+      TERM: "xterm-256color",
+    },
+    name: "xterm-256color",
+    cols: 100,
+    rows: 30,
+    ...nativeOptions,
+  });
+  let output = "";
+  let step = 0;
+  const observe = [
+    ["Ready", "/permissions str"],
+    ["\u203a strict", "\t\r"],
+    ["Approval policy", "/exit\r"],
+  ];
+  terminal.onData((chunk) => {
+    output = (output + chunk).slice(-128 * 1024);
+    if (step < observe.length && output.includes(observe[step][0])) {
+      const [, keys] = observe[step++];
+      output = "";
+      terminal.write(keys);
+    }
+  });
+  const exitCode = await new Promise((resolve) => {
+    const timer = setTimeout(() => {
+      try {
+        terminal.kill();
+      } catch {
+        /* The deadline remains authoritative. */
+      }
+      resolve(null);
+    }, 60_000);
+    terminal.onExit((event) => {
+      clearTimeout(timer);
+      resolve(event.exitCode);
+    });
+  });
+  const processRetired = processExists(terminal.pid) === false;
+  return {
+    pass: step === observe.length && exitCode === 0 && processRetired,
+    exitCode,
+    processRetired,
+    observedSteps: step,
+  };
+}
+
 async function ttyScenario(baseUrl, home, profile) {
   let pty;
   try {
@@ -2424,6 +2475,12 @@ async function ttyScenario(baseUrl, home, profile) {
       ? { debugOutput: screenReaderOutput.slice(-4_000) }
       : {}),
   };
+  const fullscreen = await fullscreenTerminalScenario(
+    pty,
+    baseUrl,
+    join(home, "fullscreen"),
+    nativeOptions,
+  );
   const disconnects = [];
   for (let index = 0; index < profile.disconnectCases; index += 1) {
     const disconnectedAt = performance.now();
@@ -2494,10 +2551,12 @@ async function ttyScenario(baseUrl, home, profile) {
     pass:
       normal.pass &&
       screenReader.pass &&
+      fullscreen.pass &&
       disconnects.every((sample) => sample.pass),
     supported: true,
     normal,
     screenReader,
+    fullscreen,
     disconnects,
   };
 }

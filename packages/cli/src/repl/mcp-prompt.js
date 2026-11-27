@@ -93,16 +93,31 @@ export async function expandMcpPrompt(line, mcpClient) {
 /**
  * Render a human overview of all connected MCP resources + prompts for `/mcp`.
  */
-export function renderMcpSurface(mcpClient) {
+export function renderMcpSurface(mcpClient, serverName) {
   if (!mcpClient) return "No MCP servers are connected this session.";
+  const server = serverName
+    ? mcpClient.listServers?.().find((item) => item.name === serverName)
+    : null;
+  if (serverName && !server) return `MCP server "${serverName}" was not found.`;
   const resources =
     typeof mcpClient.listResources === "function"
-      ? mcpClient.listResources()
+      ? mcpClient.listResources(serverName || undefined)
       : [];
   const prompts =
-    typeof mcpClient.listPrompts === "function" ? mcpClient.listPrompts() : [];
+    typeof mcpClient.listPrompts === "function"
+      ? mcpClient.listPrompts(serverName || undefined)
+      : [];
 
   const lines = [];
+  if (server) {
+    lines.push(
+      `MCP server ${server.name} (${server.state}, ${server.tools} tools):`,
+    );
+    for (const tool of mcpClient.listTools?.(serverName) || []) {
+      lines.push(`  ${tool.name}`);
+    }
+    lines.push("");
+  }
   lines.push(`MCP resources (${resources.length}):`);
   for (const r of resources) {
     lines.push(`  ${r.uri} [${r.server}]${r.name ? " — " + r.name : ""}`);
