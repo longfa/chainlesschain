@@ -26,6 +26,13 @@ import { createPersistedModelInputObserver } from "../lib/session-model-input-di
 import { randomUUID } from "node:crypto";
 import { isProxy } from "node:util/types";
 import { transportErrorDetails } from "../lib/transport-error-details.js";
+import { providerStreamErrorDetails } from "../lib/stream-retry.js";
+import {
+  DELIVERY_UNVERIFIED,
+  DELIVERY_UNVERIFIED_MESSAGE,
+  snapshotDelivery,
+  verifyDelivery,
+} from "../lib/workspace-delivery-receipt.js";
 import { captureAgentExecutionPolicy } from "../lib/agent-execution-policy.js";
 import { resolveLlmConnection } from "../lib/llm-connection-resolution.js";
 import { HERMETIC_CODING_SYSTEM_PROMPT } from "../lib/coding-task-guidance.js";
@@ -1241,6 +1248,11 @@ async function runAgentHeadlessInWorkspace(
   let model = connection.model;
   const { provider, baseUrl, apiKey } = connection;
   const cwd = options.cwd || process.cwd();
+  const deliveryBefore = await snapshotDelivery(
+    cwd,
+    options.deliveryPaths,
+    options.signal,
+  );
   const formalQualityHermetic = isFormalQualityHermeticRuntime(process.env);
   const hermeticExecution =
     options.hermeticExecution === true || formalQualityHermetic;
@@ -4481,19 +4493,23 @@ async function runAgentHeadlessInWorkspace(
         : err?.goalModelFailure || err?.goalVerificationFailure
           ? err.subtype
           : "error";
+    const providerDetails =
+      errorSubtype === "error" ? providerStreamErrorDetails(err) : undefined;
     const transportDetails =
       errorSubtype === "error" ? transportErrorDetails(err) : undefined;
-    const diagnosticFields = transportDetails
-      ? { error_details: transportDetails }
-      : {
-          ...((persistenceFailed || err?.goalVerificationFailure) && err.code
-            ? { code: err.code }
-            : {}),
-          ...(err?.goalVerificationFailure && err.verification
-            ? { verification: err.verification }
-            : {}),
-          ...(persistence ? { persistence } : {}),
-        };
+    const diagnosticFields = providerDetails
+      ? { code: providerDetails.code, error_details: providerDetails }
+      : transportDetails
+        ? { error_details: transportDetails }
+        : {
+            ...((persistenceFailed || err?.goalVerificationFailure) && err.code
+              ? { code: err.code }
+              : {}),
+            ...(err?.goalVerificationFailure && err.verification
+              ? { verification: err.verification }
+              : {}),
+            ...(persistence ? { persistence } : {}),
+          };
     if (isStream) {
       emitStream({
         type: "result",
@@ -4537,9 +4553,11 @@ async function runAgentHeadlessInWorkspace(
       exitCode:
         persistenceFailed || sessionBudgetFailed
           ? 1
-          : err?.goalModelFailure || err?.goalVerificationFailure
-            ? exitCodeForEndReason(err.endReason, true)
-            : classifyLoopError(err),
+          : providerDetails
+            ? HEADLESS_EXIT_CODES.MODEL_ERROR
+            : err?.goalModelFailure || err?.goalVerificationFailure
+              ? exitCodeForEndReason(err.endReason, true)
+              : classifyLoopError(err),
       result: message,
       isError: true,
       ...(persistence ? { persistence } : {}),
@@ -4550,6 +4568,9 @@ async function runAgentHeadlessInWorkspace(
           }
         : {}),
       ...(persistenceFailed && err.code ? { code: err.code } : {}),
+      ...(providerDetails
+        ? { code: providerDetails.code, error_details: providerDetails }
+        : {}),
     };
   } finally {
     // Capture body-cache hits/misses caused by list_skills/run_skill during the
@@ -4739,6 +4760,22 @@ async function runAgentHeadlessInWorkspace(
         : isError
           ? "error"
           : "success";
+  const delivery =
+    !isError && deliveryBefore
+      ? await verifyDelivery(cwd, deliveryBefore, {
+          sessionId,
+          turnId: options.turnId || randomUUID(),
+          signal: options.signal,
+        })
+      : null;
+  const deliveryUnverified = delivery?.status === "unverified";
+  if (deliveryUnverified) {
+    isError = true;
+    subtype = "error_deliverable_unverified";
+    if (isText) writeErr(DELIVERY_UNVERIFIED_MESSAGE + "\n");
+  } else if (isText && delivery) {
+    writeErr("Delivery files verified. Checks are unverified.\n");
+  }
   const durationMs = (deps.now ? deps.now() : Date.now()) - startedAt;
   let persistenceFailure = null;
   let sessionPersistenceCode = null;
@@ -4903,7 +4940,16 @@ async function runAgentHeadlessInWorkspace(
 
   const resultCode =
     sessionPersistenceCode ||
+    (subtype === "error_deliverable_unverified" ? DELIVERY_UNVERIFIED : null) ||
     (deniedDestructiveRequest ? DESTRUCTIVE_SHELL_DENIAL_CODE : null);
+  const deliveryFields = delivery
+    ? {
+        delivery,
+        ...(resultCode === DELIVERY_UNVERIFIED
+          ? { error: DELIVERY_UNVERIFIED_MESSAGE }
+          : {}),
+      }
+    : {};
   if (isStream) {
     emitStream({
       type: "result",
@@ -4920,6 +4966,7 @@ async function runAgentHeadlessInWorkspace(
         : {}),
       ...(persistenceFailure ? { persistence: persistenceFailure } : {}),
       ...(resultCode ? { code: resultCode } : {}),
+      ...deliveryFields,
     });
   } else if (isJson) {
     writeOut(
@@ -4939,6 +4986,7 @@ async function runAgentHeadlessInWorkspace(
           persistence: persistenceFailure,
         }),
         ...(resultCode ? { code: resultCode } : {}),
+        ...deliveryFields,
       }) + "\n",
     );
   } else {
@@ -4987,6 +5035,7 @@ async function runAgentHeadlessInWorkspace(
     isError,
     ...(persistenceFailure ? { persistence: persistenceFailure } : {}),
     ...(resultCode ? { code: resultCode } : {}),
+    ...deliveryFields,
   };
 }
 

@@ -20,6 +20,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
 import { getHomeDir } from "./paths.js";
+import { renameWithRetry } from "./config-manager.js";
 import { withFileLock } from "./with-file-lock.js";
 import {
   createGoalRecord,
@@ -90,7 +91,9 @@ function atomicWriteFileSync(filePath, data) {
   const tmp = `${filePath}.${process.pid}.${Math.random().toString(36).slice(2, 8)}.tmp`;
   try {
     fs.writeFileSync(tmp, data, "utf-8");
-    fs.renameSync(tmp, filePath);
+    // A concurrent goal watcher can briefly hold the destination open on
+    // Windows. Retry the same replacement while the mutation lock is held.
+    renameWithRetry(tmp, filePath, { _rename: fs.renameSync });
   } catch (err) {
     try {
       if (fs.existsSync(tmp)) fs.unlinkSync(tmp);

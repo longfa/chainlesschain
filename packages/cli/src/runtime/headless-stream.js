@@ -19,6 +19,13 @@
 import { createPersistedModelInputObserver } from "../lib/session-model-input-diagnostics.js";
 import { randomUUID } from "node:crypto";
 import { transportErrorDetails } from "../lib/transport-error-details.js";
+import { providerStreamErrorDetails } from "../lib/stream-retry.js";
+import {
+  DELIVERY_UNVERIFIED,
+  DELIVERY_UNVERIFIED_MESSAGE,
+  snapshotDelivery,
+  verifyDelivery,
+} from "../lib/workspace-delivery-receipt.js";
 import { storageFailureCauseSuffix } from "../lib/storage-failure-cause-codes.js";
 import { captureAgentExecutionPolicy } from "../lib/agent-execution-policy.js";
 import { resolveLlmConnection } from "../lib/llm-connection-resolution.js";
@@ -5872,7 +5879,15 @@ async function runAgentHeadlessStreamInWorkspace(
     }
 
     let outcome;
+    let deliveryBefore = null;
     try {
+      if (turns === 1) {
+        deliveryBefore = await snapshotDelivery(
+          cwd,
+          options.deliveryPaths,
+          turnSignal,
+        );
+      }
       outcome = await runTurn(
         messages,
         {
@@ -6088,13 +6103,15 @@ async function runAgentHeadlessStreamInWorkspace(
         break;
       }
       if (!settleToolRoundsForHost("after-model")) break;
-      const transportDetails = transportErrorDetails(err);
+      const providerDetails = providerStreamErrorDetails(err);
+      const errorDetails = providerDetails || transportErrorDetails(err);
       emit({
         type: "result",
         subtype: "error",
         is_error: true,
         error: err?.message || String(err),
-        ...(transportDetails ? { error_details: transportDetails } : {}),
+        ...(providerDetails ? { code: providerDetails.code } : {}),
+        ...(errorDetails ? { error_details: errorDetails } : {}),
         turn: turns,
       });
       sawError = true;
@@ -6237,13 +6254,23 @@ async function runAgentHeadlessStreamInWorkspace(
     const costStopped = outcome.endReason === "cost-budget-exhausted";
     const deniedDestructiveRequest =
       outcome.endReason === "complete" && outcome.destructiveDenials.length > 0;
-    const isError =
+    const runtimeError =
       exhausted ||
       costStopped ||
       deniedDestructiveRequest ||
       outcome.endReason === "no-response" ||
       outcome.endReason === "deferred-mutation-unresolved" ||
       Boolean(persistenceFailure);
+    const delivery =
+      !runtimeError && deliveryBefore
+        ? await verifyDelivery(cwd, deliveryBefore, {
+            sessionId,
+            turnId: parsed.clientMessageId || `${traceId}:${turns}`,
+            signal: turnSignal,
+          })
+        : null;
+    const deliveryUnverified = delivery?.status === "unverified";
+    const isError = runtimeError || deliveryUnverified;
     if (isError) sawError = true;
     const transcriptRefs = !persistenceFailure
       ? transcriptResultReferences({
@@ -6272,9 +6299,11 @@ async function runAgentHeadlessStreamInWorkspace(
           ? "error_max_budget"
           : persistenceFailure
             ? "error_persistence"
-            : isError
-              ? "error"
-              : "success",
+            : deliveryUnverified
+              ? "error_deliverable_unverified"
+              : isError
+                ? "error"
+                : "success",
       is_error: isError,
       result: outcome.finalText,
       session_id: sessionId,
@@ -6282,6 +6311,10 @@ async function runAgentHeadlessStreamInWorkspace(
       usage: outcome.usage,
       ...(transcriptRefs ? { transcript_refs: transcriptRefs } : {}),
       ...(persistenceFailure ? { persistence: persistenceFailure } : {}),
+      ...(delivery ? { delivery } : {}),
+      ...(deliveryUnverified
+        ? { code: DELIVERY_UNVERIFIED, error: DELIVERY_UNVERIFIED_MESSAGE }
+        : {}),
       ...(deniedDestructiveRequest && !persistenceFailure
         ? { code: DESTRUCTIVE_SHELL_DENIAL_CODE }
         : {}),

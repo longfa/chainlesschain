@@ -322,7 +322,11 @@ export function _openaiReduceLine(state, raw, onToken) {
     state.terminationInvalid = true;
     return state;
   }
-  if (obj?.error) throw createChatCompletionsStreamError();
+  if (obj?.error)
+    throw createChatCompletionsStreamError(
+      obj.error,
+      Boolean(state.text || state.tools.length),
+    );
   if (state.streamDone) state.terminationInvalid = true;
   if (!Array.isArray(obj.choices) || obj.choices.length > 1) {
     state.terminationInvalid = true;

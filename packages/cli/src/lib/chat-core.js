@@ -319,23 +319,25 @@ export async function streamOpenAI(
   try {
     while (true) {
       const { done, value } = await reader.read();
-      if (done) break;
-      guard.bump();
-
-      buf += decoder.decode(value, { stream: true });
+      if (!done) guard.bump();
+      buf += done ? decoder.decode() : decoder.decode(value, { stream: true });
       const lines = buf.split("\n");
-      buf = lines.pop() || "";
+      if (!done) buf = lines.pop() || "";
 
       for (const line of lines) {
-        if (line.startsWith("data: ")) {
-          const data = line.slice(6);
+        if (line.startsWith("data:")) {
+          const data = line.slice(5).trim();
           if (data === "[DONE]") {
             completed = true;
             continue;
           }
           try {
             const json = JSON.parse(data);
-            if (json?.error) throw createChatCompletionsStreamError();
+            if (json?.error)
+              throw createChatCompletionsStreamError(
+                json.error,
+                Boolean(fullResponse),
+              );
             const content = json.choices?.[0]?.delta?.content;
             if (content) {
               fullResponse += content;
@@ -363,6 +365,7 @@ export async function streamOpenAI(
           }
         }
       }
+      if (done) break;
     }
   } catch (e) {
     if (e?.code === CHAT_COMPLETIONS_STREAM_FAILED)

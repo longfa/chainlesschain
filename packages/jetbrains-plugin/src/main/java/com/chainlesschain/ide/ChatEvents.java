@@ -366,6 +366,11 @@ public final class ChatEvents {
             } else {
                 // If text streamed via deltas, the final result repeats it — drop.
                 text = sawDelta ? null : evt.get("result");
+                if (evt.get("delivery") instanceof Map<?, ?> delivery
+                        && "verified".equals(delivery.get("status"))
+                        && "not_verified".equals(delivery.get("checks"))) {
+                    m.put("terminalDiagnostic", "Delivery files verified. Checks are unverified.");
+                }
             }
             m.put("text", text);
             m.put("usage", evt.get("usage"));

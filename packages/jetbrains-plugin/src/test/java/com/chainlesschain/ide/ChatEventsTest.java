@@ -349,6 +349,21 @@ class ChatEventsTest {
     }
 
     @Test
+    void deliveryResultKeepsAssistantTextAndStatesWhatWasChecked() {
+        Map<String, Object> result = Map.of(
+                "type", "result", "subtype", "success", "result", "Updated the source.",
+                "delivery", Map.of("status", "verified", "checks", "not_verified"));
+        Map<String, Object> ui = ChatEvents.mapAgentEvent(result, new ChatEvents.TurnState());
+        assertEquals("Updated the source.", ui.get("text"));
+        assertEquals("Delivery files verified. Checks are unverified.", ui.get("terminalDiagnostic"));
+
+        Map<String, Object> rejected = Map.of(
+                "type", "result", "subtype", "error_deliverable_unverified", "is_error", true,
+                "error", "Delivery unverified.", "result", "I changed the file.");
+        assertEquals("Delivery unverified.", ChatEvents.mapAgentEvent(rejected, new ChatEvents.TurnState()).get("text"));
+    }
+
+    @Test
     void budgetResultWithoutStreamedTextKeepsTheResultPlusReason() {
         ChatEvents.TurnState st = new ChatEvents.TurnState();
         Map<String, Object> result = new LinkedHashMap<>();

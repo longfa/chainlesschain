@@ -324,7 +324,7 @@ See the [verified publication evidence](https://github.com/longfa/chainlesschain
 
 ## Release compatibility
 
-Plugin **0.4.215** is the current public release. It recommends `chainlesschain@0.166.165` and automatically approves routine tool use in new chats. Use `/normal` to require regular approval prompts.
+Plugin **0.4.216** is the current release candidate. It recommends `chainlesschain@0.166.166` and automatically approves routine tool use in new chats. Use `/normal` to require regular approval prompts.
 
 ## Previous candidates and development notes
 

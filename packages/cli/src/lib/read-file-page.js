@@ -1,4 +1,39 @@
+import fs from "node:fs";
+import { readBoundedDescriptor } from "./evolution/bounded-descriptor-read.js";
 import { recoverCompleteSourceRead } from "./source-read-recovery.js";
+
+export const MAX_READ_FILE_BYTES = 8 * 1024 * 1024;
+
+export function readRegularFileForPages(path, before, signal) {
+  signal?.throwIfAborted();
+  const descriptor = fs.openSync(
+    path,
+    fs.constants.O_RDONLY | (fs.constants.O_NONBLOCK || 0),
+  );
+  const matches = (stat) =>
+    stat.isFile() &&
+    stat.ino === before.ino &&
+    (process.platform === "win32" || stat.dev === before.dev) &&
+    stat.size === before.size &&
+    stat.mtimeMs === before.mtimeMs &&
+    stat.ctimeMs === before.ctimeMs;
+  try {
+    if (!matches(fs.fstatSync(descriptor)))
+      throw new Error("file changed before read");
+    const bytes = readBoundedDescriptor(
+      fs,
+      descriptor,
+      before.size,
+      MAX_READ_FILE_BYTES,
+    );
+    if (!matches(fs.fstatSync(descriptor)) || !matches(fs.statSync(path)))
+      throw new Error("file changed during read");
+    signal?.throwIfAborted();
+    return bytes.toString("utf8");
+  } finally {
+    fs.closeSync(descriptor);
+  }
+}
 
 /** Build a bounded read result with a cursor describing what was actually read. */
 export function buildReadFilePage(

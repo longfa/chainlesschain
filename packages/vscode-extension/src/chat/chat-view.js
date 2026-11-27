@@ -1628,6 +1628,17 @@ class ChatViewProvider {
             }
           : ui,
       );
+      if (
+        evt?.type === "result" &&
+        !evt.is_error &&
+        evt.delivery?.status === "verified" &&
+        evt.delivery.checks === "not_verified"
+      ) {
+        this._postFrom(convId, {
+          kind: "info",
+          text: "Delivery files verified. Checks are unverified.",
+        });
+      }
       if (evt?.type === "result" && evt.subtype === "error_max_turns") {
         this._postFrom(convId, {
           kind: "info",

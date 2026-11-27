@@ -9,3 +9,4 @@
 - [ChainlessChain 对照 Claude Code / Codex 的增量差距复核（2026-11-08）](./cli-ide-codex-claude-gap-review-2026-11-08.md)
 - [借鉴最新 Codex / Claude Code 的产品与工程学习清单（2026-11-20）](./cli-ide-codex-claude-learning-review-2026-11-20.md)
 - [借鉴最新 Codex / Claude Code 的不足复核与实施方案（2026-11-22）](./cli-ide-codex-claude-learning-review-2026-11-22.md)
+- [Claude Code / Codex 差距、36+9 实际结果与下一步实施方案（2026-11-27）](./cli-ide-codex-claude-gap-review-2026-11-27.md)

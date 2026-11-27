@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import {
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import fs, {
   mkdtempSync,
   rmSync,
   existsSync,
@@ -60,6 +60,40 @@ describe("goal-store", () => {
       id: g.id,
       status: GOAL_STATUS.PAUSED,
     });
+  });
+
+  it("retries a transient replacement denial without applying the goal transition twice", () => {
+    const original = createGoal({ objective: "Concurrent read" }, o());
+    const file = join(root, `${original.id}.json`);
+    const rename = fs.renameSync;
+    let denied = false;
+    const mock = vi.spyOn(fs, "renameSync").mockImplementation((from, to) => {
+      if (to === file && !denied) {
+        denied = true;
+        expect(getGoal(original.id, o())).toMatchObject({
+          status: GOAL_STATUS.ACTIVE,
+          revision: original.revision,
+        });
+        throw Object.assign(new Error("destination is open"), {
+          code: "EPERM",
+        });
+      }
+      return rename(from, to);
+    });
+    try {
+      setStatus(original.id, GOAL_STATUS.PAUSED, o());
+      expect(denied).toBe(true);
+      expect(getGoal(original.id, o())).toMatchObject({
+        status: GOAL_STATUS.PAUSED,
+        revision: original.revision + 1,
+        controlGeneration: original.controlGeneration + 1,
+      });
+      expect(readdirSync(root).some((name) => name.endsWith(".tmp"))).toBe(
+        false,
+      );
+    } finally {
+      mock.mockRestore();
+    }
   });
 
   it("derives progress from key results", () => {

@@ -1,5 +1,9 @@
 # Changelog — ChainlessChain IDE Bridge (VS Code)
 
+## [0.37.201] - CLI 0.166.166 pairing (candidate, 2026-11-27)
+
+- Show workspace delivery verification and distinguish it from independent checks.
+
 ## [0.37.200] - CLI 0.166.165 pairing (candidate, 2026-11-26)
 
 - Recommend CLI `0.166.165` for the terminal Esc fix.

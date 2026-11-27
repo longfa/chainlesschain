@@ -74,6 +74,8 @@ export {
 import path from "path";
 import {
   buildReadFilePage,
+  MAX_READ_FILE_BYTES,
+  readRegularFileForPages,
   buildReadFileOutline,
 } from "../lib/read-file-page.js";
 import { ReadFileLoopGuard } from "../lib/read-file-loop-guard.js";
@@ -5851,6 +5853,20 @@ async function executeToolInner(
           error: `Path is a directory, not a file: ${filePath}. Use list_dir to see its contents.`,
         });
       }
+      if (!fileStat.isFile()) {
+        return attachDescriptor({
+          code: "CC_READ_FILE_NOT_REGULAR",
+          error:
+            "Read requires a regular file. Pipes and device files are unsupported.",
+        });
+      }
+      if (fileStat.size > MAX_READ_FILE_BYTES) {
+        return attachDescriptor({
+          code: "CC_READ_FILE_SIZE_LIMIT",
+          error: `File exceeds the ${MAX_READ_FILE_BYTES}-byte read limit. Search for the needed section or use a smaller source file.`,
+        });
+      }
+      signal?.throwIfAborted();
       const fileVersion = `${fileStat.size}:${fileStat.mtimeMs}:${fileStat.ctimeMs}`;
       _recordFileObservation(filePath);
       let rendered;
@@ -5858,7 +5874,7 @@ async function executeToolInner(
       let outline;
       const render = () => {
         if (rendered !== undefined) return rendered;
-        const content = fs.readFileSync(filePath, "utf8");
+        const content = readRegularFileForPages(filePath, fileStat, signal);
         nbView =
           args.raw !== true && /\.ipynb$/i.test(filePath)
             ? renderNotebook(content)

@@ -1,5 +1,9 @@
 # chainlesschain CLI
 
+## CLI 0.166.166 candidate
+
+The candidate adds workspace delivery readback, provider stream error classification, and bounded file reads. The planned pairing is Open VSX **0.37.201** and JetBrains **0.4.216**.
+
 ## Public CLI 0.166.165
 
 CLI **0.166.165** is public from exact source `206e4e72257ec9178ddb66dcc28107e0ce3c43aa`. CLI CI and Strict Sandbox passed on Linux, Windows, and macOS. GitHub Actions published through OIDC and verified the public archive and signed provenance. Install with `npm i -g chainlesschain@0.166.165 --registry https://registry.npmjs.org`, then use `cc --version` and `cc doctor`. [npm publication](https://github.com/longfa/chainlesschain/actions/runs/45885605925)

@@ -180,7 +180,7 @@ describe("streamOpenAI", () => {
     const cancel = vi.fn();
     const body = makeReadableStream([
       'data: {"choices":[{"delta":{"content":"partial"}}]}\n',
-      'data: {"error":{"message":"upstream connection reset"}}\n',
+      'data:{"error":{"code":"insufficient_quota","message":"private account details"}}',
     ]);
     const reader = body.getReader();
     globalThis.fetch = vi.fn().mockResolvedValue({
@@ -196,7 +196,11 @@ describe("streamOpenAI", () => {
         "test-key",
         (token) => tokens.push(token),
       ),
-    ).rejects.toMatchObject({ code: "CC_CHAT_COMPLETIONS_STREAM_FAILED" });
+    ).rejects.toMatchObject({
+      code: "CC_CHAT_COMPLETIONS_STREAM_FAILED",
+      message: expect.stringContaining("quota exhausted"),
+      noReplay: true,
+    });
     expect(tokens).toEqual(["partial"]);
     expect(cancel).toHaveBeenCalledOnce();
   });
