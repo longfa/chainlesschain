@@ -1,0 +1,115 @@
+{
+  "schema": "chainlesschain.native-package-set/v1",
+  "resolvedAt": "2026-11-27T23:58:06.582Z",
+  "versions": {
+    "cli": "0.166.167",
+    "vscode": "0.37.202",
+    "jetbrains": "0.4.217",
+    "vscodeHost": "1.132.0",
+    "jetbrainsHost": "2025.2"
+  },
+  "releaseSourceCommit": "8d178c315f592f71c1fb4e3edfb7ad02a56086fb",
+  "prepublication": {
+    "schema": "chainlesschain.verify01-prerelease-package-set/v1",
+    "distribution": "prerelease-actions-artifact",
+    "repository": "longfa/chainlesschain",
+    "workflow": ".github/workflows/verify01-prerelease-packages.yml",
+    "sourceCommit": "8d178c315f592f71c1fb4e3edfb7ad02a56086fb",
+    "runId": 46083962251,
+    "artifactId": 15238890963,
+    "artifactName": "verify01-prerelease-packages-8d178c315f592f71c1fb4e3edfb7ad02a56086fb",
+    "artifactDigest": "sha256:d25392a0d46d832f5b0c25ab2a1022442822c4afffc43dee8d0e2ac7ae655f6f",
+    "contextWindowTokens": 32768,
+    "files": {
+      "cli": {
+        "file": "chainlesschain-0.166.167.tgz",
+        "digest": "sha256:cd4697f9b638d6adfe09676ffd5790fbf81a946ff784e01be63b4556545d6db1",
+        "integrity": "sha512-SGca7dWrJNfN7o8XGZ4ZnA5B6MZPWwXVvP1PyB7ajMZQml4JkVLgOAQOJl7/6XBpFhG5pXIuStEGVbTrJ42Qyg==",
+        "bytes": 9718509
+      },
+      "vscode": {
+        "file": "chainlesschain-ide-0.37.202.vsix",
+        "digest": "sha256:aa361d67473e1be728184545cae208422b46dbc4459445e8036a94f2ba6f4651",
+        "integrity": "sha512-ztOpaQ8QiLK9j+0aYUJzlr0WbcEKPG7sDirxlQtTi957wNL6+kDnjOVoqtfWZraor+pQljFtE377k1CqQN3sSw==",
+        "bytes": 783538
+      },
+      "jetbrains": {
+        "file": "chainlesschain-ide-bridge-0.4.217.zip",
+        "digest": "sha256:8b408472549313d96b45d3077d268068d763cc2f92bcaec5e3f5c2695820cd54",
+        "integrity": "sha512-8+tGsXw+O9c8+62ENcHmkya/5W6Z3ve1gtU/gYBK+7Dw100gL26o47klFEhc4jBlrfZoCXgbbskayJeSEimrhg==",
+        "bytes": 1624544
+      }
+    },
+    "cliSourceFiles": [
+      {
+        "file": "bin/chainlesschain.js",
+        "digest": "sha256:32339064da330222d3f1129c201a5e9473441ed3d12b4758193696d3c3565547"
+      },
+      {
+        "file": "src/commands/agent.js",
+        "digest": "sha256:983cb336a3a1fcf9cbb9e7b86b3a6e791d048c6ef3523610b8dfbd2ddce717cc"
+      },
+      {
+        "file": "src/runtime/agent-core.js",
+        "digest": "sha256:1a7c395f48b2e53bc04fa3aa7488a9a70af918506b956caedd5211716c7498c9"
+      },
+      {
+        "file": "src/lib/read-file-loop-guard.js",
+        "digest": "sha256:6459ae3ed86061d16a490c0f2c9f375a1029c4dcd40f41e998a8fd63a3469985"
+      },
+      {
+        "file": "src/lib/coding-change-review-context.js",
+        "digest": "sha256:41fb28f0ee7f99721e4153b7f73b8c6cd44b6aaebaf1931da152b20f6947e8f1"
+      },
+      {
+        "file": "src/lib/coding-task-guidance.js",
+        "digest": "sha256:77cca4eb2042ea3bca7effbd20fdd27e3f0ea96e48a89e066bba68fa19fb171b"
+      },
+      {
+        "file": "src/lib/tool-result-preview.js",
+        "digest": "sha256:7b1421c74a00a4f869b502a7aebe0380ed90a1bc13a8ca1390688c06a38cc16c"
+      },
+      {
+        "file": "src/lib/evolution/evidence-json-text.js",
+        "digest": "sha256:2023b1958e107fb27314b0518e73970e5ae0bab94fba4da72e7b1dcd197820d2"
+      },
+      {
+        "file": "src/lib/evolution/evolution-evidence-projector.js",
+        "digest": "sha256:bb9a0f805b682614a9c9743bd797dee2180b83d6b71e684f44f364c420f0dad5"
+      },
+      {
+        "file": "src/lib/model-capabilities.js",
+        "digest": "sha256:3153beb805ac7e044fb77e1594d39c140a55c5585067db49f111d5f92a35e865"
+      },
+      {
+        "file": "src/lib/context-memory-kernel/provider-context.js",
+        "digest": "sha256:c8becb901ca6e688e589dc96d67772fc7627a13cd66eb21686a4a93a2f930383"
+      },
+      {
+        "file": "src/lib/context-memory-kernel/live-compaction.js",
+        "digest": "sha256:a59268f96a87286d78d39f4a1d1a3a8cfb6c1dbf4eeff53a3a925d895bacbf60"
+      },
+      {
+        "file": "src/lib/context-memory-kernel/message-adapter.js",
+        "digest": "sha256:88df13cf95044e00d46d966740e08da1dde53bf9db663b712789dd496e1a5fc3"
+      },
+      {
+        "file": "src/lib/context-memory-kernel/task-binding.js",
+        "digest": "sha256:44415b38b941fc0828a9830e20c46cdc13a87453aab94cd6ab0642f44a046257"
+      },
+      {
+        "file": "src/lib/context-memory-kernel/jsonl-session-context-port.js",
+        "digest": "sha256:af56de83f273d89d4688d40e4f40493e683ff23db156f5bf93d73c71400f0a22"
+      },
+      {
+        "file": "src/runtime/message-roles.js",
+        "digest": "sha256:e60dcd7d2f24f5517d3ff706e9a5df9958aabd4390eb6fd655760ce1187b7a66"
+      },
+      {
+        "file": "src/runtime/tool-argument-recovery.js",
+        "digest": "sha256:749ca33229ff71c3438f8621b2ef0dc603355a6c0ab93c055bc37986731ebc7c"
+      }
+    ],
+    "published": false
+  }
+}
