@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Verify declared workspace deliverables and show unverified delivery in CLI and IDE results.
 - Classify explicit provider streaming failures and keep automatic replays disabled.
 - Read regular files through a bounded descriptor and reject files above 8 MiB with a typed error.
+- Keep goal transitions atomic when a Windows reader briefly prevents replacing the goal file.
 - Pair CLI 0.166.166 with Open VSX 0.37.201 and JetBrains 0.4.216.
 
 ### Fixed - cc CLI 0.166.165 and IDE pairing (candidate, 2026-11-26)
