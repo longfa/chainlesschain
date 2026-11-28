@@ -45,6 +45,14 @@ const {
   hostDomTokensEqual,
   validateHostDomRequest,
 } = require("./host-dom-relay");
+
+function historyFailureMessage(error) {
+  const message = error?.message;
+  if (typeof message !== "string" || !message.trim())
+    return "unknown history error";
+  const compact = message.replace(/[\r\n]+/gu, " ").trim();
+  return compact.length <= 240 ? compact : compact.slice(0, 240) + "…";
+}
 const {
   ConversationManager,
   deriveTabTitle,
@@ -1223,7 +1231,7 @@ class ChatViewProvider {
         kind: "info",
         text: "More saved messages are available. Select Latest messages to continue loading.",
       });
-    } catch {
+    } catch (error) {
       if (
         this._disposed ||
         this._convs.get(conv.id) !== conv ||
@@ -1236,7 +1244,10 @@ class ChatViewProvider {
         return;
       this._postFrom(conv.id, {
         kind: "info",
-        text: "Saved conversation could not be loaded. Select Latest messages to retry.",
+        text:
+          "Saved conversation could not be loaded: " +
+          historyFailureMessage(error) +
+          ". Select Latest messages to retry.",
       });
     }
   }
