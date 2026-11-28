@@ -9,7 +9,7 @@ import {
 export const LK_BROKER = Object.freeze({
   endpoint: LK_CHANNEL.addresses.primary + "/v1/chat/completions",
   provider: "lk",
-  model: "gpt-6.1-sol",
+  model: "gpt-6.2-sol",
   protocol: "chat-completions",
   maximumRequestsPerTask: 24,
   maximumRequestBytes: 256 * 1024,
