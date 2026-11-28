@@ -20,6 +20,13 @@ import java.util.function.Supplier;
 
 /** Per-tab read-only history browser. State and rendering are EDT-owned. */
 final class ChatHistoryView {
+    private static String historyFailureMessage(Exception error) {
+        String message = error == null ? "" : error.getMessage();
+        if (message == null || message.isBlank()) return "unknown history error";
+        String compact = message.replaceAll("[\\r\\n]+", " ").trim();
+        return compact.length() <= 240 ? compact : compact.substring(0, 240) + "…";
+    }
+
     interface Loader {
         SessionTranscriptPage read(String sessionId, String cursor, BooleanSupplier cancelled) throws Exception;
         default SessionTranscriptChanges changes(String sessionId, String cursor, BooleanSupplier cancelled) throws Exception {
@@ -193,7 +200,9 @@ final class ChatHistoryView {
         SessionTranscriptPage page = result == null ? null : result.page();
         if (error != null || page == null) {
             cancel();
-            status.setText(" Saved conversation could not be loaded. Select Latest messages to retry.");
+            status.setText(" Saved conversation could not be loaded: "
+                    + historyFailureMessage(error)
+                    + ". Select Latest messages to retry.");
             status.setToolTipText(status.getText()); updateControls(); return;
         }
         if (next.incremental() || next.cursor() == null) {

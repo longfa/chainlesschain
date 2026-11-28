@@ -16,6 +16,7 @@ export {
   isWebSocketTransport,
   MCP_CONFIG_SCOPES,
   normalizeMcpConfigScope,
+  discoveryCachePolicy,
   normalizeMcpElicitationRequest,
   isHttpTransport,
   redactMcpUrl,
