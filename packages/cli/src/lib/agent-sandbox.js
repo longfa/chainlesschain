@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { throwIfAborted } from "./abort-utils.js";
 import { proxyEnv } from "./sandbox-egress-proxy.js";
 import executionBroker from "./process-execution-broker/index.js";
 
@@ -56,6 +57,30 @@ function pathEntryExists(candidate, fsImpl) {
   }
 }
 
+async function canonicalPolicyPathAsync(candidate, signal) {
+  const absolute = path.resolve(candidate);
+  let existing = absolute;
+  const missing = [];
+  for (;;) {
+    throwIfAborted(signal);
+    try {
+      await fs.promises.lstat(existing);
+      break;
+    } catch (error) {
+      if (error?.code !== "ENOENT" && error?.code !== "ENOTDIR") throw error;
+      const parent = path.dirname(existing);
+      if (parent === existing)
+        throw new Error(`No existing ancestor for path: ${absolute}`);
+      missing.unshift(path.basename(existing));
+      existing = parent;
+    }
+  }
+  throwIfAborted(signal);
+  const resolved = await fs.promises.realpath(existing);
+  throwIfAborted(signal);
+  return path.resolve(resolved, ...missing);
+}
+
 /**
  * Resolve a path for policy comparison without requiring the final target to
  * exist. Existing ancestors are resolved through symlinks/junctions before the
@@ -102,23 +127,7 @@ function normalizeWorkspaceRoots(entries, cwd) {
   return stringList(roots).map((entry) => path.resolve(cwd, entry));
 }
 
-/**
- * Resolve and authorize one built-in agent file-tool path.
- *
- * The workspace roots are always allowed. A normalized sandbox policy may add
- * explicit read/write roots and may deny narrower paths. Both existing targets
- * and the nearest existing ancestor are realpath-resolved, so an in-workspace
- * symlink/junction cannot redirect a read or write outside the declared roots.
- *
- * @returns {{
- *   ok:boolean,
- *   path?:string,
- *   canonicalPath?:string,
- *   reason?:string,
- *   error?:string
- * }}
- */
-export function resolveSandboxPolicyPath(
+function sandboxPolicyPathInputs(
   requestedPath,
   {
     access = "read",
@@ -126,7 +135,6 @@ export function resolveSandboxPolicyPath(
     workspaceRoots = null,
     sandbox = null,
     policy = sandbox?.policy || null,
-    fsImpl = null,
   } = {},
 ) {
   if (access !== "read" && access !== "write") {
@@ -150,7 +158,6 @@ export function resolveSandboxPolicyPath(
 
   const resolvedCwd = path.resolve(cwd);
   const resolvedPath = path.resolve(resolvedCwd, requestedPath);
-  const effectiveFs = fsImpl || fs;
   const normalizedPolicy = policy || {};
   const policyAllows =
     access === "write"
@@ -164,42 +171,105 @@ export function resolveSandboxPolicyPath(
   ];
   const deniedInputs = resolvePolicyPaths(policyDenies, resolvedCwd);
 
-  try {
-    const canonicalPath = canonicalPolicyPath(resolvedPath, effectiveFs);
-    const allowedRoots = allowedInputs.map((root) =>
-      canonicalPolicyPath(root, effectiveFs),
-    );
-    if (!allowedRoots.some((root) => pathIsWithin(canonicalPath, root))) {
-      return {
-        ok: false,
-        path: resolvedPath,
-        canonicalPath,
-        reason: "outside-workspace",
-        error: `${access} path resolves outside the allowed workspace roots`,
-      };
-    }
+  return { ok: true, access, resolvedPath, allowedInputs, deniedInputs };
+}
 
-    const deniedRoots = deniedInputs.map((root) =>
-      canonicalPolicyPath(root, effectiveFs),
-    );
-    if (deniedRoots.some((root) => pathIsWithin(canonicalPath, root))) {
-      return {
-        ok: false,
-        path: resolvedPath,
-        canonicalPath,
-        reason: "denied-by-policy",
-        error: `${access} path is denied by the sandbox filesystem policy`,
-      };
-    }
-
-    return { ok: true, path: resolvedPath, canonicalPath };
-  } catch (error) {
+// Keep the authorization order and verdicts common to both filesystem adapters.
+function* compareSandboxPolicyPath({
+  access,
+  resolvedPath,
+  allowedInputs,
+  deniedInputs,
+}) {
+  const canonicalPath = yield resolvedPath;
+  let allowed = false;
+  for (const root of allowedInputs) {
+    const canonicalRoot = yield root;
+    if (pathIsWithin(canonicalPath, canonicalRoot)) allowed = true;
+  }
+  if (!allowed) {
     return {
       ok: false,
       path: resolvedPath,
-      reason: "realpath-failed",
-      error: `Unable to safely resolve filesystem path: ${error.message}`,
+      canonicalPath,
+      reason: "outside-workspace",
+      error: `${access} path resolves outside the allowed workspace roots`,
     };
+  }
+  let denied = false;
+  for (const root of deniedInputs) {
+    const canonicalRoot = yield root;
+    if (pathIsWithin(canonicalPath, canonicalRoot)) denied = true;
+  }
+  if (denied) {
+    return {
+      ok: false,
+      path: resolvedPath,
+      canonicalPath,
+      reason: "denied-by-policy",
+      error: `${access} path is denied by the sandbox filesystem policy`,
+    };
+  }
+  return { ok: true, path: resolvedPath, canonicalPath };
+}
+
+function sandboxRealpathFailure(resolvedPath, error) {
+  return {
+    ok: false,
+    path: resolvedPath,
+    reason: "realpath-failed",
+    error: `Unable to safely resolve filesystem path: ${error.message}`,
+  };
+}
+
+/**
+ * Resolve and authorize one built-in agent file-tool path.
+ *
+ * The workspace roots are always allowed. A normalized sandbox policy may add
+ * explicit read/write roots and may deny narrower paths. Both existing targets
+ * and the nearest existing ancestor are realpath-resolved, so an in-workspace
+ * symlink/junction cannot redirect a read or write outside the declared roots.
+ *
+ * @returns {{
+ *   ok:boolean,
+ *   path?:string,
+ *   canonicalPath?:string,
+ *   reason?:string,
+ *   error?:string
+ * }}
+ */
+export function resolveSandboxPolicyPath(requestedPath, options = {}) {
+  const inputs = sandboxPolicyPathInputs(requestedPath, options);
+  if (!inputs.ok) return inputs;
+  const steps = compareSandboxPolicyPath(inputs);
+  try {
+    let step = steps.next();
+    while (!step.done) {
+      step = steps.next(canonicalPolicyPath(step.value, options.fsImpl || fs));
+    }
+    return step.value;
+  } catch (error) {
+    return sandboxRealpathFailure(inputs.resolvedPath, error);
+  }
+}
+
+export async function resolveSandboxPolicyPathAsync(
+  requestedPath,
+  options = {},
+) {
+  const { signal } = options;
+  const inputs = sandboxPolicyPathInputs(requestedPath, options);
+  if (!inputs.ok) return inputs;
+  const steps = compareSandboxPolicyPath(inputs);
+  try {
+    let step = steps.next();
+    while (!step.done) {
+      step = steps.next(await canonicalPolicyPathAsync(step.value, signal));
+    }
+    return step.value;
+  } catch (error) {
+    throwIfAborted(signal);
+    return sandboxRealpathFailure(inputs.resolvedPath, error);
   }
 }
 

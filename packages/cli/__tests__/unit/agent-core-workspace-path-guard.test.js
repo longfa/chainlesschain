@@ -127,6 +127,121 @@ describe("agent workspace path guard", () => {
     expect(absolute.content).toBe("inside");
   });
 
+  it("can cancel a pending path authorization without reading the file", async () => {
+    const file = path.join(workspace, "inside.txt");
+    const originalLstat = fs.promises.lstat;
+    const fileStat = await originalLstat(file);
+    const entered = Promise.withResolvers();
+    const pending = Promise.withResolvers();
+    const lstat = vi
+      .spyOn(fs.promises, "lstat")
+      .mockImplementation((p, ...opts) => {
+        if (p !== file) return originalLstat(p, ...opts);
+        entered.resolve();
+        return pending.promise;
+      });
+    const open = vi.spyOn(fs.promises, "open");
+    const controller = new AbortController();
+    try {
+      const result = expect(
+        executeTool(
+          "read_file",
+          { path: "inside.txt" },
+          {
+            cwd: workspace,
+            signal: controller.signal,
+          },
+        ),
+      ).rejects.toMatchObject({ name: "AbortError" });
+      await entered.promise;
+      controller.abort();
+      await result;
+      expect(open).not.toHaveBeenCalledWith(file, expect.anything());
+    } finally {
+      pending.resolve(fileStat);
+      lstat.mockRestore();
+      open.mockRestore();
+    }
+  });
+
+  it("rejects a read whose canonical target changes after authorization", async () => {
+    const file = path.join(workspace, "inside.txt");
+    const authorized = await fs.promises.realpath(file);
+    const originalRealpath = fs.promises.realpath;
+    let resolutions = 0;
+    const realpath = vi
+      .spyOn(fs.promises, "realpath")
+      .mockImplementation((p, ...opts) => {
+        if (p !== file) return originalRealpath(p, ...opts);
+        return Promise.resolve(++resolutions === 1 ? authorized : outsideFile);
+      });
+    const open = vi.spyOn(fs.promises, "open");
+    try {
+      const result = await executeTool(
+        "read_file",
+        { path: "inside.txt" },
+        { cwd: workspace },
+      );
+      expect(result).toMatchObject({ code: "CC_READ_FILE_PATH_CHANGED" });
+      expect(result.content).toBeUndefined();
+      expect(open).not.toHaveBeenCalledWith(outsideFile, expect.anything());
+    } finally {
+      realpath.mockRestore();
+      open.mockRestore();
+    }
+  });
+
+  it("shares one deadline between path authorization and file I/O", async () => {
+    const file = path.join(workspace, "inside.txt");
+    const originalLstat = fs.promises.lstat;
+    const originalStat = fs.promises.stat;
+    const actual = await originalStat(file);
+    const authorizationStarted = Promise.withResolvers();
+    const authorization = Promise.withResolvers();
+    const readStarted = Promise.withResolvers();
+    const metadata = Promise.withResolvers();
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout", "performance"] });
+    const lstat = vi
+      .spyOn(fs.promises, "lstat")
+      .mockImplementation((p, ...opts) => {
+        if (p !== file) return originalLstat(p, ...opts);
+        authorizationStarted.resolve();
+        return authorization.promise;
+      });
+    const stat = vi
+      .spyOn(fs.promises, "stat")
+      .mockImplementation((p, ...opts) => {
+        if (p !== file) return originalStat(p, ...opts);
+        readStarted.resolve();
+        return metadata.promise;
+      });
+    let finished = false;
+    try {
+      const result = executeTool(
+        "read_file",
+        { path: "inside.txt" },
+        { cwd: workspace },
+      ).then((output) => {
+        finished = true;
+        return output;
+      });
+      await authorizationStarted.promise;
+      await vi.advanceTimersByTimeAsync(9000);
+      authorization.resolve(actual);
+      await readStarted.promise;
+      await vi.advanceTimersByTimeAsync(999);
+      expect(finished).toBe(false);
+      await vi.advanceTimersByTimeAsync(1);
+      expect(await result).toMatchObject({ code: "CC_READ_FILE_TIMEOUT" });
+    } finally {
+      authorization.resolve(actual);
+      metadata.resolve(actual);
+      lstat.mockRestore();
+      stat.mockRestore();
+      vi.useRealTimers();
+    }
+  });
+
   it("blocks absolute and .. paths that escape the workspace", async () => {
     const escapedRelative = path.relative(workspace, outsideFile);
     for (const requested of [outsideFile, escapedRelative]) {

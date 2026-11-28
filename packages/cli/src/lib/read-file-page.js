@@ -32,19 +32,29 @@ async function withFileReadSlot(operation, signal) {
   }
 }
 
-export async function withFileReadDeadline(operation, parentSignal) {
+function fileReadTimeoutError() {
+  const error = new Error(
+    `File read timed out after ${READ_FILE_TIMEOUT_MS / 1000} seconds. Try a local copy or use a focused search.`,
+  );
+  error.code = "CC_READ_FILE_TIMEOUT";
+  return error;
+}
+
+export async function withFileReadDeadline(
+  operation,
+  parentSignal,
+  timeoutMs = READ_FILE_TIMEOUT_MS,
+) {
   throwIfAborted(parentSignal);
+  if (timeoutMs <= 0) throw fileReadTimeoutError();
   const controller = new AbortController();
   const signal = parentSignal
     ? AbortSignal.any([parentSignal, controller.signal])
     : controller.signal;
-  const timer = setTimeout(() => {
-    const error = new Error(
-      `File read timed out after ${READ_FILE_TIMEOUT_MS / 1000} seconds. Try a local copy or use a focused search.`,
-    );
-    error.code = "CC_READ_FILE_TIMEOUT";
-    controller.abort(error);
-  }, READ_FILE_TIMEOUT_MS);
+  const timer = setTimeout(
+    () => controller.abort(fileReadTimeoutError()),
+    Math.ceil(timeoutMs),
+  );
   try {
     // Keep an I/O slot until the OS operation actually settles. A timed-out
     // mount must not let repeated calls exhaust the filesystem worker pool.
