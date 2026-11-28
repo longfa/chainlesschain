@@ -4,7 +4,7 @@ ChainlessChain agent workspace for VS Code-compatible editors with streaming cha
 
 ## Release pairing
 
-Version **0.37.202** recommends CLI **0.166.167**. This pairing is for candidate builds from this source. New chats automatically approve routine tool use. Use `/normal` to require regular approval prompts.
+Version **0.37.203** recommends CLI **0.166.167**. This pairing is for candidate builds from this source. New chats automatically approve routine tool use. Use `/normal` to require regular approval prompts.
 
 ## Current release
 
