@@ -75,6 +75,7 @@ import path from "path";
 import {
   buildReadFilePage,
   MAX_READ_FILE_BYTES,
+  READ_FILE_TIMEOUT_MS,
   readRegularFileForPages,
   withFileReadDeadline,
   buildReadFileOutline,
@@ -286,7 +287,10 @@ import {
   normalizeModelDecision,
   readModelFallback,
 } from "../lib/model-decision.js";
-import { resolveSandboxPolicyPath } from "../lib/agent-sandbox.js";
+import {
+  resolveSandboxPolicyPath,
+  resolveSandboxPolicyPathAsync,
+} from "../lib/agent-sandbox.js";
 import {
   beginManagedToolCheckpoint,
   managedToolCheckpointBinding,
@@ -1923,21 +1927,23 @@ function guardAgentFileToolPaths(name, args, context, cwd) {
       workspaceRoots,
       sandbox: context.sandbox || null,
     });
-    if (!verdict.ok) {
-      return {
-        error:
-          `[Workspace Path Guard] ${name}.${request.argument} ` +
-          `"${request.path}" was blocked: ${verdict.error}.`,
-        policy: {
-          decision: "deny",
-          via: "workspace-path-guard",
-          reason: verdict.reason,
-          access: request.access,
-        },
-      };
-    }
+    if (!verdict.ok) return workspacePathDenial(name, request, verdict);
   }
   return null;
+}
+
+function workspacePathDenial(name, request, verdict) {
+  return {
+    error:
+      `[Workspace Path Guard] ${name}.${request.argument} ` +
+      `"${request.path}" was blocked: ${verdict.error}.`,
+    policy: {
+      decision: "deny",
+      via: "workspace-path-guard",
+      reason: verdict.reason,
+      access: request.access,
+    },
+  };
 }
 
 function fileMutationPaths(name, args = {}) {
@@ -3131,8 +3137,40 @@ export async function executeTool(name, args, context = {}) {
   // permission hook, IDE preview, credential check, or filesystem operation
   // can touch them. Explicit --add-dir roots and sandbox allowRead/allowWrite
   // paths are the only supported expansions beyond cwd; deny paths still win.
-  const workspacePathDenial = guardAgentFileToolPaths(name, args, context, cwd);
-  if (workspacePathDenial) return workspacePathDenial;
+  let readFileAccess = null;
+  if (name === "read_file" && typeof args?.path === "string" && args.path) {
+    args = { ...args };
+    const request = { path: args.path, access: "read", argument: "path" };
+    const started = performance.now();
+    let verdict;
+    try {
+      verdict = await withFileReadDeadline(
+        (signal) =>
+          resolveSandboxPolicyPathAsync(request.path, {
+            cwd,
+            workspaceRoots: workspaceRootsFor(
+              cwd,
+              context.additionalDirectories,
+            ),
+            sandbox: context.sandbox || null,
+            signal,
+          }),
+        context.signal,
+      );
+    } catch (error) {
+      throwIfAborted(context.signal);
+      if (error?.code !== "CC_READ_FILE_TIMEOUT") throw error;
+      return { code: error.code, error: error.message };
+    }
+    if (!verdict.ok) return workspacePathDenial(name, request, verdict);
+    readFileAccess = {
+      ...verdict,
+      remainingMs: READ_FILE_TIMEOUT_MS - (performance.now() - started),
+    };
+  } else {
+    const denial = guardAgentFileToolPaths(name, args, context, cwd);
+    if (denial) return denial;
+  }
 
   // A malformed settings source may have hidden a deny/ask hook. Runtime
   // loaders attach these parse failures as host-owned metadata; executing with
@@ -3674,16 +3712,16 @@ export async function executeTool(name, args, context = {}) {
   // customizations), this safety surface stays on under --safe-mode by design.
   if (!ruleAllowed && (name === "read_file" || name === "run_shell")) {
     const {
-      credentialFileReasonResolved,
+      credentialFileReason,
       commandReadsCredentials,
       credentialGuardDisabled,
     } = await import("../lib/credential-guard.js");
     if (!credentialGuardDisabled(process.env)) {
       let credReason = null;
       if (name === "read_file" && args?.path) {
-        // Resolve symlinks: an innocent-named link to a credential file must not
-        // skip the prompt (fs.readFileSync follows the link).
-        credReason = credentialFileReasonResolved(args.path, { cwd });
+        const direct = credentialFileReason(args.path);
+        const resolved = credentialFileReason(readFileAccess?.canonicalPath);
+        credReason = direct || (resolved && `${resolved} (via symlink)`);
       } else if (name === "run_shell" && args?.command) {
         const hit = commandReadsCredentials(args.command);
         credReason = hit ? hit.reason : null;
@@ -4144,6 +4182,7 @@ export async function executeTool(name, args, context = {}) {
       sessionBudget: context.sessionBudget || null,
       hostResourceBudget: context.hostResourceBudget || null,
       readFileCache: context.readFileCache || null,
+      readFileAccess,
       readFileLoopGuard: context.readFileLoopGuard || null,
       taskProgressTracker: context.taskProgressTracker || null,
       // Effective contract of THIS loop (parent ceiling for a nested spawn) +
@@ -5766,6 +5805,7 @@ async function executeToolInner(
     toolAdmission = null,
     hostResourceBudget = null,
     readFileCache = null,
+    readFileAccess = null,
     readFileLoopGuard = null,
     unattendedActionPolicy = null,
     managedCheckpoint = false,
@@ -5844,13 +5884,29 @@ async function executeToolInner(
   switch (name) {
     case "read_file": {
       const filePath = path.resolve(cwd, args.path);
+      const pathChanged = {
+        code: "CC_READ_FILE_PATH_CHANGED",
+        error: "The file path changed during authorization. Retry the read.",
+      };
+      if (readFileAccess && filePath !== readFileAccess.path)
+        return attachDescriptor(pathChanged);
       let page;
       try {
-        page = await withFileReadDeadline(async (readSignal) => {
-          const fileStat = await fs.promises.stat(filePath).catch((error) => {
+        const readPageWithinBudget = async (readSignal) => {
+          const missingPath = (error) => {
             if (["ENOENT", "ENOTDIR"].includes(error?.code)) return null;
             throw error;
-          });
+          };
+          const canonicalPath = await fs.promises
+            .realpath(filePath)
+            .catch(missingPath);
+          throwIfAborted(readSignal);
+          if (!canonicalPath) return { error: "File not found: " + filePath };
+          if (readFileAccess && canonicalPath !== readFileAccess.canonicalPath)
+            return pathChanged;
+          const fileStat = await fs.promises
+            .stat(canonicalPath)
+            .catch(missingPath);
           throwIfAborted(readSignal);
           if (!fileStat) return { error: "File not found: " + filePath };
           if (fileStat.isDirectory()) {
@@ -5871,11 +5927,10 @@ async function executeToolInner(
               error: `File exceeds the ${MAX_READ_FILE_BYTES}-byte read limit. Search for the needed section or use a smaller source file.`,
             };
           }
-          throwIfAborted(readSignal);
           const fileVersion = `${fileStat.size}:${fileStat.mtimeMs}:${fileStat.ctimeMs}`;
           const cacheKeyFor = (request) =>
             JSON.stringify([
-              filePath,
+              canonicalPath,
               request.offset ?? null,
               request.limit ?? null,
               request.column ?? null,
@@ -5887,7 +5942,11 @@ async function executeToolInner(
           // Prepare their source before the guard synchronously records coverage.
           const content =
             readFileLoopGuard || initialCached?.fileVersion !== fileVersion
-              ? await readRegularFileForPages(filePath, fileStat, readSignal)
+              ? await readRegularFileForPages(
+                  canonicalPath,
+                  fileStat,
+                  readSignal,
+                )
               : null;
           throwIfAborted(readSignal);
           _fileObservedMtimes.set(filePath, fileStat.mtimeMs);
@@ -5956,7 +6015,12 @@ async function executeToolInner(
                 },
               )
             : readPage(args);
-        }, signal);
+        };
+        page = await withFileReadDeadline(
+          readPageWithinBudget,
+          signal,
+          readFileAccess?.remainingMs,
+        );
       } catch (error) {
         throwIfAborted(signal);
         if (error?.code !== "CC_READ_FILE_TIMEOUT") throw error;
