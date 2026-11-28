@@ -1,6 +1,7 @@
 name: VERIFY01 Host Diagnostics
 run-name: >-
-  ${{ github.event_name == 'workflow_dispatch' && inputs.descendant_repetitions != 0
+  ${{ inputs.mcp_startup_manifest != '' && 'macOS installed MCP startup diagnostic'
+      || github.event_name == 'workflow_dispatch' && inputs.descendant_repetitions != 0
       && format('Owned-descendant investigation ({0} rounds, diagnostic only)', inputs.descendant_repetitions)
       || 'VERIFY01 Host Diagnostics' }}
 
@@ -9,6 +10,11 @@ run-name: >-
 on:
   workflow_dispatch:
     inputs:
+      mcp_startup_manifest:
+        description: "Exact prerelease package-set manifest for a macOS MCP startup measurement"
+        type: string
+        required: false
+        default: ""
       descendant_repetitions:
         description: "Diagnostic only: 1..100 macOS descendant checks; 0 runs the full host workflow"
         type: number
@@ -53,9 +59,50 @@ env:
   VERIFY01_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
 jobs:
+  mcp-startup-macos:
+    if: github.event_name == 'workflow_dispatch' && inputs.mcp_startup_manifest != ''
+    runs-on: macos-15-intel
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      actions: read
+    env:
+      VERIFY01_MCP_MANIFEST: ${{ inputs.mcp_startup_manifest }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ env.VERIFY01_SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22.22.2"
+      - name: Download the immutable candidate package set
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$VERIFY01_SOURCE_SHA"
+          [[ "$VERIFY01_MCP_MANIFEST" =~ ^docs/research/cli/verify01-package-sets/[a-zA-Z0-9_.-]+\.json$ ]]
+          git ls-files --error-unmatch -- "$VERIFY01_MCP_MANIFEST"
+          node packages/cli/scripts/verify01-prerelease-package-set.mjs "$VERIFY01_MCP_MANIFEST" "$RUNNER_TEMP/mcp-candidate"
+      - name: Install and measure cold and warm terminal startup
+        shell: bash
+        run: |
+          set -euo pipefail
+          package_file=$(node -e 'process.stdout.write(require("./" + process.argv[1]).prepublication.files.cli.file)' "$VERIFY01_MCP_MANIFEST")
+          mkdir "$RUNNER_TEMP/mcp-installed"
+          npm install --prefix "$RUNNER_TEMP/mcp-installed" --no-audit --no-fund "$CC_VERIFY01_PRERELEASE_DIRECTORY/$package_file"
+          node scripts/diagnostics/verify01-mcp-startup-timing.mjs "$VERIFY01_MCP_MANIFEST" "$CC_VERIFY01_PRERELEASE_DIRECTORY" "$RUNNER_TEMP/mcp-installed" "$RUNNER_TEMP/mcp-startup.json"
+      - uses: actions/upload-artifact@v6
+        with:
+          name: verify01-mcp-startup-macos-${{ github.run_id }}
+          path: ${{ runner.temp }}/mcp-startup.json
+          if-no-files-found: error
+
   descendant-reproduction:
     name: macOS owned-descendant reproduction (diagnostic only)
-    if: github.event_name == 'workflow_dispatch' && inputs.descendant_repetitions != 0
+    if: github.event_name == 'workflow_dispatch' && inputs.mcp_startup_manifest == '' && inputs.descendant_repetitions != 0
     runs-on: macos-15-intel
     timeout-minutes: 15
     steps:
@@ -90,7 +137,7 @@ jobs:
           retention-days: 90
 
   vscode-package:
-    if: github.event_name != 'workflow_dispatch' || inputs.descendant_repetitions == 0
+    if: github.event_name != 'workflow_dispatch' || (inputs.mcp_startup_manifest == '' && inputs.descendant_repetitions == 0)
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
