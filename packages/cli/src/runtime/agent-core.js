@@ -76,6 +76,7 @@ import {
   buildReadFilePage,
   MAX_READ_FILE_BYTES,
   readRegularFileForPages,
+  withFileReadDeadline,
   buildReadFileOutline,
 } from "../lib/read-file-page.js";
 import { ReadFileLoopGuard } from "../lib/read-file-loop-guard.js";
@@ -5843,105 +5844,124 @@ async function executeToolInner(
   switch (name) {
     case "read_file": {
       const filePath = path.resolve(cwd, args.path);
-      if (!fs.existsSync(filePath)) {
-        return attachDescriptor({ error: `File not found: ${filePath}` });
-      }
-      // A clear, self-correcting error beats the cryptic "EISDIR: illegal
-      // operation on a directory" that readFileSync throws on a directory.
-      const fileStat = fs.statSync(filePath);
-      if (fileStat.isDirectory()) {
-        return attachDescriptor({
-          error: `Path is a directory, not a file: ${filePath}. Use list_dir to see its contents.`,
-        });
-      }
-      if (!fileStat.isFile()) {
-        return attachDescriptor({
-          code: "CC_READ_FILE_NOT_REGULAR",
-          error:
-            "Read requires a regular file. Pipes and device files are unsupported.",
-        });
-      }
-      if (fileStat.size > MAX_READ_FILE_BYTES) {
-        return attachDescriptor({
-          code: "CC_READ_FILE_SIZE_LIMIT",
-          error: `File exceeds the ${MAX_READ_FILE_BYTES}-byte read limit. Search for the needed section or use a smaller source file.`,
-        });
-      }
-      signal?.throwIfAborted();
-      const fileVersion = `${fileStat.size}:${fileStat.mtimeMs}:${fileStat.ctimeMs}`;
-      _recordFileObservation(filePath);
-      let rendered;
-      let nbView;
-      let outline;
-      const render = () => {
-        if (rendered !== undefined) return rendered;
-        const content = readRegularFileForPages(filePath, fileStat, signal);
-        nbView =
-          args.raw !== true && /\.ipynb$/i.test(filePath)
-            ? renderNotebook(content)
-            : null;
-        rendered =
-          nbView || (args.hashed === true ? annotateLines(content) : content);
-        // Excerpts are data, never subtree instructions. Keep the index
-        // separate from read coverage so it cannot claim the file was read.
-        outline =
-          ((args.offset == null && args.limit == null) ||
-            Number(args.limit) >= 2000) &&
-          content.length > MAX_TOOL_RESULT_CHARS &&
-          /\.(?:md|mdx|txt)$/i.test(filePath)
-            ? buildReadFileOutline(content)
-            : null;
-        return rendered;
-      };
-      const readPage = (request) => {
-        const cacheKey = JSON.stringify([
-          filePath,
-          request.offset ?? null,
-          request.limit ?? null,
-          request.column ?? null,
-          args.hashed === true,
-          args.raw === true,
-        ]);
-        const cached = readFileCache?.get(cacheKey);
-        if (cached?.fileVersion === fileVersion)
-          return structuredClone(cached.page);
-        render();
-        const page = buildReadFilePage(rendered, request, {
-          filePath,
-          fileVersion,
-          // An unbounded large-document request starts with an index and a
-          // small preview. A task-specific search can then avoid a full scan.
-          maxChars:
-            outline && request.offset == null && request.limit == null
-              ? Math.min(MAX_TOOL_RESULT_CHARS, 12000)
-              : MAX_TOOL_RESULT_CHARS,
-          outline,
-        });
-        if (nbView) page.notebook = true;
-        if (readFileCache && !page.error) {
-          readFileCache.delete(cacheKey);
-          readFileCache.set(cacheKey, {
-            fileVersion,
-            page: structuredClone(page),
+      let page;
+      try {
+        page = await withFileReadDeadline(async (readSignal) => {
+          const fileStat = await fs.promises.stat(filePath).catch((error) => {
+            if (["ENOENT", "ENOTDIR"].includes(error?.code)) return null;
+            throw error;
           });
-          while (readFileCache.size > 8)
-            readFileCache.delete(readFileCache.keys().next().value);
-        }
-        return page;
-      };
-      const page = readFileLoopGuard
-        ? readFileLoopGuard.read(
-            args,
-            { filePath, fileVersion },
-            readPage,
-            (charOffset) => {
-              const prefix = render().slice(0, charOffset);
-              const offset = (prefix.match(/\n/g) || []).length + 1;
-              const column = charOffset - prefix.lastIndexOf("\n");
-              return readPage({ ...args, offset, column, limit: 2000 });
-            },
-          )
-        : readPage(args);
+          throwIfAborted(readSignal);
+          if (!fileStat) return { error: "File not found: " + filePath };
+          if (fileStat.isDirectory()) {
+            return {
+              error: `Path is a directory, not a file: ${filePath}. Use list_dir to see its contents.`,
+            };
+          }
+          if (!fileStat.isFile()) {
+            return {
+              code: "CC_READ_FILE_NOT_REGULAR",
+              error:
+                "Read requires a regular file. Pipes and device files are unsupported.",
+            };
+          }
+          if (fileStat.size > MAX_READ_FILE_BYTES) {
+            return {
+              code: "CC_READ_FILE_SIZE_LIMIT",
+              error: `File exceeds the ${MAX_READ_FILE_BYTES}-byte read limit. Search for the needed section or use a smaller source file.`,
+            };
+          }
+          throwIfAborted(readSignal);
+          const fileVersion = `${fileStat.size}:${fileStat.mtimeMs}:${fileStat.ctimeMs}`;
+          const cacheKeyFor = (request) =>
+            JSON.stringify([
+              filePath,
+              request.offset ?? null,
+              request.limit ?? null,
+              request.column ?? null,
+              args.hashed === true,
+              args.raw === true,
+            ]);
+          const initialCached = readFileCache?.get(cacheKeyFor(args));
+          // Guarded reads can need a continuation or a bounded recovery page.
+          // Prepare their source before the guard synchronously records coverage.
+          const content =
+            readFileLoopGuard || initialCached?.fileVersion !== fileVersion
+              ? await readRegularFileForPages(filePath, fileStat, readSignal)
+              : null;
+          throwIfAborted(readSignal);
+          _fileObservedMtimes.set(filePath, fileStat.mtimeMs);
+          let rendered;
+          let nbView;
+          let outline;
+          const render = () => {
+            if (rendered !== undefined) return rendered;
+            nbView =
+              args.raw !== true && /\.ipynb$/i.test(filePath)
+                ? renderNotebook(content)
+                : null;
+            rendered =
+              nbView ||
+              (args.hashed === true ? annotateLines(content) : content);
+            // Excerpts are data, never subtree instructions. Keep the index
+            // separate from read coverage so it cannot claim the file was read.
+            outline =
+              ((args.offset == null && args.limit == null) ||
+                Number(args.limit) >= 2000) &&
+              content.length > MAX_TOOL_RESULT_CHARS &&
+              /\.(?:md|mdx|txt)$/i.test(filePath)
+                ? buildReadFileOutline(content)
+                : null;
+            return rendered;
+          };
+          const readPage = (request) => {
+            const cacheKey = cacheKeyFor(request);
+            const cached = readFileCache?.get(cacheKey);
+            if (cached?.fileVersion === fileVersion)
+              return structuredClone(cached.page);
+            render();
+            const page = buildReadFilePage(rendered, request, {
+              filePath,
+              fileVersion,
+              // An unbounded large-document request starts with an index and a
+              // small preview. A task-specific search can then avoid a full scan.
+              maxChars:
+                outline && request.offset == null && request.limit == null
+                  ? Math.min(MAX_TOOL_RESULT_CHARS, 12000)
+                  : MAX_TOOL_RESULT_CHARS,
+              outline,
+            });
+            if (nbView) page.notebook = true;
+            if (readFileCache && !page.error) {
+              readFileCache.delete(cacheKey);
+              readFileCache.set(cacheKey, {
+                fileVersion,
+                page: structuredClone(page),
+              });
+              while (readFileCache.size > 8)
+                readFileCache.delete(readFileCache.keys().next().value);
+            }
+            return page;
+          };
+          return readFileLoopGuard
+            ? readFileLoopGuard.read(
+                args,
+                { filePath, fileVersion },
+                readPage,
+                (charOffset) => {
+                  const prefix = render().slice(0, charOffset);
+                  const offset = (prefix.match(/\n/g) || []).length + 1;
+                  const column = charOffset - prefix.lastIndexOf("\n");
+                  return readPage({ ...args, offset, column, limit: 2000 });
+                },
+              )
+            : readPage(args);
+        }, signal);
+      } catch (error) {
+        throwIfAborted(signal);
+        if (error?.code !== "CC_READ_FILE_TIMEOUT") throw error;
+        return attachDescriptor({ code: error.code, error: error.message });
+      }
       return attachDescriptor(
         await _withSubtreeInstructions(
           page,

@@ -6,7 +6,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { mkdtempSync, rmSync, truncateSync, writeFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
-import { MAX_READ_FILE_BYTES } from "../../src/lib/read-file-page.js";
+import {
+  MAX_READ_FILE_BYTES,
+  READ_FILE_TIMEOUT_MS,
+} from "../../src/lib/read-file-page.js";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import fs from "node:fs";
@@ -1220,7 +1223,7 @@ describe("read_file offset/limit line ranges", () => {
     const filePath = join(dir, "large.txt");
     writeFileSync(filePath, "");
     truncateSync(filePath, MAX_READ_FILE_BYTES + 1);
-    const open = vi.spyOn(fs, "openSync");
+    const open = vi.spyOn(fs.promises, "open");
     try {
       expect(
         await executeTool(
@@ -1248,9 +1251,98 @@ describe("read_file offset/limit line ranges", () => {
     },
   );
 
+  it("returns a stable timeout while file metadata is still pending", async () => {
+    const filePath = join(dir, "f.txt");
+    const fileStat = await fs.promises.stat(filePath);
+    const started = Promise.withResolvers();
+    const statResult = Promise.withResolvers();
+    const stat = fs.promises.stat;
+    const delayedStat = vi
+      .spyOn(fs.promises, "stat")
+      .mockImplementation((target, ...options) => {
+        if (target !== filePath) return stat(target, ...options);
+        started.resolve();
+        return statResult.promise;
+      });
+    const cache = new Map();
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+    try {
+      const read = executeTool(
+        "read_file",
+        { path: "f.txt" },
+        { cwd: dir, readFileCache: cache },
+      );
+      await started.promise;
+      await vi.advanceTimersByTimeAsync(READ_FILE_TIMEOUT_MS);
+      expect(await read).toMatchObject({ code: "CC_READ_FILE_TIMEOUT" });
+      expect(cache.size).toBe(0);
+    } finally {
+      delayedStat.mockRestore();
+      statResult.resolve(fileStat);
+      vi.useRealTimers();
+    }
+  });
+
+  it("interrupts a pending open, closes its late descriptor, and can read again", async () => {
+    const filePath = join(dir, "f.txt");
+    const descriptor = await fs.promises.open(filePath, "r");
+    const close = descriptor.close.bind(descriptor);
+    const closed = Promise.withResolvers();
+    const closeSpy = vi
+      .spyOn(descriptor, "close")
+      .mockImplementation(async () => {
+        await close();
+        closed.resolve();
+      });
+    const started = Promise.withResolvers();
+    const openResult = Promise.withResolvers();
+    const open = fs.promises.open;
+    const delayedOpen = vi
+      .spyOn(fs.promises, "open")
+      .mockImplementation((target, ...options) => {
+        if (target !== filePath) return open(target, ...options);
+        started.resolve();
+        return openResult.promise;
+      });
+    const controller = new AbortController();
+    const context = {
+      cwd: dir,
+      readFileCache: new Map(),
+      readFileLoopGuard: new ReadFileLoopGuard(),
+    };
+    try {
+      const read = executeTool(
+        "read_file",
+        { path: "f.txt", limit: 2 },
+        { ...context, signal: controller.signal },
+      );
+      const interrupted = expect(read).rejects.toMatchObject({
+        name: "AbortError",
+      });
+      await started.promise;
+      controller.abort();
+      await interrupted;
+      expect(closeSpy).not.toHaveBeenCalled();
+      expect(context.readFileCache.size).toBe(0);
+    } finally {
+      delayedOpen.mockRestore();
+      openResult.resolve(descriptor);
+    }
+    await closed.promise;
+    expect(closeSpy).toHaveBeenCalledTimes(1);
+    closeSpy.mockRestore();
+    const result = await executeTool(
+      "read_file",
+      { path: "f.txt", limit: 2 },
+      context,
+    );
+    expect(result.range).toMatchObject({ startLine: 1, endLine: 2 });
+    expect(result.content).toBeTruthy();
+  });
+
   it("caches repeated reads within a run and invalidates the cache when the file changes", async () => {
     const filePath = join(dir, "f.txt");
-    const readSpy = vi.spyOn(fs, "openSync");
+    const readSpy = vi.spyOn(fs.promises, "open");
     const context = { cwd: dir, readFileCache: new Map() };
     try {
       const first = await executeTool(

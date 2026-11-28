@@ -1,12 +1,65 @@
 import fs from "node:fs";
-import { readBoundedDescriptor } from "./evolution/bounded-descriptor-read.js";
+import { raceWithAbort, throwIfAborted } from "./abort-utils.js";
 import { recoverCompleteSourceRead } from "./source-read-recovery.js";
 
 export const MAX_READ_FILE_BYTES = 8 * 1024 * 1024;
+export const READ_FILE_TIMEOUT_MS = 10_000;
+const READ_FILE_CHUNK_BYTES = 64 * 1024;
+const MAX_PENDING_FILE_READS = 2;
+let pendingFileReads = 0;
+const fileReadWaiters = new Set();
 
-export function readRegularFileForPages(path, before, signal) {
-  signal?.throwIfAborted();
-  const descriptor = fs.openSync(
+async function withFileReadSlot(operation, signal) {
+  while (pendingFileReads >= MAX_PENDING_FILE_READS) {
+    let wake;
+    const ready = new Promise((resolve) => {
+      wake = resolve;
+      fileReadWaiters.add(resolve);
+    });
+    try {
+      await raceWithAbort(ready, signal);
+    } finally {
+      fileReadWaiters.delete(wake);
+    }
+  }
+  throwIfAborted(signal);
+  pendingFileReads++;
+  try {
+    return await operation(signal);
+  } finally {
+    pendingFileReads--;
+    for (const wake of fileReadWaiters) wake();
+  }
+}
+
+export async function withFileReadDeadline(operation, parentSignal) {
+  throwIfAborted(parentSignal);
+  const controller = new AbortController();
+  const signal = parentSignal
+    ? AbortSignal.any([parentSignal, controller.signal])
+    : controller.signal;
+  const timer = setTimeout(() => {
+    const error = new Error(
+      `File read timed out after ${READ_FILE_TIMEOUT_MS / 1000} seconds. Try a local copy or use a focused search.`,
+    );
+    error.code = "CC_READ_FILE_TIMEOUT";
+    controller.abort(error);
+  }, READ_FILE_TIMEOUT_MS);
+  try {
+    // Keep an I/O slot until the OS operation actually settles. A timed-out
+    // mount must not let repeated calls exhaust the filesystem worker pool.
+    const read = Promise.resolve().then(() =>
+      withFileReadSlot(operation, signal),
+    );
+    return await raceWithAbort(read, signal);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+export async function readRegularFileForPages(path, before, signal) {
+  throwIfAborted(signal);
+  const descriptor = await fs.promises.open(
     path,
     fs.constants.O_RDONLY | (fs.constants.O_NONBLOCK || 0),
   );
@@ -18,20 +71,37 @@ export function readRegularFileForPages(path, before, signal) {
     stat.mtimeMs === before.mtimeMs &&
     stat.ctimeMs === before.ctimeMs;
   try {
-    if (!matches(fs.fstatSync(descriptor)))
+    throwIfAborted(signal);
+    if (!matches(await descriptor.stat()))
       throw new Error("file changed before read");
-    const bytes = readBoundedDescriptor(
-      fs,
-      descriptor,
-      before.size,
-      MAX_READ_FILE_BYTES,
-    );
-    if (!matches(fs.fstatSync(descriptor)) || !matches(fs.statSync(path)))
+    const bytes = Buffer.allocUnsafe(before.size);
+    let offset = 0;
+    while (offset < bytes.length) {
+      throwIfAborted(signal);
+      const length = Math.min(READ_FILE_CHUNK_BYTES, bytes.length - offset);
+      const { bytesRead } = await descriptor.read(
+        bytes,
+        offset,
+        length,
+        offset,
+      );
+      if (bytesRead < 1 || bytesRead > length)
+        throw new Error("file changed or ended during bounded read");
+      offset += bytesRead;
+    }
+    throwIfAborted(signal);
+    if ((await descriptor.read(Buffer.alloc(1), 0, 1, offset)).bytesRead !== 0)
+      throw new Error("file grew during bounded read");
+    throwIfAborted(signal);
+    if (!matches(await descriptor.stat()))
       throw new Error("file changed during read");
-    signal?.throwIfAborted();
+    throwIfAborted(signal);
+    if (!matches(await fs.promises.stat(path)))
+      throw new Error("file changed during read");
+    throwIfAborted(signal);
     return bytes.toString("utf8");
   } finally {
-    fs.closeSync(descriptor);
+    await descriptor.close();
   }
 }
 
